@@ -239,7 +239,7 @@ function render(t){if(S.mode!='dun'&&S.mode!='bat')return;const dx=Math.cos(S.a)
 function drawMap(){const M=S.map,n=M.length,cs=Math.max(2,Math.floor(120/n)),ox=W-n*cs-6,oy=6;ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(ox-3,oy-3,n*cs+6,n*cs+6);
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){if(!S.seen[y*n+x])continue;ctx.fillStyle=M[y][x]==1?'#6b5a48':'#20180f';ctx.fillRect(ox+x*cs,oy+y*cs,cs,cs)}
   for(const s of S.sprites){if(s.gone||!S.seen[Math.floor(s.y)*n+Math.floor(s.x)])continue;if(s.k=='up'||s.k=='dn'||s.k=='chest'){ctx.fillStyle=s.k=='up'?'#ffc069':s.k=='dn'?'#7fb6ff':'#e6b450';ctx.fillRect(ox+Math.floor(s.x)*cs,oy+Math.floor(s.y)*cs,cs,cs)}}
-  ctx.fillStyle='#ff8a3d';ctx.fillRect(ox+Math.floor(S.px)*cs,oy+Math.floor(S.py)*cs,cs,cs)}
+  const cx=ox+(Math.floor(S.px)+.5)*cs,cy=oy+(Math.floor(S.py)+.5)*cs,r=Math.max(3,cs*1.1),a=S.a;ctx.fillStyle='#ff8a3d';ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.lineTo(cx+Math.cos(a+2.5)*r*.8,cy+Math.sin(a+2.5)*r*.8);ctx.lineTo(cx+Math.cos(a-2.5)*r*.8,cy+Math.sin(a-2.5)*r*.8);ctx.closePath();ctx.fill()}
 /* ========== ダンジョン生成 ========== */
 const S={mode:'title',map:null,px:1.5,py:1.5,a:0,tw:null,sprites:[],lights:[],seen:[],floor:1,steps:0,showMap:true};
 function genFloor(f){const n=Math.min(6+f,15),sz=n*2+1,M=Array.from({length:sz},()=>Array(sz).fill(1)),vis=Array.from({length:n},()=>Array(n).fill(false)),st=[[0,0]];vis[0][0]=true;M[1][1]=0;
