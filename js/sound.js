@@ -68,10 +68,16 @@ const SND = (() => {
     // よく使う効果音を先に読んでおく
     if (ac) ['select', 'slash', 'hit', 'swing', 'door', 'win', 'heal1', 'step_stone', 'item'].forEach(load);
   }
-  ['touchstart', 'touchend', 'pointerdown', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, { capture: true, passive: true }));
+  // iPhoneは touchend / click の中でないと音を起こせない（touchstart や pointerdown ではだめ）
+  ['touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, { capture: true, passive: true }));
   // アプリに戻ってきたとき、止まった音を戻す
   document.addEventListener('visibilitychange', () => { if (document.hidden) { music.pause(); if (ac) ac.suspend(); } else if (unlocked) { if (ac) ac.resume(); startMusic(); } });
 
+  // ?debug をつけて開くと、音の状態を画面の下に出す
+  if (/debug/.test(location.search)) setInterval(() => {
+    let d = document.getElementById('snddbg'); if (!d) { d = document.createElement('div'); d.id = 'snddbg'; d.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:999;font:11px monospace;background:#000c;color:#0f0;padding:4px;white-space:pre-wrap'; document.body.appendChild(d); }
+    d.textContent = `unlocked=${unlocked} on=${on} ac=${ac ? ac.state : 'none'} web=${!!web}\nbgm=${cur} paused=${music.paused} ready=${music.readyState} err=${music.error ? music.error.code : '-'} t=${music.currentTime.toFixed(1)}\nsfx読込=${Object.keys(bufs).length}`;
+  }, 500);
   function toggle() {
     on = !on; try { localStorage.setItem('tower_sound', on ? 'on' : 'off'); } catch (e) {}
     if (master) master.gain.value = on ? 1 : 0;

@@ -297,6 +297,7 @@ function titleScreen() {
   const L = [{ t: 'はじめから', hot: !load(), f: () => { G = NEW_GAME(); save(); intro(0); } }];
   if (load()) L.unshift({ t: 'つづきから', hot: true, f: () => { G = load(); townMap(); say('normal', '「さて、今日も行くか」\n工房の火はまだ温かい。', true); } });
   buttons(L); log('', true); hud();
+  { const v = document.createElement('div'); v.textContent = 'ver 3'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 function intro(i) {
   viewScreen('', true);
