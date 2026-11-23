@@ -1,6 +1,6 @@
 {
-  "name": "塔の鍛冶屋",
-  "short_name": "塔の鍛冶屋",
+  "name": "Tower of Hope",
+  "short_name": "希望の塔",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
