@@ -100,7 +100,7 @@ const SND = (() => {
     let k = 'town', am = '';
     if (scene) k = scene;
     else if (lost) k = 'lost';
-    else if (body.contains('title')) k = 'title';
+    else if (body.contains('title') || body.contains('story')) k = 'title';  // タイトルと、はじめの説明
     else if (typeof mode !== 'undefined' && mode === 'battle' && typeof B !== 'undefined' && B) k = B.m && B.m.boss ? 'boss_battle' : 'battle';
     else if (typeof mode !== 'undefined' && mode === 'dungeon' && typeof floorNo !== 'undefined') {
       k = goddess ? 'goddess' : stageKey(floorNo);
@@ -119,7 +119,7 @@ const SND = (() => {
     bgm(k); ambience(am);
   }
   setInterval(tick, 300);
-  return { sfx, bgm, toggle, tick, get on() { return on; }, get now() { return cur + '|' + ambKey; }, set lost(v) { lost = v; }, set goddess(v) { goddess = v; }, set scene(v) { scene = v || ''; tick(true); } };
+  return { sfx, bgm, toggle, tick, get unlocked() { return unlocked; }, get on() { return on; }, get now() { return cur + '|' + ambKey; }, set lost(v) { lost = v; }, set goddess(v) { goddess = v; }, set scene(v) { scene = v || ''; tick(true); } };
 })();
 const sfx = (k, o) => SND.sfx(k, o);
 let SND_INDOOR = false;
