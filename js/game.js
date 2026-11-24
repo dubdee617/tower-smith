@@ -253,6 +253,7 @@ function buttons(list, cls) {
   } else { shown = []; for (const b of body) shown.push(b); }
   const n = shown.filter(b => !b.title).length;
   if (!cls) cls = n > 6 ? 'three small' : n === 3 ? 'three' : n === 1 ? 'one' : '';
+  if (cls === 'list') cls = 'list';
   const per = cls.includes('three') ? 9 : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
   let pages = 1, pg = 0, items = shown;
   if (n > per + (tail.length ? 0 : 1)) {
@@ -262,7 +263,7 @@ function buttons(list, cls) {
   const mk = (b, wrap) => {
     const el = document.createElement('button'); el.innerHTML = b.t + (b.s ? `<small>${b.s}</small>` : '');
     el.addEventListener('click', () => sfx('select', { vol: .5 }), { capture: true });
-    if (b.off) el.disabled = true; if (b.hot) el.className = 'hot';
+    if (b.off) el.disabled = true; if (b.hot) el.className = 'hot'; if (b.cls) el.classList.add(b.cls);
     const move = !b.stay && (b.go || b.f === townMap || ['入る', '外に出る', '町へ', '工房へ'].includes(b.t));
     el.onclick = () => { if (move) fadeGo(() => b.f()); else { b.f(); hud(); } }; wrap.appendChild(el); return el;
   };
@@ -323,7 +324,7 @@ function fitStage() {
   for (const c of main.children) if (c !== s && c.id !== 'log' && getComputedStyle(c).display !== 'none') used += c.offsetHeight;
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
-  const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(250, ctl.offsetHeight) : 0));
+  const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(268, ctl.offsetHeight) : 0));
   let w = W, h;
   if (COVER) h = document.body.classList.contains('intro') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(H, Hdg, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
@@ -471,7 +472,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 22'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 23'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -683,27 +684,46 @@ function prepMenu() {
 }
 function newGear(r) { const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; } return x; }
 const gearKind = t => t === 'armor' ? '鎧' : t === 'tool' ? 'ツール' : WEAPON_TYPES[t].name;
+// 工房の鍛冶: まず「武器・防具・ツール・手入れ」を選んで、その中の一覧へ。
+// 一覧の各行に「必要な素材（今の数）」を出す。足りない物を押すと、何が足りないかを教える
+const FORGE_CAT = { weapon: ['武器', r => !['armor', 'shield', 'tool'].includes(r.type)], armor: ['防具', r => r.type === 'armor' || r.type === 'shield'], tool: ['ツール', r => r.type === 'tool'] };
+const canMake = r => Object.entries(r.cost).every(([k, n]) => (G.store[k] || 0) >= n);
+const lackText = r => Object.entries(r.cost).filter(([k, n]) => (G.store[k] || 0) < n).map(([k, n]) => `${MATS[k]}あと${n - (G.store[k] || 0)}`).join('・');
+const needText = r => Object.entries(r.cost).map(([k, n]) => `${MATS[k]}${n}(${G.store[k] || 0})`).join(' ');
 function forge(msg, face) {
-  const L = [], can = [], all = [];
-  for (const r of RECIPES) {
-    const ok = Object.entries(r.cost).every(([k, n]) => (G.store[k] || 0) >= n);
-    const kind = r.type === 'tool' ? TOOL_NAMES[r.tool] + `・耐久${r.dur}` : gearKind(r.type);
-    const b = { t: r.name, s: `${kind} ${r.atk ? '攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}／${matText(r.cost)}`, off: !ok, f: () => {
+  const L = [{ title: `工房の素材: ${matText(G.store)}` }];
+  for (const [k, [name, f]] of Object.entries(FORGE_CAT)) { const rs = RECIPES.filter(f), n = rs.filter(canMake).length;
+    L.push({ t: name, s: n ? `作れる ${n}/${rs.length}` : `作れる物なし（${rs.length}種）`, hot: n > 0, f: () => forgeList(k) }); }
+  const worn = G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur);
+  L.push({ t: '手入れ', s: worn.length ? `ツール${worn.length}本（銅1）` : '直す物なし', off: !worn.length, f: forgeFix });
+  L.push({ t: '戻る', f: homeMenu });
+  buttons(L);
+  if (face) say(face, msg, true); else say('serious', msg || (Object.keys(G.raw).some(k => G.raw[k]) ? '「戦利品は、まずギルドで加工してもらわないとな」' : '「何を打とうか」'), true);
+}
+function forgeList(cat, msg, face) {
+  const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(f).sort((a, b) => canMake(b) - canMake(a));
+  const L = [{ title: `${name}（素材: ${matText(G.store)}）` }];
+  for (const r of rs) {
+    const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
+    L.push({ t: r.name + (ok ? '' : '<i class="lack">素材不足</i>'), s: `${stat}<br>${needText(r)}`, cls: ok ? '' : 'dim', f: () => {
+      if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(r.cost)}`, true); return; }
       for (const [k, n] of Object.entries(r.cost)) G.store[k] -= n;
       G.gear.push(newGear(r)); save();
-      fadeGo(() => forge(`「${r.name}、できた。悪くない」`, 'grin'), { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
-    } };
-    all.push(b); if (ok) can.push(b);
+      fadeGo(() => forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'), { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
+    } });
   }
-  const fix = [];
+  L.push({ t: '戻る', f: () => forge() });
+  buttons(L, 'list');
+  if (face) say(face, msg, true); else log(msg || '（ ）の数字は、工房にある素材の数。', true);
+}
+function forgeFix() {
+  const L = [{ title: '手入れ（銅1で新品同様に）' }];
   for (const t of G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur)) {
     const ok = (G.store.copper || 0) >= 1;
-    fix.push({ t: `${t.name}を直す`, s: `耐久${t.dur}/${t.maxDur}／銅1`, off: !ok, f: () => { G.store.copper--; t.dur = t.maxDur; save(); fadeGo(() => forge(`${t.name}を研ぎ直した。新品同様だ。`, 'grin'), { text: `${t.name}\n手入れ中`, hold: 900, sfx: [['hit1', 250], ['hit1', 700]] }); } });
+    L.push({ t: `${t.name}を直す`, s: `耐久${t.dur}/${t.maxDur}／銅1(${G.store.copper || 0})`, off: !ok, f: () => { G.store.copper--; t.dur = t.maxDur; save(); fadeGo(() => forge(`${t.name}を研ぎ直した。新品同様だ。`, 'grin'), { text: `${t.name}\n手入れ中`, hold: 900, sfx: [['hit1', 250], ['hit1', 700]] }); } });
   }
-  // 作れる物を先に。作れない物は「すべて」タブで見られる
-  L.push({ title: `作れる（素材: ${matText(G.store)}）` }, ...(can.length ? can : [{ t: '今は作れる物がない', s: 'ギルドで素材を', off: true, f: () => {} }]), ...fix, { title: `すべて（素材: ${matText(G.store)}）` }, ...all);
-  L.push({ t: '戻る', f: homeMenu });
-  buttons(L); if (face) say(face, msg, true); else say('serious', msg || Object.keys(G.raw).some(k => G.raw[k]) ? '「戦利品は、まずギルドで加工してもらわないとな」' : '「何を打とうか」\n塔の戦利品は、ギルドで加工すると工房に届く。', true);
+  L.push({ t: '戻る', f: () => forge() });
+  buttons(L);
 }
 // 装備: 武器を押すたびに 右手 → 左手 → 外す と切り替わる（盾は左手だけ、両手武器は右手だけ）
 function equipMenu(back) {
@@ -1231,8 +1251,8 @@ const FIXED_CMD = ['attack', 'guard', 'herb', 'flee'];
 const battleSkills = () => [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall'] : [])])].filter(id => !FIXED_CMD.includes(id));
 const canPlan = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.m.boss) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
 const whyNot = id => B.ap < apCost(id) ? 'APが足りない' : id === 'flee' && B.m.boss ? 'ボスからは逃げられない' : B.plan.some(p => p.id === 'flee') ? '逃げる予定' : '';
-// 戦闘: 下のボタンはいつも「攻撃・スキル・守る・道具・逃げる」＋「取り消す・行動！」。
-// スキルは塔の絵の上に一覧（1行に1つ、説明つき）を開いて選ぶ。ボタンの数が変わらないので絵の大きさも変わらない
+// 戦闘: 下に「攻撃・守る・道具・逃げる」と持ち込んだ技を全部並べる（1回押せば予定に入る）。
+// 技の説明は、押したときにセリフ欄に出す
 function battleUI() {
   if (!B) return; if (!B.plan) B.plan = [];
   const box = $('ctl'); box.innerHTML = '';
@@ -1244,20 +1264,18 @@ function battleUI() {
   B.plan.forEach((p, i) => { const c = document.createElement('button'); c.className = 'chip'; c.textContent = `${i + 1}.${p.id === 'item' ? ITEMS[p.k].name : SKILLS[p.id].name} ✕`;
     c.onclick = () => { if (B.running) return; unplan(i); battleUI(); hud(); }; plan.appendChild(c); });
   box.appendChild(plan);
-  const row = document.createElement('div'); row.className = 'btns three cmd';
-  const sk = battleSkills();
-  mk(row, `攻撃<small>AP${apCost('attack')}</small>`, '', !canPlan('attack'), () => planAdd('attack'));
-  mk(row, `スキル<small>${sk.length ? sk.length + 'つ' : 'なし'}</small>`, B.skillOpen ? 'on' : '', !sk.length || B.over || B.running, () => { B.skillOpen = !B.skillOpen; battleUI(); });
-  mk(row, `守る<small>AP${apCost('guard')}</small>`, '', !canPlan('guard'), () => planAdd('guard'));
-  mk(row, `道具<small>AP${apCost('herb')}</small>`, '', !canPlan('herb'), () => planAdd('herb'));
-  mk(row, `逃げる<small>AP${apCost('flee')}</small>`, '', !canPlan('flee'), () => planAdd('flee'));
+  const row = document.createElement('div'); row.className = 'btns four';
+  for (const id of FIXED_CMD) mk(row, `${SKILLS[id].name}<small>AP${apCost(id)}</small>`, '', !canPlan(id), () => planAdd(id));
   box.appendChild(row);
+  const sk = battleSkills();
+  if (sk.length) { const g = document.createElement('div'); g.className = 'btns three sk';
+    for (const id of sk) mk(g, `${SKILLS[id].name}<small>AP${apCost(id)}</small>`, '', !canPlan(id), () => planAdd(id));
+    box.appendChild(g); }
   const tail = document.createElement('div'); tail.className = 'btns tail';
   const keep = Math.min(carryMax(), B.ap);
   mk(tail, '取り消す', 'undo', !B.plan.length || B.running || B.over, () => { unplan(B.plan.length - 1); battleUI(); });
-  mk(tail, B.plan.length ? `行動！<small>${B.plan.length}つ実行${keep ? `・AP${keep}持ち越し` : ''}</small>` : `ターン終了<small>${keep ? `AP${keep}を持ち越す` : 'なにもしない'}</small>`, 'hot', B.over || B.running, () => { B.skillOpen = false; runPlan(); });
+  mk(tail, B.plan.length ? `行動！<small>${B.plan.length}つ実行${keep ? `・AP${keep}持ち越し` : ''}</small>` : `ターン終了<small>${keep ? `AP${keep}を持ち越す` : 'なにもしない'}</small>`, 'hot', B.over || B.running, runPlan);
   box.appendChild(tail);
-  skillPanel();
   fitStage();
 }
 // スキルの一覧（塔の絵の上に重ねる）
@@ -1292,15 +1310,15 @@ function runPlan() {
   const list = B.plan.slice(); B.plan = [];
   if (!list.length) { endTurn(); return; }
   B.running = true; battleUI();
-  let i = 0;
+  let i = 0;  // 「行動！」を押してから一拍おいて始める
   const step = () => {
     if (!B || B.over) return;
     const a = list[i++], r = a.id === 'item' ? doItem(a.k) : doSkill(a.id);
     hud();
     if (r === 'end' || !B || B.over) { if (B) B.running = false; return; }
-    if (i < list.length) setTimeout(step, 700); else setTimeout(() => { if (!B || B.over) return; B.running = false; endTurn(); }, 650);
+    if (i < list.length) setTimeout(step, 750); else setTimeout(() => { if (!B || B.over) return; B.running = false; endTurn(); }, 700);
   };
-  step();
+  setTimeout(step, 450);
 }
 function doItem(k) {
   if (useItem(k)) playFx(k === 'bandage' ? 'heal_leaf' : 'heal', { self: true, size: .9 });
