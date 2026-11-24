@@ -132,7 +132,7 @@ const NPCS = {
   '王様': { id: 'king', laugh: 2 }, '大臣': { id: 'minister', laugh: 2 }, 'ギャバン': { id: 'gaban', laugh: 2 },
   'ドーラ': { id: 'item', think: 10 }, 'ベルナルド': { id: 'bank', think: 10 }, 'ガストン': { id: 'inn', think: 10 },
   'アルス': { id: 'als', smile: 1, laugh: 2, shock: 11, think: 13 },  // 工房の弟子
-  '助手': { id: 'apprentice', laugh: 3, smile: 1, shock: 9 },  // 工房の見習い（ただのNPC）
+  'ルゥ': { id: 'apprentice', laugh: 3, smile: 1, shock: 9 },  // 工房の見習い（ただのNPC）
   'ブッパ': { id: 'buppa', normal: 'sleep', sleep: 'sleep', shock: 'shock', laugh: 'laugh', angry: 'grumpy', grumpy: 'grumpy', eat: 'eat', tired: 'tired' },  // たまにいる居候
   '砂の女神': { id: 'desert', laugh: 4 }, '森の女神': { id: 'forest', laugh: 4 }, '花の女神': { id: 'druid', laugh: 3 }, '山の女神': { id: 'mountain', laugh: 5, smile: 1, angry: 11, think: 12 }, '氷の女神': { id: 'ice', laugh: 4 },
   'チッチ': { id: 'chicchi', smile: 1, laugh: 3, shock: 18, angry: 7, think: 15, shy: 11 },  // 工房の居候
@@ -401,7 +401,7 @@ const STAGE = {
 // ブッパ: たまに勝手に工房に入ってきて寝ている居候（塔から戻るたびに3割くらい）
 const buppaHere = () => ((G.runs * 7 + 3) % 10) < 3;
 const BUPPA = ['ブッパ「……ぐう……ぐう……」', 'ブッパ[eat]「お、親方。台所にあった肉……もう食べちまった」', 'ブッパ[laugh]「がっはっは！ 今日も平和だなぁ」', 'ブッパ[shock]「うおっ！ ……なんだ、親方か。寝てた寝てた」', 'ブッパ[tired]「……ここ、寝心地いいんだよなぁ」', 'ブッパ[grumpy]「……起こすなよぉ」'];
-const HELPER = ['助手[smile]「親方、炉の温度、上げておきました！」', '助手[laugh]「見てください、初めて釘がまっすぐ打てました！」', '助手「チッチさんに、鍵の開け方を教わってます。……鍛冶に関係ないですけど」', '助手[laugh]「アルスさん、また素振りしてますね。すごいなぁ」'];
+const HELPER = ['ルゥ[smile]「親方、炉の温度、上げておきました！」', 'ルゥ[laugh]「見てください、初めて釘がまっすぐ打てました！」', 'ルゥ「チッチさんに、鍵の開け方を教わってます。……鍛冶に関係ないですけど」', 'ルゥ[laugh]「アルスさん、また素振りしてますね。すごいなぁ」'];
 function greet(id) {
   if (id === 'home') { const v = homeVisit(); if (v && R() < .8) return v; if (buppaHere() && R() < .6) return pick(BUPPA); if (R() < .3) return pick(HELPER); }
   { const w = SHOP_WHO[id]; if (w && (G.seen || {})[w] && R() < .55) return pick(CLOSE_GREET[w]); }
@@ -478,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 36'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 37'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -534,7 +534,7 @@ function inside(id, msg) {
   place = id; SND_INDOOR = true; SND.lost = false; sfx('door'); showTown(true, 4 / 3); const p = PLACES[id], t = $('town');
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
   const lastSaid = msg || greet(id); log(lastSaid, true);
-  { const sp = /^([^\s「\[]+)(?:\[(\w+)\])?/.exec(lastSaid || ''); if (sp && sp[1] === 'ブッパ') npcFig('buppa_' + (NPCS['ブッパ'][sp[2] || 'normal'] || 'sleep')); else if (sp && NPCS[sp[1]] && ['ボルツ', 'アルス', '客', 'チッチ', '助手'].includes(sp[1])) npcFig(NPCS[sp[1]].id); }
+  { const sp = /^([^\s「\[]+)(?:\[(\w+)\])?/.exec(lastSaid || ''); if (sp && sp[1] === 'ブッパ') npcFig('buppa_' + (NPCS['ブッパ'][sp[2] || 'normal'] || 'sleep')); else if (sp && NPCS[sp[1]] && ['ボルツ', 'アルス', '客', 'チッチ', 'ルゥ'].includes(sp[1])) npcFig(NPCS[sp[1]].id); }
   ({ home: homeMenu, weapon: shop, clinic: clinic, guild: guild, item: itemShop, bank: bank, inn: inn })[id](); hud();
 }
 const leave = { t: '外に出る', tail: true, f: () => townMap() };
