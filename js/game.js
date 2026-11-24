@@ -474,7 +474,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 25'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 26'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -684,19 +684,59 @@ function prepMenu() {
     { t: '戻る', f: () => towerScreen('「よし、準備はいい」') }]);
   log('出発の前に、装備と持ち物を確かめる。', true);
 }
-function newGear(r) { const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; } return x; }
+function newGear(r, forged) {
+  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
+  const a = forged && r.type !== 'tool' ? upLv('anvil') : 0;  // 金床の強化ぶん、自分で打った武具は強くなる
+  if (a) { if (x.atk) x.atk += a; if (x.def) x.def += a; x.name += `+${a}`; }
+  return x;
+}
 const gearKind = t => t === 'armor' ? '鎧' : t === 'tool' ? 'ツール' : WEAPON_TYPES[t].name;
 // 工房の鍛冶: まず「武器・防具・ツール・手入れ」を選んで、その中の一覧へ。
 // 一覧の各行に「必要な素材（今の数）」を出す。足りない物を押すと、何が足りないかを教える
 const FORGE_CAT = { weapon: ['武器', r => !['armor', 'shield', 'tool'].includes(r.type)], armor: ['防具', r => r.type === 'armor' || r.type === 'shield'], tool: ['ツール', r => r.type === 'tool'] };
-const canMake = r => Object.entries(r.cost).every(([k, n]) => (G.store[k] || 0) >= n);
-const lackText = r => Object.entries(r.cost).filter(([k, n]) => (G.store[k] || 0) < n).map(([k, n]) => `${MATS[k]}あと${n - (G.store[k] || 0)}`).join('・');
-const needText = r => Object.entries(r.cost).map(([k, n]) => `${MATS[k]}${n}(${G.store[k] || 0})`).join(' ');
+// ---------- 工房の強化（お金の使い道） ----------
+// 炉: 打てる金属が増える（1で鉄）。金床: 打った武具の攻撃・守りが段階ぶん上がる。作業台: 使う素材が減る
+const UPG = {
+  furnace: { name: '炉', max: 1, price: [300], eff: ['鉄が打てるようになる'], now: l => l ? '鉄まで打てる' : '銅・骨・革・魔石だけ' },
+  anvil:   { name: '金床', max: 5, price: [200, 500, 1000, 2000, 4000], eff: l => `打った武器の攻撃・防具の守り +${l}`, now: l => l ? `打つ武具 +${l}` : '強化なし' },
+  bench:   { name: '作業台', max: 3, price: [300, 900, 2500], eff: ['一番多い素材が1つ減る（3つ以上のとき）', '一番多い素材が1つ減る（2つ以上のとき）', 'さらに、二番目に多い素材も1つ減る'], now: l => l ? ['', '素材を少し節約', '素材を節約', '素材をかなり節約'][l] : '節約なし' },
+};
+const upLv = k => (G.forgeUp || {})[k] || 0;
+const needFurnace = r => Object.keys(r.cost).includes('iron') ? 1 : 0;
+// 作業台の段階に合わせて、必要な素材を減らす
+function costOf(r) {
+  const c = { ...r.cost }, b = upLv('bench'); if (!b) return c;
+  const ks = Object.keys(c).sort((x, y) => c[y] - c[x]);
+  if (c[ks[0]] >= (b >= 2 ? 2 : 3)) c[ks[0]]--;
+  if (b >= 3 && ks[1] && c[ks[1]] >= 2) c[ks[1]]--;
+  return c;
+}
+const canMake = r => upLv('furnace') >= needFurnace(r) && Object.entries(costOf(r)).every(([k, n]) => (G.store[k] || 0) >= n);
+const lackText = r => Object.entries(costOf(r)).filter(([k, n]) => (G.store[k] || 0) < n).map(([k, n]) => `${MATS[k]}あと${n - (G.store[k] || 0)}`).join('・');
+const needText = r => Object.entries(costOf(r)).map(([k, n]) => `${MATS[k]}${n}(${G.store[k] || 0})`).join(' ');
+function upgradeMenu(msg) {
+  if (!G.forgeUp) G.forgeUp = {};
+  const L = [{ title: `工房の強化（手持ち ${G.gold}G）` }];
+  for (const [k, u] of Object.entries(UPG)) {
+    const l = upLv(k), done = l >= u.max, p = done ? 0 : u.price[l], eff = done ? '' : (typeof u.eff === 'function' ? u.eff(l + 1) : u.eff[l]);
+    L.push({ t: `${u.name} Lv${l}${done ? '（最大）' : ` → ${l + 1}`}`, s: done ? u.now(l) : `${p}G：${eff}`, off: done, cls: !done && G.gold < p ? 'dim' : '', f: () => {
+      if (G.gold < p) { log(`${u.name}を強くするには${p}G要る。あと${p - G.gold}G。`, true); return; }
+      buttons([{ title: `${p}Gで${u.name}をLv${l + 1}にする？` }, { t: '強くする', s: eff, hot: true, f: () => {
+        G.gold -= p; G.forgeUp[k] = l + 1; save();
+        fadeGo(() => upgradeMenu(`${u.name}がLv${l + 1}になった！\n${eff}。`), { text: `${u.name}を改装中`, hold: 1500, sfx: [['hit1', 250], ['heavy', 700], ['hit1', 1150], ['register', 1500]] });
+      } }, { t: 'やめる', f: () => upgradeMenu() }]);
+    } });
+  }
+  L.push({ t: '戻る', f: () => forge() });
+  buttons(L, 'one');
+  if (msg) say('grin', msg, true); else log('お金をかけて、工房を強くする。\nいい工房から、いい武具が生まれる。', true);
+}
 function forge(msg, face) {
   const L = [{ title: `工房の素材: ${matText(G.store)}` }];
   for (const [k, [name, f]] of Object.entries(FORGE_CAT)) { const rs = RECIPES.filter(f), n = rs.filter(canMake).length;
     L.push({ t: name, s: n ? `作れる ${n}/${rs.length}` : `作れる物なし（${rs.length}種）`, hot: n > 0, f: () => forgeList(k) }); }
   const worn = G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur);
+  L.push({ t: '工房の強化', s: `炉${upLv('furnace')} 金床${upLv('anvil')} 作業台${upLv('bench')}`, f: () => upgradeMenu() });
   L.push({ t: '手入れ', s: worn.length ? `ツール${worn.length}本（銅1）` : '直す物なし', off: !worn.length, f: forgeFix });
   L.push({ t: '戻る', f: homeMenu });
   buttons(L);
@@ -707,10 +747,12 @@ function forgeList(cat, msg, face) {
   const L = [{ title: `${name}（素材: ${matText(G.store)}）` }];
   for (const r of rs) {
     const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
-    L.push({ t: r.name + (ok ? '' : '<i class="lack">素材不足</i>'), s: `${stat}<br>${needText(r)}`, cls: ok ? '' : 'dim', f: () => {
-      if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(r.cost)}`, true); return; }
-      for (const [k, n] of Object.entries(r.cost)) G.store[k] -= n;
-      G.gear.push(newGear(r)); save();
+    const lock = upLv('furnace') < needFurnace(r);
+    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? '炉Lv1が必要' : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<br>${needText(r)}`, cls: ok ? '' : 'dim', f: () => {
+      if (lock) { log(`鉄を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv1に）`, true); return; }
+      if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
+      for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n;
+      G.gear.push(newGear(r, true)); save();
       fadeGo(() => forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'), { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
     } });
   }
@@ -819,7 +861,7 @@ function sellGear(list) {
 }
 function shopSell(msg) {
   const free = G.gear.filter(g => !isEquipped(g)), groups = {};
-  for (const g of free) (groups[g.id] = groups[g.id] || []).push(g);
+  for (const g of free) (groups[g.name] = groups[g.name] || []).push(g);
   const L = [{ title: `売る（手持ち ${G.gold}G）` }];
   if (free.length > 1) L.push({ t: '全部売る', s: `装備していない${free.length}個／${free.reduce((a, g) => a + sellPrice(g), 0)}G`, hot: true, f: () => {
     buttons([{ title: `装備していない物を${free.length}個、全部売る？` }, { t: '売る', hot: true, f: () => { const n = free.length, sum = sellGear(free); shopSell(`${n}個まとめて${sum}Gで売った。\nジェニー[laugh]「まとめて持ってくるなんて、気が利くじゃない」`); } }, { t: 'やめる', f: () => shopSell() }]); } });
