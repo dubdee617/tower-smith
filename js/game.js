@@ -471,7 +471,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 21'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 22'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1228,35 +1228,52 @@ function encounterFx(m) {
 // 戦闘: 技を押して「行動の予定」に並べる（APはその場で減る）→「行動」で順番に実行 → 敵の番
 // 予定は押すと取り消せる。予定が空のまま押すと、そのままターン終了（APを持ち越す）
 const FIXED_CMD = ['attack', 'guard', 'herb', 'flee'];
+const battleSkills = () => [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall'] : [])])].filter(id => !FIXED_CMD.includes(id));
+const canPlan = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.m.boss) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
+const whyNot = id => B.ap < apCost(id) ? 'APが足りない' : id === 'flee' && B.m.boss ? 'ボスからは逃げられない' : B.plan.some(p => p.id === 'flee') ? '逃げる予定' : '';
+// 戦闘: 下のボタンはいつも「攻撃・スキル・守る・道具・逃げる」＋「取り消す・行動！」。
+// スキルは塔の絵の上に一覧（1行に1つ、説明つき）を開いて選ぶ。ボタンの数が変わらないので絵の大きさも変わらない
 function battleUI() {
   if (!B) return; if (!B.plan) B.plan = [];
   const box = $('ctl'); box.innerHTML = '';
-  const can = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.m.boss) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
   const mk = (wrap, html, cls, off, f) => { const el = document.createElement('button'); el.innerHTML = html; if (cls) el.className = cls; el.disabled = !!off;
     el.addEventListener('click', () => sfx('select', { vol: .5 }), { capture: true }); el.onclick = () => { f(); hud(); }; wrap.appendChild(el); return el; };
-  // 予定の列
   const plan = document.createElement('div'); plan.className = 'plan';
   plan.innerHTML = `<span class="ap">AP ${B.ap}</span>`;
-  if (!B.plan.length) plan.insertAdjacentHTML('beforeend', `<span class="hint">${B.running ? '行動中……' : '技を選んで「行動！」'}</span>`);
+  if (!B.plan.length) plan.insertAdjacentHTML('beforeend', `<span class="hint">${B.running ? '行動中……' : '選んで「行動！」'}</span>`);
   B.plan.forEach((p, i) => { const c = document.createElement('button'); c.className = 'chip'; c.textContent = `${i + 1}.${p.id === 'item' ? ITEMS[p.k].name : SKILLS[p.id].name} ✕`;
     c.onclick = () => { if (B.running) return; unplan(i); battleUI(); hud(); }; plan.appendChild(c); });
   box.appendChild(plan);
-  // いつでも使える4つ
-  const row = document.createElement('div'); row.className = 'btns four';
-  for (const id of FIXED_CMD) { const s = SKILLS[id]; mk(row, `${s.name}<small>AP${apCost(id)}</small>`, '', !can(id), () => planAdd(id)); }
+  const row = document.createElement('div'); row.className = 'btns three cmd';
+  const sk = battleSkills();
+  mk(row, `攻撃<small>AP${apCost('attack')}</small>`, '', !canPlan('attack'), () => planAdd('attack'));
+  mk(row, `スキル<small>${sk.length ? sk.length + 'つ' : 'なし'}</small>`, B.skillOpen ? 'on' : '', !sk.length || B.over || B.running, () => { B.skillOpen = !B.skillOpen; battleUI(); });
+  mk(row, `守る<small>AP${apCost('guard')}</small>`, '', !canPlan('guard'), () => planAdd('guard'));
+  mk(row, `道具<small>AP${apCost('herb')}</small>`, '', !canPlan('herb'), () => planAdd('herb'));
+  mk(row, `逃げる<small>AP${apCost('flee')}</small>`, '', !canPlan('flee'), () => planAdd('flee'));
   box.appendChild(row);
-  // 持ち込んだ技（6個）と盾の技
-  const sk = [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall'] : [])])].filter(id => !FIXED_CMD.includes(id));
-  if (sk.length) { const g = document.createElement('div'); g.className = 'btns three small sk';
-    for (const id of sk) { const s = SKILLS[id]; mk(g, `${s.name}<small>AP${apCost(id)}・${s.desc}</small>`, '', !can(id), () => planAdd(id)); }
-    box.appendChild(g); }
-  // 取り消す／行動
   const tail = document.createElement('div'); tail.className = 'btns tail';
   const keep = Math.min(carryMax(), B.ap);
   mk(tail, '取り消す', 'undo', !B.plan.length || B.running || B.over, () => { unplan(B.plan.length - 1); battleUI(); });
-  mk(tail, B.plan.length ? `行動！<small>${B.plan.length}つ実行${keep ? `・AP${keep}持ち越し` : ''}</small>` : `ターン終了<small>${keep ? `AP${keep}を持ち越す` : 'なにもしない'}</small>`, 'hot', B.over || B.running, runPlan);
+  mk(tail, B.plan.length ? `行動！<small>${B.plan.length}つ実行${keep ? `・AP${keep}持ち越し` : ''}</small>` : `ターン終了<small>${keep ? `AP${keep}を持ち越す` : 'なにもしない'}</small>`, 'hot', B.over || B.running, () => { B.skillOpen = false; runPlan(); });
   box.appendChild(tail);
+  skillPanel();
   fitStage();
+}
+// スキルの一覧（塔の絵の上に重ねる）
+function skillPanel() {
+  const v = $('view'); let p = v.querySelector('.skp');
+  if (!B || !B.skillOpen || B.over || B.running) { if (p) p.remove(); return; }
+  if (!p) { p = document.createElement('div'); p.className = 'skp'; v.appendChild(p); }
+  p.innerHTML = `<div class="skh"><span>スキル　AP ${B.ap}</span><button class="x">✕</button></div>`;
+  p.querySelector('.x').onclick = () => { B.skillOpen = false; battleUI(); };
+  for (const id of battleSkills()) {
+    const s = SKILLS[id], ok = canPlan(id), why = ok ? '' : whyNot(id);
+    const b = document.createElement('button'); b.className = 'skr'; b.disabled = !ok;
+    b.innerHTML = `<span class="nm">${s.name}</span><span class="apv">AP${apCost(id)}</span><small>${s.desc}${why ? `（${why}）` : ''}</small>`;
+    b.onclick = () => { sfx('select', { vol: .5 }); planAdd(id); hud(); };
+    p.appendChild(b);
+  }
 }
 function battleItemList() {
   const used = {}; for (const p of B.plan || []) if (p.id === 'item') used[p.k] = (used[p.k] || 0) + 1;
@@ -1266,7 +1283,7 @@ function planAdd(id) {
   if (B.over || B.running) return;
   const cost = apCost(id); if (B.ap < cost) return;
   if (id === 'herb') { battleItems(); return; }
-  B.ap -= cost; B.plan.push({ id }); battleUI();
+  B.ap -= cost; B.plan.push({ id }); log(`${SKILLS[id].name}（AP${cost}）：${SKILLS[id].desc}`, true); battleUI();
 }
 function unplan(i) { if (i < 0) return; const p = B.plan.splice(i, 1)[0]; if (p) B.ap += p.id === 'item' ? apCost('herb') : apCost(p.id); }
 // 予定を順番に実行する
@@ -1355,7 +1372,7 @@ function endTurn() {
     }
   }
   if (has('p_regen')) healMe(3);
-  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud();
+  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; B.skillOpen = false; battleUI(); hud();
 }
 function win() {
   sfx('win', { delay: 300, max: G.exp + B.m.exp >= expNeed() ? .9 : 0 });
