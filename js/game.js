@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 60'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 61'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -942,6 +942,20 @@ function shop(msg) {
 // 売る: 同じ物はまとめて1行に。押すと「1つ／全部」を選べる。装備していない物をまとめて全部売ることもできる
 const sellPrice = g => { const rec = RECIPES.find(r => r.id === g.id); return Math.floor((rec ? rec.price : 10) * (perk('jenny') ? 1.25 : 1)); };
 const isEquipped = g => [G.equip.r, G.equip.l, G.equip.armor, G.equip.tool].includes(g.uid);
+// 帰還の羽: 青い光の柱に包まれて、白く飛んで、暗転して町へ
+function warpOut() {
+  B = null; mode = 'dungeon'; busy = true; $('ctl').innerHTML = '';
+  log('帰還の羽が、青く光りはじめた……。', true);
+  sfx('magic', { vol: .8 }); sfx('holy', { delay: 500, vol: .7 });
+  playFx('warp', { self: true, size: 1.4 }); playFx('magic_circle', { y: VH * .8, size: .9, parts: 20 });
+  codeFx(0, 1500, k => { ctx.globalCompositeOperation = 'lighter'; const a = Math.min(1, k / .6);
+    const g = ctx.createLinearGradient(0, 0, 0, VH); g.addColorStop(0, `rgba(120,190,255,${a * .15})`); g.addColorStop(1, `rgba(90,160,255,${a * .5})`); ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+    for (let i = 0; i < 18; i++) { const x = (i * 53 + k * 40) % VW, y = VH - ((i * 37 + k * VH * 1.6) % VH); ctx.globalAlpha = a * .8; ctx.fillStyle = '#cfe6ff'; ctx.fillRect(x, y, 2, 6); }
+    if (k > .75) { ctx.globalAlpha = (k - .75) / .25; ctx.fillStyle = '#e8f4ff'; ctx.fillRect(0, 0, VW, VH); } });
+  setTimeout(() => { busy = false; fadeGo(() => toTown('帰還の羽の光に包まれて、町へ戻ってきた。', true), { hold: 500 }); }, 1450);
+}
+// 売り買いの確認: 「はい」で決まり、お金の音
+function deal(q, yes, no) { buttons([{ title: q }, { t: 'はい', hot: true, f: () => { sfx('register', { vol: .9 }); yes(); } }, { t: 'やめる', f: no }]); }
 function sellGear(list) {
   const sum = list.reduce((a, g) => a + sellPrice(g), 0);
   G.gold += sum; G.gear = G.gear.filter(x => !list.includes(x)); save(); return sum;
@@ -951,12 +965,12 @@ function shopSell(msg) {
   for (const g of free) (groups[g.name] = groups[g.name] || []).push(g);
   const L = [{ title: `売る（手持ち ${G.gold}G）` }];
   if (free.length > 1) L.push({ t: '全部売る', s: `装備していない${free.length}個／${free.reduce((a, g) => a + sellPrice(g), 0)}G`, hot: true, f: () => {
-    buttons([{ title: `装備していない物を${free.length}個、全部売る？` }, { t: '売る', hot: true, f: () => { const n = free.length, sum = sellGear(free); shopSell(`${n}個まとめて${sum}Gで売った。\nジェニー[laugh]「まとめて持ってくるなんて、気が利くじゃない」`); } }, { t: 'やめる', f: () => shopSell() }]); } });
+    buttons([{ title: `装備していない物を${free.length}個、全部売る？` }, { t: '売る', hot: true, f: () => { sfx('register', { vol: .9 }); const n = free.length, sum = sellGear(free); shopSell(`${n}個まとめて${sum}Gで売った。\nジェニー[laugh]「まとめて持ってくるなんて、気が利くじゃない」`); } }, { t: 'やめる', f: () => shopSell() }]); } });
   for (const [id, gs] of Object.entries(groups)) { const p = sellPrice(gs[0]);
     L.push({ t: `${gs[0].name}${gs.length > 1 ? ` ×${gs.length}` : ''}`, s: `1つ${p}G`, f: () => {
-      if (gs.length === 1) { sellGear(gs); shopSell(`ジェニー「${gs[0].name}、${p}Gね。……もっと高く売れるのに」`); return; }
-      buttons([{ title: `${gs[0].name}（${gs.length}個）をいくつ売る？` }, { t: '1つ', s: `${p}G`, f: () => { sellGear([gs[0]]); shopSell(`${gs[0].name}を${p}Gで売った。`); } },
-        { t: `全部（${gs.length}個）`, s: `${p * gs.length}G`, hot: true, f: () => { sellGear(gs); shopSell(`${gs[0].name}を${gs.length}個、${p * gs.length}Gで売った。`); } }, { t: '戻る', f: () => shopSell() }]); } });
+      if (gs.length === 1) { deal(`${gs[0].name}を${p}Gで売る？`, () => { sellGear(gs); shopSell(`ジェニー「${gs[0].name}、${p}Gね。……もっと高く売れるのに」`); }, () => shopSell()); return; }
+      buttons([{ title: `${gs[0].name}（${gs.length}個）をいくつ売る？` }, { t: '1つ', s: `${p}G`, f: () => deal(`${gs[0].name}を1つ、${p}Gで売る？`, () => { sellGear([gs[0]]); shopSell(`${gs[0].name}を${p}Gで売った。`); }, () => shopSell()) },
+        { t: `全部（${gs.length}個）`, s: `${p * gs.length}G`, hot: true, f: () => deal(`${gs[0].name}を${gs.length}個、${p * gs.length}Gで売る？`, () => { sellGear(gs); shopSell(`${gs[0].name}を${gs.length}個、${p * gs.length}Gで売った。`); }, () => shopSell()) }, { t: '戻る', f: () => shopSell() }]); } });
   }
   if (!free.length) L.push({ t: '売る物がない', s: '装備中の物は売れない', off: true, f: () => {} });
   L.push({ t: '戻る', f: () => shop() });
@@ -965,12 +979,12 @@ function shopSell(msg) {
 function shopBuy(msg) {
   const L = [{ title: `買う（手持ち ${G.gold}G）` }];
   for (const id of SHOP) { const r = RECIPES.find(x => x.id === id), p = Math.floor(r.price * 1.8);
-    L.push({ t: r.name, s: `${p}G`, off: G.gold < p, f: () => { G.gold -= p; G.gear.push(newGear(r)); save(); shopBuy(`${r.name}を買った。\nジェニー「毎度。……あんたが打った方が、いい物なんだけどね」`); } }); }
+    L.push({ t: r.name, s: `${p}G`, off: G.gold < p, f: () => deal(`${r.name}を${p}Gで買う？（手持ち${G.gold}G）`, () => { G.gold -= p; G.gear.push(newGear(r)); save(); shopBuy(`${r.name}を買った。\nジェニー「毎度。……あんたが打った方が、いい物なんだけどね」`); }, () => shopBuy()) }); }
   L.push({ t: '戻る', f: () => shop() });
   buttons(L); log(msg || 'ジェニー「うちの品よ。自分で打つより高いけど、急ぎならね」', true);
 }
 function itemShop(msg) {
-  const L = Object.entries(ITEMS).map(([k, it]) => ({ t: `${it.name}<small>${it.price}G・持${G.items[k] || 0}</small>`, s: it.short, off: G.gold < it.price, f: () => { G.gold -= it.price; G.items[k] = (G.items[k] || 0) + 1; save(); itemShop(`${it.name}を買った。${it.desc}。`); } }));
+  const L = Object.entries(ITEMS).map(([k, it]) => ({ t: `${it.name}<small>${it.price}G・持${G.items[k] || 0}</small>`, s: it.short, off: G.gold < it.price, f: () => deal(`${it.name}を${it.price}Gで買う？（手持ち${G.gold}G）`, () => { G.gold -= it.price; G.items[k] = (G.items[k] || 0) + 1; save(); itemShop(`${it.name}を買った。${it.desc}。`); }, () => itemShop()) }));
   L.push(leave); buttons(L, 'three small');
   if (msg) log(msg, true);
 }
@@ -1051,16 +1065,16 @@ function guildSell(msg) {
   const L = [{ title: `素材を売る（工房の素材）` }];
   if (!Object.values(G.store).some(n => n > 0)) L.push({ t: '売る素材がない', off: true, f: () => {} });
   for (const [k, n] of Object.entries(G.store)) if (n > 0) L.push({ t: `${MATS[k]} ×${n}`, s: `1つ${MAT_PRICE[k]}G`, f: () => {
-    if (n === 1) { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); return; }
-    buttons([{ title: `${MATS[k]}（${n}個）をいくつ売る？` }, { t: '1つ', s: `${MAT_PRICE[k]}G`, f: () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); } },
-      { t: `半分（${Math.floor(n / 2)}個）`, s: `${MAT_PRICE[k] * Math.floor(n / 2)}G`, off: n < 2, f: () => { const m = Math.floor(n / 2); G.store[k] -= m; G.gold += MAT_PRICE[k] * m; save(); guildSell(`${MATS[k]}を${m}個、${MAT_PRICE[k] * m}Gで売った。`); } },
-      { t: `全部（${n}個）`, s: `${MAT_PRICE[k] * n}G`, f: () => { G.store[k] = 0; G.gold += MAT_PRICE[k] * n; save(); guildSell(`${MATS[k]}を${n}個、${MAT_PRICE[k] * n}Gで売った。`); } }, { t: '戻る', f: () => guildSell() }]); } });
+    if (n === 1) { deal(`${MATS[k]}を${MAT_PRICE[k]}Gで売る？`, () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); }, () => guildSell()); return; }
+    buttons([{ title: `${MATS[k]}（${n}個）をいくつ売る？` }, { t: '1つ', s: `${MAT_PRICE[k]}G`, f: () => deal(`${MATS[k]}を1つ、${MAT_PRICE[k]}Gで売る？`, () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); }, () => guildSell()) },
+      { t: `半分（${Math.floor(n / 2)}個）`, s: `${MAT_PRICE[k] * Math.floor(n / 2)}G`, off: n < 2, f: () => { const m = Math.floor(n / 2); deal(`${MATS[k]}を${m}個、${MAT_PRICE[k] * m}Gで売る？`, () => { G.store[k] -= m; G.gold += MAT_PRICE[k] * m; save(); guildSell(`${MATS[k]}を${m}個、${MAT_PRICE[k] * m}Gで売った。`); }, () => guildSell()); } },
+      { t: `全部（${n}個）`, s: `${MAT_PRICE[k] * n}G`, f: () => deal(`${MATS[k]}を${n}個、${MAT_PRICE[k] * n}Gで売る？`, () => { G.store[k] = 0; G.gold += MAT_PRICE[k] * n; save(); guildSell(`${MATS[k]}を${n}個、${MAT_PRICE[k] * n}Gで売った。`); }, () => guildSell()) }, { t: '戻る', f: () => guildSell() }]); } });
   L.push({ t: '戻る', f: () => guild() });
   buttons(L); log(msg || 'リア「工房の素材を買い取ります。まとめてでも大丈夫ですよ」', true);
 }
 function guildBuy(msg, face) {
   const L = [{ title: `素材を買う（手持ち ${G.gold}G）` }];
-  for (const [k, p] of Object.entries(MAT_PRICE)) { const bp = p * 3; L.push({ t: `${MATS[k]}を1つ買う`, s: `${bp}G`, off: G.gold < bp, f: () => { G.gold -= bp; add(G.store, k, 1); save(); guildBuy(`${MATS[k]}を${bp}Gで買った。\n「……高い。だから自分で取りに行くんだ」`, 'angry'); } }); }
+  for (const [k, p] of Object.entries(MAT_PRICE)) { const bp = p * 3; L.push({ t: `${MATS[k]}を1つ買う`, s: `${bp}G`, off: G.gold < bp, f: () => deal(`${MATS[k]}を1つ、${bp}Gで買う？（手持ち${G.gold}G）`, () => { G.gold -= bp; add(G.store, k, 1); save(); guildBuy(`${MATS[k]}を${bp}Gで買った。\n「……高い。だから自分で取りに行くんだ」`, 'angry'); }, () => guildBuy()) }); }
   L.push({ t: '戻る', f: () => guild() });
   buttons(L); if (msg) { if (face) say(face, msg, true); else log(msg, true); } else log('リア「塔の素材は値上がりしていて……。すみません」', true);
 }
@@ -1394,7 +1408,7 @@ function useItem(k) {
     log(`鳥が戦利品を足につかんで、窓の外へ飛んでいった。\n工房へ: ${t}`, true); return true;
   }
   if (k === 'ward' || k === 'lure') { G.items[k]--; G.enc = { k, floors: 3 }; save(); log(k === 'ward' ? '魔除けを焚いた。魔物の気配が遠のく。（3フロア）' : '魔寄せを焚いた。魔物の気配が近づいてくる……。（3フロア）', true); return true; }
-  if (k === 'wing') { G.items[k]--; flashIn(); toTown('帰還の羽が光った。', true); return true; }
+  if (k === 'wing') { G.items[k]--; warpOut(); return true; }
   return false;
 }
 // 塔の中の道具メニュー
