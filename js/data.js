@@ -233,6 +233,9 @@ const MON_UP = [
   ['iceangel','氷の天使',84,1.1,{ice_shard:2},.82], ['cloudwhale','雲くじら',85,1.3,{star_dust:2},.8], ['frostknight','霜の騎士',86,1.2,{ice_shard:1,dark_steel:1},.82], ['starjelly','星のくらげ',87,.95,{star_dust:2},.75],
   ['phantomknight','亡霊騎士',91,1.2,{dark_steel:2},.85], ['gargoyle','ガーゴイル',91,1.1,{rock_core:2},.8], ['golemdoll','魔導人形',92,1.05,{dark_steel:1,star_dust:1},.8], ['dragoon','竜騎兵',93,1.25,{dark_steel:1,scale:2},.85],
   ['shadow','影の暗殺者',94,1.0,{dark_steel:1},.78], ['armor','動く甲冑',95,1.3,{dark_steel:3},.86], ['grimoire','呪いの書',96,.95,{star_dust:2},.65], ['mirrorshard','鏡の欠片',97,1.15,{star_dust:2,raw_gem:1},.82],
+  ['icewolf','氷狼',41,1.0,{beast_pelt:1,ice_shard:1},.66], ['snowman','雪だるまの魔物',41,.95,{ice_shard:1},.72], ['icegolem','アイスゴーレム',43,1.25,{ice_shard:2},.85], ['snowsprite','雪の精',42,.85,{ice_shard:1,spore:1},.7],
+  ['polarbear','白熊',44,1.2,{beast_pelt:2,beast_fang:1},.8], ['icebird','氷の鳥',45,1.0,{feather:2,ice_shard:1},.78], ['frozenknight','凍った騎士',46,1.15,{ice_shard:1,ore_iron:2},.82], ['blizzardghost','吹雪の亡霊',47,1.0,{ice_shard:2},.8],
+  ['vulture','砂漠ハゲワシ',22,.95,{feather:1,cursed_bone:1},.76], ['cactus','サボテンの魔物',24,1.05,{old_wood:1,spore:1},.72], ['sandspirit','砂の精霊',26,1.05,{raw_gem:1},.78], ['graverobber','盗掘者の亡霊',27,1.0,{cursed_gold:1},.78],
 ];
 // エリアごとの強さの土台（10階ごと）。11〜20階が1
 const AREA_POW = n => Math.pow(1.42, Math.floor((n - 1) / 10));
@@ -240,11 +243,27 @@ for (const [id, name, from, mul, drop, size] of MON_UP) {
   const p = AREA_POW(from) * mul, end = Math.floor((from - 1) / 10) * 10 + 10;
   MONSTERS.push({ id, name, hp: Math.round(120 * p), atk: Math.round(22 * p), def: Math.round(9 * p), exp: Math.round(30 * p), gold: Math.round(16 * p), drop, from, to: end, size, color: '#776655', file: true });
 }
+// 1〜10階に足した魔物
+MONSTERS.push(
+  { id:'bat',         name:'大コウモリ',   hp:34, atk:9,  def:1, exp:6,  gold:3, drop:{rat_hide:1},              from:2, to:10, size:.6,  file:true },
+  { id:'slime',       name:'洞窟スライム', hp:48, atk:8,  def:5, exp:9,  gold:4, drop:{dim_stone:1},             from:3, to:10, size:.58, file:true },
+  { id:'wanderarmor', name:'さまよう鎧',   hp:80, atk:15, def:9, exp:20, gold:12, drop:{ore_iron:1, ore_copper:1}, from:6, to:10, size:.8,  file:true },
+  { id:'orelizard',   name:'鉱石トカゲ',   hp:64, atk:12, def:6, exp:15, gold:7, drop:{ore_copper:2},            from:4, to:10, size:.66, file:true },
+);
 for (const m of MONSTERS) if (!m.to) m.to = 10;  // 1〜10階の魔物は10階まで
 // 10階ごとの主
 const BOSS30 = { id:'sandwormking', name:'大砂蟲', hp:2600, atk:68, def:30, exp:1200, gold:900, drop:{worm_gem:1, raw_gem:3, hard_shell:3}, boss:true, color:'#a07a40', size:.95, file:true };
-const BOSSES = { 10: BOSS10, 30: BOSS30 };
-const TOP_FLOOR = 30;  // いま登れるいちばん上の階（絵ができたエリアまで）
+const mkBoss = (id, name, floor, mul, drop, size) => { const p = AREA_POW(floor) * mul; return { id, name, hp: Math.round(950 * p), atk: Math.round(36 * p), def: Math.round(15 * p), exp: Math.round(500 * p), gold: Math.round(320 * p), drop, boss: true, size, file: true }; };
+const BOSSES = { 10: BOSS10, 30: BOSS30,
+  20: mkBoss('forestbear', '森の主の大熊', 20, 1, { beast_pelt: 4, beast_fang: 3, old_wood: 3 }, .92),
+  40: mkBoss('youngdragon', '若い竜', 40, 1, { scale: 5, rock_core: 2, raw_gem: 2 }, .95),
+  50: mkBoss('icegiant', '氷の巨人', 50, 1, { ice_shard: 5, dark_steel: 1 }, .95),
+  60: mkBoss('apeking', '密林の大猿王', 60, 1, { beast_pelt: 6, hard_shell: 3, raw_gem: 2 }, .95),
+  70: mkBoss('ruinking', '遺跡の王', 70, 1, { cursed_gold: 6, raw_gem: 3 }, .95),
+  80: mkBoss('firedragon', '古い火竜', 80, 1, { ember_stone: 5, scale: 5 }, .97),
+  90: mkBoss('elderdragon', '古竜', 90, 1, { star_dust: 6, scale: 6, dark_steel: 2 }, .97),
+};
+const TOP_FLOOR = 90;  // いま登れるいちばん上の階（91〜100階の城は、最後の「鏡」と一緒に作る）
 
 // 道具屋
 // 道具屋で買える物（2026-11-23）。battle: 戦闘中にも使える
