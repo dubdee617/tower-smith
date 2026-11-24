@@ -519,7 +519,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 48'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 49'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -758,6 +758,9 @@ function costOf(r) {
 const canMake = r => upLv('furnace') >= needFurnace(r) && Object.entries(costOf(r)).every(([k, n]) => (G.store[k] || 0) >= n);
 const lackText = r => Object.entries(costOf(r)).filter(([k, n]) => (G.store[k] || 0) < n).map(([k, n]) => `${MATS[k]}あと${n - (G.store[k] || 0)}`).join('・');
 const needText = r => Object.entries(costOf(r)).map(([k, n]) => `${MATS[k]}${n}(${G.store[k] || 0})`).join(' ');
+// 必要な素材をアイコンで（足りない物は赤く）
+const icoImg = (k, cls) => { const s = iconOf(k); return s ? `<img class="${cls || 'mi'}" src="${s}" alt="${NAMES[k] || ''}">` : (NAMES[k] || k); };
+const needHtml = r => Object.entries(costOf(r)).map(([k, n]) => `<span class="need${(G.store[k] || 0) < n ? ' short' : ''}">${icoImg(k)}${n}<em>(${G.store[k] || 0})</em></span>`).join('');
 function upgradeMenu(msg) {
   if (!G.forgeUp) G.forgeUp = {};
   const L = [{ title: `工房の強化（手持ち ${G.gold}G）` }];
@@ -792,7 +795,7 @@ function forgeList(cat, msg, face) {
   for (const r of rs) {
     const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
     const lock = upLv('furnace') < needFurnace(r);
-    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? '炉Lv1が必要' : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<br>${needText(r)}`, cls: ok ? '' : 'dim', f: () => {
+    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? '炉Lv1が必要' : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
       if (lock) { log(`鉄を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv1に）`, true); return; }
       if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
       for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n;
@@ -972,16 +975,23 @@ function clinic(msg) {
   if (msg) log(msg, true);
 }
 // ギルドに戦利品を持ち込む → 鍛冶の素材に加工＋報酬。ここに来ないと鍛冶ができない
+// 持ち込みの絵: 戦利品 → 素材 を1行ずつ
+function convHtml(rows) {
+  rows.sort((a, b) => b[1] - a[1]);
+  const show = rows.slice(0, 6), rest = rows.slice(6).reduce((s, r) => s + r[1], 0);
+  return '<ul class="conv">' + show.map(([k, c], i) => `<li style="animation-delay:${300 + i * 140}ms">${icoImg(k, 'ci')}<i>×${c}</i><b>→</b>${Object.entries(RAW[k].to).map(([m, v]) => icoImg(m, 'ci') + `<i>×${v * c}</i>`).join('')}</li>`).join('') + (rest ? `<li class="more" style="animation-delay:${300 + show.length * 140}ms">ほか ${rest}個</li>` : '') + '</ul>';
+}
 function turnIn() {
   const got = {}; let gold = 0, n = 0;
-  for (const [k, c] of Object.entries(G.raw)) { if (!c || !RAW[k]) continue; n += c; gold += RAW[k].reward * c; for (const [m, v] of Object.entries(RAW[k].to)) add(got, m, v * c); }
+  const rows = [];
+  for (const [k, c] of Object.entries(G.raw)) { if (!c || !RAW[k]) continue; n += c; gold += RAW[k].reward * c; rows.push([k, c]); for (const [m, v] of Object.entries(RAW[k].to)) add(got, m, v * c); }
   if (!n) return;
   // 持ち込みが多いと、ギルドからおまけの素材も出る
   const bonus = {}; for (let i = 0; i < Math.floor(n / 6); i++) add(bonus, pick(['copper', 'leather', 'bone', 'iron']), 1);
   for (const [m, v] of Object.entries(got)) add(G.store, m, v); for (const [m, v] of Object.entries(bonus)) add(G.store, m, v);
   if (perk('ria')) gold = Math.floor(gold * 1.15);
   G.gold += gold; G.raw = {}; save();
-  setTimeout(() => bigFx(`<b class="gold">+${gold}G</b><em>ギルドの報酬</em><span>工房へ: ${matText(got)}</span>${Object.keys(bonus).length ? `<small>おまけ: ${matText(bonus)}</small>` : ''}`, 'register', 'reward'), 350);
+  setTimeout(() => bigFx(`<b class="gold">+${gold}G</b><em>ギルドの報酬</em>${convHtml(rows)}${Object.keys(bonus).length ? `<small>おまけ: ${Object.entries(bonus).map(([k, v]) => icoImg(k, 'ci') + '×' + v).join(' ')}</small>` : ''}`, 'register', 'reward', 3800), 350);
   const lines = ['ボルツ[laugh]「おう旦那！ 使える形にしといたぜ」', 'ボルツ[smile]「いい戦利品だ。腕が鳴るねぇ」', 'ボルツ[think]「ふむ……。ま、俺にかかれば素材よ」', 'ボルツ「はいよ、加工済みだ。工房に届けとくぜ」', 'ボルツ[smile]「毎度！ 次も頼むぜ、旦那」'];
   guild(`${n >= 40 ? pick(['ボルツ[shock]「こりゃ大量だ！ 旦那、ほんとに鍛冶屋か？」', 'ボルツ[shock]「おいおい、荷車ごと持ってきたのか！？」']) : n >= 20 ? pick(['ボルツ[laugh]「お、今日はなかなかの量だな！」', 'ボルツ[smile]「いい稼ぎじゃねえか、旦那」']) : pick(lines)}\n報酬${gold}G／工房へ: ${matText(got)}${Object.keys(bonus).length ? `＋おまけ ${matText(bonus)}` : ''}`);
   npcFig('craft');
@@ -1345,11 +1355,11 @@ function levelUpFx(lv, up) {
   bigFx(`<b>LEVEL UP!</b><em>Lv ${lv}</em><span>最大HP +${up.hp}　攻 +${up.atk}　守 +${up.def}</span><small>${job()}の伸び方</small>`, 'levelup');
 }
 // 画面全体に大きく出す（レベルアップ・ギルドの報酬）。押すか2.4秒で消える
-function bigFx(html, snd, cls) {
+function bigFx(html, snd, cls, ms) {
   let d = $('lvup'); if (!d) { d = document.createElement('div'); d.id = 'lvup'; document.body.appendChild(d); d.onclick = () => d.classList.remove('on'); }
   d.innerHTML = `<div>${html}</div>`; d.className = cls || '';
   void d.offsetWidth; d.classList.add('on'); if (snd) sfx(snd, { vol: 1 });
-  clearTimeout(bigFx.t); bigFx.t = setTimeout(() => d.classList.remove('on'), 2600);
+  clearTimeout(bigFx.t); bigFx.t = setTimeout(() => d.classList.remove('on'), ms || 2600);
 }
 // 遭遇の演出: 画面全体が黄色く光る → 揺れる →「遭遇！」の帯と魔物の名前。少しの間ボタンは押せない
 function encounterFx(m) {
