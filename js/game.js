@@ -611,7 +611,7 @@ function equipMenu(back) {
   for (const g of G.gear) {
     const where = G.equip.r === g.uid ? '（右手）' : G.equip.l === g.uid ? '（左手）' : G.equip.armor === g.uid || G.equip.tool === g.uid ? '（装備中）' : '';
     const kind = g.type === 'tool' ? `${TOOL_NAMES[g.tool]} 耐久${g.dur}/${g.maxDur}` : gearKind(g.type);
-    L.push({ t: g.name + where, s: `${kind}${g.atk ? ' 攻' + g.atk : ''}${g.def ? ' 守' + g.def : ''}`, hot: !!where, f: () => { equipItem(g); equipMenu(back); checkLearn(job()); save(); } });
+    L.push({ t: g.name + where, s: `${kind}${g.atk ? ' 攻' + g.atk : ''}${g.def ? ' 守' + g.def : ''}`, hot: !!where, f: () => { const before = JSON.stringify(G.equip); equipItem(g); if (JSON.stringify(G.equip) !== before) sfx('equip'); equipMenu(back); checkLearn(job()); save(); } });
   }
   L.push({ t: '戻る', f: back });
   buttons(L);
