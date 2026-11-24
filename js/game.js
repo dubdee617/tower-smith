@@ -525,7 +525,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 56'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 57'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1691,6 +1691,19 @@ function playFx(name, opt = {}) {
   if (mv === 'big') { fxDim = performance.now() + (opt.delay || 0); opt = { ...opt, delay: (opt.delay || 0) + 280, parts: 40, y: VH * .56 }; setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); fx.flash = .5; }, opt.delay + 80); }
   if (/^m_\w+2$/.test(name)) setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 6); }, (opt.delay || 0) + 60);
   const x = opt.x !== undefined ? opt.x : (FX_AT && FX_AT.cx !== undefined && !self && mv !== 'big' ? FX_AT.cx : VW / 2) + (self ? 0 : (R() - .5) * 20), y = opt.y !== undefined ? opt.y : self ? VH * .62 : VH * .52;
+  // 岩の破片: 1枚の絵をばらばらに飛ばす。回りながら、ひっくり返りながら、落ちていく
+  if (name === 'rocks') {
+    const n = 6 + Math.floor((opt.size || .7) * 4), t0 = performance.now() + (opt.delay || 0);
+    for (let i = 0; i < n; i++) {
+      const an = -Math.PI / 2 + (R() - .5) * 2.6, sp = 90 + R() * 150, vx = Math.cos(an) * sp, vy = Math.sin(an) * sp, spin = (R() - .5) * 14, flipSp = 6 + R() * 10, sz = VH * (opt.size || .7) * (.16 + R() * .16), ph = R() * 6;
+      fxList.push({ code: k => {
+        const dt = k * .75, px = x + vx * dt, py = y + vy * dt + 420 * dt * dt, a = k < .7 ? 1 : 1 - (k - .7) / .3;
+        ctx.globalAlpha = a; ctx.translate(px, py); ctx.rotate(spin * dt); ctx.scale(Math.cos(ph + flipSp * dt), 1);  // 横に裏返る
+        ctx.drawImage(img, -sz / 2, -sz / 2 * img.height / img.width, sz, sz * img.height / img.width);
+      }, t0, dur: 750 });
+    }
+    return;
+  }
   fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: R() < .5 && mv === 'slash' });
   // 同じ色の粒
   const n = opt.parts !== undefined ? opt.parts : mv === 'rise' ? 18 : 14;
