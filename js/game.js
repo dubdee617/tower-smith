@@ -428,12 +428,28 @@ function viewScreen(caption, story) {
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}town_view.jpg" alt="塔の国の町">` + (caption ? `<div class="caption">${caption}</div>` : '');
 }
+// 塔から戻ったら、まずギルドへ。リアが出迎える
+function guildWelcome(has) {
+  const close = (G.seen || {}).ria;
+  const L = has ? [
+    'リア[smile]「おかえりなさい！ 無事でよかった。\n……戦利品、ボルツさんに回しますね」',
+    'リア[smile]「おかえりなさい。到達記録、書いておきますね。\n持ち込みはそちらでどうぞ」',
+    'リア「おかえりなさい。……ケガはないですか？\nあ、戦利品はこちらです」',
+    'リア[smile]「おかえりなさい。今日はどこまで行きました？\n……あとで、ゆっくり聞かせてくださいね」',
+  ] : [
+    'リア[smile]「おかえりなさい。……今日は手ぶら、ですか？\n生きて帰ってくるのが一番です」',
+    'リア「おかえりなさい。記録だけ、書いておきますね」',
+    'リア[smile]「おかえりなさい。また明日がありますよ」',
+  ];
+  if (close) L.push(has ? 'リア[happy]「おかえりなさい。……待ってました。\nほんとに、待ってたんですから」' : 'リア[happy]「おかえりなさい。手ぶらでも、\n顔を見せてくれるだけでうれしいです」');
+  return pick(L);
+}
 function returnScreen(msg, brought, letter) {
   viewScreen('');
   // セリフ欄には短いことばだけ。持ち帰った物はボタンの上に出す（セリフ欄からはみ出さないように）
   say(brought === 'なし' ? 'tired' : 'content', `${msg ? msg + '\n' : ''}「……ふう、戻ったか」`, true);
   if (letter) log('お城から手紙が届いていた。\n町の門の下から、お城へ行けるようになった。');
-  buttons([{ title: `持ち帰った戦利品: ${brought}` }, { t: '町へ', s: brought === 'なし' ? '' : 'ギルドで素材にしてもらおう', hot: true, f: () => evReady('jenny', .35) ? jennyEvent() : townMap() }]); hud();
+  buttons([{ title: `持ち帰った戦利品: ${brought}` }, { t: 'ギルドへ', s: brought === 'なし' ? '到達記録を書いてもらう' : '戦利品を素材にしてもらう', hot: true, go: true, f: () => evReady('jenny', .35) ? jennyEvent() : inside('guild', guildWelcome(brought !== 'なし')) }]); hud();
 }
 // オープニング（2026-11-24 Daichiさんの文章）。bg: 背景の絵 face: 主人公のセリフのときの表情
 const INTRO = [
@@ -455,7 +471,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 17'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 18'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -844,8 +860,8 @@ function turnIn() {
   for (const [m, v] of Object.entries(got)) add(G.store, m, v); for (const [m, v] of Object.entries(bonus)) add(G.store, m, v);
   if (perk('ria')) gold = Math.floor(gold * 1.15);
   G.gold += gold; G.raw = {}; save();
-  const lines = ['ボルツ[laugh]「おう旦那！ 使える形にしといたぜ」', 'ボルツ[smile]「いい戦利品だ。腕が鳴るねぇ」', 'ボルツ[think]「ふむ……。ま、俺にかかれば素材よ」'];
-  guild(`${n >= 15 ? 'ボルツ[shock]「こりゃ大量だ！ 旦那、ほんとに鍛冶屋か？」' : pick(lines)}\n報酬${gold}G／工房へ: ${matText(got)}${Object.keys(bonus).length ? `＋おまけ ${matText(bonus)}` : ''}`);
+  const lines = ['ボルツ[laugh]「おう旦那！ 使える形にしといたぜ」', 'ボルツ[smile]「いい戦利品だ。腕が鳴るねぇ」', 'ボルツ[think]「ふむ……。ま、俺にかかれば素材よ」', 'ボルツ「はいよ、加工済みだ。工房に届けとくぜ」', 'ボルツ[smile]「毎度！ 次も頼むぜ、旦那」'];
+  guild(`${n >= 40 ? pick(['ボルツ[shock]「こりゃ大量だ！ 旦那、ほんとに鍛冶屋か？」', 'ボルツ[shock]「おいおい、荷車ごと持ってきたのか！？」']) : n >= 20 ? pick(['ボルツ[laugh]「お、今日はなかなかの量だな！」', 'ボルツ[smile]「いい稼ぎじゃねえか、旦那」']) : pick(lines)}\n報酬${gold}G／工房へ: ${matText(got)}${Object.keys(bonus).length ? `＋おまけ ${matText(bonus)}` : ''}`);
   npcFig('craft');
   if (evReady('ria', .4)) buttons([{ t: '次へ', hot: true, f: riaEvent }]);
 }
