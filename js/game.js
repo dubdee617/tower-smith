@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 62'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 63'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -834,7 +834,7 @@ function forgeList(cat, msg, face) {
   for (const r of rs) {
     const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
     const lock = upLv('furnace') < needFurnace(r);
-    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? '炉Lv1が必要' : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
+    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? '炉Lv1が必要' : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
       if (lock) { log(`鉄を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv1に）`, true); return; }
       if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
       for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n;
