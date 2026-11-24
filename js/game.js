@@ -892,6 +892,7 @@ function afterStep() {
 function meetCandidates() {
   return Object.entries(TOWER_NPCS).filter(([id, n]) => {
     const inRange = n.ranges ? n.ranges.some(([a, b]) => floorNo >= a && floorNo <= b) : floorNo >= n.from && (floorNo <= n.to || (id === 'fuuka' && perk('fuuka')));
+    if (id === 'dan' && G.danRun === G.runs) return false;  // ダンは1回の塔で一度だけ
     return inRange && !(n.battles && G.ally);
   }).map(([id]) => id);
 }
@@ -899,6 +900,7 @@ function meetShow(id) { showFig(`assets/npc/${id}.webp`, { who: id }); }
 function meetNpc(id) {
   meetShow(id); const go = () => { $('meet').style.display = 'none'; clearFig(); dungeonUI(); hud(); };
   if (id === 'dan') {
+    G.danRun = G.runs;
     const k = pick(['herb', 'herb', 'herb_m', 'wing', 'bandage']), n = k === 'herb' ? 2 : 1; G.items[k] += n; save();
     log(pick(['ダン「なんだ、鍛冶屋がこんな所で何してる。……ほら、余ったからやるよ。捨てるとこだっただけだ」', 'ダン[laugh]「まだ生きてたのか。しぶといな。……これ持ってけ。死なれると寝覚めが悪い」', 'ダン「勘違いするなよ。荷物が重いだけだ」']), true);
     log(`${ITEMS[k].name}を${n}個もらった。`);
