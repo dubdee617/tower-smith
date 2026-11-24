@@ -238,8 +238,9 @@ const BYE = {
 const byeLine = who => { const c = (G.seen || {})[who]; if (c && who === 'jenny') return pick(['ジェニー[shy]「……もう行っちゃうの？ ……ふん、またね」', 'ジェニー[happy]「話せてよかった。……なんてね」']); if (c && who === 'elly') return pick(['エリー[happy]「……今日、会えてよかったです」', 'エリー[shy]「また、お茶しましょうね」']); if (c && who === 'ria') return pick(['リア[happy]「……今夜、また工房に寄ってもいいですか？」', 'リア[shy]「……行ってらっしゃい。待ってますから」']); return pick(BYE[who]); };
 
 // ---------- プロローグ（オープニングのあと、工房で） ----------
-// 工房に住む人たちの紹介と、「自分で材料を採りに行く」と決めるまで。
-// fig: 立ち絵（npc/の名前） hero: 主人公の表情（セリフのとき） sfx: 効果音
+// 工房に住む人たちの紹介と、「自分で材料を採りに行く」と決めるまで。表の理由（材料が高い）と、
+// 奥の理由（ずっと裏方だった。一度くらい自分が表に立ちたい）を、帰ってきた剣と夜のひとりごとで見せる。
+// 1つの場面: fig 立ち絵（npc/の名前） clear 立ち絵を消す hero 主人公の表情 sfx 効果音 night 夜にする
 const PROLOGUE = [
   { sfx: 'cooking', t: '翌朝。町はずれの工房。\n台所から、何かを焼くいい匂いがする。' },
   { fig: 'chicchi', t: 'チッチ[smile]「親方、朝メシできたっす。\n……また帳簿とにらめっこっすか」' },
@@ -252,7 +253,15 @@ const PROLOGUE = [
   { fig: 'apprentice', t: '見習いの助手。まだ半人前だが、\n炉の前ではいつも楽しそうだ。' },
   { fig: 'buppa_sleep', t: 'ブッパ「……ぐう……ぐう……」' },
   { fig: 'buppa_sleep', t: '床で寝ているのはブッパ。\nここに住んでいるわけではない。……たぶん。' },
-  { hero: 'serious', t: '「……ギルドの素材は高い。\n冒険者から買っても、質はまちまち。\nこのままじゃ、いい物が打てない」' },
+  // 帰ってきた剣
+  { clear: true, sfx: 'door', t: 'そのとき、工房の戸が叩かれた。' },
+  { fig: 'dan', t: 'ダン「……あんたが、ここの鍛冶屋か。\nこれ、あんたが打った剣だろ」' },
+  { fig: 'dan', t: '差し出されたのは、折れた剣だった。\n見覚えがある。三年前に打った一本だ。' },
+  { fig: 'dan', t: 'ダン「持ち主は、塔の十階で死んだ。\n……最後まで、これを握ってたよ」' },
+  { fig: 'dan', t: 'ダン「礼を言っといてくれって、頼まれてた。\n……それだけだ。じゃあな」' },
+  { clear: true, sfx: 'door', hero: 'sad', t: '「……そうか」' },
+  { t: '工房が、しんと静かになった。\nアルスも、チッチも、何も言わなかった。' },
+  { hero: 'serious', t: '「……いい剣だったんだがな。\n高い鉄、質の落ちた銅。\nこのままじゃ、いい物は打てない」' },
   { hero: 'resolve', t: '「……よし、決めた。\n材料が高いなら、自分で採りに行けばいい」' },
   { fig: 'als', t: 'アルス[shock]「……師匠？ それってまさか」' },
   { hero: 'normal', t: '「塔に登る。鉱石も、魔物の素材も、\n自分の目で選んで持って帰る」' },
@@ -264,18 +273,40 @@ const PROLOGUE = [
   { fig: 'als', t: 'アルス[laugh]「……今の、日記に書いておきます！」' },
   { fig: 'als', t: 'アルス[smile]「師匠、魔物を倒すと戦利品が出ます。\nギルドで素材にしてもらえば、\nそれで鍛冶ができますよ」' },
   { fig: 'chicchi', t: 'チッチ[smile]「薬草は道具屋で買えるっす。\n装備は、工房の『装備を変える』っす。\n……ちゃんと帰ってくるっすよ」' },
+  // 夜のひとりごと（プレイヤーだけが知っている、もう一つの理由）
+  { clear: true, night: true, t: 'その夜。\nみんなが寝静まった工房で、\n鍛冶屋はひとり、折れた剣を見ていた。' },
+  { hero: 'lookup', t: '「……ずっと、\n誰かのために打ってきた。\n……一度くらい、\n自分で振ってみたかったんだよな」' },
+  { t: '窓の向こうで、塔が月を隠していた。' },
   { t: 'こうして、町いちばんの鍛冶屋の\n塔のぼりが始まった。' },
 ];
-function prologue(i) {
-  const P = PROLOGUE[i];
-  if (i === 0) {
-    mode = 'town'; place = 'home'; SND_INDOOR = true; showTown(true, 4 / 3);
-    const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}home_in.jpg" alt="工房の中"><div class="name">工房（自宅）</div>`;
-  }
+// 場面を順番に見せる（次へ／とばす）
+function runSeq(L, i, end, setup) {
+  const P = L[i];
+  if (i === 0 && setup) setup();
+  if (P.clear) clearFig();
   if (P.fig) npcFig(P.fig);
+  if (P.night) { const im = $('town').querySelector('img'); if (im) { im.style.transition = 'filter 1.2s'; im.style.filter = 'brightness(.38) saturate(.6) hue-rotate(195deg)'; } }
   if (P.sfx) sfx(P.sfx, { vol: .6, max: 2 });
   if (P.hero) say(P.hero, P.t, true); else log(P.t, true);
-  const last = i === PROLOGUE.length - 1, done = () => fadeGo(() => inside('home', '塔は町の北のはずれにある。\n準備ができたら、地図から塔へ行こう。'));
-  buttons([{ t: last ? 'はじめる' : '次へ', hot: true, stay: true, f: () => last ? done() : prologue(i + 1) }, { t: 'とばす', stay: true, f: done }]);
+  const last = i === L.length - 1;
+  buttons([{ t: '次へ', hot: true, stay: true, f: () => last ? end() : runSeq(L, i + 1, end) }, { t: 'とばす', stay: true, f: end }]);
   hud();
+}
+function prologue() {
+  runSeq(PROLOGUE, 0, () => fadeGo(() => inside('home', '塔は町の北のはずれにある。\n準備ができたら、地図から塔へ行こう。')), () => {
+    mode = 'town'; place = 'home'; SND_INDOOR = true; showTown(true, 4 / 3);
+    const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}home_in.jpg" alt="工房の中"><div class="name">工房（自宅）</div>`;
+  });
+}
+// ---------- はじめて塔に入るときの見送り ----------
+const SENDOFF = [
+  { t: '塔の門の前に、見知った顔が並んでいた。' },
+  { fig: 'weapon', t: 'ジェニー[angry]「……別に、見送りに来たわけじゃないわよ。\n卸し先がいなくなると困るだけ」\n「ああ、分かってる」' },
+  { fig: 'clinic', t: 'エリー[worried]「これ、薬草です。\n無理だと思ったら、すぐ帰ってきてくださいね。\n……約束ですよ」' },
+  { fig: 'guild', t: 'リア[smile]「到達記録は、わたしが書きますから。\n……たくさん、書かせてくださいね」' },
+  { fig: 'weapon', t: 'ジェニー[shy]「……ほら、早く行きなさいよ。\n……行ってらっしゃい」' },
+  { clear: true, hero: 'smile', t: '「ありがとう。行ってくる。\n……まぁ〜、どうにかなるんじゃないか」' },
+];
+function sendOff() {
+  runSeq(SENDOFF, 0, () => { G.sentOff = true; add(G.items, 'herb', 1); save(); goFloor(1); });
 }
