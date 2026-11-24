@@ -215,7 +215,7 @@ function buttons(list, cls) {
   } else { shown = []; for (const b of body) shown.push(b); }
   const n = shown.filter(b => !b.title).length;
   if (!cls) cls = n > 6 ? 'three small' : n === 3 ? 'three' : n === 1 ? 'one' : '';
-  const per = cls.includes('three') ? (mode === 'battle' ? 12 : 9) : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
+  const per = cls.includes('three') ? 9 : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
   let pages = 1, pg = 0, items = shown;
   if (n > per + (tail.length ? 0 : 1)) {
     const flat = shown.filter(b => !b.title); pages = Math.ceil(flat.length / per); pg = Math.min(buttons.pg[pk] || 0, pages - 1);
@@ -225,7 +225,7 @@ function buttons(list, cls) {
     const el = document.createElement('button'); el.innerHTML = b.t + (b.s ? `<small>${b.s}</small>` : '');
     el.addEventListener('click', () => sfx('select', { vol: .5 }), { capture: true });
     if (b.off) el.disabled = true; if (b.hot) el.className = 'hot';
-    const move = b.go || b.f === townMap || ['入る', '外に出る', '町へ', '工房へ'].includes(b.t);
+    const move = !b.stay && (b.go || b.f === townMap || ['入る', '外に出る', '町へ', '工房へ'].includes(b.t));
     el.onclick = () => { if (move) fadeGo(() => b.f()); else { b.f(); hud(); } }; wrap.appendChild(el); return el;
   };
   if (head) { const h = document.createElement('h2'); h.textContent = head; box.appendChild(h); }
@@ -251,13 +251,19 @@ function buttons(list, cls) {
 function fadeGo(fn, o) {
   o = o || {}; const f = $('fade');
   if (fadeGo.busy || !f) { fn(); hud(); return; }
-  fadeGo.busy = true; f.innerHTML = o.text ? `<div>${o.text.replace(/\n/g, '<br>')}<i></i></div>` : ''; f.classList.toggle('txt', !!o.text); f.classList.add('on');
+  fadeGo.busy = true; f.innerHTML = o.text ? `<div>${o.text.replace(/\n/g, '<br>')}<i></i></div>` : ''; f.classList.toggle('txt', !!o.text); f.classList.toggle('floor', !!o.floor); f.classList.add('on');
   if (o.walk) sfx('walk_town', { vol: .8, max: 1.4 });
   for (const [k, d] of o.sfx || []) sfx(k, { delay: d, vol: .8 });
   setTimeout(() => {
     try { fn(); hud(); } catch (e) { console.error(e); }
     setTimeout(() => { f.classList.remove('on'); fadeGo.busy = false; }, o.hold || 80);
   }, 240);
+}
+// 階の移動: 暗転 →「3F」と場所の名前 → 足音 → 塔の中へフェードイン
+function goFloor(n, fromAbove) {
+  const ar = areaOf(n), st = (n >= 6 && n <= 9 ? 'step_wet' : STEP_SFX[ar[1]] || 'step_stone');
+  fadeGo(() => enterFloor(n, fromAbove), { text: `${n}F\n${n % 10 === 0 ? '主の間' : ar[2]}`, floor: true, hold: 1250,
+    sfx: [['stairs', 0], [st + '_1', 450], [st + '_2', 800], [st + '_3', 1150]] });
 }
 // その場で黒から明ける（すぐに切り替わる処理のあとに使う）
 function flashIn() {
@@ -278,9 +284,11 @@ function fitStage() {
   let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn ? LOG_MIN : -6);
   for (const c of main.children) if (c !== s && c.id !== 'log' && getComputedStyle(c).display !== 'none') used += c.offsetHeight;
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
+  // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
+  const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(232, ctl.offsetHeight) : 0));
   let w = W, h;
   if (COVER) h = Math.min(H, W * 1.25);
-  else if (dg) h = Math.min(H, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
+  else if (dg) h = Math.min(H, Hdg, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
   ctl.style.flex = '';
@@ -404,7 +412,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 6'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 7'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 function intro(i) {
   viewScreen('', true);
@@ -496,7 +504,7 @@ function towerScreen(msg) {
   place = 'tower'; showTown(true, 941 / 1672);
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}tower.jpg" alt="塔の入口"><div class="name">塔</div>`;
-  buttons([{ t: '入る', hot: true, f: enterMenu }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', f: prepMenu }, { t: '戻る', f: townMap }]);
+  buttons([{ t: '入る', hot: true, stay: true, f: enterMenu }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', f: prepMenu }, { t: '戻る', f: townMap }]);
   if (msg) say('resolve', msg, true); else log(pick(PLACES.tower.hello), true);
   if (!msg && G.gold > 0) log(`手持ちの${G.gold}Gは、倒れるとなくなる。`);
   if (!msg && G.injuries.length) say('tired', `${G.injuries.map(k => INJURIES[k].name).join('・')}が痛む。\n「……まぁ〜、どうにかなるんじゃないか」`);
@@ -550,14 +558,14 @@ function warpMenu() {
   const lit = id => G.warps.some(n => GOD_OF_AREA[n] === id);
   t.innerHTML = `<div class="statues">${['forest', 'desert', 'mountain', 'ice'].map(id => `<img class="${lit(id) ? 'lit' : ''}" src="${TOWN_IMG}gstatue_${id}.png" alt="${TOWER_NPCS[id].name}の像">`).join('')}</div><div class="name">女神の像</div>`;
   if (!G.warps.length) { buttons([{ t: '戻る', f: () => towerScreen() }]); log('塔の入口に、4人の女神の像が並んでいる。\nまだどれも光っていない。……塔の中で、女神に会えたら。', true); return; }
-  const L = G.warps.map(n => ({ t: `${n}階へ`, s: `${TOWER_NPCS[GOD_OF_AREA[n]].name}・${areaOf(n)[2]}`, f: () => { log(`${TOWER_NPCS[GOD_OF_AREA[n]].name}の像に触れた。光に包まれて……`, true); setTimeout(() => fadeGo(() => enterFloor(n)), 400); } }));
+  const L = G.warps.map(n => ({ t: `${n}階へ`, s: `${TOWER_NPCS[GOD_OF_AREA[n]].name}・${areaOf(n)[2]}`, f: () => { log(`${TOWER_NPCS[GOD_OF_AREA[n]].name}の像に触れた。光に包まれて……`, true); setTimeout(() => goFloor(n), 400); } }));
   L.push({ t: 'やめる', f: () => towerScreen() });
   buttons(L, L.length > 6 ? 'three small' : ''); log('女神の像が、やさしく光っている。どこへ行く？', true);
 }
 function enterMenu() {
-  if (G.maxFloor < 5) { enterFloor(1); return; }
-  const opts = [{ t: '1階から', hot: true, go: true, f: () => enterFloor(1) }, { t: '5階から', s: '昇降機', go: true, f: () => enterFloor(5) }];
-  if (G.maxFloor >= 10) opts.push({ t: '10階から', s: '昇降機', go: true, f: () => enterFloor(10) });
+  if (G.maxFloor < 5) { goFloor(1); return; }
+  const opts = [{ t: '1階から', hot: true, f: () => goFloor(1) }, { t: '5階から', s: '昇降機', f: () => goFloor(5) }];
+  if (G.maxFloor >= 10) opts.push({ t: '10階から', s: '昇降機', f: () => goFloor(10) });
   opts.push({ t: 'やめる', f: () => towerScreen('「……どうしようか」') });
   buttons(opts); log('どこから登る？', true);
 }
@@ -984,11 +992,11 @@ function openChest() {
 function stairs() {
   sfx('stairs', { max: 1.6 });
   const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
-  if (c === 3) { if (floorNo === 1) fadeGo(() => toTown('塔から出た。', true)); else fadeGo(() => enterFloor(floorNo - 1, true)); }
+  if (c === 3) { if (floorNo === 1) fadeGo(() => toTown('塔から出た。', true)); else goFloor(floorNo - 1, true); }
   else if (c === 2) {
     if (floorNo === 10 && !G.bossDown) { startBattle(BOSS10); return; }
     if (floorNo >= 10) { log('11階から上は、まだ作っていない。', true); return; }
-    fadeGo(() => enterFloor(floorNo + 1));
+    goFloor(floorNo + 1);
   }
 }
 // 道具を使う。戻り値: 使えたか
@@ -1044,7 +1052,7 @@ function startBattle(boss) {
   const m = boss ? { ...boss } : pickMonster();
   m.mhp = m.hp;
   B = { m, ap: apBase() + (G.meal === 'spark' ? 1 : 0), cut: 1, counter: null, dodge: 0, boost: 1, stun: false, broken: 0, turn: 1, over: false };
-  mode = 'battle'; fx.flash = 1;
+  mode = 'battle'; encounterFx(m);
   setTimeout(() => { if (B && B.m) { if (B.m.boss) sfx('bossstep'); sfx(CRY_SFX[B.m.id] || 'swing', { delay: B.m.boss ? 500 : 0 }); } }, 150);
   checkLearn(job());
   log(`${m.name}が現れた！`, true);
@@ -1054,6 +1062,16 @@ function startBattle(boss) {
   if (!boss && floorNo >= 70 && floorNo <= 95 && R() < .04) { playFx('jin', { x: VW / 2, y: VH / 2 }); m.hp = 0; win(); log('……どこからか、杖をついた老人の影が現れた。\n一閃。魔物は倒れ、影はもういない。'); return; }
   if (has('p_first')) { const d = dmgTo(m, atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (m.hp <= 0) { win(); return; } }
   battleUI(); hud();
+}
+// 遭遇の演出: 画面全体が黄色く光る → 揺れる →「遭遇！」の帯と魔物の名前。少しの間ボタンは押せない
+function encounterFx(m) {
+  const fl = $('flash'); if (fl) { fl.className = ''; void fl.offsetWidth; fl.className = m.boss ? 'on boss' : 'on'; }
+  const v = $('view'); v.classList.remove('quake'); void v.offsetWidth; v.classList.add('quake'); setTimeout(() => v.classList.remove('quake'), 500);
+  const old = v.querySelector('.enc'); if (old) old.remove();
+  const e = document.createElement('div'); e.className = 'enc' + (m.boss ? ' boss' : '');
+  e.innerHTML = `<b>${m.boss ? '強敵' : '遭遇'}！</b><span>${m.name}</span>`; v.appendChild(e); setTimeout(() => e.remove(), 1500);
+  sfx('shock1', { vol: .5, max: .5 });
+  const c = $('ctl'); c.classList.add('wait'); setTimeout(() => c.classList.remove('wait'), 750);
 }
 function battleUI() {
   const sk = [...new Set(['attack', ...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]), ...(hasShield() ? ['counter', 'wall'] : []), 'guard', 'herb', 'flee'])];
@@ -1320,7 +1338,7 @@ function loop(t) {
   } else { mapCv.style.display = 'none'; }
   if (fx.flash > .02) { ctx.fillStyle = `rgba(255,60,40,${fx.flash * .35})`; ctx.fillRect(0, 0, VW, VH); fx.flash *= .85; }
   if (fx.hit > .02) { ctx.fillStyle = `rgba(255,255,255,${fx.hit * .25})`; ctx.fillRect(0, 0, VW, VH); fx.hit *= .7; }
-  if (fx.shake > .3) { cv.style.transform = `translate(${(R() - .5) * fx.shake}px,${(R() - .5) * fx.shake}px)`; fx.shake *= .8; } else cv.style.transform = '';
+  if (fx.shake > .3) { cv.style.transform = `translateX(-50%) translate(${(R() - .5) * fx.shake}px,${(R() - .5) * fx.shake}px)`; fx.shake *= .8; } else cv.style.transform = '';
   requestAnimationFrame(loop);
 }
 

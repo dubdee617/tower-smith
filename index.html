@@ -85,6 +85,24 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
 #fade.txt i{display:block;width:120px;height:3px;margin:10px auto 0;border-radius:2px;background:linear-gradient(90deg,transparent,#ff8a3d,transparent);animation:spark .45s ease-in-out infinite}
 @keyframes glow{50%{text-shadow:0 0 14px #ff8a3d,0 0 28px rgba(255,120,40,.5)}}
 @keyframes spark{50%{opacity:.2;transform:scaleX(.6)}}
+#fade.floor{flex-direction:column;letter-spacing:.15em;color:#efe3cc;font-size:17px}
+#fade.floor div::first-line{font-size:46px;font-weight:700;color:#ffc069;letter-spacing:.08em}
+#fade.floor div{animation:floorIn 1.4s ease-out both}
+#fade.floor i{animation:none;width:180px;opacity:.7}
+@keyframes floorIn{from{opacity:0;transform:translateY(8px)}25%{opacity:1;transform:none}}
+/* 遭遇 */
+#flash{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 35%,rgba(255,245,170,.95),rgba(255,205,60,.75) 60%,rgba(255,170,40,.6))}
+#flash.on{animation:yflash .55s ease-out}
+#flash.boss{background:radial-gradient(circle at 50% 35%,rgba(255,230,150,.95),rgba(255,90,40,.75) 60%,rgba(160,20,20,.6))}
+@keyframes yflash{0%{opacity:0}12%{opacity:.9}100%{opacity:0}}
+.quake{animation:quake .45s linear}
+@keyframes quake{10%{transform:translate(-5px,3px)}25%{transform:translate(5px,-4px)}40%{transform:translate(-4px,-2px)}55%{transform:translate(3px,4px)}70%{transform:translate(-2px,-1px)}85%{transform:translate(1px,1px)}}
+.enc{position:absolute;left:0;right:0;top:38%;z-index:5;display:flex;align-items:baseline;justify-content:center;gap:14px;padding:8px 0;background:linear-gradient(90deg,transparent,rgba(20,10,0,.85) 20%,rgba(20,10,0,.85) 80%,transparent);border-top:1px solid rgba(255,200,90,.6);border-bottom:1px solid rgba(255,200,90,.6);pointer-events:none;animation:encIn 1.5s ease-out forwards}
+.enc b{font-size:28px;color:#ffd75a;letter-spacing:.15em;text-shadow:0 0 10px rgba(255,180,40,.8)}
+.enc span{font-size:20px;color:#fff3d6;text-shadow:0 1px 3px #000}
+.enc.boss b{color:#ff6a4a;text-shadow:0 0 12px rgba(255,60,30,.9)}
+@keyframes encIn{0%{opacity:0;transform:translateX(-60px) scaleY(.4)}15%{opacity:1;transform:none}75%{opacity:1}100%{opacity:0;transform:translateX(40px)}}
+.ctl.wait{pointer-events:none;opacity:.55;transition:opacity .2s}
 /* 話している人の顔: セリフ欄の外、枠なし */
 #spk{position:absolute;bottom:0;height:118px;width:auto;z-index:6;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9));display:none}
 #spk.on{display:block;animation:spkIn .3s ease-out}
@@ -123,6 +141,7 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
  <div class="ctl" id="ctl"></div>
 </main>
 <div id="fade"></div>
+<div id="flash"></div>
 <script src="js/assets.js"></script>
 <script src="js/props.js"></script>
 <script src="js/fx.js"></script>
