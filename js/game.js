@@ -117,7 +117,7 @@ function drawSpk() {
   const evOn = document.querySelector('#town .portrait.ev') || ($('meet') && $('meet').classList.contains('ev') && $('meet').style.display === 'flex');
   if (!spkFace || evOn || document.body.classList.contains('title')) { sp.className = ''; sp.removeAttribute('src'); return; }
   const f = document.querySelector('.fig'), side = f && f.classList.contains('L') ? 'R' : 'L';
-  const src = `assets/${spkFace}.png`;
+  const src = `assets/face/${spkFace.replace(/^npc\//, '')}.webp`;
   if (sp.getAttribute('src') !== src || !sp.classList.contains('on')) { sp.className = ''; void sp.offsetWidth; sp.src = src; }
   sp.className = 'on ' + side;
 }
@@ -471,7 +471,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 18'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 19'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
