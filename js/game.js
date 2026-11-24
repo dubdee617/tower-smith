@@ -226,6 +226,8 @@ function hud() {
   const ap = B ? B.ap : 0, apMax = 4;
   $('apb').style.width = (100 * ap / apMax) + '%'; $('apt').textContent = B ? `${ap}` : '-';
   for (const id of ['apl', 'apbar', 'apt']) $(id).style.visibility = mode === 'battle' ? 'visible' : 'hidden';
+  // HPが3割以下: 画面のふちが赤く脈打つ
+  { const dz = $('danger'); if (dz) dz.classList.toggle('on', mode !== 'town' && G.hp > 0 && G.hp <= G.mhp * .3); }
 }
 // ボタン: 「戻る」系はいつも右下。見出しが2つ以上ある長い一覧はタブに分け、多すぎるときはページ送り
 const TAIL_T = ['戻る', 'やめる', '外に出る'];
@@ -472,7 +474,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 23'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 24'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1273,7 +1275,8 @@ function battleUI() {
     box.appendChild(g); }
   const tail = document.createElement('div'); tail.className = 'btns tail';
   const keep = Math.min(carryMax(), B.ap);
-  mk(tail, '取り消す', 'undo', !B.plan.length || B.running || B.over, () => { unplan(B.plan.length - 1); battleUI(); });
+  mk(tail, '取り消す', 'undo', !B.plan.length || B.running || B.over || B.auto, () => { unplan(B.plan.length - 1); battleUI(); });
+  mk(tail, B.auto ? 'オート<small>止める</small>' : 'オート<small>攻撃で戦う</small>', B.auto ? 'auto on' : 'auto', B.over, toggleAuto);
   mk(tail, B.plan.length ? `行動！<small>${B.plan.length}つ実行${keep ? `・AP${keep}持ち越し` : ''}</small>` : `ターン終了<small>${keep ? `AP${keep}を持ち越す` : 'なにもしない'}</small>`, 'hot', B.over || B.running, runPlan);
   box.appendChild(tail);
   fitStage();
@@ -1292,6 +1295,19 @@ function skillPanel() {
     b.onclick = () => { sfx('select', { vol: .5 }); planAdd(id); hud(); };
     p.appendChild(b);
   }
+}
+// オート: 毎ターン、APを全部「攻撃」に使って自動で行動する。HPが3割を切ったら先に薬草。薬草がなければ止める
+function toggleAuto() { B.auto = !B.auto; if (B.auto) { log('オートで戦う。（もう一度押すと止まる）', true); autoTurn(); } else battleUI(); }
+function autoTurn() {
+  if (!B || !B.auto || B.over || B.running) return;
+  while (B.plan.length) unplan(B.plan.length - 1);
+  if (G.hp <= G.mhp * .3) {
+    const it = battleItemList().find(([k]) => k.startsWith('herb'));
+    if (it && B.ap >= apCost('herb')) { B.ap -= apCost('herb'); B.plan.push({ id: 'item', k: it[0] }); }
+    else { B.auto = false; log('HPが危ない！ オートを止めた。', true); battleUI(); return; }
+  }
+  while (B.ap >= apCost('attack')) { B.ap -= apCost('attack'); B.plan.push({ id: 'attack' }); }
+  battleUI(); runPlan();
 }
 function battleItemList() {
   const used = {}; for (const p of B.plan || []) if (p.id === 'item') used[p.k] = (used[p.k] || 0) + 1;
@@ -1390,7 +1406,8 @@ function endTurn() {
     }
   }
   if (has('p_regen')) healMe(3);
-  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; B.skillOpen = false; battleUI(); hud();
+  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud();
+  if (B.auto) setTimeout(autoTurn, 550);
 }
 function win() {
   sfx('win', { delay: 300, max: G.exp + B.m.exp >= expNeed() ? .9 : 0 });
