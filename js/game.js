@@ -498,7 +498,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 44'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 45'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1442,7 +1442,7 @@ function dmgTo(m, power, pierce, critBonus) {
   let d = Math.max(1, Math.round((power - (pierce ? 0 : Math.max(0, m.def - B.broken))) * (.85 + R() * .3)));
   const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0);
   if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: 120, size: .7 }); } else B.lastCrit = false;
-  m.hp -= d; popNum(d, 'mon', crit ? 'crit' : ''); fx.hit = .6; B.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.min(8, 2 + d / 6); return d;
+  m.hp -= d; popNum(d, 'mon', crit ? 'crit' : ''); fx.hit = .6; B.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); return d;
 }
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
 function doSkill(id) {
@@ -1621,9 +1621,25 @@ const SKILL_FX = {
   hone:['power'], bunshin:['bunshin'], steal:['sparkle'],
 };
 const WEAPON_FX = { sword:'slash_h', katana:'iai', axe:'impact_heavy', greatsword:'slash_v', hammer:'impact_heavy', dagger:'thrust', bow:'arrow', book:'magic_arrow', staff:'impact' };
+// ふつうの攻撃: 武器の種類ごとに、絵の重ね方・大きさ・揺れで手ごたえを変える
+function weaponFx(type) {
+  const shake = (n, d) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n); }, d || 0);
+  switch (type) {
+    case 'sword': playFx(R() < .5 ? 'slash_h' : 'slash_v', { size: 1 }); shake(3); break;
+    case 'katana': playFx('iai', { delay: 200, size: 1.25, rot: 0 }); playFx('spark', { delay: 300, size: .55, parts: 8 }); shake(5, 220); break;  // 一瞬ためて、横一閃
+    case 'greatsword': playFx('slash_v', { size: 1.4, slow: 1.2, rot: 0 }); playFx('impact_heavy', { delay: 140, size: .85 }); shake(10, 140); break;
+    case 'axe': playFx('impact_heavy', { size: 1.3 }); playFx('rocks', { delay: 80, size: .7, parts: 20 }); shake(11); break;
+    case 'hammer': playFx('impact_heavy', { size: 1.15 }); playFx('spark', { delay: 60, size: .8, parts: 22 }); shake(8); break;
+    case 'dagger': playFx('slash_h', { size: .7, rot: -.6 }); playFx('slash_h', { delay: 130, size: .7, rot: .6, parts: 6 }); shake(2); shake(2, 130); break;
+    case 'bow': playFx('arrow', { size: .85 }); playFx('impact', { delay: 270, size: .5, parts: 6 }); shake(3, 270); break;
+    case 'book': playFx('magic_circle', { y: VH * .78, size: .55, parts: 6 }); playFx('magic_arrow', { delay: 180, size: .8 }); shake(3, 400); break;
+    case 'staff': playFx('impact', { size: .95 }); playFx('sparkle', { delay: 90, size: .6, parts: 10 }); shake(4); break;
+    default: playFx('impact', { size: .9 }); shake(4);
+  }
+}
 function skillFx(id) {
   let list = SKILL_FX[id];
-  if (id === 'attack') { const w = mainWeapon(); let n = w ? WEAPON_FX[w.type] : 'impact'; if (n === 'slash_h' && R() < .5) n = 'slash_v'; list = [n]; }
+  if (id === 'attack') { const w = mainWeapon(); weaponFx(w ? w.type : null); return; }
   if (!list) return;
   const self = ['heal', 'guard', 'wall', 'holyguard', 'counter', 'mikiri', 'hone', 'bunshin'].includes(id);
   list.forEach((n, i) => playFx(n, { delay: i * 160, self }));
