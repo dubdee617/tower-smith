@@ -22,7 +22,7 @@ const SND = (() => {
   function bgm(key) {
     if (!key || cur === key) return;
     cur = key; clearInterval(fade);
-    const go = () => { music.src = BGM_DIR + key + '.mp3'; music.currentTime = 0; mvol(on ? VOL.bgm : 0); startMusic(); };
+    const go = () => { music.src = BGM_DIR + key + '.m4a'; music.currentTime = 0; mvol(on ? VOL.bgm : 0); startMusic(); };
     if (!music.src || music.paused) { go(); return; }
     let v = music.volume; fade = setInterval(() => { v -= .08; if (v <= .02) { clearInterval(fade); go(); } else mvol(v); }, 40);
   }
