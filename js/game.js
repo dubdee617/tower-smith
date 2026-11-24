@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 64'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 65'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1489,7 +1489,7 @@ function encounterFx(m, ms) {
   const old = v.querySelector('.enc'); if (old) old.remove();
   const e = document.createElement('div'); e.className = 'enc' + (m.boss ? ' boss' : '');
   e.innerHTML = `<b>${m.boss ? '強敵' : '遭遇'}！</b><span>${ms && ms.length > 1 ? (new Set(ms.map(x => x.id)).size === 1 ? m.name.replace(/[A-D]$/, '') + ' ×' + ms.length : ms.length + '体の魔物') : m.name}</span>`; v.appendChild(e); setTimeout(() => e.remove(), 1500);
-  sfx('shock1', { vol: .5, max: .5 });
+  sfx('encounter', { vol: 1 });  // enemy_contact（頭と終わりの無音を切った）
   const c = $('ctl'); c.classList.add('wait'); setTimeout(() => c.classList.remove('wait'), 750);
 }
 // 戦闘: 技を押して「行動の予定」に並べる（APはその場で減る）→「行動」で順番に実行 → 敵の番
