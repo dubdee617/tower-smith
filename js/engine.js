@@ -356,7 +356,8 @@ function renderView(ctx, F, P, t, dim) {
     const nx = side ? 0 : -sx, ny = side ? -sy : 0, fk = F.face[mx + ',' + my + ',' + nx + ',' + ny];
     const cell = (M[my] && M[my][mx]) || 1;
     const vk = cell === 1 && F.vein ? F.vein[mx + ',' + my] : null;
-    const tex = cell === 2 ? TEX.stairs_up : cell === 3 ? TEX.stairs_down : cell === 4 ? TEX.door_wood : cell === 5 ? TEX.door_iron : vk && TEX.vein[vk] ? TEX.vein[vk] : fk === 'wall2' ? TEX.wall2 : fk && TEX.deco[fk] ? TEX.deco[fk] : TEX.wall;
+    const front = cell === 2 ? F.upDir : cell === 3 ? F.startDir : null, stOk = !front || (nx === front[0] && ny === front[1]);
+    const tex = cell === 2 && stOk ? TEX.stairs_up : cell === 3 && stOk ? TEX.stairs_down : cell === 4 ? TEX.door_wood : cell === 5 ? TEX.door_iron : vk && TEX.vein[vk] ? TEX.vein[vk] : fk === 'wall2' ? TEX.wall2 : fk && TEX.deco[fk] ? TEX.deco[fk] : TEX.wall;
     ZB[x] = dist;
     const ck = cell === 1 && F.crack ? F.crack[mx + ',' + my] : 0, cm = ck ? TEX.crack[ck] : null;
     const isT0 = cell === 1 && !vk && fk && fk.startsWith('torch'), isT = isT0, tip = isT ? TORCH_TIP[+fk.endsWith('1')] : 0;
