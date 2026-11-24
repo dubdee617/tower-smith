@@ -254,12 +254,22 @@ function genFloor(floor, seed) {
   const props = [];
   const used = new Set(); used.add(sx + ',' + sy); used.add(up[2] + ',' + up[3]);
   // 部屋のふちのマス（外側がすべて壁で、となりに置いた物がない）を探す
+  // 通れるマス（床と扉）が、ぜんぶ下り階段の前からつながっているか
+  const allReach = () => {
+    let total = 0; for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const v = M[j][i]; if (v === 0 || v === 4 || v === 5) total++; }
+    const seen = new Uint8Array(N * N), q = [sx + sy * N]; seen[q[0]] = 1; let n = 0;
+    while (q.length) { const k = q.pop(), x = k % N, y = (k - x) / N; n++;
+      for (const [a, b] of [[1,0],[-1,0],[0,1],[0,-1]]) { const X = x + a, Y = y + b; if (X < 0 || Y < 0 || X >= N || Y >= N) continue; const v = M[Y][X], kk = X + Y * N; if (!seen[kk] && (v === 0 || v === 4 || v === 5)) { seen[kk] = 1; q.push(kk); } } }
+    return n === total;
+  };
   const edgeCell = r => {
     for (let tries = 0; tries < 14; tries++) {
       const x = r.x + Math.floor(R() * r.w), y = r.y + Math.floor(R() * r.h); if (used.has(x + ',' + y) || M[y][x] !== 0) continue;
       const edgeDirs = [[1,0],[-1,0],[0,1],[0,-1]].filter(([a, b]) => { const X = x + a, Y = y + b; return !(X >= r.x && X < r.x + r.w && Y >= r.y && Y < r.y + r.h); });
       if (!edgeDirs.length || edgeDirs.some(([a, b]) => M[y + b][x + a] !== 1)) continue;
       if ([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => used.has((x + a) + ',' + (y + b)))) continue;
+      if (x === sx && y === sy) continue;
+      M[y][x] = 6; const ok = allReach(); M[y][x] = 0; if (!ok) continue;  // 置くと行けない場所ができるなら置かない
       return [x, y];
     }
     return null;
