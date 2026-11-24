@@ -44,6 +44,8 @@ const VEINS_STONE = [['v_copper',60], ['v_iron',25], ['v_stone',10], ['v_gems',5
 const AREA_FILES = ['wall', 'wall2', 'floor', 'ceil', 'door_wood', 'door_iron', 'stairs_up', 'stairs_down'];
 // 外のエリアは明るい（たいまつがなくても見える）
 const OUTDOOR = { forest: 1, desert: 1, mountain: 1, snow: 1, jungle: 1, canyon: 1, glacier: 1 };
+// 空が見えるエリア（森とジャングルは葉の天井）
+const SKY = { desert: 1, mountain: 1, snow: 1, canyon: 1, glacier: 1 };
 let LIGHT_MIN = 0;
 // 床の小物: [名前, 大きさ, 調べたときの種類]
 const AREA_PROPS = {
@@ -131,6 +133,9 @@ async function loadTextures(set) {
   }
   if (TEX.crackImg && TEX.crackImg[3]) TEX.crack = TEX.crackImg;
   // エリアの床の小物
+  // 空のいちばん下の色（地平線のかすみ）
+  { let r = 0, g = 0, b = 0, n = 0; for (let y = 200; y < 256; y++) for (let x = 0; x < 256; x += 4) { const c = TEX.ceil[y * 256 + x]; r += c & 255; g += (c >> 8) & 255; b += (c >> 16) & 255; n++; }
+    r = r / n * .75 + 255 * .25; g = g / n * .75 + 255 * .25; b = b / n * .75 + 255 * .25; TEX.haze = 0xff000000 | (b << 16) | (g << 8) | r; }
   if (AREA_PROPS[set]) for (let k = 1; k <= 4; k++) { const im = await loadImg(`assets/area/${set}/p${k}.webp`); TEX.sprite[`${set}_p${k}`] = { w: im.width, h: im.height, px: pix(im, im.width, im.height) }; }
   TEX.ready = true;
 }
@@ -260,6 +265,11 @@ function genFloor(floor, seed) {
 
 // ---------- 描画 ----------
 const VIEW = { buf: null, img: null };
+// 遠くほど空のかすみ色に近づける（外のエリア）
+function fogC(col, h, f) {
+  if (f <= 0) return col; const g = 1 - f;
+  return 0xff000000 | ((((col >> 16) & 255) * g + ((h >> 16) & 255) * f) << 16) | ((((col >> 8) & 255) * g + ((h >> 8) & 255) * f) << 8) | ((col & 255) * g + (h & 255) * f);
+}
 function shadeW(col, k, w) {
   const r = col & 255, g = (col >> 8) & 255, b = (col >> 16) & 255;
   return 0xff000000 | (Math.min(255, b * (k * .82 + w * .28)) << 16) | (Math.min(255, g * (k * .9 + w * .62)) << 8) | Math.min(255, r * (k + w * 1.05));
@@ -273,6 +283,14 @@ function renderView(ctx, F, P, t, dim) {
   const buf = VIEW.buf, M = F.M, N = F.N;
   const dx = Math.cos(P.a), dy = Math.sin(P.a), px = -dy * .66, py = dx * .66;
   const D = dim || 1; FLICK = 1 + Math.sin(t / 70) * .06 + Math.sin(t / 29) * .04;
+  const OUT = !!SKY[TEX.area], HZ = TEX.haze || 0xffcccccc;
+  // 外のエリア: 空は天井ではなく、遠くに広がる空として描く（向きに合わせて横に流れる）。地平線に近いほどかすむ
+  if (OUT) {
+    for (let x = 0; x < VW; x++) {
+      const cam = 2 * x / VW - 1, a = P.a + Math.atan(cam * .66), u = (Math.floor(a / (Math.PI * 2) * 256 * 3) % 256 + 256) % 256;
+      for (let y = 0; y <= VH / 2; y++) { const v = Math.floor(y / (VH / 2) * 210); const f = Math.max(0, (y - VH * .3) / (VH * .2)); buf[y * VW + x] = fogC(TEX.ceil[v * 256 + u], HZ, f * f * .85); }
+    }
+  }
   // 床と天井
   for (let y = VH / 2 + 1; y < VH; y++) {
     const rd = (VH / 2) / (y - VH / 2), lx = dx - px, ly = dy - py, rx = dx + px, ry = dy + py;
@@ -282,8 +300,8 @@ function renderView(ctx, F, P, t, dim) {
       const W = warmAt(F, fx, fy) * D;
       const u = (fx * 128) & 255, v = (fy * 128) & 255;
       const fc = TEX.floor[v * 256 + u];
-      buf[y * VW + x] = shadeW(fc, L * .92, W);
-      buf[(VH - y) * VW + x] = shadeW(TEX.ceil[v * 256 + u], L, W * .8);
+      if (OUT) { buf[y * VW + x] = fogC(shadeW(fc, L * .92, W), HZ, Math.min(.8, rd / 14)); }
+      else { buf[y * VW + x] = shadeW(fc, L * .92, W); buf[(VH - y) * VW + x] = shadeW(TEX.ceil[v * 256 + u], L, W * .8); }
       fx += sx; fy += sy;
     }
   }
@@ -306,17 +324,26 @@ function renderView(ctx, F, P, t, dim) {
     ZB[x] = dist;
     const ck = cell === 1 && F.crack ? F.crack[mx + ',' + my] : 0, cm = ck ? TEX.crack[ck] : null;
     const isT0 = cell === 1 && !vk && fk && fk.startsWith('torch'), isT = isT0, tip = isT ? TORCH_TIP[+fk.endsWith('1')] : 0;
-    const y0 = Math.max(0, Math.floor(VH / 2 - lh / 2)), y1 = Math.min(VH, Math.ceil(VH / 2 + lh / 2));
+    // 外のエリアの壁は崖のように高く、上のふちはでこぼこにして、遠いほどかすむ
+    const jag = OUT ? (Math.sin((mx * 7.1 + my * 3.7) + tx * .035) * .6 + Math.sin(tx * .09 + mx + my * 2) * .4) : 0;
+    const top = OUT ? VH / 2 - lh * (1.15 + jag * .12) : VH / 2 - lh / 2, fogF = OUT ? Math.min(.8, dist / 14) : 0;
+    const y0 = Math.max(0, Math.floor(top)), y1 = Math.min(VH, Math.ceil(VH / 2 + lh / 2));
     const L = lightAt(dist, t) * (side ? .78 : 1) * D;
     const W = warmAt(F, P.x + dist * rx - nx * .02, P.y + dist * ry - ny * .02) * (side ? .8 : 1) * D;
     for (let y = y0; y < y1; y++) {
-      const ty = Math.floor((y - (VH / 2 - lh / 2)) / lh * TS) & (TS - 1);
+      const above = y < VH / 2 - lh / 2, ty = Math.floor((y - (VH / 2 - lh / 2)) / lh * TS) & (TS - 1);
       if (isT && ty > 14 && ty < 42) { // たいまつの炎
         const fx2 = (tx - tip) / 7, fy2 = (42 - ty) / 26, fl = Math.sin(t / 60 + ty * .7) * .25 + Math.sin(t / 23 + ty) * .15, wd = (1 - fy2) * (1 + fl * .6);
         if (fy2 > 0 && Math.abs(fx2 + fl * fy2 * 1.2) < wd) {
           const core = 1 - Math.abs(fx2) / wd, gg = Math.min(255, 120 + core * 120 + (1 - fy2) * 60) * D, bb = Math.min(255, 30 + core * core * 150 * (1 - fy2)) * D;
           buf[y * VW + x] = 0xff000000 | (bb << 16) | (gg << 8) | (255 * D); continue;
         }
+      }
+      if (OUT) {
+        // 扉や階段の上は、ふつうの壁。上のふちに近いほど、空のかすみに溶ける
+        const t2 = above ? (fk === 'wall2' ? TEX.wall2 : TEX.wall) : tex, edge = Math.max(0, 1 - (y - top) / (lh * .45));
+        buf[y * VW + x] = fogC(shadeW(!above && cm && cm[ty * TS + tx] ? 0xff141210 : t2[ty * TS + tx], L * (above ? .95 : 1), W), HZ, Math.min(.9, fogF + edge * edge * .55));
+        continue;
       }
       buf[y * VW + x] = shadeW(cm && cm[ty * TS + tx] ? 0xff141210 : tex[ty * TS + tx], L, W);
     }
