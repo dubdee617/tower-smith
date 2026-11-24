@@ -290,7 +290,7 @@ function buttons(list, cls) {
   const isTail = b => !b.title && (b.tail || TAIL_T.includes(b.t));
   const tail = list.filter(isTail), body = list.filter(b => !isTail(b));
   const top = [], secs = []; let lead = null;
-  for (const b of body) { if (b.title) secs.push({ title: b.title, items: [] }); else if (secs.length) secs[secs.length - 1].items.push(b); else top.push(b); }
+  for (const b of body) { if (b.title) secs.push({ title: b.title, titleHtml: b.titleHtml, items: [] }); else if (secs.length) secs[secs.length - 1].items.push(b); else top.push(b); }
   if (!secs.length && top.length === 0) lead = null;
   const nItems = top.length + secs.reduce((a, x) => a + x.items.length, 0);
   const tabbed = secs.length >= 2 && nItems > 6 && secs.filter(x => x.items.length).length >= 2;
@@ -302,7 +302,7 @@ function buttons(list, cls) {
     const row = document.createElement('div'); row.className = 'tabs';
     secs.forEach((x, i) => { const tb = document.createElement('button'); tb.textContent = label(x.title); if (i === k) tb.className = 'on';
       tb.onclick = () => { sfx('select', { vol: .4 }); buttons.tab[key] = i; buttons(list, cls); }; row.appendChild(tb); });
-    box.appendChild(row); head = secs[k].title; shown = [...top, ...secs[k].items];
+    box.appendChild(row); head = secs[k].titleHtml || secs[k].title; shown = [...top, ...secs[k].items];
   } else { shown = []; for (const b of body) shown.push(b); }
   const n = shown.filter(b => !b.title).length;
   if (!cls) cls = n > 6 ? 'three small' : n === 3 ? 'three' : n === 1 ? 'one' : '';
@@ -311,7 +311,7 @@ function buttons(list, cls) {
   let pages = 1, pg = 0, items = shown;
   if (n > per + (tail.length ? 0 : 1)) {
     const flat = shown.filter(b => !b.title); pages = Math.ceil(flat.length / per); pg = Math.min(buttons.pg[pk] || 0, pages - 1);
-    items = flat.slice(pg * per, pg * per + per); if (!head) { const t = shown.find(b => b.title); if (t) head = t.title; }
+    items = flat.slice(pg * per, pg * per + per); if (!head) { const t = shown.find(b => b.title); if (t) head = t.titleHtml || t.title; }
   }
   const mk = (b, wrap) => {
     const el = document.createElement('button'); el.innerHTML = b.t + (b.s ? `<small>${b.s}</small>` : '');
@@ -320,10 +320,10 @@ function buttons(list, cls) {
     const move = !b.stay && (b.go || b.f === townMap || ['入る', '外に出る', '町へ', '工房へ'].includes(b.t));
     el.onclick = () => { if (move) fadeGo(() => b.f()); else { b.f(); hud(); } }; wrap.appendChild(el); return el;
   };
-  if (head) { const h = document.createElement('h2'); h.textContent = head; box.appendChild(h); }
+  if (head) { const h = document.createElement('h2'); if (/^<|</.test(head)) h.innerHTML = head; else h.textContent = head; box.appendChild(h); }
   const wrap = document.createElement('div'); wrap.className = 'btns' + (cls ? ' ' + cls : '');
   for (const b of items) {
-    if (b.title) { const h = document.createElement('h2'); h.textContent = b.title; h.style.gridColumn = '1/-1'; wrap.appendChild(h); continue; }
+    if (b.title) { const h = document.createElement('h2'); if (b.titleHtml) h.innerHTML = b.titleHtml; else h.textContent = b.title; h.style.gridColumn = '1/-1'; wrap.appendChild(h); continue; }
     mk(b, wrap);
   }
   box.appendChild(wrap);
@@ -525,7 +525,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 53'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 54'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -784,7 +784,7 @@ const lackText = r => Object.entries(costOf(r)).filter(([k, n]) => (G.store[k] |
 const needText = r => Object.entries(costOf(r)).map(([k, n]) => `${MATS[k]}${n}(${G.store[k] || 0})`).join(' ');
 // 必要な素材をアイコンで（足りない物は赤く）
 const icoImg = (k, cls) => { const s = iconOf(k); return s ? `<img class="${cls || 'mi'}" src="${s}" alt="${NAMES[k] || ''}">` : (NAMES[k] || k); };
-const needHtml = r => Object.entries(costOf(r)).map(([k, n]) => `<span class="need${(G.store[k] || 0) < n ? ' short' : ''}">${icoImg(k)}${n}<em>(${G.store[k] || 0})</em></span>`).join('');
+const needHtml = r => Object.entries(costOf(r)).map(([k, n]) => `<span class="need${(G.store[k] || 0) < n ? ' short' : ''}">${icoImg(k)}${n}</span>`).join('');
 function upgradeMenu(msg) {
   if (!G.forgeUp) G.forgeUp = {};
   const L = [{ title: `工房の強化（手持ち ${G.gold}G）` }];
@@ -815,7 +815,7 @@ function forge(msg, face) {
 }
 function forgeList(cat, msg, face) {
   const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(f).sort((a, b) => canMake(b) - canMake(a));
-  const L = [{ title: `${name}（素材: ${matText(G.store)}）` }];
+  const L = [{ title: name, titleHtml: `${name}<span class="have">${Object.keys(MATS).map(k => `<span>${icoImg(k)}${G.store[k] || 0}</span>`).join('')}</span>` }];
   for (const r of rs) {
     const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
     const lock = upLv('furnace') < needFurnace(r);
@@ -829,7 +829,7 @@ function forgeList(cat, msg, face) {
   }
   L.push({ t: '戻る', f: () => forge() });
   buttons(L, 'list');
-  if (face) say(face, msg, true); else log(msg || '（ ）の数字は、工房にある素材の数。', true);
+  if (face) say(face, msg, true); else log(msg || '上に並んでいるのが、工房にある素材。足りない素材は赤く出る。', true);
 }
 function forgeFix() {
   const L = [{ title: '手入れ（銅1で新品同様に）' }];
