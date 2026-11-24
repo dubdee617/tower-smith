@@ -498,7 +498,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 45'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 46'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1453,7 +1453,7 @@ function doSkill(id) {
     case 'atk': {
       if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; fx.hit = 1; B.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ 急所を貫いた。`); break; }
       const ds = []; let crit = false;
-      for (let i = 0; i < (s.hits || 1); i++) { ds.push(dmgTo(m, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (m.hp <= 0) break; }
+      for (let i = 0; i < (s.hits || 1) + (s.twice && R() < s.twice ? 1 : 0); i++) { ds.push(dmgTo(m, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (m.hp <= 0) break; }
       let t = `${s.name}！ ${ds.join('と')}のダメージ。${crit ? '会心！' : ''}`;
       if (s.break) { B.broken += s.break; t += '守りが崩れた。'; }
       if (s.self) { const c = Math.ceil(G.mhp * s.self); G.hp = Math.max(1, G.hp - c); t += `HPを${c}削った。`; }
@@ -1557,6 +1557,10 @@ function drawMonster(m, t) {
 // 絵（fx.js）を1コマもらい、動きはコードでつける。絵と同じ色の光と粒を重ねて、切り口をなじませる
 const FXI = {}; if (typeof FX_IMG !== 'undefined') for (const [k, s] of Object.entries(FX_IMG)) { const i = new Image(); i.src = s; FXI[k] = i; }
 let fxList = [], fxParts = [];
+// 5属性×小・中・大の魔法（ファイルから読む）
+const MAGIC_C = { fire:'#ff8a3d', ice:'#8fd8ff', bolt:'#ffe14a', holy:'#fff0b0', dark:'#b45cff' };
+for (const [el, c] of Object.entries(MAGIC_C)) for (let k = 1; k <= 3; k++) { const n = `m_${el}${k}`, i = new Image(); i.src = `assets/fx/${n}.webp`; FXI[n] = i; if (typeof FX_META !== 'undefined') FX_META[n] = { c, add: el !== 'dark' }; }
+let fxDim = 0;  // 大きな魔法の前に、画面を暗くする
 // 動き方: slash=さっと広がって消える burst=はじける travel=下から飛んでいって当たる rise=足元から昇る screen=画面全体に
 const FX_MOVE = {
   slash_h:'slash', slash_v:'slash', slash_x:'slash', iai:'slash', tsubame:'slash', flurry:'slash', claw:'slash', bite:'burst', dark_blade:'slash',
@@ -1564,13 +1568,18 @@ const FX_MOVE = {
   thrust:'travel', arrow:'travel', magic_arrow:'travel', fire_s:'travel', ice_spear:'travel',
   heal:'rise', heal_leaf:'rise', holy_pillar:'rise', barrier:'rise', power:'rise', speed:'rise', pray:'rise', levelup:'rise', blessing:'rise', warp:'rise', bunshin:'rise', afterimage:'rise',
   jin:'screen',
+  m_fire1:'travel', m_ice1:'travel', m_dark1:'travel', m_bolt1:'burst', m_holy1:'burst', m_fire2:'burst', m_ice2:'burst', m_bolt2:'burst', m_holy2:'burst', m_dark2:'burst',
+  m_fire3:'big', m_ice3:'big', m_bolt3:'big', m_holy3:'big', m_dark3:'big',
 };
-const FX_DUR = { slash: 380, burst: 520, travel: 520, rise: 900, screen: 700 };
+const FX_DUR = { slash: 380, burst: 520, travel: 520, rise: 900, screen: 700, big: 1100 };
 function playFx(name, opt = {}) {
   const img = FXI[name], meta = (typeof FX_META !== 'undefined' && FX_META[name]) || { c: '#ffffff', add: true };
   if (!img) return;
   if (FX_SFX[name]) sfx(FX_SFX[name], { delay: opt.delay || 0, max: 2.5 });
   const mv = FX_MOVE[name] || 'burst', self = opt.self || mv === 'rise';
+  // 大きな魔法: 画面が暗くなってから、画面いっぱいに出る。強く揺れて、粒も多い
+  if (mv === 'big') { fxDim = performance.now() + (opt.delay || 0); opt = { ...opt, delay: (opt.delay || 0) + 280, parts: 40, y: VH * .56 }; setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); fx.flash = .5; }, opt.delay + 80); }
+  if (/^m_\w+2$/.test(name)) setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 6); }, (opt.delay || 0) + 60);
   const x = opt.x !== undefined ? opt.x : VW / 2 + (self ? 0 : (R() - .5) * 20), y = opt.y !== undefined ? opt.y : self ? VH * .62 : VH * .52;
   fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: R() < .5 && mv === 'slash' });
   // 同じ色の粒
@@ -1581,8 +1590,9 @@ function playFx(name, opt = {}) {
   }
 }
 function drawFx() {
-  if (!fxList.length && !fxParts.length) return;
   const t = performance.now();  // playFx と同じ時計を使う
+  { const d = (t - fxDim) / 1400; if (fxDim && d >= 0 && d < 1) { ctx.fillStyle = `rgba(4,2,10,${(d < .2 ? d / .2 : 1 - (d - .2) / .8) * .62})`; ctx.fillRect(0, 0, VW, VH); } }
+  if (!fxList.length && !fxParts.length) return;
   ctx.save();
   fxList = fxList.filter(e => t - e.t0 < e.dur);
   for (const e of fxList) {
@@ -1594,6 +1604,7 @@ function drawFx() {
     if (e.mv === 'travel') { const q = Math.min(1, k / .5); x = VW / 2 + (e.x - VW / 2) * q; y = VH * 1.05 + (e.y - VH * 1.05) * q; s = .6 + q * .5; a = k < .5 ? 1 : 1 - (k - .5) / .5; }
     if (e.mv === 'rise') { s = .9 + k * .15; y = e.y - k * 18; a = k < .2 ? k / .2 : 1 - (k - .2) / .8; }
     if (e.mv === 'screen') { s = 1 + k * .2; a = k < .1 ? k / .1 : 1 - (k - .1) / .9; }
+    if (e.mv === 'big') { s = .75 + Math.pow(k, .35) * .45; a = k < .1 ? k / .1 : k < .7 ? 1 : 1 - (k - .7) / .3; }
     // うしろの光（絵と同じ色）
     ctx.globalCompositeOperation = e.meta.add ? 'lighter' : 'source-over';
     const r = Math.max(w, h) * s * .55, gr = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -1616,7 +1627,8 @@ function drawFx() {
 const SKILL_FX = {
   double:['slash_x'], lunge:['thrust'], iai:['iai'], tsubame:['tsubame'], frenzy:['flurry'], flurry:['flurry'], cleave:['impact_heavy'], heavyslash:['slash_v','impact_heavy'], smash:['impact_heavy'], rage:['impact_heavy'],
   stab:['thrust'], assassin:['thrust','crit'], snipe:['arrow'], aim:['arrow'], volley:['arrow','arrow'], kagenui:['thrust','dark_mist'], plunder:['impact_heavy'], punch:['impact'], monkstrike:['impact','heal'],
-  shieldbash:['impact'], fire:['fire_s','fire_l'], sagefire:['fire_l'], ice:['ice_spear','ice_burst'], bolt:['thunder'], holy:['holy_pillar'], magicblade:['slash_x','fire_s'], darkblade:['dark_blade','dark_mist'],
+  shieldbash:['impact'], fire:['m_fire1'], sagefire:['m_fire2','heal'], ice:['m_ice1'], bolt:['m_bolt1'], holy:['m_holy1'],
+  fire2:['m_fire2'], fire3:['m_fire3'], ice2:['m_ice2'], ice3:['m_ice3'], bolt2:['m_bolt2'], bolt3:['m_bolt3'], holy2:['m_holy2'], holy3:['m_holy3'], dark1:['m_dark1'], dark2:['m_dark2'], dark3:['m_dark3'], magicblade:['slash_x','fire_s'], darkblade:['dark_blade','dark_mist'],
   arcanearrow:['magic_circle','magic_arrow'], bomb:['explosion'], heal:['heal'], guard:['barrier'], wall:['barrier'], holyguard:['barrier','pray'], counter:['barrier'], mikiri:['afterimage'],
   hone:['power'], bunshin:['bunshin'], steal:['sparkle'],
 };
@@ -1642,7 +1654,7 @@ function skillFx(id) {
   if (id === 'attack') { const w = mainWeapon(); weaponFx(w ? w.type : null); return; }
   if (!list) return;
   const self = ['heal', 'guard', 'wall', 'holyguard', 'counter', 'mikiri', 'hone', 'bunshin'].includes(id);
-  list.forEach((n, i) => playFx(n, { delay: i * 160, self }));
+  list.forEach((n, i) => playFx(n, { delay: i * 160, self, size: /^m_\w+1$/.test(n) ? .7 : /^m_\w+2$/.test(n) ? 1.15 : /^m_\w+3$/.test(n) ? 1.75 : undefined }));
 }
 function drawMonsterImg(m, t) {
   const A = B.anim || {}, dt = t - (A.t0 || -1e9);

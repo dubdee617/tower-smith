@@ -125,6 +125,8 @@ const sfx = (k, o) => SND.sfx(k, o);
 let SND_INDOOR = false;
 // エフェクト → 効果音
 const FX_SFX = {
+  m_fire1: 'fire1', m_fire2: 'fire3', m_fire3: 'explosion', m_ice1: 'ice', m_ice2: 'ice2', m_ice3: 'icefreeze', m_bolt1: 'shock1', m_bolt2: 'thunder', m_bolt3: 'thunder3',
+  m_holy1: 'holy', m_holy2: 'holy', m_holy3: 'holy', m_dark1: 'dark', m_dark2: 'dark', m_dark3: 'dark',
   slash_h: 'slash', slash_v: 'slash', slash_x: 'slash', flurry: 'slash', iai: 'katana', tsubame: 'katana', jin: 'katana',
   impact: 'hit1', impact_heavy: 'heavy', thrust: 'swing', arrow: 'arrow', magic_arrow: 'magic',
   fire_s: 'fire1', fire_l: 'fire3', explosion: 'explosion', wind: 'firewind', ice_spear: 'ice2', ice_burst: 'icefreeze', thunder: 'thunder3', thunder_ball: 'shock1', paralyze: 'shock2',
