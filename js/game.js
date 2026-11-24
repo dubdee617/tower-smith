@@ -478,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 29'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 30'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1485,7 +1485,7 @@ function win() {
   { const up = { hp: 0, atk: 0, def: 0 }, lv0 = G.lv;
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
     if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
-  if (m.boss) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の主を倒した。上への道が開いた。`; }
+  if (m.boss) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);
   G.jobWins[j] = (G.jobWins[j] || 0) + 1;

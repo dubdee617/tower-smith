@@ -236,6 +236,23 @@ const MON_UP = [
   ['icewolf','氷狼',41,1.0,{beast_pelt:1,ice_shard:1},.66], ['snowman','雪だるまの魔物',41,.95,{ice_shard:1},.72], ['icegolem','アイスゴーレム',43,1.25,{ice_shard:2},.85], ['snowsprite','雪の精',42,.85,{ice_shard:1,spore:1},.7],
   ['polarbear','白熊',44,1.2,{beast_pelt:2,beast_fang:1},.8], ['icebird','氷の鳥',45,1.0,{feather:2,ice_shard:1},.78], ['frozenknight','凍った騎士',46,1.15,{ice_shard:1,ore_iron:2},.82], ['blizzardghost','吹雪の亡霊',47,1.0,{ice_shard:2},.8],
   ['vulture','砂漠ハゲワシ',22,.95,{feather:1,cursed_bone:1},.76], ['cactus','サボテンの魔物',24,1.05,{old_wood:1,spore:1},.72], ['sandspirit','砂の精霊',26,1.05,{raw_gem:1},.78], ['graverobber','盗掘者の亡霊',27,1.0,{cursed_gold:1},.78],
+  // 2026-11-24 追加（1エリア16体に）
+  ['forestthief','森の盗賊ゴブリン',12,.9,{beast_pelt:1,ore_copper:1},.66], ['slug','巨大ナメクジ',13,.95,{spore:1},.64], ['owl','梟の魔物',14,.95,{feather:2},.72], ['stump','切り株の魔物',12,1.05,{old_wood:2},.66],
+  ['mosstortoise','苔むした亀',16,1.2,{hard_shell:1,old_wood:1},.72], ['queenbee','蜂の女王',18,1.1,{hard_shell:1,spore:1},.74], ['kodama','木霊',15,.75,{spore:1},.55], ['scarecrow','枯れ枝の案山子',17,1.0,{old_wood:1,old_cloth:1},.78],
+  ['bandit','砂漠の盗賊',21,.95,{old_cloth:1,ore_copper:2},.78], ['camel','ラクダの魔物',23,1.1,{beast_pelt:2},.78], ['antlion','蟻地獄',24,1.1,{hard_shell:2},.66], ['sandeye','砂嵐の目玉',26,1.0,{raw_gem:1},.72],
+  ['snakeknot','毒蛇の束',25,1.05,{scale:2},.7], ['mirage','蜃気楼の踊り子',27,.95,{cursed_gold:1},.8], ['bonelizard','骨のトカゲ',22,1.0,{cursed_bone:2},.68], ['chesthermit','宝箱ガニ',28,1.15,{hard_shell:1,cursed_gold:1},.7],
+  ['banditchief','山賊の頭',33,1.15,{beast_pelt:1,ore_iron:2},.82], ['lynx','山猫',31,.95,{beast_pelt:1,beast_fang:1},.68], ['boulder','落石の魔物',32,1.1,{rock_core:1,rubble:1},.66], ['eagle','大鷲',34,1.0,{feather:2},.78],
+  ['dwarfghost','ドワーフの亡霊',36,1.0,{ore_iron:2},.76], ['orecentipede','鉱石ムカデ',35,1.1,{ore_iron:1,hard_shell:1},.66], ['thundergoat','雷の山羊',37,1.05,{beast_pelt:1,rock_core:1},.78], ['troll','トロル',38,1.25,{beast_fang:2,rock_core:1},.86],
+  ['snowleopard','雪豹',41,1.0,{beast_pelt:2},.7], ['penguin','ペンギンの戦士',42,.95,{feather:1,ice_shard:1},.74], ['iceslime','氷のスライム',41,.9,{ice_shard:1},.6], ['mammoth','マンモス',45,1.25,{beast_pelt:2,beast_fang:2},.82],
+  ['yukionna','雪女',47,1.05,{ice_shard:2},.8], ['frozentree','凍った大樹',44,1.15,{old_wood:2,ice_shard:1},.85], ['frostfox','霜の狐',43,.95,{beast_pelt:1,ice_shard:1},.7], ['iciclebeast','氷柱の魔物',46,1.1,{ice_shard:2},.82],
+  ['chameleon','カメレオンの魔物',52,1.0,{scale:2},.7], ['parrot','大オウム',51,.9,{feather:3},.76], ['pitcherplants','食虫植物の群れ',53,1.05,{spore:2,old_wood:1},.72], ['crocwarrior','ワニの戦士',55,1.2,{scale:2,beast_fang:1},.82],
+  ['mushsprite','毒キノコの森の精',54,.9,{spore:2},.68], ['leech','巨大ヒル',56,1.0,{scale:1,spore:1},.7], ['jaguarwarrior','ジャガーの戦士',57,1.15,{beast_pelt:2,raw_gem:1},.82], ['woodmask','木の仮面の精霊',58,1.05,{old_wood:2,star_dust:1},.8],
+  ['hawkpriest','鷹の頭の神官',63,1.05,{cursed_gold:1,feather:1},.82], ['tablet','呪いの石板',62,1.1,{rock_core:1,cursed_gold:1},.76], ['chariot','砂の戦車兵',65,1.2,{cursed_bone:2,cursed_gold:1},.82], ['medusa','蛇の髪の女',66,1.1,{scale:2,raw_gem:1},.8],
+  ['goldswarm','金の甲虫の群れ',64,1.0,{cursed_gold:2},.8], ['royalcat','王の猫',61,.95,{cursed_gold:1},.72], ['colossushand','崩れた巨像の手',67,1.25,{rock_core:2},.78], ['sealedbox','封印の箱',68,1.15,{cursed_gold:2,raw_gem:1},.72],
+  ['rockrhino','岩のサイ',73,1.25,{rock_core:2},.8], ['frilllizard','火吹きトカゲ',71,1.0,{scale:1,ember_stone:1},.72], ['canyonbat','峡谷の大コウモリ',72,.95,{feather:1,beast_fang:1},.76], ['stoneeye','石化の目玉',74,1.0,{rock_core:1,raw_gem:1},.68],
+  ['firesprite','炎の精',75,.95,{ember_stone:1},.7], ['obsidian','黒曜石のゴーレム',77,1.3,{rock_core:2,ember_stone:1},.86], ['scorpionking','巨大サソリの王',76,1.2,{hard_shell:3},.74], ['lavasnake','溶岩の蛇',78,1.1,{ember_stone:1,scale:1},.74],
+  ['courtmage','宮廷魔術師の亡霊',92,1.05,{star_dust:2},.8], ['rose','血の色の薔薇',91,1.0,{old_wood:2,spore:2},.74], ['portrait','肖像画の魔物',93,1.0,{cursed_gold:2},.78], ['candleknight','燭台の騎士',94,1.15,{dark_steel:1,ember_stone:1},.82],
+  ['wolfking','黒い狼の王',95,1.25,{beast_pelt:3,dark_steel:1},.82], ['hangingarmor','吊るし鎧',96,1.15,{dark_steel:2},.85], ['jester','道化の人形',97,1.0,{old_cloth:2,star_dust:1},.78], ['shadowhand','影の王の手',98,1.2,{dark_steel:1,star_dust:2},.8],
 ];
 // エリアごとの強さの土台（10階ごと）。11〜20階が1
 const AREA_POW = n => Math.pow(1.42, Math.floor((n - 1) / 10));
@@ -249,6 +266,14 @@ MONSTERS.push(
   { id:'slime',       name:'洞窟スライム', hp:48, atk:8,  def:5, exp:9,  gold:4, drop:{dim_stone:1},             from:3, to:10, size:.58, file:true },
   { id:'wanderarmor', name:'さまよう鎧',   hp:80, atk:15, def:9, exp:20, gold:12, drop:{ore_iron:1, ore_copper:1}, from:6, to:10, size:.8,  file:true },
   { id:'orelizard',   name:'鉱石トカゲ',   hp:64, atk:12, def:6, exp:15, gold:7, drop:{ore_copper:2},            from:4, to:10, size:.66, file:true },
+  { id:'gobarcher',  name:'ゴブリンの弓兵', hp:46, atk:12, def:3, exp:11, gold:8, drop:{ore_copper:1, rat_hide:1}, from:3, to:10, size:.66, file:true },
+  { id:'bonedog',    name:'骨の犬',     hp:40, atk:11, def:2, exp:9,  gold:4, drop:{cursed_bone:2},          from:2, to:10, size:.62, file:true },
+  { id:'larva',      name:'大ムカデの幼虫', hp:56, atk:8, def:5, exp:9, gold:4, drop:{iron_shell:1},          from:4, to:10, size:.58, file:true },
+  { id:'gearbeast',  name:'錆びた歯車の魔物', hp:70, atk:13, def:9, exp:16, gold:10, drop:{ore_iron:1, ore_copper:1}, from:7, to:10, size:.66, file:true },
+  { id:'ratking',    name:'地下ネズミの王', hp:90, atk:14, def:5, exp:22, gold:20, drop:{rat_hide:3},            from:8, to:10, size:.72, file:true },
+  { id:'chainghost', name:'鎖の亡霊',   hp:62, atk:14, def:4, exp:16, gold:9, drop:{cursed_bone:1, dim_stone:1}, from:6, to:10, size:.76, file:true },
+  { id:'pebbleimp',  name:'石つぶて小鬼', hp:44, atk:11, def:4, exp:10, gold:6, drop:{rubble:2},              from:2, to:10, size:.62, file:true },
+  { id:'candle',     name:'ろうそくの魔物', hp:52, atk:13, def:2, exp:12, gold:7, drop:{dim_stone:1},          from:5, to:10, size:.66, file:true },
 );
 for (const m of MONSTERS) if (!m.to) m.to = 10;  // 1〜10階の魔物は10階まで
 // 10階ごとの主
@@ -263,6 +288,19 @@ const BOSSES = { 10: BOSS10, 30: BOSS30,
   80: mkBoss('firedragon', '古い火竜', 80, 1, { ember_stone: 5, scale: 5 }, .97),
   90: mkBoss('elderdragon', '古竜', 90, 1, { star_dust: 6, scale: 6, dark_steel: 2 }, .97),
 };
+// 中ボス（5階ごと。2026-11-24）。階段の前で待っている。主より弱い
+Object.assign(BOSSES, {
+  5:  { id:'goblinboss', name:'ゴブリンの親分', hp:220, atk:17, def:5, exp:70, gold:80, drop:{ore_copper:4, rat_hide:2, dim_stone:1}, boss:true, size:.86, file:true },
+  15: mkBoss('mossserpent', '苔の大蛇', 15, .55, { scale: 3, spore: 2 }, .9),
+  25: mkBoss('scorpionqueen', 'サソリの女王', 25, .55, { hard_shell: 3, raw_gem: 1 }, .9),
+  35: mkBoss('ogrechief', 'オーガの戦士長', 35, .55, { beast_fang: 3, ore_iron: 3 }, .92),
+  45: mkBoss('icewolfking', '氷の狼の王', 45, .55, { beast_pelt: 3, ice_shard: 3 }, .9),
+  55: mkBoss('frogking', '巨大なカエルの王', 55, .55, { spore: 4, raw_gem: 1 }, .9),
+  65: mkBoss('anubis', 'アヌビスの番人', 65, .55, { cursed_gold: 4 }, .92),
+  75: mkBoss('chimera', 'キマイラ', 75, .55, { beast_pelt: 3, ember_stone: 2 }, .92),
+  85: mkBoss('stormroc', '嵐の巨鳥', 85, .55, { feather: 5, star_dust: 2 }, .92),
+  95: mkBoss('blackknightlord', '黒騎士団長', 95, .55, { dark_steel: 4 }, .92),
+});
 const TOP_FLOOR = 90;  // いま登れるいちばん上の階（91〜100階の城は、最後の「鏡」と一緒に作る）
 
 // 道具屋
