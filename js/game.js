@@ -392,9 +392,10 @@ function viewScreen(caption, story) {
 }
 function returnScreen(msg, brought, letter) {
   viewScreen('');
-  say(brought === 'なし' ? 'tired' : 'content', `${msg ? msg + '\n' : ''}「……ふう、戻ったか」\n持ち帰った戦利品: ${brought}${brought === 'なし' ? '' : '\n（ギルドで加工してもらうと、鍛冶に使える）'}`, true);
-  if (letter) log('工房に、お城から手紙が届いていた。「王が会いたいと仰せだ」……町の門の下から、お城へ行けるようになった。', true);
-  buttons([{ t: '町へ', hot: true, f: () => evReady('jenny', .35) ? jennyEvent() : townMap() }]); hud();
+  // セリフ欄には短いことばだけ。持ち帰った物はボタンの上に出す（セリフ欄からはみ出さないように）
+  say(brought === 'なし' ? 'tired' : 'content', `${msg ? msg + '\n' : ''}「……ふう、戻ったか」`, true);
+  if (letter) log('お城から手紙が届いていた。\n町の門の下から、お城へ行けるようになった。');
+  buttons([{ title: `持ち帰った戦利品: ${brought}` }, { t: '町へ', s: brought === 'なし' ? '' : 'ギルドで素材にしてもらおう', hot: true, f: () => evReady('jenny', .35) ? jennyEvent() : townMap() }]); hud();
 }
 // オープニング（2026-11-24 Daichiさんの文章）。bg: 背景の絵 face: 主人公のセリフのときの表情
 const INTRO = [
@@ -416,7 +417,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 13'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 14'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -868,23 +869,24 @@ function act(a) {
   if (c === 4 || c === 5) { F.M[cy + ddy][cx + ddx] = 0; reveal(F, cx + ddx, cy + ddy); log(c === 5 ? '重い鉄の扉を押し開けた。' : '扉を開けた。'); dungeonUI(); return; }
   if (c === 2 || c === 3) { if (o === 0) stairs(); else log('階段は正面から使う。'); return; }
   if (c === 1) { fx.shake = 3; sfx('hit1', { vol: .35, max: .3 }); log('壁だ。'); return; }
-  if (c === 6) { fx.shake = 2; log('木が立ちふさがっている。'); return; }
+  if (c === 6) { fx.shake = 2; const ch = F.chests.find(q => q.x === cx + ddx && q.y === cy + ddy); log(ch ? (ch.open ? '開けた宝箱だ。' : '宝箱がある。開けてみよう。') : propAt(cx + ddx, cy + ddy) ? 'じゃまな物がある。' : '木が立ちふさがっている。'); return; }
   T.x += ddx; T.y += ddy; busy = true; steps++; stepSfx(floorNo);
   reveal(F, cx + ddx, cy + ddy);
   setTimeout(afterStep, 200);
 }
-function chestHere() { return F && F.chests.find(ch => !ch.open && ch.x === Math.floor(T.x) && ch.y === Math.floor(T.y)); }
+// 宝箱は通れない。正面にあるときに開けられる
+function chestAhead(any) { if (!F) return null; const [fdx, fdy] = DIRS[dir], x = Math.floor(T.x) + fdx, y = Math.floor(T.y) + fdy; return F.chests.find(ch => (any || !ch.open) && ch.x === x && ch.y === y); }
+const chestHere = () => chestAhead();
 function facingNote() {
   const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
   if (c === 2) log(floorNo === 10 && !G.bossDown ? '上り階段。上から重い足音がする……。' : '上り階段がある。');
   else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。' : '下り階段がある。');
   else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
-  else if (c === 6) { const p = propAhead(); if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
+  else if (c === 6) { const ch = chestAhead(true), p = propAhead(); if (ch) log(ch.open ? '開けた宝箱がある。' : ch.gold ? '豪華な宝箱がある！' : '宝箱がある。'); else if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
 }
 function afterStep() {
   if (mode !== 'dungeon') return;
-  if (chestHere()) log('宝箱がある。');
-  else if (steps > 4 && R() < (TODAY.enc || .075) * (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
+  if (steps > 4 && R() < (TODAY.enc || .075) * (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
   else if (steps > 6 && !F.met && R() < .025) { const who = meetCandidates(); if (who.length) { F.met = true; meetNpc(pick(who)); return; } }
   facingNote(); dungeonUI();
 }
@@ -968,6 +970,7 @@ function allyTick() {
   log(a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……もう行かなきゃ。……また、会えるよね？」');
 }
 // ---------- 調べる（床の小物） ----------
+const propAt = (x, y) => (F.props || []).find(p => p.cx === x && p.cy === y);
 function propAhead() { const [fdx, fdy] = DIRS[dir], x = Math.floor(T.x) + fdx, y = Math.floor(T.y) + fdy; return (F.props || []).find(p => p.cx === x && p.cy === y); }
 function rollLoot(table) { const sum = table.reduce((s, r) => s + r[2], 0); let q = R() * sum; for (const r of table) if ((q -= r[2]) < 0) return r; return table[table.length - 1]; }
 function giveLoot([kind, v]) {
@@ -1113,6 +1116,13 @@ function startBattle(boss) {
   if (has('p_first')) { const d = dmgTo(m, atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (m.hp <= 0) { win(); return; } }
   battleUI(); hud();
 }
+// レベルアップ: 画面全体に大きく出す（押すか2.4秒で消える）
+function levelUpFx(lv, up) {
+  let d = $('lvup'); if (!d) { d = document.createElement('div'); d.id = 'lvup'; document.body.appendChild(d); d.onclick = () => d.classList.remove('on'); }
+  d.innerHTML = `<div><b>LEVEL UP!</b><em>Lv ${lv}</em><span>最大HP +${up.hp}　攻 +${up.atk}　守 +${up.def}</span><small>${job()}の伸び方</small></div>`;
+  d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
+  clearTimeout(levelUpFx.t); levelUpFx.t = setTimeout(() => d.classList.remove('on'), 2400);
+}
 // 遭遇の演出: 画面全体が黄色く光る → 揺れる →「遭遇！」の帯と魔物の名前。少しの間ボタンは押せない
 function encounterFx(m) {
   const fl = $('flash'); if (fl) { fl.className = ''; void fl.offsetWidth; fl.className = m.boss ? 'on boss' : 'on'; }
@@ -1208,7 +1218,9 @@ function win() {
   if (G.meal === 'broth') { G.hp = Math.min(G.mhp, G.hp + 6); }
   let msg = `${m.name}を倒した！ 経験値${m.exp}、${m.gold}G。素材: ${matText(m.drop)}`;
   if (G.exp >= expNeed()) setTimeout(() => playFx('levelup', { self: true, size: 1.2 }), 500);
-  while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; msg += `\nレベル${G.lv}になった！（${job()}の伸び方）`; }
+  { const up = { hp: 0, atk: 0, def: 0 }, lv0 = G.lv;
+    while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
+    if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 650); } }
   if (m.boss) { G.bossDown = true; msg += '\n10階の主を倒した。上への道が開いた。'; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);

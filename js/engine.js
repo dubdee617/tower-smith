@@ -165,8 +165,8 @@ function genFloor(floor, seed) {
     if ([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => { const X = x + a, Y = y + b; return X >= best.x && X < best.x + best.w && Y >= best.y && Y < best.y + best.h; })) M[y][x] = 5;
   }
   // 宝箱: 部屋の中にいくつか（最初の部屋以外）
+  // 宝箱は、床の小物と同じく部屋のふち（外側が壁）に置いて、通れないようにする（M=6）。下で置く
   const chests = [];
-  for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35)) { const x = r.x + Math.floor(R() * r.w), y = r.y + Math.floor(R() * r.h); if (M[y][x] === 0) chests.push({ x, y, gold: R() < .15, open: false }); }
   // 壁の飾りとたいまつ
   const face = {}, torches = [];
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
@@ -201,16 +201,25 @@ function genFloor(floor, seed) {
   }
   // 床の小物: 部屋のふち（外側が壁で、出入り口でないマス）に置く。通れなくなる（M=6）。調べられる
   const props = [];
+  const used = new Set(); used.add(sx + ',' + sy); used.add(up[2] + ',' + up[3]);
+  // 部屋のふちのマス（外側がすべて壁で、となりに置いた物がない）を探す
+  const edgeCell = r => {
+    for (let tries = 0; tries < 14; tries++) {
+      const x = r.x + Math.floor(R() * r.w), y = r.y + Math.floor(R() * r.h); if (used.has(x + ',' + y) || M[y][x] !== 0) continue;
+      const edgeDirs = [[1,0],[-1,0],[0,1],[0,-1]].filter(([a, b]) => { const X = x + a, Y = y + b; return !(X >= r.x && X < r.x + r.w && Y >= r.y && Y < r.y + r.h); });
+      if (!edgeDirs.length || edgeDirs.some(([a, b]) => M[y + b][x + a] !== 1)) continue;
+      if ([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => used.has((x + a) + ',' + (y + b)))) continue;
+      return [x, y];
+    }
+    return null;
+  };
+  for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35)) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
   if (typeof PROPS !== 'undefined') {
     const table = FLOOR_PROPS_STONE.concat(floor >= 6 ? FLOOR_PROPS_DEEP : []), tw = table.reduce((s, p) => s + p[2], 0);
-    const used = new Set(chests.map(c => c.x + ',' + c.y)); used.add(sx + ',' + sy); used.add(up[2] + ',' + up[3]);
     for (const r of rooms) {
       const n = (r.w >= 3 && r.h >= 3 ? 2 : 1) * (R() < .75 ? 1 : 0);
-      for (let k = 0, tries = 0; k < n && tries < 12; tries++) {
-        const x = r.x + Math.floor(R() * r.w), y = r.y + Math.floor(R() * r.h); if (used.has(x + ',' + y) || M[y][x] !== 0) continue;
-        const edgeDirs = [[1,0],[-1,0],[0,1],[0,-1]].filter(([a, b]) => { const X = x + a, Y = y + b; return !(X >= r.x && X < r.x + r.w && Y >= r.y && Y < r.y + r.h); });
-        if (!edgeDirs.length || edgeDirs.some(([a, b]) => M[y + b][x + a] !== 1)) continue;  // 部屋のふちで、外側がすべて壁
-        if ([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => used.has((x + a) + ',' + (y + b)))) continue;
+      for (let k = 0, tries = 0; k < n && tries < 4; tries++) {
+        const c = edgeCell(r); if (!c) continue; const [x, y] = c;
         let q = R() * tw, pick = table[0]; for (const p of table) if ((q -= p[2]) < 0) { pick = p; break; }
         props.push({ key: pick[0], size: pick[1], x: x + .5, y: y + .5, cx: x, cy: y }); M[y][x] = 6; used.add(x + ',' + y); k++;
       }

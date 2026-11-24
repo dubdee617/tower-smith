@@ -112,6 +112,16 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
 .enc.boss b{color:#ff6a4a;text-shadow:0 0 12px rgba(255,60,30,.9)}
 @keyframes encIn{0%{opacity:0;transform:translateX(-60px) scaleY(.4)}15%{opacity:1;transform:none}75%{opacity:1}100%{opacity:0;transform:translateX(40px)}}
 .ctl.wait{pointer-events:none;opacity:.55;transition:opacity .2s}
+/* レベルアップ */
+#lvup{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 45%,rgba(90,55,10,.85),rgba(12,8,4,.92) 70%);transition:opacity .35s}
+#lvup.on{opacity:1;pointer-events:auto}
+#lvup div{text-align:center;display:flex;flex-direction:column;gap:6px}
+#lvup b{font-size:44px;letter-spacing:.08em;color:#ffe27a;text-shadow:0 0 14px rgba(255,190,60,.9),0 3px 0 #6a3a00}
+#lvup.on b{animation:lvPop .6s cubic-bezier(.2,1.6,.4,1)}
+#lvup em{font-style:normal;font-size:26px;color:#fff3d6;font-weight:700}
+#lvup span{font-size:17px;color:#fff3d6}
+#lvup small{font-size:13px;color:var(--dim)}
+@keyframes lvPop{from{transform:scale(.3);opacity:0}}
 /* 話している人の顔: セリフ欄の外、枠なし */
 #spk{position:absolute;bottom:0;height:118px;width:auto;z-index:6;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9));display:none}
 #spk.on{display:block;animation:spkIn .3s ease-out}
