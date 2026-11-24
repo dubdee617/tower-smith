@@ -478,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 34'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 35'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1162,6 +1162,11 @@ function searchProp() {
     const gold = 30 + floorNo * 8, raw = pick(['ore_iron', 'raw_gem', 'dim_stone']); G.gold += gold; add(G.carry, raw, 1);
     p.key = p.key === 'f_mimic' ? 'chest_open' : 'chest_gold_open'; p.size = .42;
     msg = `ガブッ！ ${name}にかみつかれた！ ${d}のダメージ。\nミミックは中身を吐き出して逃げていった。${gold}Gと${NAMES[raw]}を手に入れた。`;
+  }
+  else if (grp === 'view') { p.searched = false; msg = PROP_LOOK[p.key] || `${name}がある。`; }
+  else if (grp === 'berry') {
+    if (R() < .5) { G.items.herb++; msg = '茂みの中に、薬草がまじっていた。薬草を手に入れた。'; }
+    else msg = '赤い木の実がなっている。……すっぱい。何もなかった。';
   }
   else if (grp === 'mushroom') {
     if (R() < .6) { G.items.herb++; msg = 'キノコの根元に、薬草が生えていた。'; }

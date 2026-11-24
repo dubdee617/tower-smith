@@ -462,9 +462,25 @@ const PROP_INFO = {
   f_rubble:['がれき','rock'], t_rock1:['岩','rock'], t_minecart:['トロッコ','rock'], t_pick_rock:['ツルハシの刺さった岩','rock'], t_crystal:['結晶','crystal'], u_cairn:['積み石','rock'], u_stalag:['石筍','rock'],
   f_skel_sit:['白骨化した戦士','bone'], f_skel_prone:['倒れた戦士の骨','bone'], f_skel_shield:['盾を抱えた骨','bone'], t_bones:['大きな骨','bone'], t_bullskull:['獣の頭骨','bone'],
   f_skulls:['頭骨の山','bone'], f_ribcage:['あばら骨','bone'], f_sword_grave:['剣の墓','bone'],
-  f_feather:['飾りのついた羽根','feather'], f_mimic:['ミミック','mimic'], f_mimic_gold:['豪華なミミック','mimic'], f_pit:['落とし穴','pit'],
+  f_feather:['飾りのついた羽根','feather'], f_mimic:['ミミック','mimic'], f_mimic_gold:['豪華なミミック','mimic'],
   t_planks:['壊れた板','wood'], t_wagon:['壊れた荷車','wood'], u_mushroom:['キノコ','mushroom'],
   f_altar:['祭壇','altar'], f_brazier_skull:['頭骨の台','altar'], f_rune_stone:['紋様の石','altar'],
+  // ほかのエリアの小物（2026-11-24）。view は見るだけ（何も取れない）
+  u_boulder:['大きな岩','rock'], t_rock2:['岩','rock'], t_rock3:['苔むした岩','rock'], u_mossrock:['苔むした岩','rock'], t_slab:['割れた岩','rock'], t_ore_rock:['鉱石まじりの岩','rock'],
+  t_spire1:['尖った岩','view'], t_spire2:['そびえる岩','view'], u_spires:['岩の柱','view'],
+  u_grass:['草むら','view'], u_flowers:['白い花','view'], t_bush:['茂み','view'], t_lavender:['紫の花','view'], t_bramble:['いばら','view'], t_wheat:['枯れ草','view'], u_berries:['木の実の茂み','berry'],
+  u_mossarch:['苔むした岩のアーチ','view'], t_arch:['岩のアーチ','view'], t_ruinarch:['柱のアーチ','view'], t_colonnade:['並んだ柱','view'], t_ruinwall:['崩れた壁','view'], t_ruinwindow:['窓の残った壁','view'], u_wall:['崩れた壁','rock'],
+  t_pillars:['折れた柱','rock'], u_pillar:['倒れた柱','rock'], t_rune1:['渦巻きの石','altar'], t_rune2:['渦巻きの石柱','altar'], t_head:['石像の頭','altar'],
+  t_deadtree:['枯れ木','wood'], t_deadroots:['枯れた根','wood'], t_log:['苔むした丸太','wood'],
+  u_crystal:['氷の結晶','crystal'],
+};
+// 見るだけの小物の、ひとこと
+const PROP_LOOK = {
+  t_spire1:'鋭くとがった岩が空を向いている。', t_spire2:'見上げるほどの岩だ。登れそうにはない。', u_spires:'風に削られた岩の柱が並んでいる。',
+  u_grass:'背の高い草が揺れている。', u_flowers:'小さな白い花が咲いている。こんな所にも。', t_bush:'葉の茂った低い木だ。', t_lavender:'紫の花から、いい香りがする。',
+  t_bramble:'とげだらけのいばらだ。手を出すのはやめておこう。', t_wheat:'乾いた草が、かさかさと鳴った。',
+  u_mossarch:'苔に覆われた岩のアーチ。昔からここにあるようだ。', t_arch:'岩が自然にアーチを作っている。', t_ruinarch:'柱だけが残った門だ。',
+  t_colonnade:'柱が並んでいる。昔はここに建物があったのだろう。', t_ruinwall:'崩れかけた石壁だ。', t_ruinwindow:'窓の形だけが残った壁だ。向こうには何もない。',
 };
 // グループごとの出る物: [種類, 中身, 重み]。種類 raw=戦利品 item=道具 gold=お金 none=何もない
 const SEARCH_LOOT = {
@@ -473,6 +489,5 @@ const SEARCH_LOOT = {
   crystal: [['raw','dim_stone',60], ['raw','raw_gem',15], ['none',0,25]],
   bone:    [['raw','cursed_bone',45], ['gold',15,15], ['item','herb',10], ['raw','ore_iron',5], ['none',0,25]],
   wood:    [['raw','log',55], ['raw','ore_copper',10], ['none',0,35]],
-  pit:     [['raw','ore_copper',20], ['gold',20,15], ['raw','cursed_bone',15], ['none',0,50]],
   altar:   [['raw','dim_stone',35], ['gold',30,20], ['raw','raw_gem',10], ['none',0,35]],
 };

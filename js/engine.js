@@ -32,7 +32,7 @@ const WALL_SET_B = ['w_banner_skull','w_banner_eye','w_banner_torn','w_skull_hor
 // 床の小物: [名前, 大きさ(マスの高さに対する割合), 重み]。1〜10階（石のダンジョン）
 const FLOOR_PROPS_STONE = [
   ['f_barrels',.42,8], ['f_crates',.42,8], ['f_sacks',.32,7], ['f_pots',.36,7], ['f_rubble',.28,6], ['f_scatter',.2,5],
-  ['f_skel_sit',.38,5], ['f_skel_prone',.26,4], ['f_skel_shield',.32,4], ['f_feather',.16,1.2], ['f_mimic',.4,1.2], ['f_mimic_gold',.4,.5], ['f_pit',.24,3],
+  ['f_skel_sit',.38,5], ['f_skel_prone',.26,4], ['f_skel_shield',.32,4], ['f_feather',.16,1.2], ['f_mimic',.4,1.2], ['f_mimic_gold',.4,.5],
   ['t_rock1',.4,4], ['t_minecart',.4,3], ['t_pick_rock',.42,3], ['t_crystal',.48,2], ['t_bones',.28,3], ['t_bullskull',.28,2], ['t_planks',.32,3], ['t_wagon',.44,2],
   ['u_mushroom',.34,3], ['u_cairn',.48,2], ['u_stalag',.48,2],
 ];
@@ -59,6 +59,19 @@ const AREA_PROPS = {
   canyon:  [['溶岩の噴き出す岩', .42, 'crystal'], ['骨', .28, 'bone'], ['尖った岩', .44, 'rock'], ['焦げた木', .36, 'wood']],
   glacier: [['氷の結晶の柱', .56, 'crystal'], ['雲のかたまり', .3, 'box'], ['天の祭壇', .5, 'altar'], ['凍った羽根', .34, 'feather']],
   castle:  [['燭台', .5, 'box'], ['甲冑の飾り', .56, 'bone'], ['玉座の椅子', .5, 'altar'], ['本の積まれた机', .4, 'box']],
+};
+// エリアに混ぜる小物（Background/miscs の絵）: [絵, 大きさ, 重み]。地面に貼る平らな絵（池・溶岩・落とし穴など）は浮いて見えるので使わない
+const AREA_EXTRA = {
+  stone:   [['u_boulder',.4,3], ['t_rock2',.4,3]],
+  forest:  [['u_grass',.24,6], ['u_flowers',.24,5], ['u_berries',.3,5], ['t_bush',.34,5], ['t_lavender',.32,3], ['u_mossrock',.38,5], ['t_rock3',.4,4], ['u_mossarch',.52,2], ['t_log',.28,3]],
+  desert:  [['t_deadtree',.52,5], ['t_deadroots',.3,5], ['t_bones',.28,5], ['t_bullskull',.28,4], ['t_wheat',.32,4], ['u_stalag',.46,4], ['t_rune1',.5,2], ['t_pillars',.48,3], ['u_cairn',.46,3], ['t_head',.34,2]],
+  mountain:[['t_rock1',.4,5], ['t_rock2',.4,4], ['t_spire1',.48,4], ['t_spire2',.52,4], ['t_slab',.34,4], ['u_spires',.5,3], ['t_ore_rock',.32,4], ['t_pick_rock',.42,3], ['t_minecart',.4,2], ['t_planks',.3,3], ['t_wagon',.42,2], ['u_boulder',.4,4]],
+  snow:    [['u_crystal',.46,5], ['t_deadtree',.52,4], ['u_boulder',.4,4], ['t_rock1',.4,4], ['u_cairn',.46,3], ['t_spire1',.48,3]],
+  jungle:  [['t_bush',.34,6], ['u_berries',.3,5], ['u_grass',.26,6], ['u_flowers',.24,4], ['t_lavender',.34,4], ['t_bramble',.34,4], ['u_mossrock',.38,4], ['t_rock3',.4,3], ['u_mossarch',.52,3], ['t_ruinwall',.44,3], ['t_ruinwindow',.56,2], ['t_head',.34,3], ['t_log',.28,3]],
+  ruins:   [['t_ruinwall',.44,5], ['t_ruinwindow',.56,4], ['t_pillars',.5,5], ['t_colonnade',.56,3], ['t_ruinarch',.6,3], ['t_arch',.5,3], ['u_pillar',.48,4], ['u_wall',.44,4], ['t_rune1',.52,3], ['t_rune2',.56,3], ['t_head',.34,3], ['u_stalag',.46,2], ['t_bullskull',.28,2]],
+  canyon:  [['t_spire1',.48,5], ['t_spire2',.52,5], ['t_rock2',.4,4], ['u_spires',.5,4], ['u_stalag',.46,3], ['t_deadtree',.5,3], ['t_deadroots',.3,3], ['t_bones',.28,4], ['t_bullskull',.28,3], ['u_boulder',.4,3]],
+  glacier: [['u_crystal',.48,6], ['t_crystal',.46,4], ['t_spire2',.5,2], ['u_cairn',.46,2]],
+  castle:  [['f_barrels',.42,3], ['f_crates',.42,3], ['f_sacks',.32,2], ['f_pots',.36,3], ['u_pillar',.48,4], ['t_pillars',.5,3], ['f_skel_sit',.38,2], ['f_sword_grave',.5,2], ['f_rune_stone',.58,2], ['f_altar',.44,2]],
 };
 // 床から天井まで届く大きな木の幹（古い森）
 const AREA_TRUNKS = { forest: 4 };
@@ -254,7 +267,7 @@ function genFloor(floor, seed) {
   for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35)) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
   if (typeof PROPS !== 'undefined') {
     const own = (AREA_PROPS[area] || []).map((p, k) => [`${area}_p${k + 1}`, p[1], area === 'stone' ? 6 : 10]);
-    const table = area === 'stone' ? own.concat(FLOOR_PROPS_STONE, floor >= 6 ? FLOOR_PROPS_DEEP : []) : own, tw = table.reduce((s, p) => s + p[2], 0);
+    const table = (area === 'stone' ? own.concat(FLOOR_PROPS_STONE, floor >= 6 ? FLOOR_PROPS_DEEP : []) : own).concat(AREA_EXTRA[area] || []), tw = table.reduce((s, p) => s + p[2], 0);
     // 古い森: 部屋のふちに大きな木の幹を立てる（天井まで届く）。小物は少しだけ
     const nt = AREA_TRUNKS[area] || 0;
     if (nt) for (const r of rooms) {
