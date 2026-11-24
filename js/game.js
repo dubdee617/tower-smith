@@ -525,7 +525,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 54'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 55'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1698,6 +1698,7 @@ function drawFx() {
   fxList = fxList.filter(e => t - e.t0 < e.dur);
   for (const e of fxList) {
     const k = (t - e.t0) / e.dur; if (k < 0) continue;
+    if (e.code) { ctx.save(); e.code(k); ctx.restore(); continue; }  // コードで描くエフェクト
     const base = VH * .55 * e.size, w = base * e.img.width / Math.max(e.img.width, e.img.height), h = base * e.img.height / Math.max(e.img.width, e.img.height);
     let s = 1, a = 1, x = e.x, y = e.y;
     if (e.mv === 'slash') { s = .75 + k * .45; a = k < .2 ? k / .2 : 1 - (k - .2) / .8; }
@@ -1739,8 +1740,63 @@ const SKILL_FX = {
   hone:['power'], bunshin:['bunshin'], steal:['sparkle'],
 };
 const WEAPON_FX = { sword:'slash_h', katana:'iai', axe:'impact_heavy', greatsword:'slash_v', hammer:'impact_heavy', dagger:'thrust', bow:'arrow', book:'magic_arrow', staff:'impact' };
+// ---------- 武器の強さで足すエフェクト（コードで描く） ----------
+// 段階: 銅・骨・魔石=1、鉄=2、銀=3、ミスリル=4、オリハルコン・竜=5。金床の+2ごとに1段上がる
+const W_COLOR = { copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
+function weaponTier(w) {
+  if (!w) return { tier: 0, c: '#ffffff' };
+  const mat = Object.keys(W_COLOR).find(m => (w.id || '').startsWith(m)) || 'copper', base = { copper: 1, bone: 1, stone: 1, iron: 2, silver: 3, mithril: 4, orichalcum: 5, dragon: 5 }[mat];
+  const plus = +(((w.name || '').match(/\+(\d+)/) || [])[1] || 0);
+  return { tier: Math.min(5, base + Math.floor(plus / 2)), c: W_COLOR[mat] };
+}
+function codeFx(dl, dur, fn) { fxList.push({ code: fn, t0: performance.now() + dl, dur }); }
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+// 光る弧（斬る武器）
+function fxArc(dl, c, w, rot, r0) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .5, r = r0 || VH * .32;
+  codeFx(dl, 330, k => {
+    const sweep = Math.min(1, k / .45), a = k < .45 ? 1 : 1 - (k - .45) / .55, a0 = rot - 1.1, a1 = a0 + 2.2 * easeOut(sweep);
+    ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    for (const [lw, al] of [[w * 3, .18], [w * 1.6, .35], [w, .9]]) { ctx.globalAlpha = a * al; ctx.strokeStyle = lw === w ? '#ffffff' : c; ctx.lineWidth = lw; ctx.beginPath(); ctx.arc(x, y, r, a0, a1); ctx.stroke(); }
+  });
+}
+// 広がる輪（打つ武器・衝撃）
+function fxRing(dl, c, size, w) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .6;
+  codeFx(dl, 480, k => { const e = easeOut(k); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * .85; ctx.strokeStyle = c; ctx.lineWidth = (w || 4) * (1 - k * .6);
+    ctx.beginPath(); ctx.ellipse(x, y, VH * size * e, VH * size * e * .42, 0, 0, 7); ctx.stroke(); });
+}
+// 放射する光の筋
+function fxRays(dl, c, n, len) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .5, off = R() * 6;
+  codeFx(dl, 420, k => { const e = easeOut(k); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * .8; ctx.strokeStyle = c; ctx.lineWidth = 2;
+    for (let i = 0; i < n; i++) { const a = off + i / n * Math.PI * 2, r1 = VH * .06 + VH * len * e * .4, r2 = VH * .08 + VH * len * e; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r1, y + Math.sin(a) * r1); ctx.lineTo(x + Math.cos(a) * r2, y + Math.sin(a) * r2); ctx.stroke(); } });
+}
+// 画面全体の色の光
+function fxTint(dl, c, al) { codeFx(dl, 260, k => { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * al; ctx.fillStyle = c; ctx.fillRect(0, 0, VW, VH); }); }
+// 火花（粒）
+function fxSparks(dl, c, n) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .52;
+  for (let i = 0; i < n; i++) { const a = R() * Math.PI * 2, sp = 60 + R() * 160; fxParts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 40, c, t0: performance.now() + dl, life: 300 + R() * 500, r: 1 + R() * 1.6, add: true }); }
+}
+// 武器の段階に合わせて、上に重ねる
+function weaponTierFx(type, w) {
+  const { tier, c } = weaponTier(w); if (tier < 2) return;
+  const slash = ['sword', 'katana', 'greatsword', 'dagger', 'axe'].includes(type), hit = { katana: 200, greatsword: 140, bow: 270, book: 180 }[type] || 0;
+  // 段階2（鉄）: 色の光る筋と火花
+  if (slash) fxArc(hit, c, type === 'greatsword' || type === 'axe' ? 5 : 3, type === 'katana' ? 0 : R() < .5 ? -.6 : .6 + Math.PI);
+  else fxRing(hit, c, .28, 3);
+  fxSparks(hit, c, 10 + tier * 6);
+  // 段階3（銀）: 衝撃の輪
+  if (tier >= 3) fxRing(hit + 40, c, .4, 4);
+  // 段階4（ミスリル）: 光の筋が放射し、二の太刀の残像
+  if (tier >= 4) { fxRays(hit + 60, c, 10, .5); if (slash) fxArc(hit + 120, '#ffffff', 2, R() * Math.PI * 2, VH * .26); }
+  // 段階5（オリハルコン・竜）: 画面が武器の色に光り、大きく揺れる
+  if (tier >= 5) { fxTint(hit, c, .35); fxRing(hit + 80, '#ffffff', .6, 6); setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); }, hit); }
+}
 // ふつうの攻撃: 武器の種類ごとに、絵の重ね方・大きさ・揺れで手ごたえを変える
 function weaponFx(type) {
+  weaponTierFx(type, mainWeapon());
   const shake = (n, d) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n); }, d || 0);
   switch (type) {
     case 'sword': playFx(R() < .5 ? 'slash_h' : 'slash_v', { size: 1 }); shake(3); break;
