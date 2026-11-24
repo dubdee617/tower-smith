@@ -412,7 +412,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 7'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 8'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 function intro(i) {
   viewScreen('', true);
@@ -678,18 +678,28 @@ function jobList(back) {
   L.push({ t: '戻る', f: back });
   buttons(L, 'three small'); jobScene(cur); log('熟練度は、その武器を持って勝つと上がる。', true);
 }
-function shop() {
-  const L = [{ title: '売る（自分で打った物も売れる）' }];
+// 武具屋: まず「買う／売る／話す／外に出る」。押してから、それぞれの一覧を出す
+function shop(msg) {
+  buttons([{ t: '買う', s: '自分で打つより高い', hot: true, f: () => shopBuy() }, { t: '売る', s: G.gear.length ? `持ち物${G.gear.length}個` : '売る物がない', f: () => shopSell() },
+    talkBtn('jenny', () => inside('weapon', byeLine('jenny'))), leave]);
+  if (msg) log(msg, true);
+}
+function shopSell(msg) {
+  const L = [{ title: `売る（手持ち ${G.gold}G）` }];
   if (!G.gear.length) L.push({ t: '売る物がない', off: true, f: () => {} });
   for (const g of G.gear) {
     const used = [G.equip.r, G.equip.l, G.equip.armor, G.equip.tool].includes(g.uid); const rec = RECIPES.find(r => r.id === g.id); const p = Math.floor((rec ? rec.price : 10) * (perk('jenny') ? 1.25 : 1));
-    L.push({ t: `${g.name}`, s: used ? '装備中' : `${p}Gで売る`, off: used, f: () => { G.gold += p; G.gear = G.gear.filter(x => x !== g); save(); log(`ジェニー「${g.name}、${p}Gね。……もっと高く売れるのに」`, true); shop(); } });
+    L.push({ t: `${g.name}`, s: used ? '装備中' : `${p}Gで売る`, off: used, f: () => { G.gold += p; G.gear = G.gear.filter(x => x !== g); save(); shopSell(`ジェニー「${g.name}、${p}Gね。……もっと高く売れるのに」`); } });
   }
-  L.push({ title: '買う（自分で打つより高い）' });
+  L.push({ t: '戻る', f: () => shop() });
+  buttons(L); log(msg || 'ジェニー「何を売るの？ 自分で打ったのも買い取るわよ」', true);
+}
+function shopBuy(msg) {
+  const L = [{ title: `買う（手持ち ${G.gold}G）` }];
   for (const id of SHOP) { const r = RECIPES.find(x => x.id === id), p = Math.floor(r.price * 1.8);
-    L.push({ t: r.name, s: `${p}G`, off: G.gold < p, f: () => { G.gold -= p; G.gear.push(newGear(r)); save(); log(`${r.name}を買った。`, true); shop(); } }); }
-  L.push(talkBtn('jenny', () => inside('weapon', byeLine('jenny'))), leave);
-  buttons(L);
+    L.push({ t: r.name, s: `${p}G`, off: G.gold < p, f: () => { G.gold -= p; G.gear.push(newGear(r)); save(); shopBuy(`${r.name}を買った。\nジェニー「毎度。……あんたが打った方が、いい物なんだけどね」`); } }); }
+  L.push({ t: '戻る', f: () => shop() });
+  buttons(L); log(msg || 'ジェニー「うちの品よ。自分で打つより高いけど、急ぎならね」', true);
 }
 function itemShop(msg) {
   const L = Object.entries(ITEMS).map(([k, it]) => ({ t: `${it.name}<small>${it.price}G・持${G.items[k] || 0}</small>`, s: it.short, off: G.gold < it.price, f: () => { G.gold -= it.price; G.items[k] = (G.items[k] || 0) + 1; save(); itemShop(`${it.name}を買った。${it.desc}。`); } }));
@@ -751,15 +761,28 @@ function turnIn() {
   npcFig('craft');
   if (evReady('ria', .4)) buttons([{ t: '次へ', hot: true, f: riaEvent }]);
 }
+// ギルド: まず「持ち込む／素材を売る／素材を買う／話す／到達記録／外に出る」
 function guild(msg, face) {
-  const rawN = Object.values(G.raw).reduce((a, b) => a + b, 0);
-  const L = [{ title: '持ち込む（戦利品→素材＋報酬）' }, { t: '持ち込む', s: rawN ? `戦利品${rawN}個→素材＋報酬` : '戦利品なし', hot: rawN > 0, off: !rawN, f: turnIn }, { t: '到達記録', s: `あなた ${G.maxFloor}階`, f: () => log(`最高到達: 近衛兵長ギャバン 86階／あなた ${G.maxFloor}階${G.bossDown ? '（10階の主を倒した）' : ''}`, true) }, { title: '売る（工房の素材）' }];
+  const rawN = Object.values(G.raw).reduce((a, b) => a + b, 0), have = Object.values(G.store).reduce((a, b) => a + b, 0);
+  buttons([{ t: '持ち込む', s: rawN ? `戦利品${rawN}個→素材＋報酬` : '戦利品なし', hot: rawN > 0, off: !rawN, f: turnIn },
+    { t: '素材を売る', s: have ? `工房の素材${have}個` : '素材がない', f: () => guildSell() },
+    { t: '素材を買う', s: '値上がり中', f: () => guildBuy() },
+    { t: '到達記録', s: `あなた ${G.maxFloor}階`, f: () => log(`最高到達: 近衛兵長ギャバン 86階／あなた ${G.maxFloor}階${G.bossDown ? '（10階の主を倒した）' : ''}`, true) },
+    talkBtn('ria', () => inside('guild', byeLine('ria'))), leave]);
+  if (msg) { if (face) say(face, msg, true); else log(msg, true); }
+}
+function guildSell(msg) {
+  const L = [{ title: `素材を売る（工房の素材）` }];
   if (!Object.values(G.store).some(n => n > 0)) L.push({ t: '売る素材がない', off: true, f: () => {} });
-  for (const [k, n] of Object.entries(G.store)) if (n > 0) L.push({ t: `${MATS[k]}を1つ売る`, s: `${MAT_PRICE[k]}G（${n}個）`, f: () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guild(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); } });
-  L.push({ title: '買う（素材・値上がり中）' });
-  for (const [k, p] of Object.entries(MAT_PRICE)) { const bp = p * 3; L.push({ t: `${MATS[k]}を1つ買う`, s: `${bp}G`, off: G.gold < bp, f: () => { G.gold -= bp; add(G.store, k, 1); save(); guild(`${MATS[k]}を${bp}Gで買った。\n「……高い。だから自分で取りに行くんだ」`, 'angry'); } }); }
-  L.push(talkBtn('ria', () => inside('guild', byeLine('ria'))), leave);
-  buttons(L); if (msg) { if (face) say(face, msg, true); else log(msg, true); }
+  for (const [k, n] of Object.entries(G.store)) if (n > 0) L.push({ t: `${MATS[k]}を1つ売る`, s: `${MAT_PRICE[k]}G（${n}個）`, f: () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); } });
+  L.push({ t: '戻る', f: () => guild() });
+  buttons(L); log(msg || 'リア「工房の素材を買い取ります。1つずつどうぞ」', true);
+}
+function guildBuy(msg, face) {
+  const L = [{ title: `素材を買う（手持ち ${G.gold}G）` }];
+  for (const [k, p] of Object.entries(MAT_PRICE)) { const bp = p * 3; L.push({ t: `${MATS[k]}を1つ買う`, s: `${bp}G`, off: G.gold < bp, f: () => { G.gold -= bp; add(G.store, k, 1); save(); guildBuy(`${MATS[k]}を${bp}Gで買った。\n「……高い。だから自分で取りに行くんだ」`, 'angry'); } }); }
+  L.push({ t: '戻る', f: () => guild() });
+  buttons(L); if (msg) { if (face) say(face, msg, true); else log(msg, true); } else log('リア「塔の素材は値上がりしていて……。すみません」', true);
 }
 // タイトルの設定: 音とデータ消去（町の地図から移した）
 function settings() {
