@@ -5,14 +5,29 @@
     [/^(売る|買う)/, 'coin'], [/^話す/, 'talk'], [/^休む/, 'bed'], [/^薬草/, 'herb']];
   document.documentElement.style.setProperty('--coin', `url("${UI_ICON.coin}")`);
   document.documentElement.style.setProperty('--bag', `url("${UI_ICON.bag}")`);
+  // 名前からアイテムの絵を探す（長い名前から順に。「中薬草」が「薬草」にならないように）
+  let NAMEMAP = null;
+  function itemIcon(t) {
+    if (!NAMEMAP) {
+      NAMEMAP = [];
+      for (const [k, n] of Object.entries(NAMES)) NAMEMAP.push([n, k]);
+      for (const [k, v] of Object.entries(ITEMS)) NAMEMAP.push([v.name, k]);
+      for (const r of RECIPES) NAMEMAP.push([r.name, r.id]);
+      NAMEMAP.sort((a, b) => b[0].length - a[0].length);
+    }
+    const s = t.replace(/^[「（\s]+/, '');
+    for (const [n, k] of NAMEMAP) if (s.startsWith(n)) return iconOf(k);
+    return '';
+  }
   const label = b => { for (const n of b.childNodes) if (n.nodeType === 3 && n.textContent.trim()) return n.textContent.trim(); return ''; };
   function icons() {
     for (const b of document.querySelectorAll('#ctl button:not([data-ic])')) {
       b.dataset.ic = 1; const t = label(b); let k = null;
       for (const [re, n] of IC) if (re.test(t)) { k = n; break; }
       if (!k && typeof mode !== 'undefined' && mode === 'battle' && /AP\d/.test(b.textContent)) k = 'star';
-      if (!k) continue;
-      const i = document.createElement('i'); i.className = 'ic'; i.style.backgroundImage = `url("${UI_ICON[k]}")`; b.insertBefore(i, b.firstChild);
+      let src = k ? UI_ICON[k] : itemIcon(t);
+      if (!src) continue;
+      const i = document.createElement('i'); i.className = 'ic' + (k ? '' : ' item'); i.style.backgroundImage = `url("${src}")`; b.insertBefore(i, b.firstChild);
     }
     const log = $('log'), n = document.querySelectorAll('#ctl button').length;
     log.classList.toggle('wait', n === 1 && !document.body.classList.contains('title'));

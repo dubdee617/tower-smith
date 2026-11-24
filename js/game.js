@@ -99,7 +99,28 @@ function checkLearn(j, quiet) {
 checkLearn(job(), true);
 const expNeed = () => Math.floor(10 * Math.pow(G.lv, 1.5));
 const matText = o => Object.entries(o).filter(([, n]) => n > 0).map(([k, n]) => NAMES[k] + n).join(' ') || 'なし';
-function add(o, k, n) { o[k] = (o[k] || 0) + n; }
+function add(o, k, n) { o[k] = (o[k] || 0) + n; if (o === G.carry && n > 0 && mode !== 'town') gotToast(k, n); }
+// ---------- アイテムのアイコン（2026-11-24。assets/icon） ----------
+const ICON_KEYS = new Set(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem"]);
+const TOOL_ICON = { pick: 'w_pick', axe: 'w_axe', shovel: 'w_shovel' };
+function iconOf(k) {
+  if (k === 'gold') return typeof UI_ICON !== 'undefined' ? UI_ICON.coin : '';
+  if (ICON_KEYS.has(k)) return `assets/icon/${k}.webp`;
+  const r = RECIPES.find(x => x.id === k); if (r) return iconOfType(r);
+  return '';
+}
+function iconOfType(r) { const k = r.type === 'tool' ? TOOL_ICON[r.tool] : 'w_' + r.type; return ICON_KEYS.has(k) ? `assets/icon/${k}.webp` : ''; }
+// 手に入れたとき、絵の上にアイコン付きの札をぽんと出す
+function gotToast(k, n) {
+  const st = $('stage'); if (!st) return;
+  let box = $('toasts'); if (!box) { box = document.createElement('div'); box.id = 'toasts'; st.appendChild(box); }
+  const name = k === 'gold' ? `${n}G` : (NAMES[k] || (ITEMS[k] || {}).name || k) + (n > 1 ? ` ×${n}` : '');
+  const e = document.createElement('div'); e.className = 'toast';
+  const src = iconOf(k); e.innerHTML = (src ? `<img src="${src}" alt="">` : '') + `<span></span>`; e.lastChild.textContent = name;
+  const delay = box.children.length * 140; e.style.animationDelay = delay + 'ms'; box.appendChild(e);
+  if (box.children.length > 5) box.firstChild.remove();
+  setTimeout(() => e.remove(), 2200 + delay);
+}
 
 // ---------- 画面の文字 ----------
 let logLines = [];
@@ -498,7 +519,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 47'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 48'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1162,8 +1183,8 @@ function propAhead() { const [fdx, fdy] = DIRS[dir], x = Math.floor(T.x) + fdx, 
 function rollLoot(table) { const sum = table.reduce((s, r) => s + r[2], 0); let q = R() * sum; for (const r of table) if ((q -= r[2]) < 0) return r; return table[table.length - 1]; }
 function giveLoot([kind, v]) {
   if (kind === 'raw') { add(G.carry, v, 1); return `${NAMES[v]}を見つけた。`; }
-  if (kind === 'item') { G.items[v] = (G.items[v] || 0) + 1; return `${ITEMS[v].name}を見つけた。`; }
-  if (kind === 'gold') { const n = Math.ceil(v * (.6 + R() * .8) * (1 + floorNo * .1)); G.gold += n; return `${n}Gを見つけた。`; }
+  if (kind === 'item') { G.items[v] = (G.items[v] || 0) + 1; gotToast(v, 1); return `${ITEMS[v].name}を見つけた。`; }
+  if (kind === 'gold') { const n = Math.ceil(v * (.6 + R() * .8) * (1 + floorNo * .1)); G.gold += n; gotToast('gold', n); return `${n}Gを見つけた。`; }
   return '';
 }
 // 調べる: 正面の宝箱を開ける／床の物を調べる／階段なら行き方を教える
@@ -1178,7 +1199,7 @@ function inspect() {
 function searchProp() {
   const p = propAhead(); if (!p || p.searched) return; p.searched = true;
   const [name, grp] = PROP_INFO[p.key]; let msg;
-  if (grp === 'feather') { G.items.wing++; msg = `${name}を拾った。……帰還の羽だ！`; }
+  if (grp === 'feather') { G.items.wing++; gotToast('wing', 1); msg = `${name}を拾った。……帰還の羽だ！`; }
   else if (grp === 'mimic') {
     const d = Math.max(1, Math.ceil(G.mhp * .2)); G.hp = Math.max(1, G.hp - d); fx.flash = .8; fx.shake = 6;
     const gold = 30 + floorNo * 8, raw = pick(['ore_iron', 'raw_gem', 'dim_stone']); G.gold += gold; add(G.carry, raw, 1);
@@ -1187,11 +1208,11 @@ function searchProp() {
   }
   else if (grp === 'view') { p.searched = false; msg = PROP_LOOK[p.key] || `${name}がある。`; }
   else if (grp === 'berry') {
-    if (R() < .5) { G.items.herb++; msg = '茂みの中に、薬草がまじっていた。薬草を手に入れた。'; }
+    if (R() < .5) { G.items.herb++; gotToast('herb', 1); msg = '茂みの中に、薬草がまじっていた。薬草を手に入れた。'; }
     else msg = '赤い木の実がなっている。……すっぱい。何もなかった。';
   }
   else if (grp === 'mushroom') {
-    if (R() < .6) { G.items.herb++; msg = 'キノコの根元に、薬草が生えていた。'; }
+    if (R() < .6) { G.items.herb++; gotToast('herb', 1); msg = 'キノコの根元に、薬草が生えていた。'; }
     else { const d = Math.ceil(G.mhp * .08); G.hp = Math.max(1, G.hp - d); msg = `……かじってみたら、毒キノコだった。${d}のダメージ。`; }
   }
   else { const got = giveLoot(rollLoot(SEARCH_LOOT[grp])); msg = got ? `${name}を調べた。${got}` : `${name}を調べた。……何もない。`; }
@@ -1240,7 +1261,7 @@ function openChest() {
   for (let i = 0; i < n; i++) add(got, pool[Math.floor(R() * pool.length)], 1);
   if (ch.gold) add(got, R() < .5 ? 'ore_iron' : 'dim_stone', 2);
   const gold = Math.floor((ch.gold ? 40 : 8) * (1 + floorNo * .3) * (.7 + R() * .6));
-  for (const [k, v] of Object.entries(got)) add(G.carry, k, v); G.gold += gold;
+  for (const [k, v] of Object.entries(got)) add(G.carry, k, v); G.gold += gold; gotToast('gold', gold);
   log(`宝箱を開けた！ ${matText(got)}、${gold}G。`, true); dungeonUI(); hud();
 }
 function stairs() {
