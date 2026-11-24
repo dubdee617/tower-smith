@@ -76,10 +76,11 @@ const UPPERS = [
   { job:'アサシン', hold:'dagger',     exp:'katana' },
 ];
 // 最上級職: 70階より上が目安。条件はまだ決めていない（一覧には？？？で出る）
+// 2026-11-24 条件を決めた: 持つ武器の熟練30＋上級職での勝利数。鍛冶師範は、上級職3つ以上で10勝ずつ
 const TOPS = [
-  { job:'剣聖',     hold:'sword' },
-  { job:'大魔導',   hold:'book' },
-  { job:'鍛冶師範', hold:'hammer' },  // 鍛冶屋を極めた先。ほかのジョブの経験も必要
+  { job:'剣聖',     hold:'sword',  prof:30, wins:{ '剣豪':20, '魔法剣士':10 }, hint:'剣の熟練30、剣豪で20勝、魔法剣士で10勝' },
+  { job:'大魔導',   hold:'book',   prof:30, wins:{ '賢者':20, '魔弓士':10 },   hint:'魔導書の熟練30、賢者で20勝、魔弓士で10勝' },
+  { job:'鍛冶師範', hold:'hammer', prof:30, uppers:3,                          hint:'槌の熟練30、上級職3つ以上でそれぞれ10勝' },  // 鍛冶屋を極めた先
 ];
 // grow: レベルアップ時の伸び方。learn: そのジョブで勝った回数で覚える技（[回数, 技]）。覚えた技はずっと使える
 // img: 立ち絵（assets/jobs/job_○○.webp）
@@ -105,9 +106,9 @@ const JOBS = {
   '剣豪':       { img:'kengo', grow:{hp:7, atk:4, def:0}, learn:[[0,'tsubame'],[5,'p_focus']] },
   '忍者':       { img:'ninja',     grow:{hp:6, atk:2, def:1}, learn:[[0,'bunshin'],[3,'kagenui'],[6,'p_first']] },
   'アサシン':   { img:'assassin', grow:{hp:5, atk:3, def:0}, learn:[[0,'assassin'],[5,'p_crit']] },
-  '剣聖':       { img:'kensei',      grow:{hp:9, atk:5, def:2}, learn:[] },
+  '剣聖':       { img:'kensei',      grow:{hp:9, atk:5, def:2}, learn:[[0,'kensei'],[5,'p_crit'],[12,'senken']] },
   '大魔導':     { img:'archmage',    grow:{hp:7, atk:5, def:1}, learn:[[0,'fire3'],[0,'ice3'],[0,'bolt3'],[0,'dark3']] },
-  '鍛冶師範':   { img:'mastersmith', grow:{hp:10,atk:5, def:3}, learn:[] },
+  '鍛冶師範':   { img:'mastersmith', grow:{hp:10,atk:5, def:3}, learn:[[0,'temper'],[5,'masterstrike'],[10,'p_keep']] },
   '素手':       { grow:{hp:6, atk:1, def:1}, learn:[] },
 };
 
@@ -169,6 +170,13 @@ const SKILLS = {
   holyguard:{ name:'聖なる守り', ap:2, kind:'guard', cut:.4, heal:12, desc:'回復して守る' },
   bomb:     { name:'爆薬',     ap:2, kind:'atk', mult:1.8, pierce:true, desc:'敵全体に、守りを無視する爆発', all:true },
   punch:    { name:'正拳突き', ap:1, kind:'atk', mult:1.4, desc:'素手の一撃' },
+  // 最上級職とジンの技（2026-11-24）
+  kensei:   { name:'剣聖の一閃', ap:3, kind:'atk', mult:5.2, crit:.3, desc:'すべてを断つ一閃。会心が出やすい' },
+  senken:   { name:'千の剣',   ap:4, kind:'atk', mult:3.2, all:true, desc:'敵全体を千の斬撃で包む。APを溜めて撃つ' },
+  temper:   { name:'鍛え直し', ap:1, kind:'buff', boost:1.7, desc:'その場で刃を鍛え直す。このターンの攻撃1.7倍' },
+  masterstrike:{ name:'名工の一撃', ap:3, kind:'atk', mult:4.8, break:3, desc:'武器の芯を知る者の一撃＋守りを大きく崩す' },
+  jin1:     { name:'一閃',     ap:3, kind:'atk', mult:4.0, pierce:true, desc:'ジンに教わった一閃。守りを無視する' },
+  jin2:     { name:'流水',     ap:1, kind:'counter', cut:.1, back:2.2, desc:'ジンに教わった構え。攻撃を流して、倍にして返す' },
   flurry:   { name:'連打',     ap:2, kind:'atk', mult:.65, hits:4, desc:'4回攻撃', spread:true },
 };
 
@@ -215,6 +223,15 @@ const RECIPES = [
   { id:'iron_armor',    name:'鉄の鎧',       type:'armor',      def:5,  cost:{iron:3, leather:2},           price:120 },
 ];
 
+// 王様からの褒美（2026-11-24）。工房では打てない。種類ごとに「王家の〇〇」「王家の宝〇〇」
+{ const base = { sword:11, katana:17, greatsword:19, axe:18, hammer:10, dagger:8, bow:13, book:7, staff:7 }, jp = { sword:'剣', katana:'刀', greatsword:'大剣', axe:'斧', hammer:'槌', dagger:'短剣', bow:'弓', book:'魔導書', staff:'杖' };
+  for (const [t, a] of Object.entries(base)) {
+    RECIPES.push({ id:'royal_' + t, name:'王家の' + jp[t], type:t, atk:Math.round(a * 2.6), cost:{}, price:900, royal:true });
+    RECIPES.push({ id:'treasure_' + t, name:'王家の宝' + jp[t], type:t, atk:Math.round(a * 3.8), cost:{}, price:1800, royal:true });
+  }
+  RECIPES.push({ id:'royal_armor', name:'近衛の鎧', type:'armor', def:14, cost:{}, price:900, royal:true });
+  RECIPES.push({ id:'royal_shield', name:'王家の盾', type:'shield', atk:0, def:12, cost:{}, price:900, royal:true });
+}
 // 武具屋で買える物（買うと高い。自分で打つ方が得）
 const SHOP = ['copper_sword','bone_dagger','bone_staff','copper_shield','leather_armor'];
 
@@ -315,7 +332,7 @@ Object.assign(BOSSES, {
   85: mkBoss('stormroc', '嵐の巨鳥', 85, .55, { feather: 5, star_dust: 2 }, .92),
   95: mkBoss('blackknightlord', '黒騎士団長', 95, .55, { dark_steel: 4 }, .92),
 });
-const TOP_FLOOR = 90;  // いま登れるいちばん上の階（91〜100階の城は、最後の「鏡」と一緒に作る）
+const TOP_FLOOR = 100;  // 100階のいちばん上で「鏡」が待っている
 
 // 道具屋
 // 道具屋で買える物（2026-11-23）。battle: 戦闘中にも使える
@@ -423,7 +440,7 @@ const AFF_PERKS = {
   elly:  '治療費と祈りが半額',
   ria:   '戦利品の持ち込みの報酬が+15%',
   fuuka: 'フウカが一緒に戦う回数が20回になり、40階より上にも現れる',
-  jin:   'ジンが技を教えてくれる（技は今後）',
+  jin:   'ジンが技「一閃」を教えてくれる（95階に着くと「流水」も）',
   desert: '砂の女神がめずらしい素材をくれて、回復もしてくれる', forest: '森の女神がめずらしい素材をくれて、回復もしてくれる',
   druid: '花の女神がめずらしい素材をくれて、回復もしてくれる', mountain: '山の女神がめずらしい素材をくれて、回復もしてくれる', ice: '氷の女神がめずらしい素材をくれて、回復もしてくれる',
 };
@@ -432,7 +449,7 @@ const TOWER_NPCS = {
   dan:      { name:'ダン',     from:1,  to:45 },
   fuuka:    { name:'フウカ',   from:5,  to:40, battles:15 },
   gurugamo: { name:'グルガモ', from:30, to:70, battles:10 },
-  gaban:    { name:'ギャバン', from:60, to:80 },
+  gaban:    { name:'ギャバン', from:60, to:80, battles:8 },
   // 属性の階にランダムに現れる女神たち（戦利品をくれる。親密度が上がるとレアな素材、回復も選べる）
   // 2026-11-23: エリアを並べ直して、女神4人が塔を2周するように（森→砂→花→氷 を2回）
   forest:   { name:'森の女神', ranges:[[11,20],[51,60]], god:true },

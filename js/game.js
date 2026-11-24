@@ -80,8 +80,15 @@ function mainWeapon() { const r = gearBy(G.equip.r), l = gearBy(G.equip.l); if (
 function hasShield() { const l = gearBy(G.equip.l), r = gearBy(G.equip.r); return (l && l.type === 'shield') || (r && r.type === 'shield'); }
 function upperReady(u) { return (G.prof[u.hold] || 0) >= UPPER_NEED.hold && (G.prof[u.exp] || 0) >= UPPER_NEED.exp; }
 function uppersFor(type) { return UPPERS.filter(u => u.hold === type && upperReady(u)); }
+function topReady(u) {
+  if ((G.prof[u.hold] || 0) < u.prof) return false;
+  if (u.wins && Object.entries(u.wins).some(([j, n]) => (G.jobWins[j] || 0) < n)) return false;
+  if (u.uppers && UPPERS.filter(x => (G.jobWins[x.job] || 0) >= 10).length < u.uppers) return false;
+  return true;
+}
 function job() {
   const w = mainWeapon(); if (!w) return '素手';
+  { const tp = TOPS.find(u => u.hold === w.type && topReady(u)); if (tp && G.upperPick[w.type] !== '-top') return tp.job; }
   const ups = uppersFor(w.type);
   if (ups.length) { const pick = ups.find(u => u.job === G.upperPick[w.type]); return (pick || ups.sort((a, b) => (G.prof[b.exp] || 0) - (G.prof[a.exp] || 0))[0]).job; }
   return WEAPON_TYPES[w.type].job;
@@ -480,13 +487,14 @@ function rollRumor() { const k = Object.keys(RUMORS); G.rumor = k[Math.floor(R()
 function startRun() { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; }
 function endRun() { G.mhp -= G.runHp || 0; G.hp = Math.min(G.hp, G.mhp); G.runHp = 0; }
 function endMeal() { if (G.meal === 'stew') { G.mhp -= 10; G.hp = Math.min(G.hp, G.mhp); } G.meal = null; }
-function toTown(msg, fromTower) {
+function toTown(msg, fromTower, then) {
   mode = 'town'; B = null; F = null; FLOORS = {};
   let letter = false;
   if (fromTower) { endMeal(); endRun(); rollRumor(); G.bless = null; G.runs++; G.ally = null; G.bandaged = []; G.enc = null; G.als = false; if (G.maxFloor >= 50 && !G.castle) { G.castle = true; letter = true; } }
   const brought = matText(G.carry);
   for (const [k, n] of Object.entries(G.carry)) add(RAW[k] ? G.raw : G.store, k, n);
   G.carry = {}; save();
+  if (fromTower && then) { then(); return; }
   if (fromTower) { returnScreen(msg, brought, letter); return; }
   townMap(); if (msg) log(msg, true); hud();
 }
@@ -540,7 +548,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 68'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 69'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -580,8 +588,8 @@ function townMark(id) {
 // 次の目標（10階ごとの主を順に）
 function nextGoal() {
   if (!G.maxFloor) return '塔に入ってみる';
-  for (let f = 10; f <= TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(f * .8); return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
-  return '誰も行ったことのない、さらに上へ';
+  for (let f = 10; f < TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(f * .8); return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
+  return G.cleared ? '塔のてっぺんに立った。……また登るのも、悪くない' : '100階へ。てっぺんで、何かが待っている';
 }
 function townMap() {
   place = null; showTown(true, 2 / 3);
@@ -678,13 +686,33 @@ function towerScreen(msg) {
   hud();
 }
 // 広場の像: 300年前の剣士の像（実はジン。95階で知る）。ジンにたまに会える
+// ジンの技: 親密度が届くと「一閃」、95階に着いていると「流水」
+function jinTeach() {
+  const k = perk('jin') && !G.learned.includes('jin1') ? 'jin1' : perk('jin') && G.maxFloor >= 95 && !G.learned.includes('jin2') ? 'jin2' : null;
+  if (!k) return null;
+  return { t: '技を教わる', s: 'ジンから', hot: true, f: () => {
+    const L = k === 'jin1' ? [
+      { fig: 'jin', t: 'ジン[think]「……鍛冶屋の。約束どおり、ひとつ教えよう」' },
+      { fig: 'jin', sfx: 'slash', t: 'ジンが杖を、すっと横に払った。\n――風が、遅れて吹いた。' },
+      { fig: 'jin', t: 'ジン「斬ろうと思うな。……もう斬れている、と思え。\nそれが『一閃』じゃ」' },
+      { hero: 'shock', t: '「……今の、杖ですよね」' },
+      { fig: 'jin', t: 'ジン[laugh]「ほっほっほ。得物は何でもよい。\nお主の打った刃なら、なおさらじゃ」' },
+    ] : [
+      { fig: 'jin', t: 'ジン[think]「95階まで行ったか。……あの城を見たのじゃな」' },
+      { fig: 'jin', t: 'ジン「わしも、昔あそこを歩いた。……ずっと昔にな」' },
+      { fig: 'jin', t: 'ジン「最後に教えよう。『流水』。\n受けるのではない。流して、返すのじゃ」' },
+      { fig: 'jin', t: 'ジン[smile]「てっぺんで待つものは、お主がいちばんよく知っておる相手じゃ。\n……怖がらんでいい」' },
+    ];
+    runSeq(L, 0, () => { G.learned.push(k); if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(k); save(); sfx('levelup', { vol: .8 }); bigFx(`<b>技を覚えた</b><em>${SKILLS[k].name}</em><small>${SKILLS[k].desc}（どのジョブでも使える）</small>`); statueScreen('ジン[smile]「さて、わしは昼寝の時間じゃ」'); });
+  } };
+}
 function statueScreen(msg) {
   place = 'statue'; showTown(true, 0);
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}statue.jpg" alt="剣士の像"><div class="name">剣士の像</div>`;
   if (statueScreen.run !== G.runs) { statueScreen.run = G.runs; statueScreen.jin = R() < .4; }
   const L = [{ t: '碑文を読む', f: () => log('「三百年前、この塔に挑みし名もなき剣士」\n……台座の文字は、少しすり減っている。', true) }];
-  if (statueScreen.jin) { npcFig('jin'); L.push(talkBtn('jin', () => statueScreen(byeLine('jin')))); }
+  if (statueScreen.jin) { npcFig('jin'); L.push(talkBtn('jin', () => statueScreen(byeLine('jin')))); const tj = jinTeach(); if (tj) L.push(tj); }
   L.push({ t: '戻る', f: townMap });
   buttons(L); hud();
   if (msg) { log(msg, true); return; }
@@ -701,13 +729,35 @@ function castleScreen() {
 const CASTLE_TALK = {
   king: [[50, ['王様[laugh]「おお、来たか鍛冶屋！ 50階だと？ わっはっは、たいしたもんだ！」', '王様「わしの若い頃より強いんじゃないか？ ……いや、わしは登ったことないがな！」']],
          [70, ['王様[laugh]「70階か！ 国じゅうがお前の話をしておる。期待しとるぞ！」']],
-         [86, ['王様「ギャバンの記録に並んだか……。いや、越えてくれ。この国の夢だ」']]],
+         [86, ['王様「ギャバンの記録に並んだか……。いや、越えてくれ。この国の夢だ」']],
+         [87, ['王様[laugh]「越えたか！ ギャバンの記録を、越えおったか！ わっはっは、今夜は祝いじゃ！」', '王様「誰も見たことのない階か……。土産話を、楽しみにしておるぞ」']]],
   minister: [[50, ['大臣「よくぞご無事で。何か困ったことがあれば、何でも言ってください」', '大臣[smile]「陛下はああ見えて、毎晩あなたの記録を読んでおられます」']],
-             [70, ['大臣「塔の情報で必要なものがあれば、王宮の書庫を開けましょう」']]],
+             [70, ['大臣「塔の情報で必要なものがあれば、王宮の書庫を開けましょう」']],
+             [87, ['大臣[smile]「87階……。王宮の書庫にも、そこから先の記録はございません。あなたが最初の一行です」']]],
   gaban: [[50, ['ギャバン[laugh]「鍛冶屋殿！ お会いしたかった！ その剣、自分で打ったのですか！？」', 'ギャバン「自分は2年前、86階で引き返しました。……敵が強すぎたのです」']],
           [70, ['ギャバン「70階……！ 自分は、あなたなら越えられると信じています！」']],
-          [86, ['ギャバン[laugh]「86階……自分の記録です。ここから先は、あなたの道です！」']]],
+          [86, ['ギャバン[laugh]「86階……自分の記録です。ここから先は、あなたの道です！」']],
+          [87, ['ギャバン「……っ、87階……。鍛冶屋殿……自分は……自分は……！」\n近衛兵長は、目元を袖でぬぐった。', 'ギャバン[laugh]「2年間、ずっと、誰かに越えてほしかったのです。……ありがとうございます！」']]],
 };
+// 王様からの褒美: 50・60・70・80・87階を越えるたびに1つずつ
+const GIFTS = [
+  { floor: 50, say: '王様[laugh]「50階を越えた祝いじゃ！ 王家の宝物庫から、お前の得物と同じ種類のを持ってこさせた。使え！」', give: () => royalWeapon('royal') },
+  { floor: 60, say: '王様「60階か。近衛の鎧をやろう。ギャバンと同じ鎧じゃ。……ちと重いがな！」', give: () => royalItem('royal_armor') },
+  { floor: 70, say: '王様[laugh]「70階！ 王家の盾じゃ。わしの爺さんの、そのまた爺さんの盾じゃ。大事にせい」', give: () => royalItem('royal_shield') },
+  { floor: 80, say: '王様「80階……。薬と金じゃ。足りなくなったら、また来い」', give: () => { G.items.herb_l += 3; G.items.wing += 2; G.gold += 1000; return '大薬草3つ、帰還の羽2つ、1000G'; } },
+  { floor: 87, say: '王様「……ギャバンの記録を越えたな。これは、この国でいちばんの宝じゃ。お前に託す」', give: () => royalWeapon('treasure') },
+];
+function royalItem(id) { const r = RECIPES.find(x => x.id === id); G.gear.push(newGear(r)); return r.name; }
+function royalWeapon(kind) { const w = mainWeapon(), t = w && w.type !== 'shield' ? w.type : 'sword'; return royalItem(kind + '_' + t); }
+function giftBtn() {
+  G.gifts = G.gifts || []; const g = GIFTS.find(x => G.maxFloor >= x.floor && !G.gifts.includes(x.floor));
+  if (!g) return { t: '褒美', s: 'もらった', off: true, f: () => {} };
+  return { t: '褒美をもらう', s: `${g.floor}階を越えた祝い`, hot: true, f: () => {
+    G.gifts.push(g.floor); const what = g.give(); save(); npcFig('king'); sfx('chest', { vol: .8 }); playFx('sparkle', { x: VW / 2, y: VH / 2, size: .8 });
+    bigFx(`<b>王様からの褒美</b><em>${what}</em><small>${g.floor}階を越えた祝い（装備は工房の「装備を変える」から）</small>`, 'levelup');
+    castleHall(g.say);
+  } };
+}
 const castleLine = who => { let L = CASTLE_TALK[who][0][1]; for (const [n, l] of CASTLE_TALK[who]) if (G.maxFloor >= n) L = l; return pick(L); };
 function castleHall(msg) {
   place = 'castle'; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
@@ -715,7 +765,7 @@ function castleHall(msg) {
   npcFig('king');
   const talk = who => () => { npcFig(who); log(castleLine(who), true); };
   buttons([{ t: '王様と話す', hot: true, f: talk('king') }, { t: '大臣と話す', f: talk('minister') }, { t: 'ギャバンと話す', f: talk('gaban') },
-    { t: '贈り物', s: '今後', off: true, f: () => {} }, { t: '戻る', f: castleScreen }]);
+    giftBtn(), { t: '戻る', f: castleScreen }]);
   log(msg || castleLine('king'), true); hud();
 }
 // 女神の像: 触ると、女神に会ったエリアの最初の階へワープできる
@@ -777,6 +827,7 @@ const gearKind = t => t === 'armor' ? '鎧' : t === 'tool' ? 'ツール' : WEAPO
 // 工房の鍛冶: まず「武器・防具・ツール・手入れ」を選んで、その中の一覧へ。
 // 一覧の各行に「必要な素材（今の数）」を出す。足りない物を押すと、何が足りないかを教える
 const FORGE_CAT = { weapon: ['武器', r => !['armor', 'shield', 'tool'].includes(r.type)], armor: ['防具', r => r.type === 'armor' || r.type === 'shield'], tool: ['ツール', r => r.type === 'tool'] };
+for (const k of Object.keys(FORGE_CAT)) { const f = FORGE_CAT[k][1]; FORGE_CAT[k][1] = r => !r.royal && f(r); }  // 王家の褒美は打てない
 // ---------- 工房の強化（お金の使い道） ----------
 // 炉: 打てる金属が増える（1で鉄）。金床: 打った武具の攻撃・守りが段階ぶん上がる。作業台: 使う素材が減る
 const UPG = {
@@ -929,7 +980,7 @@ function jobList(back) {
       if (!ok) { log('まだ知らないジョブ。持つ武器と、経験する武器の熟練度が条件。', true); return; }
       G.upperPick[u.hold] = u.job; save(); jobList(back); jobScene(u.job); log(`${WEAPON_TYPES[u.hold].name}を持ったときは${u.job}になる。`, true); } });
   }
-  for (const u of TOPS) L.push({ t: '？？？', s: `最上級職・${WEAPON_TYPES[u.hold].name}`, f: () => log('塔のずっと上で、この姿になれるらしい。', true) });
+  for (const u of TOPS) { const ok = topReady(u); L.push({ t: (ok ? u.job : '？？？') + (u.job === cur ? ' ◀' : ''), s: `最上級職・${WEAPON_TYPES[u.hold].name}`, hot: u.job === cur, f: () => { if (ok) jobScene(u.job); log(ok ? `${u.job}: ${WEAPON_TYPES[u.hold].name}を持つと、この姿になる。` : `まだ知らないジョブ。\n条件: ${u.hint}`, true); } }); }
   L.push({ t: '戻る', f: back });
   buttons(L, 'three small'); jobScene(cur); log('熟練度は、その武器を持って勝つと上がる。', true);
 }
@@ -1139,6 +1190,8 @@ function enterFloor(n, fromAbove) {
   G.maxFloor = Math.max(G.maxFloor, n); save();
   dungeonUI(); log(`${n}階。うしろに${fromAbove ? '上り' : '下り'}階段がある。`, true); hud();
   if (encEnd) log('焚いていた香の効き目が切れた。');
+  if (n === 99 && !G.lastGoddess) setTimeout(() => { if (mode === 'dungeon' && floorNo === 99) lastGoddess(); }, 700);
+  if (n === 100) log(G.cleared ? '100階。塔のいちばん上。……鏡は、まだそこにある。' : '100階。空気が、しんと静まりかえっている。\nこの階の上り階段の先に、何かがいる。', true);
   if (G.als && n > 10) { G.als = false; save(); log('アルス「ここから先は、まだ僕には……。師匠、先に町へ戻ってます！ ご無事で！」', true); }
 }
 function dungeonUI() {
@@ -1217,9 +1270,9 @@ function meetNpc(id) {
   }
   if (TOWER_NPCS[id].god) { meetGod(id, go); return; }
   if (id === 'gaban') {
-    G.hp = G.mhp; G.items.herb_l++; save();
+    G.hp = G.mhp; G.items.herb_l++; if (!G.ally) G.ally = { id, left: TOWER_NPCS.gaban.battles }; save();
     log(pick(['ギャバン[laugh]「鍛冶屋殿！ こんな上で会えるとは！ さあ、近衛兵の秘薬です。遠慮なく！」', 'ギャバン「自分も、ここまでは来られたのです。……鍛冶屋殿なら、その先へ行けます！」']), true);
-    log('HPが全回復した。大薬草をもらった。');
+    log(`HPが全回復した。大薬草をもらった。${G.ally && G.ally.id === 'gaban' ? `\nギャバンが一緒に戦ってくれる（${G.ally.left}回）。` : ''}`);
     buttons([{ t: '「ありがとう、ギャバン」', hot: true, f: () => { log('ギャバン[laugh]「はっ！ ご武運を！」', true); go(); } }]); return;
   }
   if (id === 'gurugamo') {
@@ -1266,6 +1319,7 @@ function allyTurn() {
   const a = G.ally; if (!a) return false;
   if (a.id === 'fuuka') { playFx('thrust', { delay: 200 }); playFx('heal_leaf', { self: true, delay: 420, size: .8 }); const d = dmgTo(m, atkPower() * .7), h = Math.ceil(G.mhp * .15); healMe(h); log(`フウカの攻撃！ ${d}のダメージ。HPを${h}回復してくれた。`); }
   if (a.id === 'gurugamo') { playFx('impact_heavy', { delay: 200 }); const d = dmgTo(m, atkPower()); log(`グルガモの斧！ ${d}のダメージ。`); }
+  if (a.id === 'gaban') { FX_AT = m; playFx('slash_x', { delay: 200, size: 1.1 }); FX_AT = null; const d = dmgTo(m, atkPower() * 1.1); log(`ギャバンの剣！ ${d}のダメージ。`); }
   if (allDead()) { win(); return true; }
   return false;
 }
@@ -1274,7 +1328,7 @@ function allyTick() {
   const a = G.ally; if (!a) return; a.left--;
   if (a.left > 0) return;
   G.ally = null;
-  log(a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……もう行かなきゃ。……また、会えるよね？」');
+  log(a.id === 'gaban' ? 'ギャバン[laugh]「自分はここまでです！ 鍛冶屋殿、その先を……どうか！」' : a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……もう行かなきゃ。……また、会えるよね？」');
 }
 // ---------- 調べる（床の小物） ----------
 const propAt = (x, y) => (F.props || []).find(p => p.cx === x && p.cy === y);
@@ -1387,6 +1441,7 @@ function stairs() {
   const [fdx, fdy] = DIRS[dir], c = cellTo(fdx, fdy);
   if (c === 3) { if (floorNo === 1) fadeGo(() => toTown('塔から出た。', true)); else goFloor(floorNo - 1, true); }
   else if (c === 2) {
+    if (floorNo === 100) { mirrorScene(); return; }
     if (BOSSES[floorNo] && !bossBeat(floorNo)) { startBattle(BOSSES[floorNo]); return; }
     if (floorNo >= TOP_FLOOR) { log(`${TOP_FLOOR + 1}階から上は、まだ作っていない。`, true); return; }
     goFloor(floorNo + 1);
@@ -1656,6 +1711,10 @@ function endTurn() {
       m.anim = { kind: 'attack', t0: performance.now() + order * 220 }; order++;
       if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); { const w = (order - 1) * 220; setTimeout(() => popNum(0, 'me', 'miss'), w); } continue; }
       let d = Math.max(1, Math.round((m.atk - defPower()) * (.85 + R() * .3)));
+      if (m.mirror) {  // 鏡は、自分の技を使ってくる
+        if (!m.said && m.hp < m.mhp * .5) { m.said = true; log('鏡の中の自分が、口をひらいた。\n「……どうして、登る？」'); }
+        const sk = battleSkills().filter(id => SKILLS[id].kind === 'atk'); if (sk.length && R() < .35) { const id = pick(sk); d = Math.round(d * 1.5); log(`鏡の中の自分は、${SKILLS[id].name}を使った！`); }
+      }
       monAttackFx(m, B.counter || B.cut < 1, (order - 1) * 220);
       if (B.counter) { d = Math.ceil(d * B.counter.cut); const c = dmgTo(m, atkPower() * B.counter.back); log(`受け止めて反撃！ ${c}のダメージ。`); B.counter = null; }
       else d = Math.ceil(d * B.cut);
@@ -1688,7 +1747,7 @@ function win() {
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
     if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
   { const mc = ms.find(x => x.chest); if (mc) { mc.chest.mimic = false; msg += '\n' + chestLoot(mc.chest, true); } }
-  if (m.boss) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
+  if (m.boss && !m.mirror) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);
   G.jobWins[j] = (G.jobWins[j] || 0) + 1;
@@ -1699,6 +1758,7 @@ function win() {
   for (const u of UPPERS) if (upperReady(u) && !readyBefore.includes(u.job)) say('shock', `${WEAPON_TYPES[u.exp].name}の経験が生きてきた。${WEAPON_TYPES[u.hold].name}を持つと${u.job}になれる！`);
   const w1 = mainWeapon(); if (w1 && WEAPON_TYPES[w1.type].twoHand && G.prof[w1.type] === ONE_HAND_NEED) log(`${WEAPON_TYPES[w1.type].name}を片手で扱えるようになった！`);
   save();
+  if (ms.some(x => x.mirror)) { const first = !G.cleared; buttons([{ t: '……', hot: true, f: () => first ? ending() : (B = null, fadeGo(() => toTown('鏡はまた、静かに砕けた。', true))) }]); return; }
   buttons([{ t: '先へ進む', hot: true, f: () => { B = null; mode = 'dungeon'; dungeonUI(); hud(); } }]);
   hud();
 }
@@ -1787,7 +1847,7 @@ const MON_ATK = [
   [/knight|armor|guard|bandit|orc|goblin|skeleton|warrior|chariot|dragoon|rider|thief|archer|graverobber|chain|gear|imp/, 'weapon'],
   [/rat|dog|wolf|jackal|lynx|leopard|fox|cat|croc|bat|lizard|boar|jaguar|camel|penguin|crab/, 'bite'],
 ];
-function monAtkKind(m) { if (m.boss && !/golem|worm|king/.test(m.id)) return 'heavy'; const k = m.id + m.name; for (const [re, v] of MON_ATK) if (re.test(k)) return v; return 'claw'; }
+function monAtkKind(m) { if (m.mirror) return 'weapon'; if (m.boss && !/golem|worm|king/.test(m.id)) return 'heavy'; const k = m.id + m.name; for (const [re, v] of MON_ATK) if (re.test(k)) return v; return 'claw'; }
 function monAttackFx(m, blocked, dl) {
   dl = dl || 0;
   const y = VH * .62, o = { y, size: 1.1, mv: 'burst', x: VW / 2 + (R() - .5) * 40, delay: dl };
@@ -1935,10 +1995,10 @@ const SKILL_SHOW = {
 };
 // ---------- 武器の強さで足すエフェクト（コードで描く） ----------
 // 段階: 銅・骨・魔石=1、鉄=2、銀=3、ミスリル=4、オリハルコン・竜=5。金床の+2ごとに1段上がる
-const W_COLOR = { copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
+const W_COLOR = { royal: '#ffd24a', treasure: '#ffe98a', copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
 function weaponTier(w) {
   if (!w) return { tier: 0, c: '#ffffff' };
-  const mat = Object.keys(W_COLOR).find(m => (w.id || '').startsWith(m)) || 'copper', base = { copper: 1, bone: 1, stone: 1, iron: 2, silver: 3, mithril: 4, orichalcum: 5, dragon: 5 }[mat];
+  const mat = Object.keys(W_COLOR).find(m => (w.id || '').startsWith(m)) || 'copper', base = { royal: 4, treasure: 5, copper: 1, bone: 1, stone: 1, iron: 2, silver: 3, mithril: 4, orichalcum: 5, dragon: 5 }[mat];
   const plus = +(((w.name || '').match(/\+(\d+)/) || [])[1] || 0);
   return { tier: Math.min(5, base + Math.floor(plus / 2)), c: W_COLOR[mat] };
 }
@@ -2031,7 +2091,17 @@ function drawMonsterImg(m, t, i) {
   const H = VH * (m.size || .7) * sc, W = H * img.width / img.height, cx = VW * px + ox, by = VH * (.93 + dy) + oy; m.cx = VW * px; m.top = by - H;
   ctx.save(); ctx.globalAlpha = alpha;
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(cx, by - 2, W * .38, 8, 0, 0, 7); ctx.fill();
-  ctx.imageSmoothingEnabled = true; ctx.drawImage(img, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
+  ctx.imageSmoothingEnabled = true;
+  if (m.mirror) {  // 鏡: 自分の姿を左右反転して、青白く写す。ゆらゆら揺らぐ
+    if (!drawMonsterImg.mc) drawMonsterImg.mc = document.createElement('canvas');
+    const o = drawMonsterImg.mc; o.width = img.width; o.height = img.height; const g = o.getContext('2d');
+    g.clearRect(0, 0, o.width, o.height); g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(120,170,255,.38)'; g.fillRect(0, 0, o.width, o.height); g.globalCompositeOperation = 'source-over';
+    const wob = Math.sin(t / 260) * 2;
+    ctx.save(); ctx.translate(cx + wob, 0); ctx.scale(-1, 1); ctx.translate(-cx, 0);
+    ctx.drawImage(o, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha * (.15 + .1 * Math.sin(t / 180)); ctx.drawImage(o, cx - W * sx / 2 + 3, by - H * sy, W * sx, H * sy);
+    ctx.restore();
+  } else ctx.drawImage(img, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
   if (white > 0) { // 当たった瞬間に白く光らせる
     if (!drawMonsterImg.c) drawMonsterImg.c = document.createElement('canvas');
     const o = drawMonsterImg.c; o.width = img.width; o.height = img.height; const g = o.getContext('2d');

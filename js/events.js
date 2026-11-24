@@ -283,6 +283,8 @@ const PROLOGUE = [
 function runSeq(L, i, end, setup) {
   const P = L[i];
   if (i === 0 && setup) setup();
+  if (P.bg) { mode = 'town'; showTown(true, P.aspect || 4 / 3); const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${P.bg}" alt="">` + (P.cap ? `<div class="caption">${P.cap}</div>` : ''); }
+  if (P.music !== undefined) SND.scene = P.music;
   if (P.clear) clearFig();
   if (P.fig) npcFig(P.fig);
   if (P.night) { const im = $('town').querySelector('img'); if (im) { im.style.transition = 'filter 1.2s'; im.style.filter = 'brightness(.38) saturate(.6) hue-rotate(195deg)'; } }
@@ -309,4 +311,70 @@ const SENDOFF = [
 ];
 function sendOff() {
   runSeq(SENDOFF, 0, () => { G.sentOff = true; add(G.items, 'herb', 1); save(); goFloor(1); });
+}
+
+// ---------- 99階: 最後の女神（山の女神の、腰から上の絵） ----------
+const LAST_GODDESS = [
+  { fig: 'mountain_bust_arms', t: '山の女神「……来たか、鍛冶屋。\nここまで登ってきた人の子は、三百年ぶりだ」' },
+  { fig: 'mountain_bust_crystal', t: '山の女神「わたしたち女神は、この塔を見守ってきた。\n森も、砂も、氷も、山も」' },
+  { fig: 'mountain_bust_crystal', t: '山の女神「……だが、この上だけは、誰にも見守れない。\nそこにいるのは、お前自身だからな」' },
+  { hero: 'doubt', t: '「俺自身……？」' },
+  { fig: 'mountain_bust_reach', t: '山の女神「てっぺんには鏡がある。\nお前が打った武器も、選んだ技も、そのまま写す鏡だ」' },
+  { fig: 'mountain_bust_reach', t: '山の女神「勝てるかどうかは、わたしにも分からない。\n……だから、手を貸そう」' },
+  { fig: 'mountain_bust_pray', sfx: 'holy', t: '女神が祈ると、体の傷がすっと消えていった。' },
+  { fig: 'mountain_bust_pray', t: '山の女神「わたしは、最後の女神。\n……行っておいで。帰りを、この山で待っている」' },
+  { clear: true, hero: 'resolve', t: '「……ありがとう。行ってくる」' },
+];
+function lastGoddess() {
+  G.lastGoddess = true; G.hp = G.mhp; G.injuries = []; save(); SND.goddess = true;
+  runSeq(LAST_GODDESS, 0, () => { SND.goddess = false; clearFig(); dungeonUI(); log('HPが全回復した。ケガも治った。', true); hud(); });
+}
+// ---------- 100階: 鏡 ----------
+const MIRROR_PRE = [
+  { t: '百階。塔の、いちばん上。\n広間の真ん中に、背の高い鏡が立っていた。' },
+  { t: '鏡には、見慣れた姿が写っている。\n煤けた手。自分で打った武器。……自分だ。' },
+  { hero: 'serious', t: '「……ずっと、誰かのために打ってきた。\n振るのは、いつも誰かだった」' },
+  { sfx: 'swing', t: '鏡の中の自分が、ゆっくりと武器を構えた。' },
+  { hero: 'resolve', t: '「……一度くらい、自分で振ってみたかったんだ。\n来い」' },
+];
+function mirrorBoss() {
+  const j = job(), img = (JOBS[j] || {}).img || 'smith', src = `assets/jobs/job_${img}.webp`;
+  for (const pose of ['idle', 'attack', 'hit']) { const i = new Image(); i.src = src; MON_IMG['mirror_' + pose] = i; }
+  return { id: 'mirror', name: '鏡の中の自分', mirror: true, boss: true, size: .95, drop: {}, gold: 0, exp: 5000,
+    hp: Math.round(G.mhp * 2.5 + atkPower() * 10), atk: Math.round(G.mhp * .09 + defPower()), def: Math.round(atkPower() * .45) };
+}
+function mirrorScene() {
+  if (G.cleared) { log('鏡が、また自分を写した。', true); setTimeout(() => startBattle(mirrorBoss()), 600); return; }
+  runSeq(MIRROR_PRE, 0, () => startBattle(mirrorBoss()));
+}
+// ---------- エンディング（静かに帰る） ----------
+const ENDING = [
+  { bg: 'intro_tower.jpg', music: 'ending', t: '鏡の中の自分が、ふっと笑った気がした。\n……そして、鏡は静かに砕けた。' },
+  { t: '百階。誰も見たことのない、塔のてっぺん。\n東の空が、白んでいく。' },
+  { t: '朝日が、エルディアの町を照らしていた。\n工房の煙突から、細い煙がのぼっているのが見えた。' },
+  { hero: 'calm', t: '「……なんだ。てっぺんには、何もないんだな」' },
+  { hero: 'smile', t: '「……いや。登ってきた道が、全部あったか」' },
+  { bg: 'town_view.jpg', aspect: 941 / 1672, cap: '帰還', t: '町の門の前に、人だかりができていた。' },
+  { fig: 'weapon', t: 'ジェニー[angry]「……遅い。どれだけ待たせるのよ」' },
+  { fig: 'weapon', t: 'ジェニー[shy]「……おかえり。\nあんたの打った剣、全部うちで高く売ってあげるから」' },
+  { fig: 'clinic', t: 'エリー[worried]「ケガ、見せてください。\n……もう、本当に。……本当に、よかった」' },
+  { fig: 'guild', t: 'リア[smile]「最高到達記録、百階。\n……わたしが、書きました。いちばんきれいな字で」' },
+  { fig: 'gaban', t: 'ギャバン[laugh]「鍛冶屋殿……！ 自分は、自分は……！\n……っ、おかえりなさいませ！」' },
+  { fig: 'king', t: '王様[laugh]「わっはっは！ やりおったわ！\n今夜は国じゅうで祝いじゃ！」' },
+  { clear: true, bg: 'home_in.jpg', t: 'その夜。\n工房には、いつもの炉の火が灯っていた。' },
+  { fig: 'chicchi', t: 'チッチ[smile]「親方、おかえりっす。\nメシ、冷めないうちにどうぞっす」' },
+  { fig: 'apprentice', t: 'ルゥ[laugh]「親方！ 塔のてっぺん、どんなでした！？」' },
+  { hero: 'smile', t: '「……朝日が、きれいだった」' },
+  { fig: 'als', t: 'アルス[smile]「師匠……おかえりなさい」' },
+  { hero: 'calm', t: '「アルス。……これは、お前が持っていけ」\n塔のてっぺんまで振ってきた武器を、そっと手渡した。' },
+  { fig: 'als', t: 'アルス[shock]「……師匠の武器を、ぼくが？」' },
+  { hero: 'smile', t: '「お前の塔は、お前が登れ。\n……俺は、また打つ」' },
+  { fig: 'als', t: 'アルス[laugh]「……はい！\n今の、日記に書いておきます！」' },
+  { clear: true, hero: 'smile', t: '「まぁ〜、どうにかなるんじゃないか」' },
+  { t: '鍛冶屋は、ずっと誰かのために武器を打ってきた。\n……そして一度だけ、自分のために振った。' },
+  { bg: 'title.jpg', aspect: 2 / 3, t: '― Tower of Hope ―\n\nおしまい。……でも、塔はまだ、そこにある。' },
+];
+function ending() {
+  B = null; F = null; G.cleared = true; save(); clearFig();
+  fadeGo(() => toTown('', true, () => runSeq(ENDING, 0, () => { SND.scene = ''; clearFig(); fadeGo(() => inside('home', '工房の朝。炉に火を入れる。\n……さて、今日は何を打とうか。'), { hold: 900 }); })), { hold: 1200 });
 }
