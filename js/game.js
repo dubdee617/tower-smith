@@ -471,7 +471,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 19'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 20'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -926,13 +926,13 @@ function dungeonUI() {
   }
   box.appendChild(pad);
   const row = document.createElement('div'); row.className = 'btns three'; row.style.marginTop = '6px';
+  // ボタンはいつも同じ3つ（ツール・調べる・道具）。階段は正面に進めば上り下りする（ボタンが増えて絵が小さくならないように）
   const [fdx, fdy] = DIRS[dir], here = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
-  const chest = chestHere();
+  const chest = chestHere(), p = propAhead();
   const mk = (t, s, f, hot, off) => { const b = document.createElement('button'); b.innerHTML = t + (s ? `<small>${s}</small>` : ''); if (hot) b.className = 'hot'; if (off) b.disabled = true; b.onclick = () => { f(); hud(); }; row.appendChild(b); };
-  mk(here === 2 ? '上る' : here === 3 ? '下りる' : '階段', here === 2 ? `${floorNo + 1}階へ` : here === 3 ? (floorNo === 1 ? '町へ' : `${floorNo - 1}階へ`) : 'ここにはない', stairs, here === 2 || here === 3, !(here === 2 || here === 3));
-  if (chest) mk('宝箱を開ける', chest.gold ? '豪華な宝箱' : '', openChest, true);
   { const dg = digInfo(), tl = gearBy(G.equip.tool); mk('ツール', dg ? dg.label : tl ? `${tl.name} ${tl.dur}/${tl.maxDur}` : 'なし', useTool, !!(dg && dg.ok)); }
-  { const p = propAhead(); if (p && PROP_INFO[p.key]) mk('調べる', p.searched ? '調べた' : PROP_INFO[p.key][0], searchProp, !p.searched, !!p.searched); }
+  { const what = chest ? (chest.gold ? '豪華な宝箱' : '宝箱') : p && PROP_INFO[p.key] ? (p.searched ? '調べた' : PROP_INFO[p.key][0]) : here === 2 ? '上り階段' : here === 3 ? '下り階段' : '';
+    mk('調べる', what, inspect, !!chest || !!(p && PROP_INFO[p.key] && !p.searched)); }
   mk('道具', G.enc ? `${ITEMS[G.enc.k].name} 残${G.enc.floors}` : '薬草・羽など', itemMenu);
   box.appendChild(row);
   const n = document.createElement('div'); n.className = 'note'; n.textContent = `持っている戦利品: ${matText(G.carry)}（倒れるとなくなる）`; box.appendChild(n);
@@ -957,8 +957,8 @@ function chestAhead(any) { if (!F) return null; const [fdx, fdy] = DIRS[dir], x 
 const chestHere = () => chestAhead();
 function facingNote() {
   const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
-  if (c === 2) log(floorNo === 10 && !G.bossDown ? '上り階段。上から重い足音がする……。' : '上り階段がある。');
-  else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。' : '下り階段がある。');
+  if (c === 2) log(floorNo === 10 && !G.bossDown ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
+  else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。（▲で下りる）' : '下り階段がある。（▲で下りる）');
   else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
   else if (c === 6) { const ch = chestAhead(true), p = propAhead(); if (ch) log(ch.open ? '開けた宝箱がある。' : ch.gold ? '豪華な宝箱がある！' : '宝箱がある。'); else if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
 }
@@ -1056,6 +1056,15 @@ function giveLoot([kind, v]) {
   if (kind === 'item') { G.items[v] = (G.items[v] || 0) + 1; return `${ITEMS[v].name}を見つけた。`; }
   if (kind === 'gold') { const n = Math.ceil(v * (.6 + R() * .8) * (1 + floorNo * .1)); G.gold += n; return `${n}Gを見つけた。`; }
   return '';
+}
+// 調べる: 正面の宝箱を開ける／床の物を調べる／階段なら行き方を教える
+function inspect() {
+  if (chestHere()) { openChest(); return; }
+  const p = propAhead(); if (p && PROP_INFO[p.key]) { if (p.searched) log(`${PROP_INFO[p.key][0]}。もう調べた。`, true); else searchProp(); return; }
+  const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
+  if (c === 2) log(`上り階段だ。前に進むと${floorNo + 1}階へ上る。`, true);
+  else if (c === 3) log(`下り階段だ。前に進むと${floorNo === 1 ? '町に戻る' : (floorNo - 1) + '階へ下りる'}。`, true);
+  else log(pick(['特に何もない。', '……何もないようだ。', '足元を見回した。何もない。']), true);
 }
 function searchProp() {
   const p = propAhead(); if (!p || p.searched) return; p.searched = true;
