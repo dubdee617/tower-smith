@@ -474,7 +474,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 24'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 25'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -810,13 +810,26 @@ function shop(msg) {
     talkBtn('jenny', () => inside('weapon', byeLine('jenny'))), leave]);
   if (msg) log(msg, true);
 }
+// 売る: 同じ物はまとめて1行に。押すと「1つ／全部」を選べる。装備していない物をまとめて全部売ることもできる
+const sellPrice = g => { const rec = RECIPES.find(r => r.id === g.id); return Math.floor((rec ? rec.price : 10) * (perk('jenny') ? 1.25 : 1)); };
+const isEquipped = g => [G.equip.r, G.equip.l, G.equip.armor, G.equip.tool].includes(g.uid);
+function sellGear(list) {
+  const sum = list.reduce((a, g) => a + sellPrice(g), 0);
+  G.gold += sum; G.gear = G.gear.filter(x => !list.includes(x)); save(); return sum;
+}
 function shopSell(msg) {
+  const free = G.gear.filter(g => !isEquipped(g)), groups = {};
+  for (const g of free) (groups[g.id] = groups[g.id] || []).push(g);
   const L = [{ title: `売る（手持ち ${G.gold}G）` }];
-  if (!G.gear.length) L.push({ t: '売る物がない', off: true, f: () => {} });
-  for (const g of G.gear) {
-    const used = [G.equip.r, G.equip.l, G.equip.armor, G.equip.tool].includes(g.uid); const rec = RECIPES.find(r => r.id === g.id); const p = Math.floor((rec ? rec.price : 10) * (perk('jenny') ? 1.25 : 1));
-    L.push({ t: `${g.name}`, s: used ? '装備中' : `${p}Gで売る`, off: used, f: () => { G.gold += p; G.gear = G.gear.filter(x => x !== g); save(); shopSell(`ジェニー「${g.name}、${p}Gね。……もっと高く売れるのに」`); } });
+  if (free.length > 1) L.push({ t: '全部売る', s: `装備していない${free.length}個／${free.reduce((a, g) => a + sellPrice(g), 0)}G`, hot: true, f: () => {
+    buttons([{ title: `装備していない物を${free.length}個、全部売る？` }, { t: '売る', hot: true, f: () => { const n = free.length, sum = sellGear(free); shopSell(`${n}個まとめて${sum}Gで売った。\nジェニー[laugh]「まとめて持ってくるなんて、気が利くじゃない」`); } }, { t: 'やめる', f: () => shopSell() }]); } });
+  for (const [id, gs] of Object.entries(groups)) { const p = sellPrice(gs[0]);
+    L.push({ t: `${gs[0].name}${gs.length > 1 ? ` ×${gs.length}` : ''}`, s: `1つ${p}G`, f: () => {
+      if (gs.length === 1) { sellGear(gs); shopSell(`ジェニー「${gs[0].name}、${p}Gね。……もっと高く売れるのに」`); return; }
+      buttons([{ title: `${gs[0].name}（${gs.length}個）をいくつ売る？` }, { t: '1つ', s: `${p}G`, f: () => { sellGear([gs[0]]); shopSell(`${gs[0].name}を${p}Gで売った。`); } },
+        { t: `全部（${gs.length}個）`, s: `${p * gs.length}G`, hot: true, f: () => { sellGear(gs); shopSell(`${gs[0].name}を${gs.length}個、${p * gs.length}Gで売った。`); } }, { t: '戻る', f: () => shopSell() }]); } });
   }
+  if (!free.length) L.push({ t: '売る物がない', s: '装備中の物は売れない', off: true, f: () => {} });
   L.push({ t: '戻る', f: () => shop() });
   buttons(L); log(msg || 'ジェニー「何を売るの？ 自分で打ったのも買い取るわよ」', true);
 }
@@ -901,9 +914,13 @@ function guild(msg, face) {
 function guildSell(msg) {
   const L = [{ title: `素材を売る（工房の素材）` }];
   if (!Object.values(G.store).some(n => n > 0)) L.push({ t: '売る素材がない', off: true, f: () => {} });
-  for (const [k, n] of Object.entries(G.store)) if (n > 0) L.push({ t: `${MATS[k]}を1つ売る`, s: `${MAT_PRICE[k]}G（${n}個）`, f: () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); } });
+  for (const [k, n] of Object.entries(G.store)) if (n > 0) L.push({ t: `${MATS[k]} ×${n}`, s: `1つ${MAT_PRICE[k]}G`, f: () => {
+    if (n === 1) { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); return; }
+    buttons([{ title: `${MATS[k]}（${n}個）をいくつ売る？` }, { t: '1つ', s: `${MAT_PRICE[k]}G`, f: () => { G.store[k]--; G.gold += MAT_PRICE[k]; save(); guildSell(`${MATS[k]}を${MAT_PRICE[k]}Gで売った。`); } },
+      { t: `半分（${Math.floor(n / 2)}個）`, s: `${MAT_PRICE[k] * Math.floor(n / 2)}G`, off: n < 2, f: () => { const m = Math.floor(n / 2); G.store[k] -= m; G.gold += MAT_PRICE[k] * m; save(); guildSell(`${MATS[k]}を${m}個、${MAT_PRICE[k] * m}Gで売った。`); } },
+      { t: `全部（${n}個）`, s: `${MAT_PRICE[k] * n}G`, f: () => { G.store[k] = 0; G.gold += MAT_PRICE[k] * n; save(); guildSell(`${MATS[k]}を${n}個、${MAT_PRICE[k] * n}Gで売った。`); } }, { t: '戻る', f: () => guildSell() }]); } });
   L.push({ t: '戻る', f: () => guild() });
-  buttons(L); log(msg || 'リア「工房の素材を買い取ります。1つずつどうぞ」', true);
+  buttons(L); log(msg || 'リア「工房の素材を買い取ります。まとめてでも大丈夫ですよ」', true);
 }
 function guildBuy(msg, face) {
   const L = [{ title: `素材を買う（手持ち ${G.gold}G）` }];
