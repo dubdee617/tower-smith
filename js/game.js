@@ -417,7 +417,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 14'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 15'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -518,6 +518,7 @@ function homeMenu() {
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true); } },
     { t: '装備を変える', s: job(), f: () => equipMenu(homeMenu) },
+    { t: 'ツール', s: toolName(), f: () => toolMenu(homeMenu) },
     { t: '技を選ぶ', s: `${G.loadout.skills.length}/10`, f: () => skillMenu(homeMenu) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(homeMenu) },
     { t: 'ジョブ', s: '一覧', f: () => jobList(homeMenu) },
@@ -595,9 +596,31 @@ function enterMenu() {
   opts.push({ t: 'やめる', f: () => towerScreen('「……どうしようか」') });
   buttons(opts); log('どこから登る？', true);
 }
+// ツール: 1回の塔のぼりに1つだけ持っていける。塔の中では「ツール」のコマンドで使う
+const toolName = () => { const t = gearBy(G.equip.tool); return t ? `${t.name} ${t.dur}/${t.maxDur}` : 'なし'; };
+function toolMenu(back) {
+  const tools = G.gear.filter(g => g.type === 'tool');
+  const L = [{ title: '持っていくツール（1回に1つだけ）' }];
+  if (!tools.length) L.push({ t: 'ツールがない', s: '工房で打てる', off: true, f: () => {} });
+  for (const g of tools) { const on = G.equip.tool === g.uid;
+    L.push({ t: g.name + (on ? ' ✓' : ''), s: `耐久${g.dur}/${g.maxDur}`, hot: on, f: () => { G.equip.tool = on ? null : g.uid; sfx('equip'); save(); toolMenu(back); } }); }
+  L.push({ t: '戻る', f: back });
+  buttons(L);
+  log('ツールは、正面の壁に向かって「ツール」で使う。\n石の壁はツルハシ、木は木こりの斧、砂はシャベルが得意。', true);
+}
+// 塔の中の「ツール」コマンド
+function useTool() {
+  const t = gearBy(G.equip.tool);
+  if (!t) { log('ツールを持ってきていない。\n（塔の入口の「準備する」で選べる）', true); return; }
+  const d = digInfo();
+  if (!d) { log(`${t.name}は、正面の壁に向かって使う。`, true); return; }
+  if (!d.ok) { log(d.label === '塔の骨' ? 'この壁は「塔の骨」だ。掘れない。' : `${t.name}が壊れている。工房で直そう。`, true); return; }
+  dig();
+}
 function prepMenu() {
   const back = () => prepMenu();
   buttons([{ t: '装備を変える', s: job(), f: () => equipMenu(back) },
+    { t: 'ツールを選ぶ', s: toolName(), hot: !G.equip.tool && G.gear.some(g => g.type === 'tool'), f: () => toolMenu(back) },
     { t: '技を選ぶ', s: `${G.loadout.skills.length}/10`, f: () => skillMenu(back) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(back) },
     { t: '持ち物を見る', f: () => log(`${Object.entries(ITEMS).filter(([k]) => G.items[k] > 0).map(([k, it]) => it.name + G.items[k]).join(' ')}／手持ち ${G.gold}G${G.injuries.length ? '\nケガ: ' + G.injuries.map(k => INJURIES[k].name + '（' + INJURIES[k].desc + '）').join('、') : ''}${G.bless ? '\n祝福: ' + BLESSINGS[G.bless].name : ''}`, true) },
@@ -633,8 +656,8 @@ function equipMenu(back) {
   back = back || homeMenu; if (equipMenu.back !== back) equipMenu.last = null; equipMenu.back = back;
   const r = gearBy(G.equip.r), l = gearBy(G.equip.l), a = gearBy(G.equip.armor);
   const tl = gearBy(G.equip.tool);
-  const L = [{ title: `右 ${r ? r.name : 'なし'}／左 ${l ? l.name : 'なし'}／鎧 ${a ? a.name : 'なし'}／ツール ${tl ? tl.name : 'なし'}` }];
-  for (const g of G.gear) {
+  const L = [{ title: `右 ${r ? r.name : 'なし'}／左 ${l ? l.name : 'なし'}／鎧 ${a ? a.name : 'なし'}` }];
+  for (const g of G.gear.filter(x => x.type !== 'tool')) {
     const where = G.equip.r === g.uid ? '（右手）' : G.equip.l === g.uid ? '（左手）' : G.equip.armor === g.uid || G.equip.tool === g.uid ? '（装備中）' : '';
     const kind = g.type === 'tool' ? `${TOOL_NAMES[g.tool]} 耐久${g.dur}/${g.maxDur}` : gearKind(g.type);
     L.push({ t: g.name + where, s: `${kind}${g.atk ? ' 攻' + g.atk : ''}${g.def ? ' 守' + g.def : ''}`, hot: !!where, f: () => { const before = JSON.stringify(G.equip); equipItem(g); if (JSON.stringify(G.equip) !== before) sfx('equip'); equipMenu(back); checkLearn(job()); save(); } });
@@ -853,7 +876,7 @@ function dungeonUI() {
   const mk = (t, s, f, hot, off) => { const b = document.createElement('button'); b.innerHTML = t + (s ? `<small>${s}</small>` : ''); if (hot) b.className = 'hot'; if (off) b.disabled = true; b.onclick = () => { f(); hud(); }; row.appendChild(b); };
   mk(here === 2 ? '上る' : here === 3 ? '下りる' : '階段', here === 2 ? `${floorNo + 1}階へ` : here === 3 ? (floorNo === 1 ? '町へ' : `${floorNo - 1}階へ`) : 'ここにはない', stairs, here === 2 || here === 3, !(here === 2 || here === 3));
   if (chest) mk('宝箱を開ける', chest.gold ? '豪華な宝箱' : '', openChest, true);
-  { const dg = digInfo(); if (dg) mk('掘る', dg.label, dig, false, !dg.ok); }
+  { const dg = digInfo(), tl = gearBy(G.equip.tool); mk('ツール', dg ? dg.label : tl ? `${tl.name} ${tl.dur}/${tl.maxDur}` : 'なし', useTool, !!(dg && dg.ok)); }
   { const p = propAhead(); if (p && PROP_INFO[p.key]) mk('調べる', p.searched ? '調べた' : PROP_INFO[p.key][0], searchProp, !p.searched, !!p.searched); }
   mk('道具', G.enc ? `${ITEMS[G.enc.k].name} 残${G.enc.floors}` : '薬草・羽など', itemMenu);
   box.appendChild(row);
@@ -1120,7 +1143,7 @@ function startBattle(boss) {
 function levelUpFx(lv, up) {
   let d = $('lvup'); if (!d) { d = document.createElement('div'); d.id = 'lvup'; document.body.appendChild(d); d.onclick = () => d.classList.remove('on'); }
   d.innerHTML = `<div><b>LEVEL UP!</b><em>Lv ${lv}</em><span>最大HP +${up.hp}　攻 +${up.atk}　守 +${up.def}</span><small>${job()}の伸び方</small></div>`;
-  d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
+  d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); sfx('levelup', { vol: 1 });
   clearTimeout(levelUpFx.t); levelUpFx.t = setTimeout(() => d.classList.remove('on'), 2400);
 }
 // 遭遇の演出: 画面全体が黄色く光る → 揺れる →「遭遇！」の帯と魔物の名前。少しの間ボタンは押せない
@@ -1211,7 +1234,7 @@ function endTurn() {
   B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; battleUI(); hud();
 }
 function win() {
-  sfx('win', { delay: 300 });
+  sfx('win', { delay: 300, max: G.exp + B.m.exp >= expNeed() ? .9 : 0 });
   const m = B.m; B.over = true; B.dying = performance.now();
   G.exp += m.exp; G.gold += m.gold; allyTick();
   for (const [k, n] of Object.entries(m.drop)) if (m.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') ? .12 : 0))) add(G.carry, k, n);
@@ -1220,7 +1243,7 @@ function win() {
   if (G.exp >= expNeed()) setTimeout(() => playFx('levelup', { self: true, size: 1.2 }), 500);
   { const up = { hp: 0, atk: 0, def: 0 }, lv0 = G.lv;
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
-    if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 650); } }
+    if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
   if (m.boss) { G.bossDown = true; msg += '\n10階の主を倒した。上への道が開いた。'; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);

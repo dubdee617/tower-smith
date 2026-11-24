@@ -129,7 +129,7 @@ const FX_SFX = {
   impact: 'hit1', impact_heavy: 'heavy', thrust: 'swing', arrow: 'arrow', magic_arrow: 'magic',
   fire_s: 'fire1', fire_l: 'fire3', explosion: 'explosion', wind: 'firewind', ice_spear: 'ice2', ice_burst: 'icefreeze', thunder: 'thunder3', thunder_ball: 'shock1', paralyze: 'shock2',
   holy_pillar: 'holy', holy_cross: 'holy', dark_mist: 'dark', dark_blade: 'dark', magic_circle: 'magic', blessing: 'holy', pray: 'magic', warp: 'magic',
-  heal: 'heal1', heal_leaf: 'heal3', barrier: 'buff', power: 'buff', levelup: 'levelup', bunshin: 'dash', afterimage: 'miss',
+  heal: 'heal1', heal_leaf: 'heal3', barrier: 'buff', power: 'buff', bunshin: 'dash', afterimage: 'miss',
   poison: 'poison1', poison_bubble: 'poison2', spark: 'hit', claw: 'punch', bite: 'bite', rocks: 'rockbreak',
 };
 // 足音（エリアごと）
