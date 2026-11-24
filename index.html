@@ -36,8 +36,8 @@ main{max-width:520px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-
 .bars{flex:none;display:grid;grid-template-columns:auto 1fr auto auto 1fr auto;gap:2px 8px;align-items:center;font-size:13px}
 .bar{height:8px;background:#000;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%}
 .log{flex:1 1 auto;min-height:100px;position:relative;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:7px 10px;overflow:hidden;font-size:16px;line-height:1.5;white-space:pre-line}
-.log.hasface{padding-left:82px}
-.log .face{position:absolute;left:7px;top:7px;width:64px;height:84px;object-fit:cover;object-position:50% 0;border-radius:8px;border:2px solid var(--line);background:radial-gradient(circle at 50% 35%,#5a4330,#20160f 75%)}
+.log.hasface{padding-right:82px}
+.log .face{position:absolute;right:7px;top:7px;width:64px;height:84px;object-fit:cover;object-position:50% 0;border-radius:8px;border:2px solid var(--line);background:radial-gradient(circle at 50% 35%,#5a4330,#20160f 75%)}
 .ctl{flex:none;margin-top:auto}
 /* 塔の中: 絵は4:3のまま。余った高さは文章でなく、ボタン（十字キー）を大きくする */
 .dg .log{flex:0 0 104px}
@@ -78,6 +78,13 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
 @keyframes hop{30%{transform:translateY(-8px) scale(1.01)}60%{transform:translateY(0)}}
 .fig span{position:absolute;bottom:6px;font-size:15px;font-weight:700;color:#fff3d6;text-shadow:0 1px 2px #000,0 0 6px #000;z-index:1}
 .fig.L span{left:12px}.fig.R span{right:12px}
+/* 暗転 */
+#fade{position:fixed;inset:0;z-index:50;background:#000;opacity:0;pointer-events:none;transition:opacity .24s ease;display:flex;align-items:center;justify-content:center;text-align:center;color:#ffc069;font-size:20px;letter-spacing:.25em;line-height:1.9}
+#fade.on{opacity:1;pointer-events:auto}
+#fade.txt div{animation:glow 1.1s ease-in-out infinite}
+#fade.txt i{display:block;width:120px;height:3px;margin:10px auto 0;border-radius:2px;background:linear-gradient(90deg,transparent,#ff8a3d,transparent);animation:spark .45s ease-in-out infinite}
+@keyframes glow{50%{text-shadow:0 0 14px #ff8a3d,0 0 28px rgba(255,120,40,.5)}}
+@keyframes spark{50%{opacity:.2;transform:scaleX(.6)}}
 /* 話している人の顔: セリフ欄の外、枠なし */
 #spk{position:absolute;bottom:0;height:118px;width:auto;z-index:6;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9));display:none}
 #spk.on{display:block;animation:spkIn .3s ease-out}
@@ -115,6 +122,7 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
  <div class="log" id="log"></div>
  <div class="ctl" id="ctl"></div>
 </main>
+<div id="fade"></div>
 <script src="js/assets.js"></script>
 <script src="js/props.js"></script>
 <script src="js/fx.js"></script>

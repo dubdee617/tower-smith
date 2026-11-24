@@ -169,7 +169,7 @@ function showFig(src, opt) {
   if (old && old.dataset.src === src) { delete old.dataset.stale; return; }
   const lastSide = showFig.side;
   if (old) old.remove();
-  const side = opt.side || (lastSide && R() < .7 ? (lastSide === 'L' ? 'R' : 'L') : (R() < .5 ? 'L' : 'R'));
+  const side = opt.side || 'L';  // 立ち絵はみんな右を向いているので、左に立たせる
   const m = opt.mode || (R() < .45 ? 'bust' : 'full');
   const d = document.createElement('div'); d.className = `fig ${m === 'wide' ? 'wide C' : side} ${m === 'bust' ? 'bust' : ''}`;
   d.dataset.src = src; d.dataset.who = opt.who || '';
@@ -225,7 +225,8 @@ function buttons(list, cls) {
     const el = document.createElement('button'); el.innerHTML = b.t + (b.s ? `<small>${b.s}</small>` : '');
     el.addEventListener('click', () => sfx('select', { vol: .5 }), { capture: true });
     if (b.off) el.disabled = true; if (b.hot) el.className = 'hot';
-    el.onclick = () => { b.f(); hud(); }; wrap.appendChild(el); return el;
+    const move = b.go || b.f === townMap || ['入る', '外に出る', '町へ', '工房へ'].includes(b.t);
+    el.onclick = () => { if (move) fadeGo(() => b.f()); else { b.f(); hud(); } }; wrap.appendChild(el); return el;
   };
   if (head) { const h = document.createElement('h2'); h.textContent = head; box.appendChild(h); }
   const wrap = document.createElement('div'); wrap.className = 'btns' + (cls ? ' ' + cls : '');
@@ -244,6 +245,25 @@ function buttons(list, cls) {
     box.appendChild(tr);
   }
   fitStage();
+}
+// 暗転: 画面を一度黒くしてから切り替える。場所が変わるとき・工房で何かを作るとき
+// o.text: 黒い画面に出す文字（「制作中」など） o.hold: 黒いままにする時間 o.walk: 町を歩く足音 o.sfx: [[音, 遅らせるms]]
+function fadeGo(fn, o) {
+  o = o || {}; const f = $('fade');
+  if (fadeGo.busy || !f) { fn(); hud(); return; }
+  fadeGo.busy = true; f.innerHTML = o.text ? `<div>${o.text.replace(/\n/g, '<br>')}<i></i></div>` : ''; f.classList.toggle('txt', !!o.text); f.classList.add('on');
+  if (o.walk) sfx('walk_town', { vol: .8, max: 1.4 });
+  for (const [k, d] of o.sfx || []) sfx(k, { delay: d, vol: .8 });
+  setTimeout(() => {
+    try { fn(); hud(); } catch (e) { console.error(e); }
+    setTimeout(() => { f.classList.remove('on'); fadeGo.busy = false; }, o.hold || 80);
+  }, 240);
+}
+// その場で黒から明ける（すぐに切り替わる処理のあとに使う）
+function flashIn() {
+  const f = $('fade'); if (!f || fadeGo.busy) return;
+  f.innerHTML = ''; f.classList.remove('txt'); f.style.transition = 'none'; f.classList.add('on'); void f.offsetWidth; f.style.transition = '';
+  setTimeout(() => f.classList.remove('on'), 60);
 }
 // 画面（町の絵・ダンジョン）を、残りの高さに収まる大きさにする
 // 絵は上に寄せる。COVER の画面（店の中・町の景色など）は余った高さいっぱいに広げ、切れた分は絵の端を落とす
@@ -384,7 +404,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 5'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 6'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 function intro(i) {
   viewScreen('', true);
@@ -399,9 +419,9 @@ function townMap() {
     const [x0, y0, x1, y1] = p.box, b = document.createElement('button');
     b.className = 'hot'; b.setAttribute('aria-label', p.name);
     Object.assign(b.style, { left: (x0 / 466 * 100) + '%', top: (y0 / 700 * 100) + '%', width: ((x1 - x0) / 466 * 100) + '%', height: ((y1 - y0) / 700 * 100) + '%' });
-    b.onclick = () => outside(id); t.appendChild(b);
+    b.onclick = () => fadeGo(() => outside(id), { walk: true }); t.appendChild(b);
   }
-  if (G.castle) { const ar = document.createElement('button'); ar.className = 'arrow'; ar.textContent = '▼ お城'; ar.onclick = castleScreen; t.appendChild(ar); }
+  if (G.castle) { const ar = document.createElement('button'); ar.className = 'arrow'; ar.textContent = '▼ お城'; ar.onclick = () => fadeGo(castleScreen, { walk: true }); t.appendChild(ar); }
   buttons([]);
   log('行きたい場所を押してね。', true); hud();
 }
@@ -530,14 +550,14 @@ function warpMenu() {
   const lit = id => G.warps.some(n => GOD_OF_AREA[n] === id);
   t.innerHTML = `<div class="statues">${['forest', 'desert', 'mountain', 'ice'].map(id => `<img class="${lit(id) ? 'lit' : ''}" src="${TOWN_IMG}gstatue_${id}.png" alt="${TOWER_NPCS[id].name}の像">`).join('')}</div><div class="name">女神の像</div>`;
   if (!G.warps.length) { buttons([{ t: '戻る', f: () => towerScreen() }]); log('塔の入口に、4人の女神の像が並んでいる。\nまだどれも光っていない。……塔の中で、女神に会えたら。', true); return; }
-  const L = G.warps.map(n => ({ t: `${n}階へ`, s: `${TOWER_NPCS[GOD_OF_AREA[n]].name}・${areaOf(n)[2]}`, f: () => { log(`${TOWER_NPCS[GOD_OF_AREA[n]].name}の像に触れた。光に包まれて……`, true); setTimeout(() => enterFloor(n), 400); } }));
+  const L = G.warps.map(n => ({ t: `${n}階へ`, s: `${TOWER_NPCS[GOD_OF_AREA[n]].name}・${areaOf(n)[2]}`, f: () => { log(`${TOWER_NPCS[GOD_OF_AREA[n]].name}の像に触れた。光に包まれて……`, true); setTimeout(() => fadeGo(() => enterFloor(n)), 400); } }));
   L.push({ t: 'やめる', f: () => towerScreen() });
   buttons(L, L.length > 6 ? 'three small' : ''); log('女神の像が、やさしく光っている。どこへ行く？', true);
 }
 function enterMenu() {
   if (G.maxFloor < 5) { enterFloor(1); return; }
-  const opts = [{ t: '1階から', hot: true, f: () => enterFloor(1) }, { t: '5階から', s: '昇降機', f: () => enterFloor(5) }];
-  if (G.maxFloor >= 10) opts.push({ t: '10階から', s: '昇降機', f: () => enterFloor(10) });
+  const opts = [{ t: '1階から', hot: true, go: true, f: () => enterFloor(1) }, { t: '5階から', s: '昇降機', go: true, f: () => enterFloor(5) }];
+  if (G.maxFloor >= 10) opts.push({ t: '10階から', s: '昇降機', go: true, f: () => enterFloor(10) });
   opts.push({ t: 'やめる', f: () => towerScreen('「……どうしようか」') });
   buttons(opts); log('どこから登る？', true);
 }
@@ -559,15 +579,15 @@ function forge(msg, face) {
     const kind = r.type === 'tool' ? TOOL_NAMES[r.tool] + `・耐久${r.dur}` : gearKind(r.type);
     const b = { t: r.name, s: `${kind} ${r.atk ? '攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}／${matText(r.cost)}`, off: !ok, f: () => {
       for (const [k, n] of Object.entries(r.cost)) G.store[k] -= n;
-      G.gear.push(newGear(r));
-      save(); forge(`カン、カン、カン……。\n「${r.name}、できた。悪くない」`, 'grin');
+      G.gear.push(newGear(r)); save();
+      fadeGo(() => forge(`「${r.name}、できた。悪くない」`, 'grin'), { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
     } };
     all.push(b); if (ok) can.push(b);
   }
   const fix = [];
   for (const t of G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur)) {
     const ok = (G.store.copper || 0) >= 1;
-    fix.push({ t: `${t.name}を直す`, s: `耐久${t.dur}/${t.maxDur}／銅1`, off: !ok, f: () => { G.store.copper--; t.dur = t.maxDur; save(); forge(`${t.name}を研ぎ直した。新品同様だ。`, 'grin'); } });
+    fix.push({ t: `${t.name}を直す`, s: `耐久${t.dur}/${t.maxDur}／銅1`, off: !ok, f: () => { G.store.copper--; t.dur = t.maxDur; save(); fadeGo(() => forge(`${t.name}を研ぎ直した。新品同様だ。`, 'grin'), { text: `${t.name}\n手入れ中`, hold: 900, sfx: [['hit1', 250], ['hit1', 700]] }); } });
   }
   // 作れる物を先に。作れない物は「すべて」タブで見られる
   L.push({ title: `作れる（素材: ${matText(G.store)}）` }, ...(can.length ? can : [{ t: '今は作れる物がない', s: 'ギルドで素材を', off: true, f: () => {} }]), ...fix, { title: `すべて（素材: ${matText(G.store)}）` }, ...all);
@@ -964,11 +984,11 @@ function openChest() {
 function stairs() {
   sfx('stairs', { max: 1.6 });
   const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
-  if (c === 3) { if (floorNo === 1) toTown('塔から出た。', true); else enterFloor(floorNo - 1, true); }
+  if (c === 3) { if (floorNo === 1) fadeGo(() => toTown('塔から出た。', true)); else fadeGo(() => enterFloor(floorNo - 1, true)); }
   else if (c === 2) {
     if (floorNo === 10 && !G.bossDown) { startBattle(BOSS10); return; }
     if (floorNo >= 10) { log('11階から上は、まだ作っていない。', true); return; }
-    enterFloor(floorNo + 1);
+    fadeGo(() => enterFloor(floorNo + 1));
   }
 }
 // 道具を使う。戻り値: 使えたか
@@ -990,7 +1010,7 @@ function useItem(k) {
     log(`鳥が戦利品を足につかんで、窓の外へ飛んでいった。\n工房へ: ${t}`, true); return true;
   }
   if (k === 'ward' || k === 'lure') { G.items[k]--; G.enc = { k, floors: 3 }; save(); log(k === 'ward' ? '魔除けを焚いた。魔物の気配が遠のく。（3フロア）' : '魔寄せを焚いた。魔物の気配が近づいてくる……。（3フロア）', true); return true; }
-  if (k === 'wing') { G.items[k]--; toTown('帰還の羽が光った。', true); return true; }
+  if (k === 'wing') { G.items[k]--; flashIn(); toTown('帰還の羽が光った。', true); return true; }
   return false;
 }
 // 塔の中の道具メニュー

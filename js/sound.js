@@ -66,7 +66,7 @@ const SND = (() => {
     for (const a of pool) { a.src = SILENT; const p = a.play(); if (p && p.catch) p.catch(() => {}); }
     cur = ''; tick(true);
     // よく使う効果音を先に読んでおく
-    if (ac) ['select', 'slash', 'hit', 'swing', 'door', 'win', 'heal1', 'step_stone', 'item'].forEach(load);
+    if (ac) ['select', 'slash', 'hit', 'swing', 'door', 'win', 'heal1', 'step_stone_1', 'step_stone_2', 'step_stone_3', 'walk_town', 'item'].forEach(load);
   }
   // iPhoneは touchend / click の中でないと音を起こせない（touchstart や pointerdown ではだめ）
   ['touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, { capture: true, passive: true }));
@@ -134,7 +134,8 @@ const FX_SFX = {
 };
 // 足音（エリアごと）
 const STEP_SFX = { stone: 'step_stone', forest: 'step_grass', jungle: 'step_grass', desert: 'step_sand', ruins: 'step_sand', mountain: 'step_dirt', canyon: 'step_dirt', snow: 'step_snow', glacier: 'step_snow', castle: 'step_stone' };
-const stepSfx = n => sfx(n >= 6 && n <= 9 ? 'step_wet' : STEP_SFX[areaOf(n)[1]] || 'step_stone', { max: .32, vol: .7 });
+// 1歩ぶんに切った短い足音（3種類）をランダムに。長い元の音は最初が小さく、聞こえにくかった
+const stepSfx = n => sfx((n >= 6 && n <= 9 ? 'step_wet' : STEP_SFX[areaOf(n)[1]] || 'step_stone') + '_' + (1 + Math.floor(Math.random() * 3)), { vol: .75 });
 // 魔物の鳴き声（戦闘の始まり）
 const CRY_SFX = { rat: 'cry_beast', centipede: 'cry_beast', skeleton: 'cry_skeleton', goblin: 'goblin', golem: 'cry_golem' };
 // 文の中身で鳴らす効果音（店・宿・ギルドなど）
