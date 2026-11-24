@@ -236,3 +236,46 @@ const BYE = {
   jin:   ['ジン「……またおいで。ここは、静かでいい」', 'ジン[smile]「話せてよかった。塔は逃げんよ」', 'ジン「茶でも持ってくればよかったのう」', 'ジン[laugh]「ほっほっほ。若いのと話すと、若返る」', 'ジン「行っておいで。わしはここにおる」'],
 };
 const byeLine = who => { const c = (G.seen || {})[who]; if (c && who === 'jenny') return pick(['ジェニー[shy]「……もう行っちゃうの？ ……ふん、またね」', 'ジェニー[happy]「話せてよかった。……なんてね」']); if (c && who === 'elly') return pick(['エリー[happy]「……今日、会えてよかったです」', 'エリー[shy]「また、お茶しましょうね」']); if (c && who === 'ria') return pick(['リア[happy]「……今夜、また工房に寄ってもいいですか？」', 'リア[shy]「……行ってらっしゃい。待ってますから」']); return pick(BYE[who]); };
+
+// ---------- プロローグ（オープニングのあと、工房で） ----------
+// 工房に住む人たちの紹介と、「自分で材料を採りに行く」と決めるまで。
+// fig: 立ち絵（npc/の名前） hero: 主人公の表情（セリフのとき） sfx: 効果音
+const PROLOGUE = [
+  { sfx: 'cooking', t: '翌朝。町はずれの工房。\n台所から、何かを焼くいい匂いがする。' },
+  { fig: 'chicchi', t: 'チッチ[smile]「親方、朝メシできたっす。\n……また帳簿とにらめっこっすか」' },
+  { hero: 'sigh', t: '「鉄がまた値上がりした。銅もだ。\n……質は落ちてるのにな」' },
+  { fig: 'chicchi', t: '居候のチッチ。元・盗賊。\n工房に盗みに入り、0.5秒で捕まった。\n以来なぜか住みついて、家事をしている。' },
+  { fig: 'chicchi', t: 'チッチ[laugh]「鍵開けと掃除は得意っす。\n盗みは……向いてなかったっす」' },
+  { fig: 'als', sfx: 'swing', t: 'アルス[smile]「師匠、おはようございます！\n素振り500回、終わりました！」' },
+  { fig: 'als', t: '弟子のアルス。16歳。\n師匠の言葉を、毎日日記につけている。\n……中身は、ほとんど「まぁどうにかなる」だ。' },
+  { fig: 'apprentice', sfx: 'hit1', t: '助手[laugh]「親方！ 炉の火、入れておきました！\nあと、釘を3本まっすぐ打てました！」' },
+  { fig: 'apprentice', t: '見習いの助手。まだ半人前だが、\n炉の前ではいつも楽しそうだ。' },
+  { fig: 'buppa_sleep', t: 'ブッパ「……ぐう……ぐう……」' },
+  { fig: 'buppa_sleep', t: '床で寝ているのはブッパ。\nここに住んでいるわけではない。……たぶん。' },
+  { hero: 'serious', t: '「……ギルドの素材は高い。\n冒険者から買っても、質はまちまち。\nこのままじゃ、いい物が打てない」' },
+  { hero: 'resolve', t: '「……よし、決めた。\n材料が高いなら、自分で採りに行けばいい」' },
+  { fig: 'als', t: 'アルス[shock]「……師匠？ それってまさか」' },
+  { hero: 'normal', t: '「塔に登る。鉱石も、魔物の素材も、\n自分の目で選んで持って帰る」' },
+  { fig: 'chicchi', t: 'チッチ[shock]「は！？ 親方、鍛冶屋っすよね！？\n冒険者じゃないっすよね！？」' },
+  { fig: 'apprentice', t: '助手[shock]「と、塔って、あの塔ですか！？\nてっぺんが見えない、あの！？」' },
+  { fig: 'buppa_shock', t: 'ブッパ[shock]「うおっ！ ……なんだ、塔の話か。\n……寝てた寝てた」' },
+  { fig: 'als', t: 'アルス[think]「……止めても、行くんですよね」\n「ああ。悪いな」' },
+  { hero: 'smile', t: '「まぁ〜、どうにかなるんじゃないか」' },
+  { fig: 'als', t: 'アルス[laugh]「……今の、日記に書いておきます！」' },
+  { fig: 'als', t: 'アルス[smile]「師匠、魔物を倒すと戦利品が出ます。\nギルドで素材にしてもらえば、\nそれで鍛冶ができますよ」' },
+  { fig: 'chicchi', t: 'チッチ[smile]「薬草は道具屋で買えるっす。\n装備は、工房の『装備を変える』っす。\n……ちゃんと帰ってくるっすよ」' },
+  { t: 'こうして、町いちばんの鍛冶屋の\n塔のぼりが始まった。' },
+];
+function prologue(i) {
+  const P = PROLOGUE[i];
+  if (i === 0) {
+    mode = 'town'; place = 'home'; SND_INDOOR = true; showTown(true, 4 / 3);
+    const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}home_in.jpg" alt="工房の中"><div class="name">工房（自宅）</div>`;
+  }
+  if (P.fig) npcFig(P.fig);
+  if (P.sfx) sfx(P.sfx, { vol: .6, max: 2 });
+  if (P.hero) say(P.hero, P.t, true); else log(P.t, true);
+  const last = i === PROLOGUE.length - 1, done = () => fadeGo(() => inside('home', '塔は町の北のはずれにある。\n準備ができたら、地図から塔へ行こう。'));
+  buttons([{ t: last ? 'はじめる' : '次へ', hot: true, stay: true, f: () => last ? done() : prologue(i + 1) }, { t: 'とばす', stay: true, f: done }]);
+  hud();
+}

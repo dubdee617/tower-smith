@@ -131,7 +131,7 @@ const NPCS = {
   '王様': { id: 'king', laugh: 2 }, '大臣': { id: 'minister', laugh: 2 }, 'ギャバン': { id: 'gaban', laugh: 2 },
   'ドーラ': { id: 'item', think: 10 }, 'ベルナルド': { id: 'bank', think: 10 }, 'ガストン': { id: 'inn', think: 10 },
   'アルス': { id: 'als', smile: 1, laugh: 2, shock: 11, think: 13 },  // 工房の弟子
-  '助手': { id: 'apprentice', laugh: 3, smile: 1 },  // 工房の見習い（ただのNPC）
+  '助手': { id: 'apprentice', laugh: 3, smile: 1, shock: 9 },  // 工房の見習い（ただのNPC）
   'ブッパ': { id: 'buppa', normal: 'sleep', sleep: 'sleep', shock: 'shock', laugh: 'laugh', angry: 'grumpy', grumpy: 'grumpy', eat: 'eat', tired: 'tired' },  // たまにいる居候
   '砂の女神': { id: 'desert', laugh: 4 }, '森の女神': { id: 'forest', laugh: 4 }, '花の女神': { id: 'druid', laugh: 3 }, '山の女神': { id: 'mountain', laugh: 5, smile: 1, angry: 11, think: 12 }, '氷の女神': { id: 'ice', laugh: 4 },
   'チッチ': { id: 'chicchi', smile: 1, laugh: 3, shock: 18, angry: 7, think: 15, shy: 11 },  // 工房の居候
@@ -274,7 +274,7 @@ function flashIn() {
 // 画面（町の絵・ダンジョン）を、残りの高さに収まる大きさにする
 // 絵は上に寄せる。COVER の画面（店の中・町の景色など）は余った高さいっぱいに広げ、切れた分は絵の端を落とす
 let ASPECT = 2 / 3, COVER = false;
-const LOG_MIN = 104;
+const LOG_MIN = 120;
 function fitStage() {
   const s = $('stage'), main = s.parentNode, el = mode === 'town' ? $('town') : $('view');
   const dg = mode !== 'town'; document.body.classList.toggle('dg', dg);
@@ -397,7 +397,6 @@ function returnScreen(msg, brought, letter) {
   buttons([{ t: '町へ', hot: true, f: () => evReady('jenny', .35) ? jennyEvent() : townMap() }]); hud();
 }
 // オープニング（2026-11-24 Daichiさんの文章）。bg: 背景の絵 face: 主人公のセリフのときの表情
-// y: 絵のどこを大きく見せるか（0=塔のてっぺん 100=町の通り）。画面ごとにゆっくり動く
 const INTRO = [
   { y: 0, t: 'エルディア王国の真ん中に、\n天まで届く大きな塔がある。\nその頂を見た者は、誰もいない。' },
   { y: 45, t: '人々は塔で鉱石を掘り、\n魔物を狩り、食べ、売って暮らす。\n塔の恵みが、この国を支えていた。' },
@@ -417,7 +416,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 11'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 12'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -429,8 +428,7 @@ function intro(i) {
     log('', true); buttons([{ t: 'とばす', stay: true, f: () => introEnd() }]); fitStage();
   }
   intro.i = i;
-  const img = t.querySelector('img.intro'), c = t.querySelector('.cine');
-  requestAnimationFrame(() => { img.style.transformOrigin = `${I.x === undefined ? 50 : I.x}% ${I.y}%`; img.style.transform = `scale(${I.z || 1.35})`; });
+  const c = t.querySelector('.cine');
   c.classList.remove('out');
   c.innerHTML = I.t.split('\n').map((l, k) => `<span class="${/[「」]/.test(l) ? 'q' : ''}" style="animation-delay:${.3 + k * .7}s">${l}</span>`).join('');
   clearTimeout(intro.tm); intro.tm = setTimeout(introNext, 2600 + I.t.length * 85);
@@ -444,7 +442,7 @@ function introNext() {
 function introEnd() {
   clearTimeout(intro.tm); if (!document.body.classList.contains('intro')) return;
   $('town').onclick = null;
-  fadeGo(() => { document.body.classList.remove('intro'); townMap(); inside('home', 'アルス「師匠、本当に行くんですか！？ ……今の、日記に書いておきます」'); }, { hold: 400 });
+  fadeGo(() => { document.body.classList.remove('intro'); prologue(0); }, { hold: 500 });
 }
 function townMap() {
   place = null; showTown(true, 2 / 3);

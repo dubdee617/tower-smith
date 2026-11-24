@@ -31,7 +31,6 @@ main{max-width:520px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-
 .town .hot:active,.town .hot:focus-visible{border-color:var(--ember2);background:rgba(255,192,105,.18)}
 .town .bg{inset:-12px;width:calc(100% + 24px);height:calc(100% + 24px);filter:blur(4px) brightness(.45)}
 .town .fg{inset:6% 4% 4%;width:92%;height:90%;object-fit:contain}
-.town img.intro{transition:transform 2.4s ease-in-out,transform-origin 2.4s ease-in-out;transform:scale(1.35);transform-origin:50% 0}
 .intro .log,.intro .bars{display:none}
 .intro .ctl{display:flex;justify-content:flex-end}.intro .ctl .btns{display:block}
 .intro .ctl button{min-height:34px;width:96px;font-size:14px;background:transparent;border-color:rgba(255,255,255,.18);color:var(--dim)}
@@ -45,12 +44,12 @@ main{max-width:520px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-
 .town .name{position:absolute;left:8px;top:6px;font-size:15px;font-weight:700;color:var(--ember2);text-shadow:0 1px 2px #000,0 0 6px #000;z-index:4}
 .bars{flex:none;display:grid;grid-template-columns:auto 1fr auto auto 1fr auto;gap:2px 8px;align-items:center;font-size:13px}
 .bar{height:8px;background:#000;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%}
-.log{flex:1 1 auto;min-height:100px;position:relative;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:7px 10px;overflow:hidden;font-size:16px;line-height:1.5;white-space:pre-line}
+.log{flex:1 1 auto;min-height:120px;position:relative;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:7px 10px;overflow:hidden;font-size:16px;line-height:1.5;white-space:pre-line}
 .log.hasface{padding-right:82px}
 .log .face{position:absolute;right:7px;top:7px;width:64px;height:84px;object-fit:cover;object-position:50% 0;border-radius:8px;border:2px solid var(--line);background:radial-gradient(circle at 50% 35%,#5a4330,#20160f 75%)}
 .ctl{flex:none;margin-top:auto}
 /* 塔の中: 絵は4:3のまま。余った高さは文章でなく、ボタン（十字キー）を大きくする */
-.dg .log{flex:0 0 104px}
+.dg .log{flex:0 0 112px}
 .dg .ctl{flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-end}
 .dg .pad{flex:1 1 auto;grid-auto-rows:1fr;max-height:220px}.dg .pad button{height:100%}
 .dg .ctl>.btns:not(.tail){flex:1 1 auto;grid-auto-rows:1fr;max-height:280px}
