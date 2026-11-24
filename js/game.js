@@ -140,11 +140,15 @@ const NPCS = {
   'ボルツ': { id: 'craft', smile: 2, laugh: 1, shock: 12, angry: 3, think: 5 },  // ギルドの加工職人
 };
 const NPC_FACE = { normal: 0, smile: 1, laugh: 3, shock: 5, angry: 6, think: 11 };
+const HEROINE = { 'ジェニー': 'jenny', 'エリー': 'elly', 'リア': 'ria', 'フウカ': 'fuuka' };
+const BLUSH = { happy: 'smile', shy: 'think', inlove: 'smile', worried: 'think', love: 'smile', pout: 'angry' };
 function log(t, clear) {
   if (clear) { logLines = []; logFace = null; spkFace = null; }
   const m = /^([^\s「\[]+)(?:\[(\w+)\])?「/.exec(t);
   if (m && NPCS[m[1]] && NPCS[m[1]].noFace) { /* 顔なし */ }
-  else if (m && NPCS[m[1]]) { const n = NPCS[m[1]], e = m[2] || 'normal'; t = t.replace(/^([^\[「]+)\[\w+\]/, '$1'); if (clear || !spkFace) { const v = n[e] !== undefined ? n[e] : NPC_FACE[e] || 0; spkFace = `npc/${n.id}_${typeof v === 'string' ? v : String(v).padStart(2, '0')}`; logFace = null; } figTalk(n.id); }
+  else if (m && NPCS[m[1]]) { const n = NPCS[m[1]]; let e = m[2] || 'normal';
+    // ヒロインの照れ顔（頬が赤い絵）は、親密度が上がってから。それまではふつうの表情にする
+    { const who = HEROINE[m[1]]; if (who && BLUSH[e] && !perk(who) && !(G.seen || {})[who]) e = BLUSH[e]; } t = t.replace(/^([^\[「]+)\[\w+\]/, '$1'); if (clear || !spkFace) { const v = n[e] !== undefined ? n[e] : NPC_FACE[e] || 0; spkFace = `npc/${n.id}_${typeof v === 'string' ? v : String(v).padStart(2, '0')}`; logFace = null; } figTalk(n.id); }
   else if (clear) spkFace = null;
   t = t.replace(/(^|\n)([^\s「\[\n]+)\[\w+\]「/g, '$1$2「');  // 2行目以降の表情タグも消す
   for (const [re, k, mx] of LOG_SFX) if (re.test(t)) { sfx(k, { max: mx }); break; }
@@ -474,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 26'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 27'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1022,7 +1026,7 @@ function dungeonUI() {
 }
 function cellAt(x, y) { return F.M[y] && F.M[y][x] !== undefined ? F.M[y][x] : 1; }
 function act(a) {
-  if (mode !== 'dungeon' || busy) return;
+  if (mode !== 'dungeon' || busy || document.querySelector('#view .fig')) return;  // 人と会っている間は歩かない（絵を押しても進まない）
   const cx = Math.floor(T.x), cy = Math.floor(T.y);
   if (a === 'tl' || a === 'tr') { dir = (dir + (a === 'tl' ? 3 : 1)) % 4; T.a += (a === 'tl' ? -1 : 1) * Math.PI / 2; busy = true; setTimeout(() => { facingNote(); dungeonUI(); }, 180); return; }
   const o = { f: 0, b: 2, sl: 3, sr: 1 }[a], [ddx, ddy] = DIRS[(dir + o) % 4], c = cellAt(cx + ddx, cy + ddy);
