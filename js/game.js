@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 65'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 66'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1908,21 +1908,21 @@ const SKILL_SHOW = {
   double:   { gap: 300, at: 60, len: 250, hit: (i, dl) => { playFx('slash_h', { delay: dl, rot: i ? .55 : -.55, size: 1.05 }); fxArc(dl, WHITE, 3, i ? .6 + Math.PI : -.6); fxSparks(dl + 50, WHITE, 8); shakeAt(dl + 50, 4); } },
   lunge:    { pre: () => fxSpeed(0, 260), wait: 160, at: 80, len: 150, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.1 }); fxRing(dl + 80, WHITE, .22, 3); shakeAt(dl + 80, 4); } },
   iai:      { pre: () => { fxDark(0, 700, .55); sfx('swing', { vol: .5 }); }, wait: 380, at: 40, len: 450, hit: (i, dl) => { fxBeam(dl, '#cfe3ff'); playFx('iai', { delay: dl, rot: 0, size: 1.4 }); fxSparks(dl + 40, WHITE, 18); fxTint(dl + 30, WHITE, .3); shakeAt(dl + 40, 9); } },
-  tsubame:  { gap: 260, at: 60, len: 300, hit: (i, dl) => { playFx(i ? 'tsubame' : 'slash_v', { delay: dl, rot: i ? Math.PI + .3 : .3, size: 1.2 }); fxArc(dl, '#cfe3ff', 4, i ? -Math.PI / 2 - .4 : Math.PI / 2 - .4); fxSparks(dl + 60, WHITE, 10); shakeAt(dl + 60, 6); } },
+  tsubame:  { gap: 260, at: 60, len: 300, hit: (i, dl) => { playFx(i ? 'tsubame' : 'slash_v', { delay: dl, rot: i ? Math.PI + .3 : .3, size: 1.2, snd: 'w_katana' }); fxArc(dl, '#cfe3ff', 4, i ? -Math.PI / 2 - .4 : Math.PI / 2 - .4); fxSparks(dl + 60, WHITE, 10); shakeAt(dl + 60, 6); } },
   frenzy:   { gap: 150, at: 40, len: 450, hit: (i, dl) => { const r = (R() - .5) * 2.4; playFx('slash_h', { delay: dl, rot: r, size: .85 }); fxArc(dl, '#ffd0a0', 2, r * 1.5, VH * (.22 + R() * .12)); shakeAt(dl + 40, 3); } },
   flurry:   { gap: 140, at: 30, len: 400, hit: (i, dl) => { playFx('impact', { delay: dl, size: .6, x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 40, y: VH * (.42 + R() * .18) }); fxRing(dl, WHITE, .12, 2); shakeAt(dl + 30, 3); } },
   punch:    { at: 60, len: 100, hit: (i, dl) => { fxSpeed(dl, 200); playFx('impact', { delay: dl + 60, size: 1 }); fxRays(dl + 60, WHITE, 8, .35); shakeAt(dl + 60, 5); } },
   volley:   { gap: 150, at: 260, len: 500, hit: (i, dl) => { playFx('arrow', { delay: dl, size: .8 }); fxSparks(dl + 260, '#ffe0a0', 5); } },
   aim:      { pre: () => fxReticle(0, 380, '#ffe08a'), wait: 300, at: 260, len: 450, hit: (i, dl) => { playFx('arrow', { delay: dl, size: .95 }); fxRing(dl + 260, '#ffe08a', .2, 3); shakeAt(dl + 260, 4); } },
   snipe:    { pre: () => fxReticle(0, 520, '#ff7a5c'), wait: 420, at: 260, len: 550, hit: (i, dl) => { fxDark(0, 600, .35); playFx('arrow', { delay: dl, size: 1.1 }); fxRays(dl + 260, '#ff7a5c', 10, .45); shakeAt(dl + 260, 6); } },
-  stab:     { at: 120, len: 100, hit: (i, dl) => { fxSpeed(dl, 180, '#ffcfcf'); playFx('thrust', { delay: dl, size: .9 }); fxSparks(dl + 120, '#ff9a8a', 8); shakeAt(dl + 120, 4); } },
-  assassin: { pre: () => { fxDark(0, 800, .6); playFx('dark_mist', { size: .7 }); }, wait: 360, at: 80, len: 500, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.2 }); fxTint(dl + 80, '#ff2030', .35); fxRays(dl + 80, '#ff5060', 12, .5); shakeAt(dl + 80, 8); } },
+  stab:     { at: 120, len: 100, hit: (i, dl) => { fxSpeed(dl, 180, '#ffcfcf'); playFx('thrust', { delay: dl, size: .9, snd: 'w_dagger' }); fxSparks(dl + 120, '#ff9a8a', 8); shakeAt(dl + 120, 4); } },
+  assassin: { pre: () => { fxDark(0, 800, .6); playFx('dark_mist', { size: .7 }); }, wait: 360, at: 80, len: 500, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.2, snd: 'w_dagger' }); fxTint(dl + 80, '#ff2030', .35); fxRays(dl + 80, '#ff5060', 12, .5); shakeAt(dl + 80, 8); } },
   kagenui:  { at: 120, len: 400, hit: (i, dl) => { playFx('dark_mist', { delay: dl, size: .8 }); playFx('thrust', { delay: dl + 80, size: .9 }); fxPins(dl + 160, '#8a5cff'); shakeAt(dl + 120, 4); } },
   smash:    { at: 90, len: 150, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.2 }); playFx('rocks', { delay: dl + 60, size: .7, parts: 16 }); fxRing(dl + 60, '#d9b07a', .34, 5); shakeAt(dl + 90, 9); } },
-  rage:     { pre: () => fxTint(0, '#ff2010', .35), wait: 120, at: 90, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.45 }); fxRays(dl + 60, '#ff5030', 12, .6); fxRing(dl + 60, '#ff7050', .42, 6); shakeAt(dl + 90, 12); } },
+  rage:     { pre: () => fxTint(0, '#ff2010', .35), wait: 120, at: 90, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.45, snd: 'w_axe' }); fxRays(dl + 60, '#ff5030', 12, .6); fxRing(dl + 60, '#ff7050', .42, 6); shakeAt(dl + 90, 12); } },
   heavyslash:{ at: 150, len: 250, hit: (i, dl) => { playFx('slash_v', { delay: dl, rot: 0, size: 1.45, slow: 1.2 }); fxArc(dl, WHITE, 5, Math.PI / 2 - 1.1 + .55); playFx('impact_heavy', { delay: dl + 140, size: .85 }); fxRing(dl + 150, WHITE, .36, 5); shakeAt(dl + 150, 10); } },
-  cleave:   { pre: () => { const k = FX_AT; FX_AT = null; fxArc(0, '#ffd8a0', 6, Math.PI / 2 - .2, VH * .55); playFx('slash_h', { size: 1.7, rot: 0, x: VW / 2 }); FX_AT = k; }, wait: 160, at: 40, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: .75, parts: 6 }); shakeAt(dl + 40, 9); } },
-  plunder:  { at: 100, len: 200, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.1 }); fxSparks(dl + 80, '#ffd24a', 20); playFx('sparkle', { delay: dl + 160, size: .6 }); shakeAt(dl + 100, 7); } },
+  cleave:   { pre: () => { const k = FX_AT; FX_AT = null; fxArc(0, '#ffd8a0', 6, Math.PI / 2 - .2, VH * .55); playFx('slash_h', { size: 1.7, rot: 0, x: VW / 2, snd: 'w_axe' }); FX_AT = k; }, wait: 160, at: 40, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: .75, parts: 6 }); shakeAt(dl + 40, 9); } },
+  plunder:  { at: 100, len: 200, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.1, snd: 'w_axe' }); fxSparks(dl + 80, '#ffd24a', 20); playFx('sparkle', { delay: dl + 160, size: .6 }); shakeAt(dl + 100, 7); } },
   shieldbash:{ at: 80, len: 150, hit: (i, dl) => { fxSpeed(dl, 160); playFx('impact', { delay: dl + 60, size: 1.1 }); fxRing(dl + 80, '#cfe3ff', .3, 5); playFx('barrier', { delay: dl + 60, size: .5, self: false }); shakeAt(dl + 80, 6); } },
   monkstrike:{ at: 80, len: 300, hit: (i, dl) => { playFx('impact', { delay: dl, size: 1 }); fxRays(dl + 60, '#ffe9a0', 10, .45); playFx('heal', { delay: dl + 240, self: true, size: .8 }); shakeAt(dl + 80, 5); } },
   magicblade:{ at: 100, len: 250, hit: (i, dl) => { playFx('slash_x', { delay: dl, size: 1.1 }); fxArc(dl, '#ff9a4a', 4, -.6); playFx('fire_s', { delay: dl + 120, size: .8 }); fxSparks(dl + 120, '#ffb060', 14); shakeAt(dl + 100, 6); } },
@@ -1991,11 +1991,11 @@ function weaponFx(type) {
   // 音: 剣=剣で斬る 刀=刀で斬る 大剣・斧=大剣で斬る 槌=重いパンチ ダガー=素振り×2 弓=弓矢 魔導書=魔法陣 杖=打撃
   switch (type) {
     case 'sword': playFx(R() < .5 ? 'slash_h' : 'slash_v', { size: 1 }); shake(3); break;
-    case 'katana': sfx('swing', { vol: .5 }); playFx('iai', { delay: 200, size: 1.25, rot: 0 }); playFx('spark', { delay: 300, size: .55, parts: 8, snd: null }); shake(5, 220); break;  // 一瞬ためて、横一閃
+    case 'katana': sfx('swing', { vol: .5 }); playFx('iai', { delay: 200, size: 1.25, rot: 0, snd: 'w_katana' }); playFx('spark', { delay: 300, size: .55, parts: 8, snd: null }); shake(5, 220); break;  // 一瞬ためて、横一閃
     case 'greatsword': playFx('slash_v', { size: 1.4, slow: 1.2, rot: 0, snd: 'heavy' }); playFx('impact_heavy', { delay: 140, size: .85, vol: .6 }); shake(10, 140); break;
-    case 'axe': playFx('impact_heavy', { size: 1.3, snd: 'heavy' }); playFx('rocks', { delay: 80, size: .7, vol: .5 }); shake(11); break;
+    case 'axe': playFx('impact_heavy', { size: 1.3, snd: 'w_axe' }); playFx('rocks', { delay: 80, size: .7, vol: .5 }); shake(11); break;
     case 'hammer': playFx('impact_heavy', { size: 1.15 }); playFx('spark', { delay: 60, size: .8, parts: 22, vol: .7 }); shake(8); break;
-    case 'dagger': playFx('slash_h', { size: .7, rot: -.6, snd: 'swing' }); playFx('slash_h', { delay: 130, size: .7, rot: .6, parts: 6, snd: 'swing' }); sfx('hit1', { delay: 160, vol: .6 }); shake(2); shake(2, 130); break;
+    case 'dagger': playFx('slash_h', { size: .7, rot: -.6, snd: 'w_dagger' }); playFx('slash_h', { delay: 130, size: .7, rot: .6, parts: 6, snd: 'w_dagger' }); shake(2); shake(2, 130); break;
     case 'bow': playFx('arrow', { size: .85 }); playFx('impact', { delay: 270, size: .5, parts: 6, vol: .6 }); shake(3, 270); break;
     case 'book': playFx('magic_circle', { y: VH * .78, size: .55, parts: 6 }); playFx('magic_arrow', { delay: 180, size: .8, snd: null }); shake(3, 400); break;
     case 'staff': playFx('impact', { size: .95 }); playFx('sparkle', { delay: 90, size: .6, parts: 10, snd: null }); shake(4); break;

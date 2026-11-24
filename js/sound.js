@@ -66,7 +66,7 @@ const SND = (() => {
     for (const a of pool) { a.src = SILENT; const p = a.play(); if (p && p.catch) p.catch(() => {}); }
     cur = ''; tick(true);
     // よく使う効果音を先に読んでおく
-    if (ac) ['select', 'slash', 'hit', 'swing', 'door', 'win', 'heal1', 'step_stone_1', 'step_stone_2', 'step_stone_3', 'walk_town', 'item'].forEach(load);
+    if (ac) ['select', 'w_sword', 'hit', 'swing', 'door', 'win', 'heal1', 'step_stone_1', 'step_stone_2', 'step_stone_3', 'walk_town', 'item'].forEach(load);
   }
   // iPhoneは touchend / click の中でないと音を起こせない（touchstart や pointerdown ではだめ）
   ['touchend', 'click', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, { capture: true, passive: true }));
@@ -127,7 +127,8 @@ const sfx = (k, o) => SND.sfx(k, o);
 let SND_INDOOR = false;
 // エフェクト → 効果音
 // エフェクト → 効果音（2026-11-24 見直し。SFX/battle の元の名前を書いておく）
-// slash=剣で斬る6 katana=刀で斬る5 heavy=大剣で斬る swing=剣の素振り3 hit1=打撃1 hit=打撃4 punch=重いパンチ2 arrow=弓矢を放つ bite=噛みつく miss=attack_miss
+// w_sword=剣 w_katana=刀 w_axe=斧 w_dagger=ダガー w_bow=弓矢を放つ（2026-11-24 差し替え。前後の無音を切った）
+// slash=剣で斬る6（一閃だけに使う） katana=刀で斬る5 heavy=大剣で斬る swing=剣の素振り3 hit1=打撃1 hit=打撃4 punch=重いパンチ2 arrow=弓矢を放つ bite=噛みつく miss=attack_miss
 // fire1=火炎魔法1 fire2=火炎魔法2 fire3=火炎魔法3 ignite=着火2 firewind=炎の風1 explosion=爆発3
 // ice0=氷魔法 ice=氷魔法1 ice2=氷魔法2 ice3=氷魔法3 freeze=凍る4 icefreeze=氷魔法で凍結 blizzard=吹雪（4秒に切った）
 // bolt1=雷魔法1 thunder=雷魔法2 thunder3=雷魔法3 bolt4=雷魔法4 shock1=電撃魔法1 shock2=電撃魔法2
@@ -137,8 +138,8 @@ const FX_SFX = {
   m_fire1: 'ignite', m_fire2: 'fire2', m_fire3: 'fire3', m_ice1: 'ice0', m_ice2: 'ice2', m_ice3: 'blizzard', m_bolt1: 'bolt1', m_bolt2: 'thunder', m_bolt3: 'thunder3',
   m_holy1: 'holy', m_holy2: 'holy', m_holy3: 'holy', m_dark1: 'dark', m_dark2: 'dark', m_dark3: 'dark',
   // 武器・技
-  slash_h: 'slash', slash_v: 'slash', slash_x: 'slash', flurry: 'slash', iai: 'katana', tsubame: 'katana', jin: 'katana', dark_blade: 'slash',
-  impact: 'hit1', impact_heavy: 'punch', thrust: 'swing', arrow: 'arrow', magic_arrow: 'magic', crit: 'hit', spark: 'hit',
+  slash_h: 'w_sword', slash_v: 'w_sword', slash_x: 'w_sword', flurry: 'w_sword', iai: 'slash', tsubame: 'w_katana', jin: 'slash', dark_blade: 'w_sword',
+  impact: 'hit1', impact_heavy: 'punch', thrust: 'swing', arrow: 'w_bow', magic_arrow: 'magic', crit: 'hit', spark: 'hit',
   // 前からある魔法の絵
   fire_s: 'fire1', fire_l: 'fire3', explosion: 'explosion', wind: 'firewind', ice_spear: 'ice3', ice_burst: 'freeze', thunder: 'bolt4', thunder_ball: 'shock1', paralyze: 'shock2',
   holy_pillar: 'holy', holy_cross: 'holy', dark_mist: 'dark', magic_circle: 'magic', blessing: 'holy', pray: 'magic', warp: 'magic',
