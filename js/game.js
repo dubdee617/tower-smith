@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 61'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 62'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -952,7 +952,7 @@ function warpOut() {
     const g = ctx.createLinearGradient(0, 0, 0, VH); g.addColorStop(0, `rgba(120,190,255,${a * .15})`); g.addColorStop(1, `rgba(90,160,255,${a * .5})`); ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
     for (let i = 0; i < 18; i++) { const x = (i * 53 + k * 40) % VW, y = VH - ((i * 37 + k * VH * 1.6) % VH); ctx.globalAlpha = a * .8; ctx.fillStyle = '#cfe6ff'; ctx.fillRect(x, y, 2, 6); }
     if (k > .75) { ctx.globalAlpha = (k - .75) / .25; ctx.fillStyle = '#e8f4ff'; ctx.fillRect(0, 0, VW, VH); } });
-  setTimeout(() => { busy = false; fadeGo(() => toTown('帰還の羽の光に包まれて、町へ戻ってきた。', true), { hold: 500 }); }, 1450);
+  setTimeout(() => { busy = false; fadeGo(() => toTown('', true), { text: 'エルディア', hold: 1400, walk: true }); }, 1450);
 }
 // 売り買いの確認: 「はい」で決まり、お金の音
 function deal(q, yes, no) { buttons([{ title: q }, { t: 'はい', hot: true, f: () => { sfx('register', { vol: .9 }); yes(); } }, { t: 'やめる', f: no }]); }
