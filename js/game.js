@@ -478,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 27'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 28'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1043,7 +1043,7 @@ function chestAhead(any) { if (!F) return null; const [fdx, fdy] = DIRS[dir], x 
 const chestHere = () => chestAhead();
 function facingNote() {
   const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
-  if (c === 2) log(floorNo === 10 && !G.bossDown ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
+  if (c === 2) log(BOSSES[floorNo] && !bossBeat(floorNo) ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
   else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。（▲で下りる）' : '下り階段がある。（▲で下りる）');
   else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
   else if (c === 6) { const ch = chestAhead(true), p = propAhead(); if (ch) log(ch.open ? '開けた宝箱がある。' : ch.gold ? '豪華な宝箱がある！' : '宝箱がある。'); else if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
@@ -1104,7 +1104,7 @@ function meetGod(id, go0) {
     log(`${name}[smile]「さあ、どうしてほしい？」`, true);
     buttons([
       { t: '戦利品をもらう', hot: true, f: () => {
-        const pool = MONSTERS.filter(m => m.from <= Math.min(floorNo, 10)).flatMap(m => Object.keys(m.drop)), got = {};
+        const pool = monPool(floorNo).flatMap(m => Object.keys(m.drop)), got = {};
         for (let i = 0; i < 3; i++) add(got, pick(pool), 1);
         if (aff >= GOD_RARE_NEED) add(got, pick(RARE_RAW), 1);
         for (const [k, v] of Object.entries(got)) add(G.carry, k, v); save();
@@ -1207,7 +1207,7 @@ function dig() {
 }
 function openChest() {
   const ch = chestHere(); if (!ch) return; ch.open = true;
-  const pool = MONSTERS.filter(m => m.from <= floorNo).flatMap(m => Object.keys(m.drop));
+  const pool = monPool(floorNo).flatMap(m => Object.keys(m.drop));
   const got = {}; const n = ch.gold ? 5 : 2 + Math.floor(R() * 2);
   for (let i = 0; i < n; i++) add(got, pool[Math.floor(R() * pool.length)], 1);
   if (ch.gold) add(got, R() < .5 ? 'ore_iron' : 'dim_stone', 2);
@@ -1220,8 +1220,8 @@ function stairs() {
   const [fdx, fdy] = DIRS[dir], c = cellAt(Math.floor(T.x) + fdx, Math.floor(T.y) + fdy);
   if (c === 3) { if (floorNo === 1) fadeGo(() => toTown('塔から出た。', true)); else goFloor(floorNo - 1, true); }
   else if (c === 2) {
-    if (floorNo === 10 && !G.bossDown) { startBattle(BOSS10); return; }
-    if (floorNo >= 10) { log('11階から上は、まだ作っていない。', true); return; }
+    if (BOSSES[floorNo] && !bossBeat(floorNo)) { startBattle(BOSSES[floorNo]); return; }
+    if (floorNo >= TOP_FLOOR) { log(`${TOP_FLOOR + 1}階から上は、まだ作っていない。`, true); return; }
     goFloor(floorNo + 1);
   }
 }
@@ -1264,8 +1264,10 @@ function battleItems() {
 function useHerb() { if (!G.items.herb || G.hp >= G.mhp) return false; G.items.herb--; const h = healMe(Math.round((25 + G.lv * 3) * (has('p_herb') ? 1.5 : 1))); log(`薬草を使った。HPが${h}回復。`); return true; }
 
 // ---------- 戦闘（AP制） ----------
+// その階に出る魔物（出る最初の階〜そのエリアの最後の階）
+const monPool = n => { const L = MONSTERS.filter(m => m.from <= n && n <= m.to); return L.length ? L : MONSTERS.filter(m => m.from <= n); };
 function pickMonster() {
-  const pool = MONSTERS.filter(m => m.from <= floorNo);
+  const pool = monPool(floorNo);
   if (TODAY.goblin && floorNo >= 3) pool.push(MONSTERS.find(m => m.id === 'goblin'), MONSTERS.find(m => m.id === 'goblin'));
   const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = TODAY.danger ? 1.2 : 1, rw = TODAY.danger ? 1.4 : 1;
   return { ...base, hp: Math.round(base.hp * k * dz), atk: Math.round(base.atk * k * dz), def: Math.round(base.def * k), exp: Math.round(base.exp * k * rw), gold: Math.round(base.gold * k * rw) };
@@ -1483,7 +1485,7 @@ function win() {
   { const up = { hp: 0, atk: 0, def: 0 }, lv0 = G.lv;
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
     if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
-  if (m.boss) { G.bossDown = true; msg += '\n10階の主を倒した。上への道が開いた。'; }
+  if (m.boss) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の主を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);
   G.jobWins[j] = (G.jobWins[j] || 0) + 1;
@@ -1511,8 +1513,15 @@ function lose() {
 // ---------- 魔物の絵（待機・攻撃・攻撃を受けた の3枚＋コードの動き） ----------
 const MON_IMG = {};
 for (const [k, src] of Object.entries(ASSETS.mon || {})) { const i = new Image(); i.src = src; MON_IMG[k] = i; }
+// 11階より上の魔物はファイルから読む（出会ったときに読み込む）
+const bossBeat = n => n === 10 ? G.bossDown || (G.bosses || {})[10] : !!(G.bosses || {})[n];
+function monImg(m, pose) {
+  const k = m.id + '_' + pose;
+  if (!MON_IMG[k] && m.file) { const i = new Image(); i.src = `assets/monsters/${k}.webp`; MON_IMG[k] = i; }
+  return MON_IMG[k];
+}
 function drawMonster(m, t) {
-  const idle = MON_IMG[m.id + '_idle'];
+  const idle = monImg(m, 'idle'); monImg(m, 'attack'); monImg(m, 'hit');
   if (idle && idle.complete) { drawMonsterImg(m, t); return; }
   drawMonsterShape(m, t);
 }
@@ -1599,7 +1608,7 @@ function drawMonsterImg(m, t) {
   if (A.kind === 'attack' && dt < 480) { pose = 'attack'; const k = Math.sin(Math.min(1, dt / 480) * Math.PI); sx *= 1 + k * .14; sy *= 1 + k * .14; oy = k * 10; }
   if (A.kind === 'hit' && dt < 360) { pose = 'hit'; const k = 1 - dt / 360; ox = Math.sin(dt / 25) * 5 * k; oy = -4 * k; white = dt < 90 ? .75 : 0; }
   if (B.dying) { const d = Math.min(1, (t - B.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
-  const img = MON_IMG[m.id + '_' + pose] || MON_IMG[m.id + '_idle'];
+  const img = (monImg(m, pose) && monImg(m, pose).complete && monImg(m, pose).naturalWidth ? monImg(m, pose) : null) || monImg(m, 'idle');
   const H = VH * (m.size || .7), W = H * img.width / img.height, cx = VW / 2 + ox, by = VH * .93 + oy;
   ctx.save(); ctx.globalAlpha = alpha;
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(cx, by - 2, W * .38, 8, 0, 0, 7); ctx.fill();

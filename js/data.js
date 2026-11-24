@@ -18,6 +18,25 @@ const RAW = {
   sand_find:   { name:'砂の中の掘り出し物', to:{bone:1, copper:1}, reward:5 },
   raw_gem:     { name:'宝石の原石',       to:{stone:2},   reward:25 },
 };
+// 11階より上の魔物の戦利品（2026-11-24）
+Object.assign(RAW, {
+  beast_pelt:  { name:'獣の毛皮',       to:{leather:2},          reward:10 },
+  beast_fang:  { name:'獣の牙',         to:{bone:2},             reward:9 },
+  spider_silk: { name:'大蜘蛛の糸',     to:{leather:1, stone:1}, reward:14 },
+  hard_shell:  { name:'硬い甲殻',       to:{iron:1, leather:1},  reward:16 },
+  old_wood:    { name:'古木の枝',       to:{wood:3},             reward:9 },
+  spore:       { name:'魔力を帯びた胞子', to:{stone:1},           reward:12 },
+  scale:       { name:'うろこ',         to:{leather:2, bone:1},  reward:14 },
+  old_cloth:   { name:'古い布切れ',     to:{leather:1},          reward:6 },
+  cursed_gold: { name:'呪われた金細工', to:{stone:2, copper:2},  reward:30 },
+  rock_core:   { name:'岩の核',         to:{stone:2, iron:1},    reward:24 },
+  feather:     { name:'大きな羽根',     to:{leather:1, wood:1},  reward:12 },
+  ice_shard:   { name:'溶けない氷',     to:{stone:2},            reward:26 },
+  ember_stone: { name:'燃える石',       to:{stone:2, iron:1},    reward:30 },
+  star_dust:   { name:'星のかけら',     to:{stone:3},            reward:40 },
+  dark_steel:  { name:'黒い鋼の欠片',   to:{iron:3},             reward:45 },
+  worm_gem:    { name:'大砂蟲の宝石',   to:{stone:4, iron:2},    reward:150 },
+});
 const NAMES = Object.assign({}, MATS, Object.fromEntries(Object.entries(RAW).map(([k, v]) => [k, v.name])));
 
 // 武器の種類 → 基本職（2026-11-22 の新方針）
@@ -196,6 +215,36 @@ const MONSTERS = [
   { id:'centipede',name:'鉄喰いムカデ', hp:98, atk:18, def:7, exp:21, gold:8,  drop:{iron_shell:1, ore_copper:1}, from:5, color:'#7a3f2a', size:.66 },
 ];
 const BOSS10 = { id:'golem', name:'鉱山ゴーレム', hp:520, atk:27, def:12, exp:220, gold:180, drop:{ore_copper:8, ore_iron:6, golem_core:1}, boss:true, color:'#7b746a', size:.86 };
+// 11階より上の魔物（2026-11-24。絵: assets/monsters/<id>_idle|attack|hit.webp）
+// [id, 名前, 出る最初の階, 強さの倍率, 戦利品, 大きさ]。強さはエリア（10階ごと）が上がるほど大きくなる
+const MON_UP = [
+  ['wolf','森狼',11,1.0,{beast_pelt:1,beast_fang:1},.66], ['spider','大蜘蛛',11,.9,{spider_silk:1},.66], ['treant','トレント',13,1.2,{old_wood:2},.85], ['mushroom','キノコ人',11,.8,{spore:1},.6],
+  ['moth','毒蛾',14,.85,{spore:1},.66], ['boar','角イノシシ',15,1.1,{beast_pelt:1,beast_fang:1},.66], ['pixie','いたずら妖精',16,.75,{spore:1},.55], ['vine','つる草の魔物',17,1.05,{old_wood:1,spore:1},.8],
+  ['scorpion','大サソリ',21,1.0,{hard_shell:1},.66], ['sandlizard','サンドリザード',21,.95,{scale:1},.66], ['mummy','ミイラ',23,1.05,{old_cloth:2,cursed_bone:1},.8], ['sandworm','砂ミミズ',25,1.2,{cursed_bone:2},.75],
+  ['rockgolem','岩ゴーレム',31,1.25,{rock_core:1,ore_iron:1},.85], ['goatman','山羊の魔人',31,1.05,{beast_pelt:1,beast_fang:1},.8], ['wyvern','ワイバーン',34,1.15,{scale:2},.8], ['yeti','雪男',33,1.1,{beast_pelt:2},.82],
+  ['rocklizard','岩トカゲ',32,1.0,{scale:1,rubble:1},.7], ['orc','オーク',32,1.05,{ore_iron:1,beast_fang:1},.8], ['harpy','ハーピー',35,.9,{feather:2},.72], ['ghostminer','幽霊坑夫',36,.95,{ore_iron:2},.78],
+  ['python','大蛇',51,1.1,{scale:2},.7], ['maneater','人食い花',51,1.0,{old_wood:1,spore:2},.75], ['junglecat','森虎',53,1.1,{beast_pelt:2,beast_fang:1},.72], ['poisonfrog','毒蛙',52,.9,{spore:2},.6],
+  ['ape','大猿',54,1.15,{beast_pelt:2},.8], ['swarm','羽虫の群れ',55,.85,{hard_shell:1},.75], ['shaman','ジャングルの呪術師',56,.95,{cursed_bone:2,spore:1},.75], ['beetle','巨大カブトムシ',57,1.2,{hard_shell:2},.7],
+  ['statue','石像の番人',61,1.2,{rock_core:1},.85], ['cursedpot','呪いの壺',61,.9,{cursed_gold:1},.62], ['sphinx','スフィンクス',63,1.2,{cursed_gold:1,beast_pelt:1},.8], ['tombguard','遺跡の兵',62,1.05,{old_cloth:1,cursed_gold:1},.8],
+  ['scarab','スカラベ',62,.95,{hard_shell:1,raw_gem:1},.62], ['sandserpent','砂の大蛇',64,1.1,{scale:2},.75], ['goldarmor','黄金の鎧',66,1.25,{cursed_gold:2},.82], ['jackal','墓守の犬',65,1.05,{cursed_gold:1,old_cloth:1},.8],
+  ['griffin','グリフォン',71,1.15,{feather:2,beast_fang:1},.82], ['rockcrab','岩ガニ',71,1.1,{hard_shell:2},.66], ['ogre','オーガ',73,1.25,{beast_fang:2,ore_iron:1},.86], ['magmaslime','マグマスライム',72,.95,{ember_stone:1},.62],
+  ['thunderbird','雷鳥',74,1.0,{feather:2},.75], ['rockgiant','岩の巨人の子',75,1.2,{rock_core:2},.8], ['canyonharpy','峡谷のハーピー',76,.95,{feather:2},.72], ['lavalizard','溶岩トカゲ',77,1.1,{ember_stone:1,scale:1},.7],
+  ['pegasus','天馬',81,1.1,{feather:3},.82], ['cloudragon','雲竜',82,1.25,{scale:2,star_dust:1},.85], ['windspirit','風の精霊',81,.95,{star_dust:1},.78], ['stormbird','雷の鳥',83,1.05,{feather:2,ice_shard:1},.8],
+  ['iceangel','氷の天使',84,1.1,{ice_shard:2},.82], ['cloudwhale','雲くじら',85,1.3,{star_dust:2},.8], ['frostknight','霜の騎士',86,1.2,{ice_shard:1,dark_steel:1},.82], ['starjelly','星のくらげ',87,.95,{star_dust:2},.75],
+  ['phantomknight','亡霊騎士',91,1.2,{dark_steel:2},.85], ['gargoyle','ガーゴイル',91,1.1,{rock_core:2},.8], ['golemdoll','魔導人形',92,1.05,{dark_steel:1,star_dust:1},.8], ['dragoon','竜騎兵',93,1.25,{dark_steel:1,scale:2},.85],
+  ['shadow','影の暗殺者',94,1.0,{dark_steel:1},.78], ['armor','動く甲冑',95,1.3,{dark_steel:3},.86], ['grimoire','呪いの書',96,.95,{star_dust:2},.65], ['mirrorshard','鏡の欠片',97,1.15,{star_dust:2,raw_gem:1},.82],
+];
+// エリアごとの強さの土台（10階ごと）。11〜20階が1
+const AREA_POW = n => Math.pow(1.42, Math.floor((n - 1) / 10));
+for (const [id, name, from, mul, drop, size] of MON_UP) {
+  const p = AREA_POW(from) * mul, end = Math.floor((from - 1) / 10) * 10 + 10;
+  MONSTERS.push({ id, name, hp: Math.round(120 * p), atk: Math.round(22 * p), def: Math.round(9 * p), exp: Math.round(30 * p), gold: Math.round(16 * p), drop, from, to: end, size, color: '#776655', file: true });
+}
+for (const m of MONSTERS) if (!m.to) m.to = 10;  // 1〜10階の魔物は10階まで
+// 10階ごとの主
+const BOSS30 = { id:'sandwormking', name:'大砂蟲', hp:2600, atk:68, def:30, exp:1200, gold:900, drop:{worm_gem:1, raw_gem:3, hard_shell:3}, boss:true, color:'#a07a40', size:.95, file:true };
+const BOSSES = { 10: BOSS10, 30: BOSS30 };
+const TOP_FLOOR = 30;  // いま登れるいちばん上の階（絵ができたエリアまで）
 
 // 道具屋
 // 道具屋で買える物（2026-11-23）。battle: 戦闘中にも使える
