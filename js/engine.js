@@ -48,7 +48,14 @@ const FLOOR_PROPS_STONE = [
 ];
 const FLOOR_PROPS_DEEP = [['f_skulls',.34,4], ['f_ribcage',.28,3], ['f_sword_grave',.5,3], ['f_altar',.44,1.5], ['f_brazier_skull',.44,2], ['f_rune_stone',.58,2]];
 // 鉱脈（石のダンジョン）: [名前, 重み]
-const VEINS_STONE = [['v_copper',60], ['v_iron',25], ['v_stone',10], ['v_gems',5]]; // たいまつの棒の先（反転なし／反転）
+const VEINS_STONE = [['v_copper',60], ['v_iron',25], ['v_stone',10], ['v_gems',5]];
+// 鉱脈は合うエリアだけ（2026-11-24）: [出る割合, [[絵, 重み]...]]。森・砂漠・雪・雲・城には出さない
+const VEINS_AREA = {
+  stone:    [.04, VEINS_STONE],
+  mountain: [.075, [['v_copper',35], ['v_iron',40], ['v_stone',15], ['v_gems',10]]],
+  canyon:   [.06, [['v_iron',40], ['v_orichalcum',30], ['v_gems',15], ['v_stone',15]]],
+  ruins:    [.02, [['v_gems',100]]],
+}; // たいまつの棒の先（反転なし／反転）
 
 // エリアごとの絵（2026-11-24。assets/area/<エリア>/）。壁・床・天井（空）・扉・階段・床の小物4つ
 const AREA_FILES = ['wall', 'wall2', 'floor', 'ceil', 'door_wood', 'door_iron', 'stairs_up', 'stairs_down'];
@@ -255,10 +262,11 @@ function genFloor(floor, seed) {
   }
   // 鉱脈: 部屋や通路に面した壁のところどころ（外周と節目の階はなし）
   const vein = {};
-  if (typeof PROPS !== 'undefined' && floor !== 10) for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++) {
-    if (M[y][x] !== 1 || !([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => M[y + b][x + a] === 0)) || R() > .04) continue;
-    const sum = VEINS_STONE.reduce((s, v) => s + v[1], 0); let q = R() * sum;
-    for (const [n, w] of VEINS_STONE) if ((q -= w) < 0) { vein[x + ',' + y] = n; break; }
+  const VA = VEINS_AREA[area];
+  if (VA && typeof PROPS !== 'undefined' && floor % 10 !== 0) for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++) {
+    if (M[y][x] !== 1 || !([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => M[y + b][x + a] === 0)) || R() > VA[0]) continue;
+    const sum = VA[1].reduce((s, v) => s + v[1], 0); let q = R() * sum;
+    for (const [n, w] of VA[1]) if ((q -= w) < 0) { vein[x + ',' + y] = n; break; }
   }
   // 床の小物: 部屋のふち（外側が壁で、出入り口でないマス）に置く。通れなくなる（M=6）。調べられる
   const props = [];

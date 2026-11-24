@@ -463,7 +463,15 @@ const DIG_HITS = { 3:2, 2:3, 1:5 };
 const DIG_YIELD = {
   stone:  [['rubble',45], ['ore_copper',30], ['ore_iron',12], ['dim_stone',8], ['cursed_bone',5]],
   desert: [['sand_find',50], ['cursed_bone',25], ['ore_copper',25]],
-  forest: [['log',70], ['rat_hide',15], ['ore_copper',15]],
+  forest: [['log',60], ['old_wood',20], ['spore',10], ['ore_copper',10]],
+  // 2026-11-24: エリアごとに、そのエリアらしい物が出る
+  mountain:[['rubble',30], ['ore_copper',30], ['ore_iron',25], ['rock_core',10], ['dim_stone',5]],
+  snow:    [['ice_shard',35], ['rubble',35], ['ore_iron',15], ['dim_stone',15]],
+  jungle:  [['log',50], ['old_wood',30], ['spore',10], ['ore_copper',10]],
+  ruins:   [['sand_find',40], ['cursed_bone',25], ['cursed_gold',15], ['raw_gem',10], ['ore_copper',10]],
+  canyon:  [['rubble',30], ['ore_iron',30], ['ember_stone',15], ['rock_core',15], ['dim_stone',10]],
+  glacier: [['ice_shard',45], ['dim_stone',25], ['rubble',15], ['star_dust',15]],
+  castle:  [['rubble',50], ['ore_iron',25], ['dark_steel',15], ['cursed_gold',10]],
 };
 const NO_DIG_FLOORS = [10, 86, 100];  // 節目の階の壁は「塔の骨」で掘れない
 

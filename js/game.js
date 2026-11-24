@@ -519,7 +519,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 49'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 50'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1099,7 +1099,7 @@ function facingNote() {
   const [fdx, fdy] = DIRS[dir], c = cellTo(fdx, fdy);
   if (c === 2) log(BOSSES[floorNo] && !bossBeat(floorNo) ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
   else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。（▲で下りる）' : '下り階段がある。（▲で下りる）');
-  else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
+  else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石', v_orichalcum: '燃える石' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
   else if (c === 6) { const ch = chestAhead(true), p = propAhead(); if (ch) log(ch.open ? '開けた宝箱がある。' : ch.gold ? '豪華な宝箱がある！' : '宝箱がある。'); else if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
 }
 function afterStep() {
@@ -1231,7 +1231,7 @@ function searchProp() {
 // ---------- 採掘（ツールで壁を掘る） ----------
 const areaOf = n => { let a = AREAS[0]; for (const x of AREAS) if (n >= x[0]) a = x; return a; };
 const MARK = { 3: '◎', 2: '◯', 1: '△' };
-const VEIN_RAW = { v_copper: 'ore_copper', v_iron: 'ore_iron', v_stone: 'dim_stone', v_gems: 'raw_gem' };
+const VEIN_RAW = { v_copper: 'ore_copper', v_iron: 'ore_iron', v_stone: 'dim_stone', v_gems: 'raw_gem', v_orichalcum: 'ember_stone' };
 // 目の前の壁が掘れるか。掘れないときは null（ボタンを出さない）
 function digInfo() {
   const t = gearBy(G.equip.tool); if (!t) return null;
