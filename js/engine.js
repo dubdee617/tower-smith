@@ -60,8 +60,11 @@ const AREA_PROPS = {
   glacier: [['氷の結晶の柱', .56, 'crystal'], ['雲のかたまり', .3, 'box'], ['天の祭壇', .5, 'altar'], ['凍った羽根', .34, 'feather']],
   castle:  [['燭台', .5, 'box'], ['甲冑の飾り', .56, 'bone'], ['玉座の椅子', .5, 'altar'], ['本の積まれた机', .4, 'box']],
 };
+// 床から天井まで届く大きな木の幹（古い森）
+const AREA_TRUNKS = { forest: 4 };
 // エリアの床の小物（engine.js の AREA_PROPS）も調べられるように
 for (const [a, L] of Object.entries(AREA_PROPS)) L.forEach((p, k) => { PROP_INFO[`${a}_p${k + 1}`] = [p[0], p[2]]; });
+for (const [a, n] of Object.entries(AREA_TRUNKS)) for (let k = 1; k <= n; k++) PROP_INFO[`${a}_t${k}`] = ['大きな木の幹', 'wood'];
 async function loadTextures(set) {
   TEX.ready = false;
   const A = Object.assign({}, ASSETS.stone);
@@ -136,6 +139,7 @@ async function loadTextures(set) {
   // 空のいちばん下の色（地平線のかすみ）
   { let r = 0, g = 0, b = 0, n = 0; for (let y = 200; y < 256; y++) for (let x = 0; x < 256; x += 4) { const c = TEX.ceil[y * 256 + x]; r += c & 255; g += (c >> 8) & 255; b += (c >> 16) & 255; n++; }
     r = r / n * .75 + 255 * .25; g = g / n * .75 + 255 * .25; b = b / n * .75 + 255 * .25; TEX.haze = 0xff000000 | (b << 16) | (g << 8) | r; }
+  for (let k = 1; k <= (AREA_TRUNKS[set] || 0); k++) { const im = await loadImg(`assets/area/${set}/t${k}.webp`); TEX.sprite[`${set}_t${k}`] = { w: im.width, h: im.height, px: pix(im, im.width, im.height) }; }
   if (AREA_PROPS[set]) for (let k = 1; k <= 4; k++) { const im = await loadImg(`assets/area/${set}/p${k}.webp`); TEX.sprite[`${set}_p${k}`] = { w: im.width, h: im.height, px: pix(im, im.width, im.height) }; }
   TEX.ready = true;
 }
@@ -251,8 +255,17 @@ function genFloor(floor, seed) {
   if (typeof PROPS !== 'undefined') {
     const own = (AREA_PROPS[area] || []).map((p, k) => [`${area}_p${k + 1}`, p[1], area === 'stone' ? 6 : 10]);
     const table = area === 'stone' ? own.concat(FLOOR_PROPS_STONE, floor >= 6 ? FLOOR_PROPS_DEEP : []) : own, tw = table.reduce((s, p) => s + p[2], 0);
+    // 古い森: 部屋のふちに大きな木の幹を立てる（天井まで届く）。小物は少しだけ
+    const nt = AREA_TRUNKS[area] || 0;
+    if (nt) for (const r of rooms) {
+      const m = r.w * r.h >= 16 ? 2 + (R() < .5) : r.w * r.h >= 9 ? 1 + (R() < .5) : (R() < .5 ? 1 : 0);
+      for (let k = 0, tries = 0; k < m && tries < 6; tries++) {
+        const c = edgeCell(r); if (!c) continue; const [x, y] = c;
+        props.push({ key: `${area}_t${1 + Math.floor(R() * nt)}`, size: .94, x: x + .5, y: y + .5, cx: x, cy: y }); M[y][x] = 6; used.add(x + ',' + y); k++;
+      }
+    }
     for (const r of rooms) {
-      const n = (r.w >= 4 && r.h >= 4 && R() < .35 ? 2 : 1) * (R() < .45 ? 1 : 0);
+      const n = (r.w >= 4 && r.h >= 4 && R() < .35 ? 2 : 1) * (R() < (nt ? .35 : .45) ? 1 : 0);
       for (let k = 0, tries = 0; k < n && tries < 4; tries++) {
         const c = edgeCell(r); if (!c) continue; const [x, y] = c;
         let q = R() * tw, pick = table[0]; for (const p of table) if ((q -= p[2]) < 0) { pick = p; break; }
