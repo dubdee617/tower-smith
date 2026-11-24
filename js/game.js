@@ -287,7 +287,7 @@ function fitStage() {
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
   const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(232, ctl.offsetHeight) : 0));
   let w = W, h;
-  if (COVER) h = Math.min(H, W * 1.25);
+  if (COVER) h = document.body.classList.contains('intro') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(H, Hdg, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
@@ -369,7 +369,7 @@ const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12 };
 const pick = a => a[Math.floor(R() * a.length)];
 let place = null;
 
-function showTown(on, aspect) { document.body.classList.remove('story', 'title'); $('town').style.display = on ? 'block' : 'none'; $('view').style.display = on ? 'none' : 'block'; ASPECT = aspect || (on ? 2 / 3 : 4 / 3); COVER = on && (aspect === 4 / 3 || aspect === 0); spkFace = null; drawSpk(); fitStage(); }
+function showTown(on, aspect) { document.body.classList.remove('story', 'title', 'intro'); if ($('town')) $('town').onclick = null; $('town').style.display = on ? 'block' : 'none'; $('view').style.display = on ? 'none' : 'block'; ASPECT = aspect || (on ? 2 / 3 : 4 / 3); COVER = on && (aspect === 4 / 3 || aspect === 0); spkFace = null; drawSpk(); fitStage(); }
 function rollRumor() { const k = Object.keys(RUMORS); G.rumor = k[Math.floor(R() * k.length)]; }
 function startRun() { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; }
 function endRun() { G.mhp -= G.runHp || 0; G.hp = Math.min(G.hp, G.mhp); G.runHp = 0; }
@@ -417,20 +417,34 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 10'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 11'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
+// オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
-  const I = INTRO[i];
-  let img = $('town').querySelector('img.intro');
-  if (!img || !document.body.classList.contains('story')) {
-    viewScreen('', true); img = $('town').querySelector('img'); img.className = 'intro'; img.src = `${TOWN_IMG}intro_tower.jpg`;
+  const I = INTRO[i], t = $('town');
+  if (i === 0 || !document.body.classList.contains('intro')) {
+    viewScreen('', true); document.body.classList.add('intro');
+    t.innerHTML = `<img class="intro" src="${TOWN_IMG}intro_tower.jpg" alt=""><div class="cine"></div>`;
+    t.onclick = () => { if (document.body.classList.contains('intro')) introNext(); };
+    log('', true); buttons([{ t: 'とばす', stay: true, f: () => introEnd() }]); fitStage();
   }
-  // 絵をゆっくり寄せたり引いたりする
+  intro.i = i;
+  const img = t.querySelector('img.intro'), c = t.querySelector('.cine');
   requestAnimationFrame(() => { img.style.transformOrigin = `${I.x === undefined ? 50 : I.x}% ${I.y}%`; img.style.transform = `scale(${I.z || 1.35})`; });
-  if (I.face) say(I.face, I.t, true); else log(I.t, true);
-  const last = i === INTRO.length - 1;
-  buttons([{ t: last ? '工房へ' : '次へ', hot: true, stay: true, f: () => last ? fadeGo(() => { townMap(); inside('home', 'アルス「師匠、本当に行くんですか！？ ……今の、日記に書いておきます」'); }, { hold: 300 }) : intro(i + 1) },
-    { t: 'とばす', stay: true, f: () => fadeGo(townMap) }]);
+  c.classList.remove('out');
+  c.innerHTML = I.t.split('\n').map((l, k) => `<span class="${/[「」]/.test(l) ? 'q' : ''}" style="animation-delay:${.3 + k * .7}s">${l}</span>`).join('');
+  clearTimeout(intro.tm); intro.tm = setTimeout(introNext, 2600 + I.t.length * 85);
+}
+function introNext() {
+  clearTimeout(intro.tm); const i = intro.i, c = $('town').querySelector('.cine');
+  if (i >= INTRO.length - 1) { introEnd(); return; }
+  if (c) c.classList.add('out');
+  intro.tm = setTimeout(() => intro(i + 1), 500);
+}
+function introEnd() {
+  clearTimeout(intro.tm); if (!document.body.classList.contains('intro')) return;
+  $('town').onclick = null;
+  fadeGo(() => { document.body.classList.remove('intro'); townMap(); inside('home', 'アルス「師匠、本当に行くんですか！？ ……今の、日記に書いておきます」'); }, { hold: 400 });
 }
 function townMap() {
   place = null; showTown(true, 2 / 3);
