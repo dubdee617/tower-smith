@@ -525,7 +525,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 57'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 58'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1586,13 +1586,13 @@ function endTurn() {
     const times = m.boss && R() < .4 ? 2 : 1;
     for (let i = 0; i < times; i++) {
       m.anim = { kind: 'attack', t0: performance.now() + order * 220 }; order++;
-      if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); popNum(0, 'me', 'miss'); continue; }
+      if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); { const w = (order - 1) * 220; setTimeout(() => popNum(0, 'me', 'miss'), w); } continue; }
       let d = Math.max(1, Math.round((m.atk - defPower()) * (.85 + R() * .3)));
-      playFx(B.counter || B.cut < 1 ? 'spark' : (m.id === 'rat' || m.id === 'centipede' ? 'bite' : 'claw'), { y: VH * .6, size: 1.1 });
+      monAttackFx(m, B.counter || B.cut < 1, (order - 1) * 220);
       if (B.counter) { d = Math.ceil(d * B.counter.cut); const c = dmgTo(m, atkPower() * B.counter.back); log(`受け止めて反撃！ ${c}のダメージ。`); B.counter = null; }
       else d = Math.ceil(d * B.cut);
       if (m.boss && G.bless === 'ward') d = Math.ceil(d * .7);
-      G.hp -= d; popNum(d, 'me', 'hurt'); fx.flash = .8; fx.shake = 6; log(`${m.name}の攻撃。${d}のダメージを受けた。`);
+      G.hp -= d; { const dd = d, w = (order - 1) * 220; setTimeout(() => { popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
       // 大きな一撃（最大HPの35%以上）はケガが残ることがある
       if (G.hp > 0 && d >= G.mhp * .35 && R() < .25) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
       if (allDead()) { win(); return; }
@@ -1682,29 +1682,75 @@ const FX_MOVE = {
   m_fire3:'big', m_ice3:'big', m_bolt3:'big', m_holy3:'big', m_dark3:'big',
 };
 const FX_DUR = { slash: 380, burst: 520, travel: 520, rise: 900, screen: 700, big: 1100 };
+// 回るエフェクト（1回の表示のあいだに回る角度）
+const SPIN = { magic_circle: 2.2, dark_mist: 1.4, barrier: .5 };
+// ばらばらに飛ぶエフェクト: n=数 up=上向きの強さ sp=速さ g=重さ spin=回転 flip=裏返り sz=大きさ dur=長さ fall=上から舞い落ちる tw=またたく keep=元の絵も出す
+const DEBRIS = {
+  rocks:     { n: 7, sp: 150, g: 420, spin: 14, flip: 10, sz: [.16, .32], dur: 750 },
+  ice_burst: { n: 8, sp: 170, g: 300, spin: 10, flip: 14, sz: [.12, .24], dur: 700, keep: true, glint: true },
+  heal_leaf: { n: 7, fall: true, g: 0, spin: 3, flip: 7, sz: [.14, .24], dur: 1100 },
+  sparkle:   { n: 7, sp: 110, g: 0, spin: 2, flip: 0, sz: [.12, .24], dur: 650, tw: true },
+};
+function debrisFx(img, x, y, opt, D) {
+  const n = D.n + Math.floor((opt.size || .8) * 3), t0 = performance.now() + (opt.delay || 0);
+  for (let i = 0; i < n; i++) {
+    const an = -Math.PI / 2 + (R() - .5) * 2.8, sp = (D.sp || 0) * (.6 + R() * .8), vx = D.fall ? (R() - .5) * 30 : Math.cos(an) * sp, vy = D.fall ? 30 + R() * 30 : Math.sin(an) * sp;
+    const sx = D.fall ? x + (R() - .5) * VH * .5 : x, sy = D.fall ? y - VH * (.25 + R() * .2) : y;
+    const spin = (R() - .5) * D.spin, flipSp = D.flip * (.6 + R() * .8), sz = VH * (opt.size || .8) * (D.sz[0] + R() * (D.sz[1] - D.sz[0])), ph = R() * 6, tw = R() * 6, del = D.fall ? R() * 300 : 0;
+    fxList.push({ code: k => {
+      const dt = k * D.dur / 1000, px = sx + vx * dt + (D.fall ? Math.sin(dt * 5 + ph) * 18 : 0), py = sy + vy * dt + D.g * dt * dt, a = k < .1 ? k / .1 : k < .7 ? 1 : 1 - (k - .7) / .3;
+      ctx.globalAlpha = a * (D.tw ? .55 + .45 * Math.sin(tw + k * 25) : 1); if (D.tw || D.glint) ctx.globalCompositeOperation = 'lighter';
+      ctx.translate(px, py); ctx.rotate(spin * dt); if (D.flip) ctx.scale(Math.cos(ph + flipSp * dt), 1);
+      const s2 = D.tw ? sz * (.6 + .4 * Math.sin(tw + k * 18)) : sz;
+      ctx.drawImage(img, -s2 / 2, -s2 / 2 * img.height / img.width, s2, s2 * img.height / img.width);
+    }, t0: t0 + del, dur: D.dur });
+  }
+}
+// ---------- 魔物の攻撃のエフェクト（種類ごと） ----------
+const MON_ATK = [
+  [/dragon|wyvern|cloudragon|竜/, 'breath'],
+  [/golem|mammoth|giant|troll|ogre|rhino|colossus|boulder|tortoise|whale|hand|obsidian|statue|yeti|ape|bear|巨/, 'heavy'],
+  [/thunder|lightning|storm|雷|稲妻/, 'bolt'],
+  [/fire|lava|magma|ember|frill|candle|炎|溶岩/, 'fire'],
+  [/ice|snow|frost|yuki|glacier|blizzard|frozen|氷|雪|霜/, 'ice'],
+  [/ghost|phantom|shadow|shaman|mage|grimoire|curse|cursed|tablet|mirror|portrait|jester|medusa|sealed|亡霊|影|呪/, 'dark'],
+  [/sprite|pixie|kodama|angel|spirit|woodmask|mirage|精/, 'magic'],
+  [/spider|scorpion|centipede|worm|slime|pitcher|maneater|mushroom|moth|frog|leech|slug|bee|swarm|snake|serpent|python|larva|vine|rose|cactus|beetle|scarab|毒|虫/, 'poison'],
+  [/knight|armor|guard|bandit|orc|goblin|skeleton|warrior|chariot|dragoon|rider|thief|archer|graverobber|chain|gear|imp/, 'weapon'],
+  [/rat|dog|wolf|jackal|lynx|leopard|fox|cat|croc|bat|lizard|boar|jaguar|camel|penguin|crab/, 'bite'],
+];
+function monAtkKind(m) { if (m.boss && !/golem|worm|king/.test(m.id)) return 'heavy'; const k = m.id + m.name; for (const [re, v] of MON_ATK) if (re.test(k)) return v; return 'claw'; }
+function monAttackFx(m, blocked, dl) {
+  dl = dl || 0;
+  const y = VH * .62, o = { y, size: 1.1, mv: 'burst', x: VW / 2 + (R() - .5) * 40, delay: dl };
+  if (blocked) { playFx('spark', o); return; }
+  switch (monAtkKind(m)) {
+    case 'breath': fxTint(dl, '#ff6a20', .35); playFx('fire_l', { ...o, size: 1.6 }); playFx('fire_s', { ...o, delay: dl + 120 }); shakeAt(dl + 100, 9); break;
+    case 'heavy': playFx('impact_heavy', { ...o, size: 1.3 }); playFx('rocks', { ...o, delay: dl + 60, size: .8 }); fxTint(dl, '#ff2010', .2); shakeAt(dl + 60, 11); break;
+    case 'bolt': playFx('m_bolt1', { ...o, size: .9 }); playFx('paralyze', { ...o, delay: dl + 120, size: .7 }); break;
+    case 'fire': playFx('m_fire1', { ...o, size: .8 }); playFx('fire_s', { ...o, delay: dl + 100, size: .7 }); break;
+    case 'ice': playFx('m_ice1', { ...o, size: .8 }); playFx('ice_burst', { ...o, delay: dl + 100, size: .6 }); break;
+    case 'dark': playFx('dark_mist', { ...o, size: .9 }); playFx('m_dark1', { ...o, delay: dl + 120, size: .8 }); break;
+    case 'magic': playFx('magic_arrow', { ...o, size: .8 }); playFx('sparkle', { ...o, delay: dl + 120, size: .6 }); break;
+    case 'poison': playFx('poison_bubble', { ...o, size: .9 }); playFx('poison', { ...o, delay: dl + 120, size: .7 }); break;
+    case 'weapon': playFx(R() < .5 ? 'slash_h' : 'slash_v', { ...o, mv: 'slash' }); shakeAt(dl + 40, 5); break;
+    case 'bite': playFx('bite', o); break;
+    default: playFx('claw', o);
+  }
+}
 function playFx(name, opt = {}) {
   const img = FXI[name], meta = (typeof FX_META !== 'undefined' && FX_META[name]) || { c: '#ffffff', add: true };
   if (!img) return;
   if (FX_SFX[name]) sfx(FX_SFX[name], { delay: opt.delay || 0, max: 2.5 });
-  const mv = FX_MOVE[name] || 'burst', self = opt.self || mv === 'rise';
+  const mv = opt.mv || FX_MOVE[name] || 'burst', self = opt.self || mv === 'rise';
   // 大きな魔法: 画面が暗くなってから、画面いっぱいに出る。強く揺れて、粒も多い
   if (mv === 'big') { fxDim = performance.now() + (opt.delay || 0); opt = { ...opt, delay: (opt.delay || 0) + 280, parts: 40, y: VH * .56 }; setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); fx.flash = .5; }, opt.delay + 80); }
   if (/^m_\w+2$/.test(name)) setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 6); }, (opt.delay || 0) + 60);
   const x = opt.x !== undefined ? opt.x : (FX_AT && FX_AT.cx !== undefined && !self && mv !== 'big' ? FX_AT.cx : VW / 2) + (self ? 0 : (R() - .5) * 20), y = opt.y !== undefined ? opt.y : self ? VH * .62 : VH * .52;
-  // 岩の破片: 1枚の絵をばらばらに飛ばす。回りながら、ひっくり返りながら、落ちていく
-  if (name === 'rocks') {
-    const n = 6 + Math.floor((opt.size || .7) * 4), t0 = performance.now() + (opt.delay || 0);
-    for (let i = 0; i < n; i++) {
-      const an = -Math.PI / 2 + (R() - .5) * 2.6, sp = 90 + R() * 150, vx = Math.cos(an) * sp, vy = Math.sin(an) * sp, spin = (R() - .5) * 14, flipSp = 6 + R() * 10, sz = VH * (opt.size || .7) * (.16 + R() * .16), ph = R() * 6;
-      fxList.push({ code: k => {
-        const dt = k * .75, px = x + vx * dt, py = y + vy * dt + 420 * dt * dt, a = k < .7 ? 1 : 1 - (k - .7) / .3;
-        ctx.globalAlpha = a; ctx.translate(px, py); ctx.rotate(spin * dt); ctx.scale(Math.cos(ph + flipSp * dt), 1);  // 横に裏返る
-        ctx.drawImage(img, -sz / 2, -sz / 2 * img.height / img.width, sz, sz * img.height / img.width);
-      }, t0, dur: 750 });
-    }
-    return;
-  }
-  fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: R() < .5 && mv === 'slash' });
+  // ばらばらに飛ぶ・舞うエフェクト（岩・氷・葉・きらめき）
+  if (DEBRIS[name]) { debrisFx(img, x, y, opt, DEBRIS[name]); if (!DEBRIS[name].keep) return; }
+  if (name === 'explosion') playFx('rocks', { delay: (opt.delay || 0) + 60, size: (opt.size || .9) * .8, x, y });
+  fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: R() < .5 && mv === 'slash', spin: SPIN[name] || 0, wob: name === 'dark_mist' });
   // 同じ色の粒
   const n = opt.parts !== undefined ? opt.parts : mv === 'rise' ? 18 : 14;
   for (let i = 0; i < n; i++) {
@@ -1734,7 +1780,7 @@ function drawFx() {
     const r = Math.max(w, h) * s * .55, gr = ctx.createRadialGradient(x, y, 0, x, y, r);
     gr.addColorStop(0, e.meta.c + (e.meta.add ? '66' : '33')); gr.addColorStop(1, e.meta.c + '00');
     ctx.globalAlpha = a; ctx.fillStyle = gr; ctx.fillRect(x - r, y - r, r * 2, r * 2);
-    ctx.translate(x, y); ctx.rotate(e.rot); if (e.flip) ctx.scale(-1, 1);
+    ctx.translate(x, y); ctx.rotate(e.rot + e.spin * k); if (e.flip) ctx.scale(-1, 1); if (e.wob) ctx.scale(1 + Math.sin(k * 9) * .08, 1 - Math.sin(k * 9) * .06);
     ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s);
     if (e.meta.add && k < .35) { ctx.globalAlpha = a * .5; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); } // 最初だけ強く光らせる
     ctx.setTransform(1, 0, 0, 1, 0, 0);
