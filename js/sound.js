@@ -146,10 +146,27 @@ const FX_SFX = {
   heal: 'heal1', heal_leaf: 'heal3', barrier: 'buff', power: 'buff', bunshin: 'dash', afterimage: 'miss',
   poison: 'poison1', poison_bubble: 'poison2', claw: 'punch', bite: 'bite', rocks: 'rockbreak',
 };
-// 足音（エリアごと）
-const STEP_SFX = { stone: 'step_stone', forest: 'step_grass', jungle: 'step_grass', desert: 'step_sand', ruins: 'step_sand', mountain: 'step_dirt', canyon: 'step_dirt', snow: 'step_snow', glacier: 'step_snow', castle: 'step_stone' };
-// 1歩ぶんに切った短い足音（3種類）をランダムに。長い元の音は最初が小さく、聞こえにくかった
-const stepSfx = n => sfx((n >= 6 && n <= 9 ? 'step_wet' : STEP_SFX[areaOf(n)[1]] || 'step_stone') + '_' + (1 + Math.floor(Math.random() * 3)), { vol: .75 });
+// 足音（エリアごと。2026-11-24 見直し）: 1歩ごとに、エリアの足音を混ぜて選ぶ（[種類, 重み]）
+// stone=革靴で歩く dirt=土の上 grass=芝生 bush=草むら sand=砂の上 snow=雪の上 wet=雨で濡れた道路
+const STEP_MIX = {
+  stone:    [['stone', 1]],
+  forest:   [['grass', 3], ['bush', 1]],
+  desert:   [['sand', 1]],
+  mountain: [['dirt', 3], ['stone', 1]],
+  snow:     [['snow', 1]],
+  jungle:   [['bush', 3], ['grass', 1]],
+  ruins:    [['sand', 2], ['stone', 2]],
+  canyon:   [['dirt', 2], ['sand', 1]],
+  glacier:  [['snow', 3], ['stone', 1]],
+  castle:   [['stone', 1]],
+};
+const STEP_SFX = Object.fromEntries(Object.entries(STEP_MIX).map(([a, L]) => [a, 'step_' + L[0][0]]));
+// 6〜9階は下水のような濡れた石の床。1歩ぶんに切った短い足音（3種類）をランダムに
+const stepSfx = n => {
+  let k = 'wet';
+  if (!(n >= 6 && n <= 9)) { const L = STEP_MIX[areaOf(n)[1]] || STEP_MIX.stone, sum = L.reduce((a, b) => a + b[1], 0); let q = Math.random() * sum; k = L[0][0]; for (const [t, w] of L) if ((q -= w) < 0) { k = t; break; } }
+  sfx('step_' + k + '_' + (1 + Math.floor(Math.random() * 3)), { vol: .75 });
+};
 // 魔物の鳴き声（戦闘の始まり）
 const CRY_SFX = { rat: 'cry_beast', centipede: 'cry_beast', skeleton: 'cry_skeleton', goblin: 'goblin', golem: 'cry_golem' };
 // 文の中身で鳴らす効果音（店・宿・ギルドなど）
