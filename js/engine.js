@@ -177,7 +177,7 @@ function genFloor(floor, seed) {
       const r = hash(x * 7 + nx, y * 7 + ny, floor * 31 + 21 + (seed || 0));
       let v = null;
       if (r < .10) { v = 'torch'; torches.push([x + .5 + nx * .55, y + .5 + ny * .55]); }
-      else if (r < .50) {
+      else if (r < .28) {
         const useNew = typeof PROPS !== 'undefined' && hash(x, y, floor + 77) < .55;
         const k = useNew ? (floor >= 6 && hash(y, x, floor + 5) < .5 ? WALL_SET_B : WALL_SET_A) : DECO_NAMES.filter(n => n !== 'torch');
         v = k[Math.floor(hash(x, y, nx * 3 + ny + 40 + floor) * k.length)];
@@ -195,7 +195,7 @@ function genFloor(floor, seed) {
   // 鉱脈: 部屋や通路に面した壁のところどころ（外周と節目の階はなし）
   const vein = {};
   if (typeof PROPS !== 'undefined' && floor !== 10) for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++) {
-    if (M[y][x] !== 1 || !([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => M[y + b][x + a] === 0)) || R() > .06) continue;
+    if (M[y][x] !== 1 || !([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => M[y + b][x + a] === 0)) || R() > .04) continue;
     const sum = VEINS_STONE.reduce((s, v) => s + v[1], 0); let q = R() * sum;
     for (const [n, w] of VEINS_STONE) if ((q -= w) < 0) { vein[x + ',' + y] = n; break; }
   }
@@ -217,7 +217,7 @@ function genFloor(floor, seed) {
   if (typeof PROPS !== 'undefined') {
     const table = FLOOR_PROPS_STONE.concat(floor >= 6 ? FLOOR_PROPS_DEEP : []), tw = table.reduce((s, p) => s + p[2], 0);
     for (const r of rooms) {
-      const n = (r.w >= 3 && r.h >= 3 ? 2 : 1) * (R() < .75 ? 1 : 0);
+      const n = (r.w >= 4 && r.h >= 4 && R() < .35 ? 2 : 1) * (R() < .45 ? 1 : 0);
       for (let k = 0, tries = 0; k < n && tries < 4; tries++) {
         const c = edgeCell(r); if (!c) continue; const [x, y] = c;
         let q = R() * tw, pick = table[0]; for (const p of table) if ((q -= p[2]) < 0) { pick = p; break; }

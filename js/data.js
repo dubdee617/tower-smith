@@ -188,13 +188,14 @@ const RECIPES = [
 const SHOP = ['copper_sword','bone_dagger','bone_staff','copper_shield','leather_armor'];
 
 // 魔物（1〜10階・ダンジョン）。数値は仮
+// 2026-11-24 強くした（HP約2倍、攻撃約1.4倍）。最初は歯ごたえがあるように
 const MONSTERS = [
-  { id:'rat',      name:'大ネズミ',     hp:14, atk:5,  def:0, exp:4,  gold:3,  drop:{rat_hide:1},           from:1, color:'#8a6a52', size:.55 },
-  { id:'skeleton', name:'スケルトン',   hp:22, atk:7,  def:2, exp:7,  gold:5,  drop:{cursed_bone:2},        from:2, color:'#d8d0bc', size:.78 },
-  { id:'goblin',   name:'ゴブリン',     hp:26, atk:8,  def:2, exp:9,  gold:9,  drop:{ore_copper:2, dim_stone:1}, from:3, color:'#6f9a48', size:.68 },
-  { id:'centipede',name:'鉄喰いムカデ', hp:34, atk:10, def:5, exp:13, gold:8,  drop:{iron_shell:1, ore_copper:1}, from:5, color:'#7a3f2a', size:.66 },
+  { id:'rat',      name:'大ネズミ',     hp:30, atk:7,  def:0, exp:5,  gold:3,  drop:{rat_hide:1},           from:1, color:'#8a6a52', size:.55 },
+  { id:'skeleton', name:'スケルトン',   hp:42, atk:9,  def:3, exp:9,  gold:5,  drop:{cursed_bone:2},        from:2, color:'#d8d0bc', size:.78 },
+  { id:'goblin',   name:'ゴブリン',     hp:54, atk:11, def:3, exp:12, gold:9,  drop:{ore_copper:2, dim_stone:1}, from:3, color:'#6f9a48', size:.68 },
+  { id:'centipede',name:'鉄喰いムカデ', hp:70, atk:14, def:6, exp:17, gold:8,  drop:{iron_shell:1, ore_copper:1}, from:5, color:'#7a3f2a', size:.66 },
 ];
-const BOSS10 = { id:'golem', name:'鉱山ゴーレム', hp:180, atk:16, def:8, exp:120, gold:150, drop:{ore_copper:8, ore_iron:6, golem_core:1}, boss:true, color:'#7b746a', size:.86 };
+const BOSS10 = { id:'golem', name:'鉱山ゴーレム', hp:360, atk:22, def:10, exp:160, gold:180, drop:{ore_copper:8, ore_iron:6, golem_core:1}, boss:true, color:'#7b746a', size:.86 };
 
 // 道具屋
 // 道具屋で買える物（2026-11-23）。battle: 戦闘中にも使える

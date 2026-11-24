@@ -403,7 +403,7 @@ function greet(id) {
   let tier = st[0][1]; for (const [n, L] of st) if (G.maxFloor >= n && (n < 10 || G.bossDown)) tier = L;  // 10階の段は、10階の主を倒してから
   return R() < .6 ? pick(tier) : pick(base);
 }
-const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12 };
+const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7 };
 const pick = a => a[Math.floor(R() * a.length)];
 let place = null;
 
@@ -471,7 +471,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 20'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 21'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -860,6 +860,7 @@ function turnIn() {
   for (const [m, v] of Object.entries(got)) add(G.store, m, v); for (const [m, v] of Object.entries(bonus)) add(G.store, m, v);
   if (perk('ria')) gold = Math.floor(gold * 1.15);
   G.gold += gold; G.raw = {}; save();
+  setTimeout(() => bigFx(`<b class="gold">+${gold}G</b><em>ギルドの報酬</em><span>工房へ: ${matText(got)}</span>${Object.keys(bonus).length ? `<small>おまけ: ${matText(bonus)}</small>` : ''}`, 'register', 'reward'), 350);
   const lines = ['ボルツ[laugh]「おう旦那！ 使える形にしといたぜ」', 'ボルツ[smile]「いい戦利品だ。腕が鳴るねぇ」', 'ボルツ[think]「ふむ……。ま、俺にかかれば素材よ」', 'ボルツ「はいよ、加工済みだ。工房に届けとくぜ」', 'ボルツ[smile]「毎度！ 次も頼むぜ、旦那」'];
   guild(`${n >= 40 ? pick(['ボルツ[shock]「こりゃ大量だ！ 旦那、ほんとに鍛冶屋か？」', 'ボルツ[shock]「おいおい、荷車ごと持ってきたのか！？」']) : n >= 20 ? pick(['ボルツ[laugh]「お、今日はなかなかの量だな！」', 'ボルツ[smile]「いい稼ぎじゃねえか、旦那」']) : pick(lines)}\n報酬${gold}G／工房へ: ${matText(got)}${Object.keys(bonus).length ? `＋おまけ ${matText(bonus)}` : ''}`);
   npcFig('craft');
@@ -1181,7 +1182,7 @@ function useHerb() { if (!G.items.herb || G.hp >= G.mhp) return false; G.items.h
 function pickMonster() {
   const pool = MONSTERS.filter(m => m.from <= floorNo);
   if (TODAY.goblin && floorNo >= 3) pool.push(MONSTERS.find(m => m.id === 'goblin'), MONSTERS.find(m => m.id === 'goblin'));
-  const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .12, dz = TODAY.danger ? 1.2 : 1, rw = TODAY.danger ? 1.4 : 1;
+  const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = TODAY.danger ? 1.2 : 1, rw = TODAY.danger ? 1.4 : 1;
   return { ...base, hp: Math.round(base.hp * k * dz), atk: Math.round(base.atk * k * dz), def: Math.round(base.def * k), exp: Math.round(base.exp * k * rw), gold: Math.round(base.gold * k * rw) };
 }
 function apBase() { return 3 + (has('p_ap') ? 1 : 0) - (hurt('rib') ? 1 : 0); }
@@ -1205,10 +1206,14 @@ function startBattle(boss) {
 }
 // レベルアップ: 画面全体に大きく出す（押すか2.4秒で消える）
 function levelUpFx(lv, up) {
+  bigFx(`<b>LEVEL UP!</b><em>Lv ${lv}</em><span>最大HP +${up.hp}　攻 +${up.atk}　守 +${up.def}</span><small>${job()}の伸び方</small>`, 'levelup');
+}
+// 画面全体に大きく出す（レベルアップ・ギルドの報酬）。押すか2.4秒で消える
+function bigFx(html, snd, cls) {
   let d = $('lvup'); if (!d) { d = document.createElement('div'); d.id = 'lvup'; document.body.appendChild(d); d.onclick = () => d.classList.remove('on'); }
-  d.innerHTML = `<div><b>LEVEL UP!</b><em>Lv ${lv}</em><span>最大HP +${up.hp}　攻 +${up.atk}　守 +${up.def}</span><small>${job()}の伸び方</small></div>`;
-  d.classList.remove('on'); void d.offsetWidth; d.classList.add('on'); sfx('levelup', { vol: 1 });
-  clearTimeout(levelUpFx.t); levelUpFx.t = setTimeout(() => d.classList.remove('on'), 2400);
+  d.innerHTML = `<div>${html}</div>`; d.className = cls || '';
+  void d.offsetWidth; d.classList.add('on'); if (snd) sfx(snd, { vol: 1 });
+  clearTimeout(bigFx.t); bigFx.t = setTimeout(() => d.classList.remove('on'), 2600);
 }
 // 遭遇の演出: 画面全体が黄色く光る → 揺れる →「遭遇！」の帯と魔物の名前。少しの間ボタンは押せない
 function encounterFx(m) {
