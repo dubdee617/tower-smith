@@ -183,7 +183,7 @@ function figTalk(id) {
 }
 function hud() {
   $('who').textContent = `Lv${G.lv} ${job()}　攻${atkPower()} 守${defPower()}　${G.gold}G${G.injuries.length ? '　ケガ' + G.injuries.length : ''}`;
-  $('where').textContent = document.body.classList.contains('story') ? 'Tower of Hope' : mode === 'town' ? (place ? (place === 'tower' ? '塔の入口' : (PLACES[place] || { name: 'お城' }).name) : '塔の国の町') : `塔 ${floorNo}階`;
+  $('where').textContent = document.body.classList.contains('story') ? 'Tower of Hope' : mode === 'town' ? (place ? (place === 'tower' ? '塔の入口' : (PLACES[place] || { name: 'お城' }).name) : 'エルディアの町') : `塔 ${floorNo}階`;
   $('hpb').style.width = (100 * G.hp / G.mhp) + '%'; $('hpt').textContent = `${G.hp}/${G.mhp}`;
   const ap = B ? B.ap : 0, apMax = 4;
   $('apb').style.width = (100 * ap / apMax) + '%'; $('apt').textContent = B ? `${ap}` : '-';
@@ -396,12 +396,16 @@ function returnScreen(msg, brought, letter) {
   if (letter) log('工房に、お城から手紙が届いていた。「王が会いたいと仰せだ」……町の門の下から、お城へ行けるようになった。', true);
   buttons([{ t: '町へ', hot: true, f: () => evReady('jenny', .35) ? jennyEvent() : townMap() }]); hud();
 }
+// オープニング（2026-11-24 Daichiさんの文章）。bg: 背景の絵 face: 主人公のセリフのときの表情
 const INTRO = [
-  '塔の国。\n国の真ん中に、誰もてっぺんを見たことのない塔がそびえている。',
-  '人々は塔で鉱石を掘り、魔物を狩り、それを食べて、売って、暮らしている。\n塔を目当てに、人はどんどん流れ込んでくる。',
-  'おかげで素材の値段は上がる一方。\n町で買える素材は高く、質も落ちた。',
-  '町の工房に、40歳の鍛冶屋がいる。\n誰かのために武器を打っては、その誰かが帰ってこなかったり、文句を言われたり。たまに、感謝されたり。',
-  '「……材料が高すぎる。まぁ〜、どうにかなるんじゃないか」\n鍛冶屋は、自分で塔に登ることにした。',
+  { bg: 'town_view', t: 'エルディア王国の真ん中に、\n天まで届く大きな塔がある。\nその頂を見た者は、誰もいない。' },
+  { bg: 'town_view', t: '人々は塔で鉱石を掘り、\n魔物を狩り、食べ、売って暮らす。\n塔の恵みが、この国を支えていた。' },
+  { bg: 'town_view', t: 'やがて塔を目指す人が増え、\n素材は高く、質も落ちていった。\n鍛冶屋にとっては、頭の痛い話だ。' },
+  { bg: 'home_in', t: '町に、一人の鍛冶屋がいた。\n齢四十。腕は確かな職人だが、\n性格はいたってのんびり屋。' },
+  { bg: 'home_in', t: '誰かのために剣を打ち、\n帰らぬ人を待つ日もあった。\nそれでも今日も、鉄を打つ。' },
+  { bg: 'home_in', face: 'lookup', t: 'ある日、鍛冶屋はふと思った。\n「材料が高いなら……\n自分で採りに行けばいいか」' },
+  { bg: 'town_view', t: '町の人々は目を丸くした。\n近衛兵長ギャバンの記録は八十六階。\nその先は、誰も知らない。' },
+  { bg: 'tower', face: 'smile', t: '鍛冶屋は大きな塔を見上げた。\n「まぁ〜、どうにかなるんじゃないか」' },
 ];
 function titleScreen() {
   SND_INDOOR = false;
@@ -412,12 +416,18 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 8'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 9'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 function intro(i) {
-  viewScreen('', true);
-  if (i === INTRO.length - 1) say('sigh', INTRO[i], true); else log(INTRO[i], true);
-  buttons([{ t: i < INTRO.length - 1 ? '次へ' : '工房へ', hot: true, f: () => i < INTRO.length - 1 ? intro(i + 1) : (townMap(), inside('home', 'アルス「師匠、本当に行くんですか！？ ……今の、日記に書いておきます」')) }, { t: 'とばす', f: () => townMap() }]);
+  const I = INTRO[i], show = () => {
+    viewScreen('', true); $('town').querySelector('img').src = `${TOWN_IMG}${I.bg}.jpg`;
+    if (I.face) say(I.face, I.t, true); else log(I.t, true);
+    const last = i === INTRO.length - 1;
+    buttons([{ t: last ? '工房へ' : '次へ', hot: true, stay: true, f: () => last ? fadeGo(() => { townMap(); inside('home', 'アルス「師匠、本当に行くんですか！？ ……今の、日記に書いておきます」'); }) : intro(i + 1) },
+      { t: 'とばす', stay: true, f: () => fadeGo(townMap) }]);
+  };
+  // 背景が変わるときは暗転してから
+  if (i > 0 && INTRO[i - 1].bg !== I.bg) fadeGo(show, { hold: 200 }); else show();
 }
 function townMap() {
   place = null; showTown(true, 2 / 3);
