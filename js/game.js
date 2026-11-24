@@ -478,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 31'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 32'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -990,6 +990,7 @@ function enterFloor(n, fromAbove) {
   if (!Object.keys(FLOORS).length) startRun();
   // 魔除け・魔寄せは、使ってから3フロアで切れる（階が変わるたびに1減る）
   let encEnd = false; if (G.enc && n !== floorNo) { G.enc.floors--; if (G.enc.floors <= 0) { G.enc = null; encEnd = true; } }
+  { const ar = areaOf(n)[1]; if (TEX.area !== ar) loadTextures(ar); }  // エリアが変わったら絵を読み替える（読み終わるまで暗いまま）
   floorNo = n; F = FLOORS[n] || (FLOORS[n] = genFloor(n, n % 10 === 0 ? 0 : 1 + Math.floor(R() * 1e6))); mode = 'dungeon'; B = null;
   // 上の階から下りてきたときは上り階段の前、それ以外は下り階段の前から始める（どちらも部屋の方を向く）
   const [sx, sy] = fromAbove ? F.upFront : F.start, sd = fromAbove ? F.upDir : F.startDir;

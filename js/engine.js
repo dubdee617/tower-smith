@@ -40,10 +40,35 @@ const FLOOR_PROPS_DEEP = [['f_skulls',.34,4], ['f_ribcage',.28,3], ['f_sword_gra
 // 鉱脈（石のダンジョン）: [名前, 重み]
 const VEINS_STONE = [['v_copper',60], ['v_iron',25], ['v_stone',10], ['v_gems',5]]; // たいまつの棒の先（反転なし／反転）
 
+// エリアごとの絵（2026-11-24。assets/area/<エリア>/）。壁・床・天井（空）・扉・階段・床の小物4つ
+const AREA_FILES = ['wall', 'wall2', 'floor', 'ceil', 'door_wood', 'door_iron', 'stairs_up', 'stairs_down'];
+// 外のエリアは明るい（たいまつがなくても見える）
+const OUTDOOR = { forest: 1, desert: 1, mountain: 1, snow: 1, jungle: 1, canyon: 1, glacier: 1 };
+let LIGHT_MIN = 0;
+// 床の小物: [名前, 大きさ, 調べたときの種類]
+const AREA_PROPS = {
+  stone:   [['樽', .44, 'box'], ['木箱', .42, 'box'], ['白骨', .26, 'bone'], ['壊れた荷車', .42, 'wood']],
+  forest:  [['切り株', .36, 'wood'], ['苔むした岩', .38, 'rock'], ['キノコの群れ', .32, 'mushroom'], ['倒れた丸太', .3, 'wood']],
+  desert:  [['枯れ木', .52, 'wood'], ['牛の頭骨', .28, 'bone'], ['倒れた石柱', .36, 'rock'], ['壺', .4, 'box']],
+  mountain:[['大きな岩', .44, 'rock'], ['坑道の支柱', .52, 'wood'], ['トロッコ', .4, 'rock'], ['積み石', .46, 'rock']],
+  snow:    [['凍った木', .42, 'wood'], ['雪に埋もれた樽', .26, 'box'], ['氷柱の岩', .42, 'crystal'], ['雪だるまの残骸', .28, 'box']],
+  jungle:  [['大きなシダ', .4, 'mushroom'], ['苔むした石像の頭', .38, 'altar'], ['巨大な花', .3, 'mushroom'], ['倒木', .3, 'wood']],
+  ruins:   [['オベリスク', .6, 'altar'], ['壊れた石像', .36, 'rock'], ['金の壺', .42, 'box'], ['石棺', .32, 'bone']],
+  canyon:  [['溶岩の噴き出す岩', .42, 'crystal'], ['骨', .28, 'bone'], ['尖った岩', .44, 'rock'], ['焦げた木', .36, 'wood']],
+  glacier: [['氷の結晶の柱', .56, 'crystal'], ['雲のかたまり', .3, 'box'], ['天の祭壇', .5, 'altar'], ['凍った羽根', .34, 'feather']],
+  castle:  [['燭台', .5, 'box'], ['甲冑の飾り', .56, 'bone'], ['玉座の椅子', .5, 'altar'], ['本の積まれた机', .4, 'box']],
+};
+// エリアの床の小物（engine.js の AREA_PROPS）も調べられるように
+for (const [a, L] of Object.entries(AREA_PROPS)) L.forEach((p, k) => { PROP_INFO[`${a}_p${k + 1}`] = [p[0], p[2]]; });
 async function loadTextures(set) {
-  const A = ASSETS[set];
+  TEX.ready = false;
+  const A = Object.assign({}, ASSETS.stone);
+  if (AREA_PROPS[set]) for (const k of AREA_FILES) A[k] = `assets/area/${set}/${k}.webp`;
+  A.door_bars = A.door_wood;
+  LIGHT_MIN = OUTDOOR[set] ? .72 : 0; TEX.area = set;
   const wallImg = await loadImg(A.wall);
   TEX.wall = pix(wallImg, TS, TS);
+  TEX.wall2 = A.wall2 ? pix(await loadImg(A.wall2), TS, TS) : TEX.wall;
   TEX.floor = pix(await loadImg(A.floor), 256, 256);
   TEX.ceil = pix(await loadImg(A.ceil), 256, 256);
   for (const k of ['stairs_up', 'stairs_down', 'door_wood', 'door_iron', 'door_bars']) TEX[k] = pix(await loadImg(A[k]), TS, TS);
@@ -105,6 +130,8 @@ async function loadTextures(set) {
     }
   }
   if (TEX.crackImg && TEX.crackImg[3]) TEX.crack = TEX.crackImg;
+  // エリアの床の小物
+  if (AREA_PROPS[set]) for (let k = 1; k <= 4; k++) { const im = await loadImg(`assets/area/${set}/p${k}.webp`); TEX.sprite[`${set}_p${k}`] = { w: im.width, h: im.height, px: pix(im, im.width, im.height) }; }
   TEX.ready = true;
 }
 
@@ -168,7 +195,7 @@ function genFloor(floor, seed) {
   // 宝箱は、床の小物と同じく部屋のふち（外側が壁）に置いて、通れないようにする（M=6）。下で置く
   const chests = [];
   // 壁の飾りとたいまつ
-  const face = {}, torches = [];
+  const face = {}, torches = [], area = typeof areaOf === 'function' ? areaOf(floor)[1] : 'stone', outdoor = !!OUTDOOR[area];
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     if (M[y][x] !== 1) continue;
     for (const [nx, ny] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
@@ -176,8 +203,10 @@ function genFloor(floor, seed) {
       if (!M[oy] || M[oy][ox] === undefined || SOLID(M[oy][ox])) continue;
       const r = hash(x * 7 + nx, y * 7 + ny, floor * 31 + 21 + (seed || 0));
       let v = null;
-      if (r < .10) { v = 'torch'; torches.push([x + .5 + nx * .55, y + .5 + ny * .55]); }
-      else if (r < .28) {
+      if (!outdoor && r < .10) { v = 'torch'; torches.push([x + .5 + nx * .55, y + .5 + ny * .55]); }
+      else if (area !== 'stone') { if (r < .34) face[x + ',' + y + ',' + nx + ',' + ny] = 'wall2'; continue; }  // 石のダンジョン以外は、2種類の壁を混ぜる
+      else if (r < .16) { face[x + ',' + y + ',' + nx + ',' + ny] = 'wall2'; continue; }
+      else if (r < .26) {
         const useNew = typeof PROPS !== 'undefined' && hash(x, y, floor + 77) < .55;
         const k = useNew ? (floor >= 6 && hash(y, x, floor + 5) < .5 ? WALL_SET_B : WALL_SET_A) : DECO_NAMES.filter(n => n !== 'torch');
         v = k[Math.floor(hash(x, y, nx * 3 + ny + 40 + floor) * k.length)];
@@ -215,7 +244,8 @@ function genFloor(floor, seed) {
   };
   for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35)) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
   if (typeof PROPS !== 'undefined') {
-    const table = FLOOR_PROPS_STONE.concat(floor >= 6 ? FLOOR_PROPS_DEEP : []), tw = table.reduce((s, p) => s + p[2], 0);
+    const own = (AREA_PROPS[area] || []).map((p, k) => [`${area}_p${k + 1}`, p[1], area === 'stone' ? 6 : 10]);
+    const table = area === 'stone' ? own.concat(FLOOR_PROPS_STONE, floor >= 6 ? FLOOR_PROPS_DEEP : []) : own, tw = table.reduce((s, p) => s + p[2], 0);
     for (const r of rooms) {
       const n = (r.w >= 4 && r.h >= 4 && R() < .35 ? 2 : 1) * (R() < .45 ? 1 : 0);
       for (let k = 0, tries = 0; k < n && tries < 4; tries++) {
@@ -234,7 +264,7 @@ function shadeW(col, k, w) {
   const r = col & 255, g = (col >> 8) & 255, b = (col >> 16) & 255;
   return 0xff000000 | (Math.min(255, b * (k * .82 + w * .28)) << 16) | (Math.min(255, g * (k * .9 + w * .62)) << 8) | Math.min(255, r * (k + w * 1.05));
 }
-function lightAt(d, t) { const f = 1 + Math.sin(t / 90) * .04 + Math.sin(t / 37) * .03; return Math.max(0, Math.min(1.25, 1.35 * f / (1 + d * d * .09))); }
+function lightAt(d, t) { const f = 1 + Math.sin(t / 90) * .04 + Math.sin(t / 37) * .03; return Math.max(LIGHT_MIN / (1 + d * .06), Math.min(1.25, 1.35 * f / (1 + d * d * .09))); }
 let FLICK = 1;
 function warmAt(F, x, y) { const i = Math.floor(x * 4), j = Math.floor(y * 4); if (i < 0 || j < 0 || i >= F.G || j >= F.G) return 0; return F.wm[j * F.G + i] * FLICK; }
 
@@ -272,7 +302,7 @@ function renderView(ctx, F, P, t, dim) {
     const nx = side ? 0 : -sx, ny = side ? -sy : 0, fk = F.face[mx + ',' + my + ',' + nx + ',' + ny];
     const cell = (M[my] && M[my][mx]) || 1;
     const vk = cell === 1 && F.vein ? F.vein[mx + ',' + my] : null;
-    const tex = cell === 2 ? TEX.stairs_up : cell === 3 ? TEX.stairs_down : cell === 4 ? TEX.door_wood : cell === 5 ? TEX.door_iron : vk && TEX.vein[vk] ? TEX.vein[vk] : fk && TEX.deco[fk] ? TEX.deco[fk] : TEX.wall;
+    const tex = cell === 2 ? TEX.stairs_up : cell === 3 ? TEX.stairs_down : cell === 4 ? TEX.door_wood : cell === 5 ? TEX.door_iron : vk && TEX.vein[vk] ? TEX.vein[vk] : fk === 'wall2' ? TEX.wall2 : fk && TEX.deco[fk] ? TEX.deco[fk] : TEX.wall;
     ZB[x] = dist;
     const ck = cell === 1 && F.crack ? F.crack[mx + ',' + my] : 0, cm = ck ? TEX.crack[ck] : null;
     const isT0 = cell === 1 && !vk && fk && fk.startsWith('torch'), isT = isT0, tip = isT ? TORCH_TIP[+fk.endsWith('1')] : 0;
