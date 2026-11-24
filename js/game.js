@@ -4,6 +4,7 @@ const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d'), mapCv = $('map'), mapCtx = mapCv.getContext('2d');
 const R = Math.random;
 const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+const SKILL_MAX = 6;  // 塔に持ち込める技の数（2026-11-24 に10個から変更）
 
 // ---------- 状態 ----------
 const NEW_GAME = () => ({
@@ -35,7 +36,7 @@ const NEW_GAME = () => ({
   prof: {},            // 武器の熟練度（その武器を持って勝った回数）
   jobWins: {},         // ジョブごとの勝利数（技を覚える）
   learned: [],         // 覚えた技とパッシブ
-  loadout: { skills: [], passives: [] }, // 塔に持ち込む技（10個まで）とパッシブ（3つまで）
+  loadout: { skills: [], passives: [] }, // 塔に持ち込む技（6個まで）とパッシブ（3つまで）
   runHp: 0,
   upperPick: {},      // 同じ武器で上級職が2つ以上あるとき、どれになるか
 });
@@ -89,7 +90,7 @@ function checkLearn(j, quiet) {
   const got = [];
   for (const [n, id] of J.learn) if ((G.jobWins[j] || 0) >= n && !G.learned.includes(id)) {
     G.learned.push(id); got.push(id);
-    if (SKILLS[id] && G.loadout.skills.length < 10) G.loadout.skills.push(id);
+    if (SKILLS[id] && G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(id);
     if (PASSIVES[id] && G.loadout.passives.length < PASSIVE_SLOTS) G.loadout.passives.push(id);
   }
   if (got.length && !quiet) log(`${j}の${got.map(id => (SKILLS[id] || PASSIVES[id]).name).join('・')}を覚えた！`);
@@ -285,7 +286,7 @@ function fitStage() {
   for (const c of main.children) if (c !== s && c.id !== 'log' && getComputedStyle(c).display !== 'none') used += c.offsetHeight;
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
-  const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(232, ctl.offsetHeight) : 0));
+  const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(250, ctl.offsetHeight) : 0));
   let w = W, h;
   if (COVER) h = document.body.classList.contains('intro') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(H, Hdg, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
@@ -417,7 +418,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 15'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 16'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -519,7 +520,7 @@ function homeMenu() {
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true); } },
     { t: '装備を変える', s: job(), f: () => equipMenu(homeMenu) },
     { t: 'ツール', s: toolName(), f: () => toolMenu(homeMenu) },
-    { t: '技を選ぶ', s: `${G.loadout.skills.length}/10`, f: () => skillMenu(homeMenu) },
+    { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(homeMenu) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(homeMenu) },
     { t: 'ジョブ', s: '一覧', f: () => jobList(homeMenu) },
     ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
@@ -621,7 +622,7 @@ function prepMenu() {
   const back = () => prepMenu();
   buttons([{ t: '装備を変える', s: job(), f: () => equipMenu(back) },
     { t: 'ツールを選ぶ', s: toolName(), hot: !G.equip.tool && G.gear.some(g => g.type === 'tool'), f: () => toolMenu(back) },
-    { t: '技を選ぶ', s: `${G.loadout.skills.length}/10`, f: () => skillMenu(back) },
+    { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(back) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(back) },
     { t: '持ち物を見る', f: () => log(`${Object.entries(ITEMS).filter(([k]) => G.items[k] > 0).map(([k, it]) => it.name + G.items[k]).join(' ')}／手持ち ${G.gold}G${G.injuries.length ? '\nケガ: ' + G.injuries.map(k => INJURIES[k].name + '（' + INJURIES[k].desc + '）').join('、') : ''}${G.bless ? '\n祝福: ' + BLESSINGS[G.bless].name : ''}`, true) },
     { t: '戻る', f: () => towerScreen('「よし、準備はいい」') }]);
@@ -686,14 +687,15 @@ function equipItem(g) {
   else { E.r = g.uid; if (two) E.l = null; }                         // 持っていない → 右手
   save();
 }
-// 塔に持ち込む技（10個まで）
+// 塔に持ち込む技（6個まで）
 function skillMenu(back) {
+  if (G.loadout.skills.length > SKILL_MAX) G.loadout.skills = G.loadout.skills.slice(0, SKILL_MAX);
   const mine = G.learned.filter(id => SKILLS[id]);
-  const L = [{ title: `持ち込む技 ${G.loadout.skills.length}/10（攻撃・守る・薬草・逃げるは いつでも使える）` }];
+  const L = [{ title: `持ち込む技 ${G.loadout.skills.length}/${SKILL_MAX}（攻撃・守る・道具・逃げるは いつでも使える）` }];
   for (const id of mine) { const s = SKILLS[id], on = G.loadout.skills.includes(id);
     L.push({ t: s.name + (on ? ' ✓' : ''), s: `AP${s.ap}・${s.desc}`, hot: on, f: () => {
       if (on) G.loadout.skills = G.loadout.skills.filter(x => x !== id);
-      else if (G.loadout.skills.length < 10) G.loadout.skills.push(id); else { log('持ち込める技は10個まで。', true); return; }
+      else if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(id); else { log(`持ち込める技は${SKILL_MAX}個まで。`, true); return; }
       save(); skillMenu(back); } }); }
   L.push({ t: '戻る', f: back });
   buttons(L); if (!mine.length) log('まだ技を覚えていない。ジョブで戦って勝つと覚える。', true); else log('押して選ぶ／外す。', true);
@@ -1106,10 +1108,10 @@ function itemMenu() {
 }
 // 戦闘中の道具（AP1）
 function battleItems() {
-  const L = Object.entries(ITEMS).filter(([k, it]) => it.battle && G.items[k] > 0).map(([k, it]) => ({ t: it.name, s: `${G.items[k]}個`, f: () => { if (B.ap < 1) return; if (useItem(k)) { B.ap -= 1; playFx(k === 'bandage' ? 'heal_leaf' : 'heal', { self: true, size: .9 }); } battleUI(); hud(); } }));
+  const L = battleItemList().map(([k, it]) => ({ t: it.name, s: `残り${G.items[k] - B.plan.filter(p => p.id === 'item' && p.k === k).length}個`, f: () => { if (B.ap < apCost('herb')) return; B.ap -= apCost('herb'); B.plan.push({ id: 'item', k }); battleUI(); hud(); } }));
   if (!L.length) L.push({ title: '戦闘で使える道具がない' });
-  L.push({ t: '戻る', hot: true, f: () => battleUI() });
-  buttons(L);
+  L.push({ t: '戻る', f: () => battleUI() });
+  buttons(L); log('使う道具を選ぶ（AP1）。', true);
 }
 function useHerb() { if (!G.items.herb || G.hp >= G.mhp) return false; G.items.herb--; const h = healMe(Math.round((25 + G.lv * 3) * (has('p_herb') ? 1.5 : 1))); log(`薬草を使った。HPが${h}回復。`); return true; }
 
@@ -1156,13 +1158,70 @@ function encounterFx(m) {
   sfx('shock1', { vol: .5, max: .5 });
   const c = $('ctl'); c.classList.add('wait'); setTimeout(() => c.classList.remove('wait'), 750);
 }
+// 戦闘: 技を押して「行動の予定」に並べる（APはその場で減る）→「行動」で順番に実行 → 敵の番
+// 予定は押すと取り消せる。予定が空のまま押すと、そのままターン終了（APを持ち越す）
+const FIXED_CMD = ['attack', 'guard', 'herb', 'flee'];
 function battleUI() {
-  const sk = [...new Set(['attack', ...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]), ...(hasShield() ? ['counter', 'wall'] : []), 'guard', 'herb', 'flee'])];
-  const L = sk.map(id => { const s = SKILLS[id], c = apCost(id); const off = B.over || B.ap < c || (id === 'herb' && !Object.entries(ITEMS).some(([k, it]) => it.battle && G.items[k] > 0)) || (id === 'flee' && B.m.boss);
-    return { t: `${s.name}<small>AP${c}・${s.desc}</small>`, off, f: () => useSkill(id) }; });
+  if (!B) return; if (!B.plan) B.plan = [];
+  const box = $('ctl'); box.innerHTML = '';
+  const can = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.m.boss) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
+  const mk = (wrap, html, cls, off, f) => { const el = document.createElement('button'); el.innerHTML = html; if (cls) el.className = cls; el.disabled = !!off;
+    el.addEventListener('click', () => sfx('select', { vol: .5 }), { capture: true }); el.onclick = () => { f(); hud(); }; wrap.appendChild(el); return el; };
+  // 予定の列
+  const plan = document.createElement('div'); plan.className = 'plan';
+  plan.innerHTML = `<span class="ap">AP ${B.ap}</span>`;
+  if (!B.plan.length) plan.insertAdjacentHTML('beforeend', `<span class="hint">${B.running ? '行動中……' : '技を選んで「行動！」'}</span>`);
+  B.plan.forEach((p, i) => { const c = document.createElement('button'); c.className = 'chip'; c.textContent = `${i + 1}.${p.id === 'item' ? ITEMS[p.k].name : SKILLS[p.id].name} ✕`;
+    c.onclick = () => { if (B.running) return; unplan(i); battleUI(); hud(); }; plan.appendChild(c); });
+  box.appendChild(plan);
+  // いつでも使える4つ
+  const row = document.createElement('div'); row.className = 'btns four';
+  for (const id of FIXED_CMD) { const s = SKILLS[id]; mk(row, `${s.name}<small>AP${apCost(id)}</small>`, '', !can(id), () => planAdd(id)); }
+  box.appendChild(row);
+  // 持ち込んだ技（6個）と盾の技
+  const sk = [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall'] : [])])].filter(id => !FIXED_CMD.includes(id));
+  if (sk.length) { const g = document.createElement('div'); g.className = 'btns three small sk';
+    for (const id of sk) { const s = SKILLS[id]; mk(g, `${s.name}<small>AP${apCost(id)}・${s.desc}</small>`, '', !can(id), () => planAdd(id)); }
+    box.appendChild(g); }
+  // 取り消す／行動
+  const tail = document.createElement('div'); tail.className = 'btns tail';
   const keep = Math.min(carryMax(), B.ap);
-  L.push({ t: 'ターン終了', tail: true, s: keep ? `AP${keep}を持ち越す` : '', hot: true, off: B.over, f: endTurn });
-  buttons(L);
+  mk(tail, '取り消す', 'undo', !B.plan.length || B.running || B.over, () => { unplan(B.plan.length - 1); battleUI(); });
+  mk(tail, B.plan.length ? `行動！<small>${B.plan.length}つ実行${keep ? `・AP${keep}持ち越し` : ''}</small>` : `ターン終了<small>${keep ? `AP${keep}を持ち越す` : 'なにもしない'}</small>`, 'hot', B.over || B.running, runPlan);
+  box.appendChild(tail);
+  fitStage();
+}
+function battleItemList() {
+  const used = {}; for (const p of B.plan || []) if (p.id === 'item') used[p.k] = (used[p.k] || 0) + 1;
+  return Object.entries(ITEMS).filter(([k, it]) => it.battle && (G.items[k] || 0) - (used[k] || 0) > 0);
+}
+function planAdd(id) {
+  if (B.over || B.running) return;
+  const cost = apCost(id); if (B.ap < cost) return;
+  if (id === 'herb') { battleItems(); return; }
+  B.ap -= cost; B.plan.push({ id }); battleUI();
+}
+function unplan(i) { if (i < 0) return; const p = B.plan.splice(i, 1)[0]; if (p) B.ap += p.id === 'item' ? apCost('herb') : apCost(p.id); }
+// 予定を順番に実行する
+function runPlan() {
+  if (!B || B.over || B.running) return;
+  const list = B.plan.slice(); B.plan = [];
+  if (!list.length) { endTurn(); return; }
+  B.running = true; battleUI();
+  let i = 0;
+  const step = () => {
+    if (!B || B.over) return;
+    const a = list[i++], r = a.id === 'item' ? doItem(a.k) : doSkill(a.id);
+    hud();
+    if (r === 'end' || !B || B.over) { if (B) B.running = false; return; }
+    if (i < list.length) setTimeout(step, 700); else setTimeout(() => { if (!B || B.over) return; B.running = false; endTurn(); }, 650);
+  };
+  step();
+}
+function doItem(k) {
+  if (useItem(k)) playFx(k === 'bandage' ? 'heal_leaf' : 'heal', { self: true, size: .9 });
+  else log(`${ITEMS[k].name}は使わなかった。`);
+  return 'ok';
 }
 // 重い武器（斧・刀・大剣）は、ふつうの攻撃にAPが2かかる。軽い武器ほど回避しやすい
 const apCost = id => id === 'attack' && isHeavy() ? 2 : SKILLS[id].ap;
@@ -1175,8 +1234,8 @@ function dmgTo(m, power, pierce, critBonus) {
   m.hp -= d; fx.hit = .6; B.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.min(8, 2 + d / 6); return d;
 }
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; return h; }
-function useSkill(id) {
-  if (B.over) return; const s = SKILLS[id], m = B.m, cost = apCost(id); if (B.ap < cost) return; B.ap -= cost;
+function doSkill(id) {
+  if (B.over) return 'end'; const s = SKILLS[id], m = B.m;
   skillFx(id);
   const power = atkPower() * (s.mult || 1) * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0);
   switch (s.kind) {
@@ -1199,12 +1258,10 @@ function useSkill(id) {
     case 'buff': B.boost = s.boost; log(`${s.name}。このターンの攻撃が強くなる。`); break;
     case 'dodge': B.dodge = s.dodge; log(`${s.name}！`); break;
     case 'steal': { const k = Object.keys(m.drop)[0]; if (R() < (has('p_steal') ? .8 : .5)) { add(G.carry, k, 1); log(`${NAMES[k]}を盗んだ！`); } else log('盗めなかった。'); break; }
-    case 'herb': B.ap += s.ap; battleItems(); return;
-    case 'flee': if (R() < (hurt('leg') ? .25 : .5)) { allyTick(); log('逃げ出した！', true); B = null; mode = 'dungeon'; dungeonUI(); hud(); return; } log('逃げられない！'); break;
+    case 'flee': if (R() < (hurt('leg') ? .25 : .5)) { allyTick(); log('逃げ出した！', true); B = null; mode = 'dungeon'; dungeonUI(); hud(); return 'end'; } log('逃げられない！'); break;
   }
-  if (m.hp <= 0) { win(); return; }
-  if (B.ap <= 0) setTimeout(endTurn, 350); else battleUI();
-  hud();
+  if (m.hp <= 0) { win(); return 'end'; }
+  return 'ok';
 }
 function endTurn() {
   if (!B || B.over) return; const m = B.m;
@@ -1231,7 +1288,7 @@ function endTurn() {
     }
   }
   if (has('p_regen')) healMe(3);
-  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; battleUI(); hud();
+  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud();
 }
 function win() {
   sfx('win', { delay: 300, max: G.exp + B.m.exp >= expNeed() ? .9 : 0 });
