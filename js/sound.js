@@ -119,7 +119,9 @@ const SND = (() => {
     bgm(k); ambience(am);
   }
   setInterval(tick, 300);
-  return { sfx, bgm, toggle, tick, get unlocked() { return unlocked; }, get on() { return on; }, get now() { return cur + '|' + ambKey; }, set lost(v) { lost = v; }, set goddess(v) { goddess = v; }, set scene(v) { scene = v || ''; tick(true); } };
+  // 音量（設定から。0〜1の割合）
+  function setVol(b, x) { VOL.bgm = .55 * b; VOL.amb = .25 * b; VOL.sfx = .85 * x; if (on) mvol(VOL.bgm); }
+  return { sfx, bgm, toggle, setVol, tick, get unlocked() { return unlocked; }, get on() { return on; }, get now() { return cur + '|' + ambKey; }, set lost(v) { lost = v; }, set goddess(v) { goddess = v; }, set scene(v) { scene = v || ''; tick(true); } };
 })();
 const sfx = (k, o) => SND.sfx(k, o);
 let SND_INDOOR = false;

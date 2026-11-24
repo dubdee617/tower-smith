@@ -55,7 +55,20 @@ let F = null, floorNo = 1, P = { x: 0, y: 0, a: 0 }, T = { x: 0, y: 0, a: 0 }, d
 let B = null; // 戦闘
 let fx = { shake: 0, flash: 0, hit: 0 };
 
-function save() { try { localStorage.setItem('tower_smith_v2', JSON.stringify(G)); } catch (e) {} }
+// ---------- 設定とセーブ（2026-11-24） ----------
+// オートセーブ: tower_smith_v2（いつも最新）。手動のセーブ: スロット1〜3
+const OPT_DEF = { bgm: 1, sfx: 1, text: 1, shake: 2, auto: true };
+let OPTS = (() => { try { return Object.assign({}, OPT_DEF, JSON.parse(localStorage.getItem('tower_opts') || '{}')); } catch (e) { return { ...OPT_DEF }; } })();
+function saveOpts() { try { localStorage.setItem('tower_opts', JSON.stringify(OPTS)); } catch (e) {} }
+function save() {
+  if (OPTS.auto === false) return;
+  try { localStorage.setItem('tower_smith_v2', JSON.stringify(G)); } catch (e) {}
+  // 町に戻ったときなど、ときどき「オートセーブ」と小さく出す
+  const now = Date.now(); if (mode === 'town' && now - (save.shown || 0) > 20000) { save.shown = now; const e = document.createElement('div'); e.className = 'autosaved'; e.textContent = 'オートセーブ'; document.body.appendChild(e); setTimeout(() => e.remove(), 1800); }
+}
+const SLOT_KEY = n => 'tower_smith_slot' + n;
+function slotInfo(n) { try { const s = JSON.parse(localStorage.getItem(n === 0 ? 'tower_smith_v2' : SLOT_KEY(n)) || 'null'); if (!s) return null; const g = s.G || s; return { g, at: s.at || 0 }; } catch (e) { return null; } }
+function slotText(n) { const i = slotInfo(n); if (!i) return 'からっぽ'; const g = i.g, d = i.at ? new Date(i.at) : null; return `Lv${g.lv}・最高${g.maxFloor || 0}階・${g.gold}G${d ? `　${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` : ''}`; }
 function load() { try { const s = localStorage.getItem('tower_smith_v2'); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
 
 // ---------- 計算 ----------
@@ -145,10 +158,11 @@ function drawLog() {
   if (L.length) s.appendChild(document.createTextNode(L.join('\n') + '\n'));
   const tx = document.createTextNode(''); s.appendChild(tx);
   clearInterval(drawLog.tm); const chars = [...last]; let k = 0;
-  const speed = mode === 'battle' ? 2 : 1, done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; };
+  const speed = (mode === 'battle' ? 2 : 1) * [1, 1, 2, 999][OPTS.text], done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; };
   drawLog.skip = done;
   if (!chars.length || document.body.classList.contains('story') && document.body.classList.contains('intro')) done();
-  else drawLog.tm = setInterval(() => { k += speed; tx.textContent = chars.slice(0, k).join(''); if (k >= chars.length) done(); }, 26);
+  else if (OPTS.text === 3) done();
+  else drawLog.tm = setInterval(() => { k += speed; tx.textContent = chars.slice(0, k).join(''); if (k >= chars.length) done(); }, OPTS.text === 0 ? 48 : 26);
   drawSpk();
 }
 // ダメージ・回復の数字を、絵の上に飛び出させる
@@ -520,12 +534,13 @@ function titleScreen() {
   SND_INDOOR = false;
   mode = 'town'; place = null; showTown(true, 2 / 3); document.body.classList.add('story', 'title');
   const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}title.jpg" alt="Tower of Hope">`;
-  const L = [{ t: 'はじめから', hot: !load(), f: () => load() ? resetGame() : (G = NEW_GAME(), save(), intro(0)) }, { t: '設定', s: '音・データ', f: settings }];
+  const anySlot = [1, 2, 3].some(n => slotInfo(n));
+  const L = [{ t: 'はじめから', hot: !load(), f: () => load() ? resetGame() : (G = NEW_GAME(), save(), intro(0)) }, { t: 'ロード', s: anySlot ? 'セーブしたデータから' : 'オートセーブ', off: !load() && !anySlot, f: () => openMenu('load') }, { t: '設定', s: '音・文字の速さ・揺れ', f: () => openMenu('opt') }];
   if (load()) L.unshift({ t: 'つづきから', hot: true, f: () => { G = load(); townMap(); say('normal', '「さて、今日も行くか」\n工房の火はまだ温かい。', true); } });
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 59'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 60'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1050,11 +1065,46 @@ function guildBuy(msg, face) {
   buttons(L); if (msg) { if (face) say(face, msg, true); else log(msg, true); } else log('リア「塔の素材は値上がりしていて……。すみません」', true);
 }
 // タイトルの設定: 音とデータ消去（町の地図から移した）
-function settings() {
-  buttons([{ title: '設定' }, { t: SND.on ? '音: オン' : '音: オフ', s: '押して切り替え', f: () => { SND.toggle(); $('snd').classList.toggle('off', !SND.on); settings(); } },
-    { t: 'データを消す', s: 'はじめからやり直す', off: !load(), f: resetGame }, { t: '戻る', f: titleScreen }]);
+function settings() { openMenu(); }
+// 設定・セーブ・ロードの画面（どこからでも開ける。下のボタンは変えない）
+function openMenu(tab) {
+  let m = $('menu'); if (!m) { m = document.createElement('div'); m.id = 'menu'; document.body.appendChild(m); m.onclick = e => { if (e.target === m) closeMenu(); }; }
+  tab = tab || 'opt'; const inTown = mode === 'town' && !document.body.classList.contains('story') && !document.body.classList.contains('intro');
+  const seg = (key, labels) => `<div class="seg">${labels.map((l, i) => `<button data-k="${key}" data-v="${i}" class="${OPTS[key] === i ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+  const vol = key => `<div class="seg vol">${[0, .25, .5, .75, 1].map(v => `<button data-k="${key}" data-v="${v}" class="${Math.abs(OPTS[key] - v) < .01 ? 'on' : ''}">${v === 0 ? '切' : '▮'.repeat(v * 4)}</button>`).join('')}</div>`;
+  let body = '';
+  if (tab === 'opt') body = `<dl>
+    <dt>音楽</dt><dd>${vol('bgm')}</dd><dt>効果音</dt><dd>${vol('sfx')}</dd>
+    <dt>文字の速さ</dt><dd>${seg('text', ['ゆっくり', 'ふつう', 'はやい', '一瞬'])}</dd>
+    <dt>画面の揺れ</dt><dd>${seg('shake', ['なし', '弱い', 'ふつう', '強い'])}</dd>
+    <dt>オートセーブ</dt><dd><div class="seg"><button data-k="auto" data-v="1" class="${OPTS.auto ? 'on' : ''}">オン</button><button data-k="auto" data-v="0" class="${!OPTS.auto ? 'on' : ''}">オフ</button></div></dd></dl>
+    <p class="note">オートセーブは、町に戻ったときや階を移ったときに自動で記録します。</p>`;
+  if (tab === 'save') body = (inTown ? '' : '<p class="note warn">セーブは町にいるときだけできます。</p>') + [1, 2, 3].map(n => `<button class="slot" data-save="${n}" ${inTown && G ? '' : 'disabled'}><b>スロット${n}</b><small>${slotText(n)}</small></button>`).join('');
+  if (tab === 'load') body = [0, 1, 2, 3].map(n => `<button class="slot" data-load="${n}" ${slotInfo(n) ? '' : 'disabled'}><b>${n ? 'スロット' + n : 'オートセーブ'}</b><small>${slotText(n)}</small></button>`).join('') + '<p class="note">ロードすると、町から始まります。</p>';
+  m.innerHTML = `<div class="panel"><div class="tabs2">${[['opt', '設定'], ['save', 'セーブ'], ['load', 'ロード']].map(([k, l]) => `<button data-tab="${k}" class="${k === tab ? 'on' : ''}">${l}</button>`).join('')}</div><div class="body">${body}</div>
+    <div class="foot">${document.body.classList.contains('title') ? '' : '<button data-act="title">タイトルへ</button>'}<button data-act="close" class="hot">閉じる</button></div></div>`;
+  m.classList.add('on');
+  m.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { sfx('select', { vol: .5 }); openMenu(b.dataset.tab); });
+  m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
+    const k = b.dataset.k; OPTS[k] = k === 'auto' ? b.dataset.v === '1' : +b.dataset.v; saveOpts(); applyOpts(); sfx('select', { vol: .5 });
+    if (k === 'auto' && OPTS.auto && G) save(); openMenu('opt');
+  });
+  m.querySelectorAll('[data-save]').forEach(b => b.onclick = () => {
+    const n = +b.dataset.save; try { localStorage.setItem(SLOT_KEY(n), JSON.stringify({ G, at: Date.now() })); sfx('chest', { vol: .7 }); } catch (e) {}
+    openMenu('save'); const e = m.querySelector(`[data-save="${n}"]`); if (e) e.classList.add('done');
+  });
+  m.querySelectorAll('[data-load]').forEach(b => b.onclick = () => {
+    const n = +b.dataset.load, i = slotInfo(n); if (!i) return;
+    b.outerHTML = `<div class="confirm"><span>${n ? 'スロット' + n : 'オートセーブ'}をロードする？ 今の進み具合は、セーブしていなければ消えます。</span><button data-yes="${n}" class="hot">ロードする</button><button data-no>やめる</button></div>`;
+    m.querySelector('[data-no]').onclick = () => openMenu('load');
+    m.querySelector('[data-yes]').onclick = () => { G = Object.assign(NEW_GAME(), i.g); FLOORS = {}; B = null; closeMenu(); document.body.classList.remove('story', 'title', 'intro'); fadeGo(() => { townMap(); say('normal', '「さて、続きといくか」', true); save(); }, { hold: 400 }); };
+  });
+  m.querySelector('[data-act="close"]').onclick = closeMenu;
+  { const t = m.querySelector('[data-act="title"]'); if (t) t.onclick = () => { t.outerHTML = `<button data-act="title2" class="hot">${OPTS.auto ? 'タイトルへ戻る' : 'セーブせずに戻る'}</button>`; m.querySelector('[data-act="title2"]').onclick = () => { save(); closeMenu(); FLOORS = {}; B = null; titleScreen(); }; }; }
 }
-function resetGame() { buttons([{ title: '本当にデータを消して、はじめからにする？' }, { t: '消してはじめる', f: () => { G = NEW_GAME(); save(); intro(0); } }, { t: 'やめる', f: titleScreen }]); }
+function closeMenu() { const m = $('menu'); if (m) m.classList.remove('on'); }
+function applyOpts() { if (SND.setVol) SND.setVol(OPTS.bgm, OPTS.sfx); }
+function resetGame() { buttons([{ title: 'はじめからにする？（オートセーブは上書き。スロットのセーブは残る）' }, { t: 'はじめる', f: () => { G = NEW_GAME(); save(); intro(0); } }, { t: 'やめる', f: titleScreen }]); }
 
 // ---------- 探索 ----------
 // 塔にいる間は、一度行った階の様子（開けた扉・宝箱・地図）を覚えておく。町に戻るとリセット
@@ -2029,7 +2079,7 @@ function loop(t) {
   } else { mapCv.style.display = 'none'; }
   if (fx.flash > .02) { ctx.fillStyle = `rgba(255,60,40,${fx.flash * .35})`; ctx.fillRect(0, 0, VW, VH); fx.flash *= .85; }
   if (fx.hit > .02) { ctx.fillStyle = `rgba(255,255,255,${fx.hit * .25})`; ctx.fillRect(0, 0, VW, VH); fx.hit *= .7; }
-  if (fx.shake > .3) { cv.style.transform = `translateX(-50%) translate(${(R() - .5) * fx.shake}px,${(R() - .5) * fx.shake}px)`; fx.shake *= .8; } else cv.style.transform = '';
+  if (fx.shake > .3) { const q = fx.shake * ([0, .5, 1, 1.4][OPTS.shake] ?? 1); cv.style.transform = q ? `translateX(-50%) translate(${(R() - .5) * q}px,${(R() - .5) * q}px)` : ''; fx.shake *= .8; } else cv.style.transform = '';
   requestAnimationFrame(loop);
 }
 
@@ -2059,6 +2109,8 @@ titleScreen();
 requestAnimationFrame(loop);
 
 // 音のオンオフ（右上の♪）
+applyOpts();
+{ const c = document.getElementById('cfg'); if (c) c.addEventListener('click', e => { e.stopPropagation(); sfx('select', { vol: .5 }); openMenu(); }); }
 { const b = document.getElementById('snd'); if (b) { b.classList.toggle('off', !SND.on); b.addEventListener('click', e => { e.stopPropagation(); b.classList.toggle('off', !SND.toggle()); }); } }
 
 // 塔の中: 地図を押すと大きくなる（もう一度押すか、画面を押すと戻る）
