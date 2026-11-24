@@ -42,7 +42,7 @@ const WALL_SET_B = ['w_banner_skull','w_banner_eye','w_banner_torn','w_skull_hor
 // 床の小物: [名前, 大きさ(マスの高さに対する割合), 重み]。1〜10階（石のダンジョン）
 const FLOOR_PROPS_STONE = [
   ['f_barrels',.42,8], ['f_crates',.42,8], ['f_sacks',.32,7], ['f_pots',.36,7], ['f_rubble',.28,6], ['f_scatter',.2,5],
-  ['f_skel_sit',.38,5], ['f_skel_prone',.26,4], ['f_skel_shield',.32,4], ['f_feather',.16,1.2], ['f_mimic',.4,1.2], ['f_mimic_gold',.4,.5],
+  ['f_skel_sit',.38,5], ['f_skel_prone',.26,4], ['f_skel_shield',.32,4], ['f_feather',.16,1.2],
   ['t_rock1',.4,4], ['t_minecart',.4,3], ['t_pick_rock',.42,3], ['t_crystal',.48,2], ['t_bones',.28,3], ['t_bullskull',.28,2], ['t_planks',.32,3], ['t_wagon',.44,2],
   ['u_mushroom',.34,3], ['u_cairn',.48,2], ['u_stalag',.48,2],
 ];

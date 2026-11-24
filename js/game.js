@@ -85,6 +85,12 @@ function atkPower() {
 }
 function defPower() { let d = G.def; for (const k of ['l', 'armor']) { const g = gearBy(G.equip[k]); if (g && g.def) d += g.def; } if (has('p_def')) d += 3; return d; }
 // そのジョブで覚える技のうち、勝利数が足りたものを覚える
+// 勝ち数はもう足りているのに覚えていない技（あとから足した技など）を、まとめて覚える
+function relearnAll(quiet) {
+  const got = []; for (const j of Object.keys(G.jobWins || {})) got.push(...checkLearn(j, true));
+  if (got.length && !quiet) log(`新しく覚えた: ${got.map(id => (SKILLS[id] || PASSIVES[id]).name).join('・')}`);
+  if (got.length) save(); return got;
+}
 function checkLearn(j, quiet) {
   const J = JOBS[j]; if (!J) return [];
   const got = [];
@@ -146,11 +152,11 @@ function drawLog() {
   drawSpk();
 }
 // ダメージ・回復の数字を、絵の上に飛び出させる
-function popNum(n, who, kind) {
+function popNum(n, who, kind, m) {
   const v = $('view'); if (!v || v.style.display === 'none') return;
   const e = document.createElement('div'); e.className = 'pop ' + (kind || '') + (who === 'me' ? ' me' : '');
   e.textContent = kind === 'heal' ? '+' + n : kind === 'miss' ? 'MISS' : n;
-  e.style.left = (who === 'me' ? 50 : 50 + (R() - .5) * 16) + '%'; e.style.top = (who === 'me' ? 70 : 34 + (R() - .5) * 8) + '%';
+  e.style.left = (who === 'me' ? 50 + (R() - .5) * 20 : (m && m.cx !== undefined ? m.cx / VW * 100 : 50) + (R() - .5) * 10) + '%'; e.style.top = (who === 'me' ? 70 : 34 + (R() - .5) * 8) + '%';
   v.appendChild(e); setTimeout(() => e.remove(), 1100);
 }
 function drawSpk() {
@@ -519,7 +525,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 50'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 53'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -547,6 +553,21 @@ function introEnd() {
   $('town').onclick = null;
   fadeGo(() => { document.body.classList.remove('intro'); prologue(); }, { hold: 500 });
 }
+// 町の地図の印
+function townMark(id) {
+  const rawN = Object.values(G.raw || {}).reduce((a, b) => a + b, 0);
+  if (id === 'guild' && rawN) return 'new';
+  if (id === 'south' && G.castle && !G.castleSeen) return 'new';
+  const who = { weapon: 'jenny', clinic: 'elly', guild: 'ria' }[id];
+  if (who && G.runs > 0 && canTalk(who)) return 'talk';
+  return '';
+}
+// 次の目標（10階ごとの主を順に）
+function nextGoal() {
+  if (!G.maxFloor) return '塔に入ってみる';
+  for (let f = 10; f <= TOP_FLOOR; f += 10) if (!bossBeat(f)) return G.maxFloor < f ? `${f}階を目指す（${f}階に主がいる）` : `${f}階の主を倒す`;
+  return '誰も行ったことのない、さらに上へ';
+}
 function townMap() {
   place = null; showTown(true, 2 / 3);
   const t = $('town'); t.className = 'box town';
@@ -556,7 +577,10 @@ function townMap() {
     b.className = 'hot'; b.setAttribute('aria-label', p.name);
     Object.assign(b.style, { left: (x0 / 466 * 100) + '%', top: (y0 / 700 * 100) + '%', width: ((x1 - x0) / 466 * 100) + '%', height: ((y1 - y0) / 700 * 100) + '%' });
     b.onclick = () => fadeGo(() => outside(id), { walk: true }); t.appendChild(b);
+    // 「！」＝やること・新しいこと、吹き出し＝話せる人がいる
+    const mk = townMark(id); if (mk) { const e = document.createElement('div'); e.className = 'mark ' + mk; e.textContent = mk === 'new' ? '！' : '…'; Object.assign(e.style, { left: ((x0 + x1) / 2 / 466 * 100) + '%', top: ((id === 'south' ? (y0 + y1) / 2 + 20 : y0) / 700 * 100) + '%' }); t.appendChild(e); }
   }
+  { const g = document.createElement('div'); g.className = 'goal'; g.innerHTML = `<small>目標</small>${nextGoal()}`; t.appendChild(g); }
   buttons([]);
   log('行きたい場所を押してね。', true); hud();
 }
@@ -654,7 +678,7 @@ function statueScreen(msg) {
 }
 // ---------- お城（50階に着いて生きて戻ると行ける） ----------
 function castleScreen() {
-  place = 'castle'; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
+  place = 'castle'; G.castleSeen = true; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}castle_out.jpg" alt="お城"><div class="name">お城</div>`;
   buttons([{ t: '入る', hot: true, f: () => castleHall() }, { t: '戻る', f: townMap }]);
   log('門番「鍛冶屋殿ですね。王がお待ちです」', true); hud();
@@ -853,6 +877,7 @@ function equipItem(g) {
 }
 // 塔に持ち込む技（6個まで）
 function skillMenu(back) {
+  relearnAll(true);
   if (G.loadout.skills.length > SKILL_MAX) G.loadout.skills = G.loadout.skills.slice(0, SKILL_MAX);
   const mine = G.learned.filter(id => SKILLS[id]);
   const L = [{ title: `持ち込む技 ${G.loadout.skills.length}/${SKILL_MAX}（攻撃・守る・道具・逃げるは いつでも使える）` }];
@@ -1172,12 +1197,12 @@ function meetGod(id, go0) {
 }
 // 一緒に戦ってくれる人の番（主人公のターンの後、敵の前）
 function allyTurn() {
-  const m = B.m; if (B.over) return false;
-  if (G.als && floorNo <= 10 && R() < .5) { const d = dmgTo(m, atkPower() * .6); log(`アルスの斬撃！ ${d}のダメージ。`); if (m.hp <= 0) { win(); return true; } }
+  if (B.over) return false; const m = target();
+  if (G.als && floorNo <= 10 && R() < .5) { const d = dmgTo(m, atkPower() * .6); log(`アルスの斬撃！ ${d}のダメージ。`); if (allDead()) { win(); return true; } }
   const a = G.ally; if (!a) return false;
   if (a.id === 'fuuka') { playFx('thrust', { delay: 200 }); playFx('heal_leaf', { self: true, delay: 420, size: .8 }); const d = dmgTo(m, atkPower() * .7), h = Math.ceil(G.mhp * .15); healMe(h); log(`フウカの攻撃！ ${d}のダメージ。HPを${h}回復してくれた。`); }
   if (a.id === 'gurugamo') { playFx('impact_heavy', { delay: 200 }); const d = dmgTo(m, atkPower()); log(`グルガモの斧！ ${d}のダメージ。`); }
-  if (m.hp <= 0) { win(); return true; }
+  if (allDead()) { win(); return true; }
   return false;
 }
 // 戦闘が1回終わるたびに、残りの回数を減らす
@@ -1209,7 +1234,7 @@ function inspect() {
 function searchProp() {
   const p = propAhead(); if (!p || p.searched) return; p.searched = true;
   const [name, grp] = PROP_INFO[p.key]; let msg;
-  if (grp === 'feather') { G.items.wing++; gotToast('wing', 1); msg = `${name}を拾った。……帰還の羽だ！`; }
+  if (grp === 'feather') { G.items.wing++; gotToast('wing', 1); F.props = F.props.filter(q => q !== p); F.M[p.cy][p.cx] = 0; msg = `${name}を拾った。……帰還の羽だ！`; }
   else if (grp === 'mimic') {
     const d = Math.max(1, Math.ceil(G.mhp * .2)); G.hp = Math.max(1, G.hp - d); fx.flash = .8; fx.shake = 6;
     const gold = 30 + floorNo * 8, raw = pick(['ore_iron', 'raw_gem', 'dim_stone']); G.gold += gold; add(G.carry, raw, 1);
@@ -1264,14 +1289,30 @@ function dig() {
   if (R() < .1) { log('……物音を聞きつけて、魔物がやってきた！'); setTimeout(() => startBattle(), 350); return; }
   dungeonUI(); hud();
 }
+// ミミック（2026-11-24）: 宝箱のふりをした魔物。開けると戦闘になり、倒すと中身が手に入る
+function mimicOf(ch) {
+  const pool = monPool(floorNo), base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, g = ch.gold ? 1.3 : 1;
+  return { id: ch.gold ? 'mimic_gold' : 'mimic', name: ch.gold ? '豪華なミミック' : 'ミミック', size: .62, hp: Math.round(base.hp * k * 1.7 * g), atk: Math.round(base.atk * k * 1.35 * g), def: Math.round(base.def * k * 1.2),
+    exp: Math.round(base.exp * k * 2.2 * g), gold: Math.round(base.gold * k * 2 * g), drop: {}, chest: ch };
+}
 function openChest() {
-  const ch = chestHere(); if (!ch) return; ch.open = true;
+  const ch = chestHere(); if (!ch) return;
+  // 3階から、宝箱の1割ほど（豪華な宝箱は2割）がミミック。一度決まったら変わらない
+  if (ch.mimic === undefined) ch.mimic = floorNo >= 3 && R() < (ch.gold ? .2 : .1);
+  if (ch.mimic) { sfx('bite', { vol: .8 }); fx.shake = 6; log(ch.gold ? '豪華な宝箱が、ガバッと口を開けた！ ミミックだ！' : '宝箱が、ガバッと口を開けた！ ミミックだ！', true); setTimeout(() => startBattle(mimicOf(ch)), 500); return; }
+  chestLoot(ch);
+}
+// 宝箱の中身（ミミックを倒したときは少し多め）
+function chestLoot(ch, beat) {
+  ch.open = true;
   const pool = monPool(floorNo).flatMap(m => Object.keys(m.drop));
   const got = {}; const n = ch.gold ? 5 : 2 + Math.floor(R() * 2);
   for (let i = 0; i < n; i++) add(got, pool[Math.floor(R() * pool.length)], 1);
   if (ch.gold) add(got, R() < .5 ? 'ore_iron' : 'dim_stone', 2);
   const gold = Math.floor((ch.gold ? 40 : 8) * (1 + floorNo * .3) * (.7 + R() * .6));
+  if (beat) for (const k of Object.keys(got)) got[k]++;
   for (const [k, v] of Object.entries(got)) add(G.carry, k, v); G.gold += gold; gotToast('gold', gold);
+  if (beat) return `ミミックが守っていた宝箱の中身: ${matText(got)}、${gold}G。`;
   log(`宝箱を開けた！ ${matText(got)}、${gold}G。`, true); dungeonUI(); hud();
 }
 function stairs() {
@@ -1329,25 +1370,41 @@ function pickMonster() {
   const pool = monPool(floorNo);
   if (TODAY.goblin && floorNo >= 3) pool.push(MONSTERS.find(m => m.id === 'goblin'), MONSTERS.find(m => m.id === 'goblin'));
   const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = TODAY.danger ? 1.2 : 1, rw = TODAY.danger ? 1.4 : 1;
-  return { ...base, hp: Math.round(base.hp * k * dz), atk: Math.round(base.atk * k * dz), def: Math.round(base.def * k), exp: Math.round(base.exp * k * rw), gold: Math.round(base.gold * k * rw) };
+  // 2026-11-24: 全体に少し強く（HP×1.2・攻撃×1.12）
+  return { ...base, hp: Math.round(base.hp * k * dz * 1.2), atk: Math.round(base.atk * k * dz * 1.12), def: Math.round(base.def * k), exp: Math.round(base.exp * k * rw), gold: Math.round(base.gold * k * rw) };
 }
+// 何体で出てくるか（低い階は1体。上ほど群れる。最大4体）
+function groupSize() {
+  const r = R(), f = floorNo;
+  const T = f <= 3 ? [1] : f <= 10 ? [.6, 1] : f <= 30 ? [.35, .8, 1] : f <= 60 ? [.25, .65, .9, 1] : [.15, .5, .8, 1];
+  return T.findIndex(x => r < x) + 1;
+}
+const alive = () => B.ms.filter(x => x.hp > 0);
+const allDead = () => B.ms.every(x => x.hp <= 0);
+// 狙っている敵（倒れていたら、次の生きている敵に移る）
+function target() { let m = B.ms[B.ti]; if (!m || m.hp <= 0) { B.ti = B.ms.findIndex(x => x.hp > 0); m = B.ms[B.ti]; } return m || B.ms[0]; }
 function apBase() { return 3 + (has('p_ap') ? 1 : 0) - (hurt('rib') ? 1 : 0); }
 const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 // ケガをする（すでに全部のケガをしていたら何もしない）
 function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
 function startBattle(boss) {
-  const m = boss ? { ...boss } : pickMonster();
-  m.mhp = m.hp;
-  B = { m, ap: apBase() + (G.meal === 'spark' ? 1 : 0), cut: 1, counter: null, dodge: 0, boost: 1, stun: false, broken: 0, turn: 1, over: false };
-  mode = 'battle'; encounterFx(m);
+  const n = boss ? 1 : groupSize(), ms = [];
+  for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1)) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
+  // 同じ魔物が2体以上なら A・B… と呼ぶ
+  const cnt = {}; for (const m of ms) cnt[m.id] = (cnt[m.id] || 0) + 1;
+  const seen = {}; for (const m of ms) if (cnt[m.id] > 1) { seen[m.id] = (seen[m.id] || 0) + 1; m.name += 'ABCD'[seen[m.id] - 1]; }
+  B = { ms, ti: 0, ap: apBase() + (G.meal === 'spark' ? 1 : 0), cut: 1, counter: null, dodge: 0, boost: 1, broken: 0, turn: 1, over: false };
+  Object.defineProperty(B, 'm', { get: target });
+  const m = ms[0];
+  mode = 'battle'; encounterFx(m, ms);
   setTimeout(() => { if (B && B.m) { if (B.m.boss) sfx('bossstep'); sfx(CRY_SFX[B.m.id] || 'swing', { delay: B.m.boss ? 500 : 0 }); } }, 150);
   checkLearn(job());
-  log(`${m.name}が現れた！`, true);
+  log(ms.length > 1 ? `${ms.map(x => x.name).join('・')}が現れた！\n（魔物を押すと、狙う相手を選べる）` : `${m.name}が現れた！`, true);
   if (G.ally) log(`${TOWER_NPCS[G.ally.id].name}が一緒に戦ってくれる（あと${G.ally.left}回）。`);
   if (G.als && floorNo <= 10) log('アルスも剣を構えた。');
   // 70〜95階: ジンの影が現れて、一閃して去っていく
-  if (!boss && floorNo >= 70 && floorNo <= 95 && R() < .04) { playFx('jin', { x: VW / 2, y: VH / 2 }); m.hp = 0; win(); log('……どこからか、杖をついた老人の影が現れた。\n一閃。魔物は倒れ、影はもういない。'); return; }
-  if (has('p_first')) { const d = dmgTo(m, atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (m.hp <= 0) { win(); return; } }
+  if (!boss && floorNo >= 70 && floorNo <= 95 && R() < .04) { playFx('jin', { x: VW / 2, y: VH / 2 }); for (const x of ms) x.hp = 0; win(); log('……どこからか、杖をついた老人の影が現れた。\n一閃。魔物は倒れ、影はもういない。'); return; }
+  if (has('p_first')) { const d = dmgTo(target(), atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (allDead()) { win(); return; } }
   battleUI(); hud();
 }
 // レベルアップ: 画面全体に大きく出す（押すか2.4秒で消える）
@@ -1362,12 +1419,12 @@ function bigFx(html, snd, cls, ms) {
   clearTimeout(bigFx.t); bigFx.t = setTimeout(() => d.classList.remove('on'), ms || 2600);
 }
 // 遭遇の演出: 画面全体が黄色く光る → 揺れる →「遭遇！」の帯と魔物の名前。少しの間ボタンは押せない
-function encounterFx(m) {
+function encounterFx(m, ms) {
   const fl = $('flash'); if (fl) { fl.className = ''; void fl.offsetWidth; fl.className = m.boss ? 'on boss' : 'on'; }
   const v = $('view'); v.classList.remove('quake'); void v.offsetWidth; v.classList.add('quake'); setTimeout(() => v.classList.remove('quake'), 500);
   const old = v.querySelector('.enc'); if (old) old.remove();
   const e = document.createElement('div'); e.className = 'enc' + (m.boss ? ' boss' : '');
-  e.innerHTML = `<b>${m.boss ? '強敵' : '遭遇'}！</b><span>${m.name}</span>`; v.appendChild(e); setTimeout(() => e.remove(), 1500);
+  e.innerHTML = `<b>${m.boss ? '強敵' : '遭遇'}！</b><span>${ms && ms.length > 1 ? (new Set(ms.map(x => x.id)).size === 1 ? m.name.replace(/[A-D]$/, '') + ' ×' + ms.length : ms.length + '体の魔物') : m.name}</span>`; v.appendChild(e); setTimeout(() => e.remove(), 1500);
   sfx('shock1', { vol: .5, max: .5 });
   const c = $('ctl'); c.classList.add('wait'); setTimeout(() => c.classList.remove('wait'), 750);
 }
@@ -1375,8 +1432,8 @@ function encounterFx(m) {
 // 予定は押すと取り消せる。予定が空のまま押すと、そのままターン終了（APを持ち越す）
 const FIXED_CMD = ['attack', 'guard', 'herb', 'flee'];
 const battleSkills = () => [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall'] : [])])].filter(id => !FIXED_CMD.includes(id));
-const canPlan = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.m.boss) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
-const whyNot = id => B.ap < apCost(id) ? 'APが足りない' : id === 'flee' && B.m.boss ? 'ボスからは逃げられない' : B.plan.some(p => p.id === 'flee') ? '逃げる予定' : '';
+const canPlan = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.ms.some(x => x.boss)) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
+const whyNot = id => B.ap < apCost(id) ? 'APが足りない' : id === 'flee' && B.ms.some(x => x.boss) ? 'ボスからは逃げられない' : B.plan.some(p => p.id === 'flee') ? '逃げる予定' : '';
 // 戦闘: 下に「攻撃・守る・道具・逃げる」と持ち込んだ技を全部並べる（1回押せば予定に入る）。
 // 技の説明は、押したときにセリフ欄に出す
 function battleUI() {
@@ -1473,23 +1530,27 @@ function dmgTo(m, power, pierce, critBonus) {
   let d = Math.max(1, Math.round((power - (pierce ? 0 : Math.max(0, m.def - B.broken))) * (.85 + R() * .3)));
   const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0);
   if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: 120, size: .7 }); } else B.lastCrit = false;
-  m.hp -= d; popNum(d, 'mon', crit ? 'crit' : ''); fx.hit = .6; B.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); return d;
+  m.hp -= d; popNum(d, 'mon', crit ? 'crit' : '', m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; if (m.hp <= 0 && !m.dying) m.dying = performance.now(); fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); return d;
 }
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
 function doSkill(id) {
-  if (B.over) return 'end'; const s = SKILLS[id], m = B.m;
-  skillFx(id);
+  if (B.over) return 'end'; const s = SKILLS[id], m = target();
+  FX_AT = s.all ? null : m; skillFx(id); FX_AT = null;
   const power = atkPower() * (s.mult || 1) * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0);
   switch (s.kind) {
     case 'atk': {
-      if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; fx.hit = 1; B.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ 急所を貫いた。`); break; }
+      if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; m.dying = performance.now(); fx.hit = 1; m.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ ${m.name}の急所を貫いた。`); break; }
       const ds = []; let crit = false;
-      for (let i = 0; i < (s.hits || 1) + (s.twice && R() < s.twice ? 1 : 0); i++) { ds.push(dmgTo(m, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (m.hp <= 0) break; }
-      let t = `${s.name}！ ${ds.join('と')}のダメージ。${crit ? '会心！' : ''}`;
+      if (s.all) { for (const x of alive()) { ds.push(dmgTo(x, power, s.pierce, s.crit)); crit = crit || B.lastCrit; } }   // 全体に当たる
+      else for (let i = 0; i < (s.hits || 1) + (s.twice && R() < s.twice ? 1 : 0); i++) {
+        const tg = s.spread && i > 0 && alive().length ? pick(alive()) : m.hp > 0 ? m : alive()[0];   // 連続攻撃は、ほかの敵にも散る
+        if (!tg) break; ds.push(dmgTo(tg, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (allDead()) break;
+      }
+      let t = `${s.name}！ ${B.ms.length > 1 && !s.all && !s.spread ? m.name + 'に' : ''}${ds.join('と')}のダメージ。${crit ? '会心！' : ''}`;
       if (s.break) { B.broken += s.break; t += '守りが崩れた。'; }
       if (s.self) { const c = Math.ceil(G.mhp * s.self); G.hp = Math.max(1, G.hp - c); t += `HPを${c}削った。`; }
       if (s.heal) t += `HPが${healMe(s.heal + G.lv * 3)}回復。`;
-      if (s.stun && m.hp > 0 && !m.boss && R() < s.stun) { B.stun = true; t += `${m.name}は動けない！`; }
+      if (s.stun) for (const x of s.all ? alive() : [m]) if (x.hp > 0 && !x.boss && R() < s.stun) { x.stun = true; t += `${x.name}は動けない！`; }
       if (s.guardToo) B.cut = Math.min(B.cut, .5);
       if (s.stealToo && m.hp > 0 && R() < (has('p_steal') ? .7 : .4)) { const k = Object.keys(m.drop)[0]; add(G.carry, k, 1); t += `${NAMES[k]}を奪った！`; }
       log(t); break;
@@ -1502,19 +1563,20 @@ function doSkill(id) {
     case 'steal': { const k = Object.keys(m.drop)[0]; if (R() < (has('p_steal') ? .8 : .5)) { add(G.carry, k, 1); log(`${NAMES[k]}を盗んだ！`); } else log('盗めなかった。'); break; }
     case 'flee': if (R() < (hurt('leg') ? .25 : .5)) { allyTick(); log('逃げ出した！', true); B = null; mode = 'dungeon'; dungeonUI(); hud(); return 'end'; } log('逃げられない！'); break;
   }
-  if (m.hp <= 0) { win(); return 'end'; }
+  if (allDead()) { win(); return 'end'; }
   return 'ok';
 }
 function endTurn() {
-  if (!B || B.over) return; const m = B.m;
+  if (!B || B.over) return;
   if (allyTurn()) return;
   const carry = Math.min(carryMax(), B.ap);
-  if (B.stun) { log(`${m.name}は動けない。`); B.stun = false; }
-  else {
-    // 敵の番（ボスは2回動くことがある）
+  // 敵の番: 生きている敵が順に攻撃する（ボスは2回動くことがある）
+  let order = 0;
+  for (const m of alive()) {
+    if (m.stun) { log(`${m.name}は動けない。`); m.stun = false; continue; }
     const times = m.boss && R() < .4 ? 2 : 1;
     for (let i = 0; i < times; i++) {
-      B.anim = { kind: 'attack', t0: performance.now() };
+      m.anim = { kind: 'attack', t0: performance.now() + order * 220 }; order++;
       if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); popNum(0, 'me', 'miss'); continue; }
       let d = Math.max(1, Math.round((m.atk - defPower()) * (.85 + R() * .3)));
       playFx(B.counter || B.cut < 1 ? 'spark' : (m.id === 'rat' || m.id === 'centipede' ? 'bite' : 'claw'), { y: VH * .6, size: 1.1 });
@@ -1524,7 +1586,8 @@ function endTurn() {
       G.hp -= d; popNum(d, 'me', 'hurt'); fx.flash = .8; fx.shake = 6; log(`${m.name}の攻撃。${d}のダメージを受けた。`);
       // 大きな一撃（最大HPの35%以上）はケガが残ることがある
       if (G.hp > 0 && d >= G.mhp * .35 && R() < .25) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
-      if (m.hp <= 0) { win(); return; }
+      if (allDead()) { win(); return; }
+      if (m.hp <= 0) break;
       if (G.hp <= 0 && G.bless === 'stand' && !B.stood) { G.hp = 1; B.stood = true; G.bless = null; playFx('blessing', { self: true, size: 1.2 }); say('resolve', '「……まだだ！」\nエリーの祈りで、踏みとどまった！'); continue; }
       if (G.hp <= 0) { lose(); return; }
     }
@@ -1534,16 +1597,20 @@ function endTurn() {
   if (B.auto) setTimeout(autoTurn, 550);
 }
 function win() {
-  sfx('win', { delay: 300, max: G.exp + B.m.exp >= expNeed() ? .9 : 0 });
-  const m = B.m; B.over = true; B.dying = performance.now();
-  G.exp += m.exp; G.gold += m.gold; allyTick();
-  for (const [k, n] of Object.entries(m.drop)) if (m.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') ? .12 : 0))) add(G.carry, k, n);
+  // 倒した敵（群れ）の分をまとめてもらう
+  const ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0), gold = ms.reduce((s, x) => s + x.gold, 0), drop = {};
+  for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') ? .12 : 0))) add(drop, k, n);
+  sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
+  B.over = true; for (const x of ms) if (!x.dying) x.dying = performance.now();
+  G.exp += exp; G.gold += gold; allyTick();
+  for (const [k, n] of Object.entries(drop)) add(G.carry, k, n);
   if (G.meal === 'broth') { G.hp = Math.min(G.mhp, G.hp + 6); }
-  let msg = `${m.name}を倒した！ 経験値${m.exp}、${m.gold}G。素材: ${matText(m.drop)}`;
+  let msg = `${ms.length > 1 ? ms.length + '体の魔物' : m.name}を倒した！ 経験値${exp}、${gold}G。${Object.keys(drop).length ? '素材: ' + matText(drop) : ''}`;
   if (G.exp >= expNeed()) setTimeout(() => playFx('levelup', { self: true, size: 1.2 }), 500);
   { const up = { hp: 0, atk: 0, def: 0 }, lv0 = G.lv;
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
     if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
+  { const mc = ms.find(x => x.chest); if (mc) { mc.chest.mimic = false; msg += '\n' + chestLoot(mc.chest, true); } }
   if (m.boss) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);
@@ -1572,6 +1639,8 @@ function lose() {
 // ---------- 魔物の絵（待機・攻撃・攻撃を受けた の3枚＋コードの動き） ----------
 const MON_IMG = {};
 for (const [k, src] of Object.entries(ASSETS.mon || {})) { const i = new Image(); i.src = src; MON_IMG[k] = i; }
+// ミミックの絵（床の小物の絵を使う）
+if (typeof PROPS !== 'undefined') for (const [id, k] of [['mimic', 'f_mimic'], ['mimic_gold', 'f_mimic_gold']]) if (PROPS[k]) for (const pose of ['idle', 'attack', 'hit']) { const i = new Image(); i.src = PROPS[k]; MON_IMG[id + '_' + pose] = i; }
 // 11階より上の魔物はファイルから読む（出会ったときに読み込む）
 const bossBeat = n => n === 10 ? G.bossDown || (G.bosses || {})[10] : !!(G.bosses || {})[n];
 function monImg(m, pose) {
@@ -1579,15 +1648,16 @@ function monImg(m, pose) {
   if (!MON_IMG[k] && m.file) { const i = new Image(); i.src = `assets/monsters/${k}.webp`; MON_IMG[k] = i; }
   return MON_IMG[k];
 }
-function drawMonster(m, t) {
+function drawMonster(m, t, i) {
   const idle = monImg(m, 'idle'); monImg(m, 'attack'); monImg(m, 'hit');
-  if (idle && idle.complete) { drawMonsterImg(m, t); return; }
+  if (idle && idle.complete && idle.naturalWidth) { drawMonsterImg(m, t, i); return; }
+  if (m.file) return;  // ファイルの絵は読み込み中
   drawMonsterShape(m, t);
 }
 // ---------- 戦闘エフェクト ----------
 // 絵（fx.js）を1コマもらい、動きはコードでつける。絵と同じ色の光と粒を重ねて、切り口をなじませる
 const FXI = {}; if (typeof FX_IMG !== 'undefined') for (const [k, s] of Object.entries(FX_IMG)) { const i = new Image(); i.src = s; FXI[k] = i; }
-let fxList = [], fxParts = [];
+let fxList = [], fxParts = [], FX_AT = null;  // FX_AT: 技のエフェクトを出す敵（群れのとき）
 // 5属性×小・中・大の魔法（ファイルから読む）
 const MAGIC_C = { fire:'#ff8a3d', ice:'#8fd8ff', bolt:'#ffe14a', holy:'#fff0b0', dark:'#b45cff' };
 for (const [el, c] of Object.entries(MAGIC_C)) for (let k = 1; k <= 3; k++) { const n = `m_${el}${k}`, i = new Image(); i.src = `assets/fx/${n}.webp`; FXI[n] = i; if (typeof FX_META !== 'undefined') FX_META[n] = { c, add: el !== 'dark' }; }
@@ -1611,7 +1681,7 @@ function playFx(name, opt = {}) {
   // 大きな魔法: 画面が暗くなってから、画面いっぱいに出る。強く揺れて、粒も多い
   if (mv === 'big') { fxDim = performance.now() + (opt.delay || 0); opt = { ...opt, delay: (opt.delay || 0) + 280, parts: 40, y: VH * .56 }; setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); fx.flash = .5; }, opt.delay + 80); }
   if (/^m_\w+2$/.test(name)) setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 6); }, (opt.delay || 0) + 60);
-  const x = opt.x !== undefined ? opt.x : VW / 2 + (self ? 0 : (R() - .5) * 20), y = opt.y !== undefined ? opt.y : self ? VH * .62 : VH * .52;
+  const x = opt.x !== undefined ? opt.x : (FX_AT && FX_AT.cx !== undefined && !self && mv !== 'big' ? FX_AT.cx : VW / 2) + (self ? 0 : (R() - .5) * 20), y = opt.y !== undefined ? opt.y : self ? VH * .62 : VH * .52;
   fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: R() < .5 && mv === 'slash' });
   // 同じ色の粒
   const n = opt.parts !== undefined ? opt.parts : mv === 'rise' ? 18 : 14;
@@ -1695,16 +1765,20 @@ function skillFx(id) {
     playFx(n, { delay: dl, self: self || (n === 'heal' || n === 'blessing'), size: sz || (/^m_\w+1$/.test(n) ? .7 : /^m_\w+2$/.test(n) ? 1.15 : /^m_\w+3$/.test(n) ? 1.75 : undefined) });
   });
 }
-function drawMonsterImg(m, t) {
-  const A = B.anim || {}, dt = t - (A.t0 || -1e9);
+// 群れの並び方: 横に並べて、数が多いほど小さく。真ん中は少し奥
+// 絵の左右は画面からはみ出す（見えるのは横の真ん中 76% ほど）ので、その内側に並べる
+const SLOT = { 1: [[.5, 1, 0]], 2: [[.36, .8, 0], [.64, .8, 0]], 3: [[.27, .66, .02], [.5, .62, -.05], [.73, .66, .02]], 4: [[.22, .54, .02], [.407, .5, -.05], [.593, .5, -.05], [.78, .54, .02]] };
+function slotOf(i) { const L = SLOT[B.ms.length] || SLOT[1]; return L[i] || L[0]; }
+function drawMonsterImg(m, t, i) {
+  const A = m.anim || {}, dt = t - (A.t0 || -1e9), [px, sc, dy] = slotOf(i || 0);
   let pose = 'idle', sx = 1, sy = 1, ox = 0, oy = 0, white = 0, alpha = 1;
   // 待機: ゆっくり呼吸
   sy = 1 + Math.sin(t / 420) * .015; sx = 1 - Math.sin(t / 420) * .008;
   if (A.kind === 'attack' && dt < 480) { pose = 'attack'; const k = Math.sin(Math.min(1, dt / 480) * Math.PI); sx *= 1 + k * .14; sy *= 1 + k * .14; oy = k * 10; }
   if (A.kind === 'hit' && dt < 360) { pose = 'hit'; const k = 1 - dt / 360; ox = Math.sin(dt / 25) * 5 * k; oy = -4 * k; white = dt < 90 ? .75 : 0; }
-  if (B.dying) { const d = Math.min(1, (t - B.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
+  if (m.dying) { const d = Math.min(1, (t - m.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
   const img = (monImg(m, pose) && monImg(m, pose).complete && monImg(m, pose).naturalWidth ? monImg(m, pose) : null) || monImg(m, 'idle');
-  const H = VH * (m.size || .7), W = H * img.width / img.height, cx = VW / 2 + ox, by = VH * .93 + oy;
+  const H = VH * (m.size || .7) * sc, W = H * img.width / img.height, cx = VW * px + ox, by = VH * (.93 + dy) + oy; m.cx = VW * px; m.top = by - H;
   ctx.save(); ctx.globalAlpha = alpha;
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(cx, by - 2, W * .38, 8, 0, 0, 7); ctx.fill();
   ctx.imageSmoothingEnabled = true; ctx.drawImage(img, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
@@ -1715,13 +1789,20 @@ function drawMonsterImg(m, t) {
     ctx.globalAlpha = white * alpha; ctx.drawImage(o, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
   }
   ctx.restore();
-  drawMonsterBar(m);
 }
-function drawMonsterBar(m) {
-  const w = 120, x = VW / 2 - w / 2, y = 6;
-  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x - 4, y - 2, w + 8, 24);
-  ctx.fillStyle = '#efe3cc'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(m.name, VW / 2, y + 10);
-  ctx.fillStyle = '#3a1410'; ctx.fillRect(x, y + 14, w, 5); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y + 14, w * Math.max(0, m.hp) / m.mhp, 5);
+// 敵の名前とHP。1体なら上の真ん中、群れならそれぞれの上。狙っている敵には ▼
+function drawMonsterBars(t) {
+  const n = B.ms.length, tg = target();
+  B.ms.forEach((m, i) => {
+    if (m.hp <= 0) return;
+    const w = n === 1 ? 120 : n === 2 ? 76 : n === 3 ? 62 : 50, cx = n === 1 ? VW / 2 : VW * slotOf(i)[0], y = 6;
+    const x = cx - w / 2;
+    ctx.fillStyle = 'rgba(0,0,0,.62)'; ctx.fillRect(x - 4, y - 2, w + 8, 24);
+    if (n > 1 && m === tg && !B.over) { ctx.strokeStyle = '#ffc069'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 4, y - 2, w + 8, 24); }
+    ctx.fillStyle = '#efe3cc'; ctx.font = (n > 3 ? '8px' : n > 2 ? '9px' : '11px') + ' Dot, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(m.name, cx, y + 10);
+    ctx.fillStyle = '#3a1410'; ctx.fillRect(x, y + 14, w, 5); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y + 14, w * Math.max(0, m.hp) / m.mhp, 5);
+    if (n > 1 && m === tg && !B.over && m.top !== undefined) { const b = Math.sin(t / 180) * 2; ctx.fillStyle = '#ffc069'; ctx.beginPath(); ctx.moveTo(cx - 6, m.top - 10 + b); ctx.lineTo(cx + 6, m.top - 10 + b); ctx.lineTo(cx, m.top - 2 + b); ctx.fill(); }
+  });
 }
 // 画像がないときの仮の形
 function drawMonsterShape(m, t) {
@@ -1760,7 +1841,7 @@ function loop(t) {
     const k = .2; P.x += (T.x - P.x) * k; P.y += (T.y - P.y) * k; P.a += (T.a - P.a) * k;
     if (busy && Math.abs(T.x - P.x) < .01 && Math.abs(T.y - P.y) < .01 && Math.abs(T.a - P.a) < .01) { P.x = T.x; P.y = T.y; P.a = T.a; busy = false; }
     if (TEX.ready && F) renderView(ctx, F, P, t, mode === 'battle' ? .5 : 1);
-    if (mode === 'battle' && B && (B.m.hp > 0 || (B.dying && t - B.dying < 700))) drawMonster(B.m, t);
+    if (mode === 'battle' && B && B.ms) { B.ms.forEach((m, i) => { if (m.hp > 0 || (m.dying && t - m.dying < 700)) drawMonster(m, t, i); }); drawMonsterBars(t); }
     if (mode === 'battle' || mode === 'dungeon') drawFx();
     if (F) { mapCv.style.display = mode === 'battle' ? 'none' : ''; renderMap(mapCtx, F, P); }
   } else { mapCv.style.display = 'none'; }
@@ -1770,6 +1851,13 @@ function loop(t) {
   requestAnimationFrame(loop);
 }
 
+// 戦闘: 魔物を押すと、狙う相手を変える（群れのとき）
+$('view').addEventListener('click', e => {
+  if (mode !== 'battle' || !B || !B.ms || B.ms.length < 2 || B.over) return;
+  const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * VW;
+  let best = -1, bd = 1e9; B.ms.forEach((m, i) => { if (m.hp > 0 && m.cx !== undefined && Math.abs(m.cx - x) < bd) { bd = Math.abs(m.cx - x); best = i; } });
+  if (best >= 0 && best !== B.ti) { B.ti = best; sfx('select', { vol: .5 }); log(`${B.ms[best].name}を狙う。`, true); }
+});
 // ---------- 入力 ----------
 addEventListener('keydown', e => {
   const m = { ArrowUp: 'f', ArrowDown: 'b', ArrowLeft: 'tl', ArrowRight: 'tr', a: 'sl', d: 'sr', w: 'f', s: 'b' }[e.key];
