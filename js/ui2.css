@@ -1,0 +1,55 @@
+/* ===== 見た目の皮（2026-11-24 試作）: ドット絵の枠・文字・アイコン ===== */
+@font-face{font-family:Dot;src:url(../assets/font/dot.woff2) format('woff2');font-display:block}
+:root{--frame:#7a5a32;--frame2:#c9a25d;--frameD:#0b0806;--wood:#3e2b1d;--wood2:#4f3825;--plate:#2a1c12}
+html,body,button{font-family:Dot,"Hiragino Sans",system-ui,sans-serif}
+body{background:#120d0a radial-gradient(ellipse at 50% 0,#2a1d14 0,#120d0a 70%)}
+/* 枠: 黒い外線＋金茶の枠＋内側の細い光。角はとがらせ、四隅に鋲 */
+.box,.log{border:3px solid var(--frame)!important;border-radius:3px!important;box-shadow:0 0 0 2px var(--frameD),inset 0 0 0 1px var(--frame2),inset 0 0 0 3px #1a120c,0 4px 10px rgba(0,0,0,.6)}
+.box::after,.log::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:9;
+ background:radial-gradient(circle,#ffe7a3 0 1.5px,#8a5a1c 2px 3px,transparent 3.5px) 0 0/8px 8px no-repeat,radial-gradient(circle,#ffe7a3 0 1.5px,#8a5a1c 2px 3px,transparent 3.5px) 100% 0/8px 8px no-repeat,radial-gradient(circle,#ffe7a3 0 1.5px,#8a5a1c 2px 3px,transparent 3.5px) 0 100%/8px 8px no-repeat,radial-gradient(circle,#ffe7a3 0 1.5px,#8a5a1c 2px 3px,transparent 3.5px) 100% 100%/8px 8px no-repeat}
+.log{background:linear-gradient(#1c140e,#150f0a)!important;padding:9px 12px!important;font-size:16px;letter-spacing:.02em}
+/* 話している人の名札 */
+.log .plate{display:inline-block;margin:-2px 0 3px;padding:1px 10px 0;background:linear-gradient(#6a3a16,#4a2610);border:2px solid #c9a25d;box-shadow:0 0 0 1px #0b0806;color:#ffe7a3;font-size:14px;border-radius:2px}
+.log.wait::before{content:"▼";position:absolute;right:12px;bottom:6px;color:var(--ember2);font-size:13px;animation:nextBlink 1s steps(2) infinite;z-index:10}
+.log.hasface.wait::before{right:90px}
+@keyframes nextBlink{50%{opacity:0}}
+/* ボタン: 木の板。上に光、下に影。押すと沈む */
+#ctl button,.tabs button{background:linear-gradient(var(--wood2),var(--wood))!important;border:2px solid #120b06!important;border-radius:3px!important;box-shadow:inset 0 2px 0 #7a5a3c,inset 0 -3px 0 #24170e,0 2px 0 #000;color:#f4ecd8;text-shadow:0 1px 0 #000}
+#ctl button:active:not(:disabled){transform:translateY(2px);box-shadow:inset 0 2px 0 #24170e,0 0 0 #000}
+#ctl button.hot{background:linear-gradient(#a3481a,#6a2a0c)!important;box-shadow:inset 0 2px 0 #ffb46a,inset 0 -3px 0 #3a1404,0 2px 0 #000,0 0 10px rgba(255,138,61,.35)}
+button small{color:#cdb894!important;font-size:11px}
+button .ic{display:inline-block;width:18px;height:18px;margin:0 4px -3px 0;background:center/contain no-repeat;image-rendering:pixelated;vertical-align:baseline}
+.pad button{font-size:22px;color:#ffe7a3}
+/* 見出し: 場所の名前を札に、能力は小さなチップに */
+.top{height:32px}
+.top b{background:linear-gradient(#5a3216,#3a1e0c);border:2px solid var(--frame2);box-shadow:0 0 0 2px var(--frameD);padding:2px 10px 1px;border-radius:2px;font-weight:400!important;color:#ffe7a3!important;font-size:16px!important}
+#who{display:flex;gap:4px;font-size:12px!important}
+#who i{font-style:normal;background:#1d1510;border:1px solid #4a3a2c;border-radius:2px;padding:1px 5px;color:#e9dcc0}
+#who i.g{color:#ffd76a}#who i.g::before{content:"";display:inline-block;width:11px;height:11px;margin:0 3px -1px 0;background:var(--coin) center/contain no-repeat;image-rendering:pixelated}
+#who i.hurt{color:#ff8a7a}
+.snd{background:linear-gradient(var(--wood2),var(--wood))!important}
+/* HP/AP: 目盛りのついたドットのバー */
+.bars{font-size:12px}
+.bar{height:10px!important;border-radius:1px!important;background:#0b0806!important;box-shadow:0 0 0 1px #6a5032,inset 0 0 0 1px #000;position:relative}
+.bar i{background-image:linear-gradient(rgba(255,255,255,.35) 0 2px,transparent 2px)!important}
+.bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(0,0,0,.55) 9px 10px)}
+/* 塔の中: 左上に「エリア 階」、上の真ん中に方角 */
+.hud2{position:absolute;left:8px;bottom:8px;z-index:4;pointer-events:none;display:flex;flex-direction:row;gap:4px;align-items:center}
+.hud2 .fl{background:rgba(20,12,6,.78);border:2px solid var(--frame2);box-shadow:0 0 0 1px #000;padding:1px 8px 0;color:#ffe7a3;font-size:15px;border-radius:2px}
+.hud2 .fl small{color:#cdb894;font-size:11px;margin-right:6px}
+.cmp{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:4;pointer-events:none;display:flex;gap:10px;align-items:baseline;background:rgba(20,12,6,.7);border:2px solid #6a5032;padding:0 10px;border-radius:2px;font-size:12px;color:#8f7d62}
+.cmp b{font-weight:400;color:#ffe7a3;font-size:17px}
+.hud2 .bag{background:rgba(20,12,6,.78);border:1px solid #6a5032;padding:0 6px;color:#e9dcc0;font-size:12px;border-radius:2px}
+.hud2 .bag::before{content:"";display:inline-block;width:12px;height:12px;margin:0 4px -2px 0;background:var(--bag) center/contain no-repeat;image-rendering:pixelated}
+/* 戦闘: 敵の名前とHPを札に */
+.tabs button.on{background:linear-gradient(#a3481a,#6a2a0c)!important}
+
+.btns:not(.three):not(.one):not(.list):not(.tail) button{font-size:15px}
+.dg .ctl .btns button .ic{display:block;margin:0 auto 1px;width:20px;height:20px}
+.dg .pad button .ic{display:none}
+/* ダメージの数字 */
+.pop{position:absolute;z-index:8;transform:translate(-50%,-50%);font-family:Dot,sans-serif;font-size:42px;color:#fff;pointer-events:none;
+ text-shadow:-3px -3px 0 #1a0f08,-3px -2px 0 #1a0f08,-3px 0px 0 #1a0f08,-3px 2px 0 #1a0f08,-3px 3px 0 #1a0f08,-2px -3px 0 #1a0f08,-2px -2px 0 #1a0f08,-2px 0px 0 #1a0f08,-2px 2px 0 #1a0f08,-2px 3px 0 #1a0f08,0px -3px 0 #1a0f08,0px -2px 0 #1a0f08,0px 2px 0 #1a0f08,0px 3px 0 #1a0f08,2px -3px 0 #1a0f08,2px -2px 0 #1a0f08,2px 0px 0 #1a0f08,2px 2px 0 #1a0f08,2px 3px 0 #1a0f08,3px -3px 0 #1a0f08,3px -2px 0 #1a0f08,3px 0px 0 #1a0f08,3px 2px 0 #1a0f08,3px 3px 0 #1a0f08,0 5px 6px rgba(0,0,0,.6);animation:popUp 1.05s ease-out forwards}
+.pop.crit{font-size:56px;color:#ffd76a}.pop.crit::after{content:"!";}
+.pop.me{color:#ff7a5c;font-size:36px}.pop.heal{color:#8ef07a}.pop.miss{color:#cfe3ff;font-size:24px}
+@keyframes popUp{0%{opacity:0;transform:translate(-50%,-10%) scale(.6)}12%{opacity:1;transform:translate(-50%,-60%) scale(1.25)}25%{transform:translate(-50%,-70%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-140%)}}

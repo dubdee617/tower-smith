@@ -109,8 +109,28 @@ let spkFace = null;
 function drawLog() {
   const el = $('log'); el.innerHTML = ''; el.classList.toggle('hasface', !!logFace);
   if (logFace) { const i = document.createElement('img'); i.className = 'face'; i.src = `assets/jobs/face_${logFace}.png`; i.alt = ''; el.appendChild(i); }
-  const s = document.createElement('div'); s.textContent = logLines.join('\n'); el.appendChild(s);
+  const s = document.createElement('div'); el.appendChild(s);
+  // 話している人の名前は、名札にして上にのせる
+  const L = logLines.slice(), pm = /^([^\s「」\n（）]{1,8})「/.exec(L[0] || '');
+  if (pm) { const p = document.createElement('span'); p.className = 'plate'; p.textContent = pm[1]; s.appendChild(p); s.appendChild(document.createElement('br')); L[0] = L[0].slice(pm[1].length); }
+  // 最後の行だけ、1文字ずつ出す（押すと全部出る）
+  const last = L.pop() || '';
+  if (L.length) s.appendChild(document.createTextNode(L.join('\n') + '\n'));
+  const tx = document.createTextNode(''); s.appendChild(tx);
+  clearInterval(drawLog.tm); const chars = [...last]; let k = 0;
+  const speed = mode === 'battle' ? 2 : 1, done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; };
+  drawLog.skip = done;
+  if (!chars.length || document.body.classList.contains('story') && document.body.classList.contains('intro')) done();
+  else drawLog.tm = setInterval(() => { k += speed; tx.textContent = chars.slice(0, k).join(''); if (k >= chars.length) done(); }, 26);
   drawSpk();
+}
+// ダメージ・回復の数字を、絵の上に飛び出させる
+function popNum(n, who, kind) {
+  const v = $('view'); if (!v || v.style.display === 'none') return;
+  const e = document.createElement('div'); e.className = 'pop ' + (kind || '') + (who === 'me' ? ' me' : '');
+  e.textContent = kind === 'heal' ? '+' + n : kind === 'miss' ? 'MISS' : n;
+  e.style.left = (who === 'me' ? 50 : 50 + (R() - .5) * 16) + '%'; e.style.top = (who === 'me' ? 70 : 34 + (R() - .5) * 8) + '%';
+  v.appendChild(e); setTimeout(() => e.remove(), 1100);
 }
 function drawSpk() {
   const sp = $('spk'); if (!sp) return;
@@ -478,7 +498,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 43'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 44'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1422,9 +1442,9 @@ function dmgTo(m, power, pierce, critBonus) {
   let d = Math.max(1, Math.round((power - (pierce ? 0 : Math.max(0, m.def - B.broken))) * (.85 + R() * .3)));
   const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0);
   if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: 120, size: .7 }); } else B.lastCrit = false;
-  m.hp -= d; fx.hit = .6; B.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.min(8, 2 + d / 6); return d;
+  m.hp -= d; popNum(d, 'mon', crit ? 'crit' : ''); fx.hit = .6; B.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.min(8, 2 + d / 6); return d;
 }
-function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; return h; }
+function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
 function doSkill(id) {
   if (B.over) return 'end'; const s = SKILLS[id], m = B.m;
   skillFx(id);
@@ -1464,13 +1484,13 @@ function endTurn() {
     const times = m.boss && R() < .4 ? 2 : 1;
     for (let i = 0; i < times; i++) {
       B.anim = { kind: 'attack', t0: performance.now() };
-      if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); continue; }
+      if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); popNum(0, 'me', 'miss'); continue; }
       let d = Math.max(1, Math.round((m.atk - defPower()) * (.85 + R() * .3)));
       playFx(B.counter || B.cut < 1 ? 'spark' : (m.id === 'rat' || m.id === 'centipede' ? 'bite' : 'claw'), { y: VH * .6, size: 1.1 });
       if (B.counter) { d = Math.ceil(d * B.counter.cut); const c = dmgTo(m, atkPower() * B.counter.back); log(`受け止めて反撃！ ${c}のダメージ。`); B.counter = null; }
       else d = Math.ceil(d * B.cut);
       if (m.boss && G.bless === 'ward') d = Math.ceil(d * .7);
-      G.hp -= d; fx.flash = .8; fx.shake = 6; log(`${m.name}の攻撃。${d}のダメージを受けた。`);
+      G.hp -= d; popNum(d, 'me', 'hurt'); fx.flash = .8; fx.shake = 6; log(`${m.name}の攻撃。${d}のダメージを受けた。`);
       // 大きな一撃（最大HPの35%以上）はケガが残ることがある
       if (G.hp > 0 && d >= G.mhp * .35 && R() < .25) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
       if (m.hp <= 0) { win(); return; }
