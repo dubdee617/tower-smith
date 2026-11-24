@@ -332,7 +332,7 @@ function fitStage() {
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
   const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(268, ctl.offsetHeight) : 0));
   let w = W, h;
-  if (COVER) h = document.body.classList.contains('intro') ? H : Math.min(H, W * 1.25);
+  if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(H, Hdg, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
@@ -414,7 +414,7 @@ const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7
 const pick = a => a[Math.floor(R() * a.length)];
 let place = null;
 
-function showTown(on, aspect) { document.body.classList.remove('story', 'title', 'intro'); if ($('town')) $('town').onclick = null; $('town').style.display = on ? 'block' : 'none'; $('view').style.display = on ? 'none' : 'block'; ASPECT = aspect || (on ? 2 / 3 : 4 / 3); COVER = on && (aspect === 4 / 3 || aspect === 0); spkFace = null; drawSpk(); fitStage(); }
+function showTown(on, aspect) { document.body.classList.remove('story', 'title', 'intro', 'big'); if ($('town')) $('town').onclick = null; $('town').style.display = on ? 'block' : 'none'; $('view').style.display = on ? 'none' : 'block'; ASPECT = aspect || (on ? 2 / 3 : 4 / 3); COVER = on && (aspect === 4 / 3 || aspect === 0); spkFace = null; drawSpk(); fitStage(); }
 function rollRumor() { const k = Object.keys(RUMORS); G.rumor = k[Math.floor(R() * k.length)]; }
 function startRun() { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; }
 function endRun() { G.mhp -= G.runHp || 0; G.hp = Math.min(G.hp, G.mhp); G.runHp = 0; }
@@ -430,8 +430,8 @@ function toTown(msg, fromTower) {
   townMap(); if (msg) log(msg, true); hud();
 }
 // 町の外観の絵（タイトル・はじめの説明・塔から戻ったとき）
-function viewScreen(caption, story) {
-  place = null; showTown(true, 941 / 1672); if (story) document.body.classList.add('story');
+function viewScreen(caption, story, big) {
+  place = null; showTown(true, big ? 0 : 941 / 1672); if (story) document.body.classList.add('story'); if (big) { document.body.classList.add('big'); fitStage(); }
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}town_view.jpg" alt="塔の国の町">` + (caption ? `<div class="caption">${caption}</div>` : '');
 }
@@ -452,7 +452,7 @@ function guildWelcome(has) {
   return pick(L);
 }
 function returnScreen(msg, brought, letter) {
-  viewScreen('帰還');
+  viewScreen('帰還', false, true);
   // セリフ欄には短いことばだけ。持ち帰った物はボタンの上に出す（セリフ欄からはみ出さないように）
   say(brought === 'なし' ? 'tired' : 'content', `${msg ? msg + '\n' : ''}「……ふう、戻ったか」`, true);
   if (letter) log('お城から手紙が届いていた。\n町の門の下から、お城へ行けるようになった。');
@@ -478,7 +478,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 40'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 41'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
