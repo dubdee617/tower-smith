@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 67'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 68'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1175,7 +1175,7 @@ function act(a) {
   const o = { f: 0, b: 2, sl: 3, sr: 1 }[a], [ddx, ddy] = DIRS[(dir + o) % 4], c = cellTo(ddx, ddy);
   if (c === 4 || c === 5) { F.M[cy + ddy][cx + ddx] = 0; reveal(F, cx + ddx, cy + ddy); log(c === 5 ? '重い鉄の扉を押し開けた。' : '扉を開けた。'); dungeonUI(); return; }
   if (c === 2 || c === 3) { if (o === 0) stairs(); else log('階段は正面から使う。'); return; }
-  if (c === 1) { fx.shake = 3; sfx('hit1', { vol: .35, max: .3 }); log('壁だ。'); return; }
+  if (c === 1) { fx.shake = 3; sfx('wallhit', { vol: .7 }); log('壁だ。'); return; }
   if (c === 6) { fx.shake = 2; const ch = F.chests.find(q => q.x === cx + ddx && q.y === cy + ddy); log(ch ? (ch.open ? '開けた宝箱だ。' : '宝箱がある。開けてみよう。') : propAt(cx + ddx, cy + ddy) ? 'じゃまな物がある。' : '木が立ちふさがっている。'); return; }
   T.x += ddx; T.y += ddy; busy = true; steps++; stepSfx(floorNo);
   reveal(F, cx + ddx, cy + ddy);
@@ -1333,7 +1333,10 @@ function digInfo() {
 function dig() {
   const d = digInfo(); if (!d || !d.ok) return;
   F.dmg = F.dmg || {}; const k = d.x + ',' + d.y;
-  F.dmg[k] = (F.dmg[k] || 0) + 1; d.t.dur--; fx.shake = 3; sfx('hit');
+  F.dmg[k] = (F.dmg[k] || 0) + 1; d.t.dur--; fx.shake = 3;
+  // 音: シャベル＝穴掘り（3種類）、ツルハシ・斧＝打撃。崩れたら岩が割れる音
+  if (d.t.tool === 'shovel') sfx('shovel_' + (1 + Math.floor(R() * 3))); else sfx('hit');
+  if (F.dmg[k] >= d.need) sfx('rockbreak', { delay: 200, vol: .8, max: 1.6 });
   F.crack = F.crack || {}; F.crack[k] = Math.min(3, Math.ceil(F.dmg[k] / d.need * 3));
   if (F.dmg[k] < d.need) {
     log(`カン！ ${['ヒビが入った。', 'ヒビが広がった。', 'もう少しで崩れそうだ。'][Math.min(2, Math.floor(F.dmg[k] / d.need * 3))]}${d.t.dur <= 5 ? `（${d.t.name}の耐久 残り${d.t.dur}）` : ''}`, true);
