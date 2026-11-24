@@ -11,6 +11,16 @@ function hash(x, y, s) { let q = (Math.imul(x | 0, 374761393) + Math.imul(y | 0,
 // ---------- テクスチャ ----------
 const TEX = { ready: false };
 function loadImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; }); }
+// 下り階段の絵に、下向きの矢印を描きこむ（下りだと分かるように）
+function downArrow(img) {
+  const o = document.createElement('canvas'); o.width = o.height = TS; const g = o.getContext('2d'); g.drawImage(img, 0, 0, TS, TS);
+  const cx = TS / 2, y0 = TS * .3, y1 = TS * .66, hw = TS * .2, sw = TS * .075, hy = y1 - TS * .17;
+  g.beginPath(); g.moveTo(cx - sw, y0); g.lineTo(cx + sw, y0); g.lineTo(cx + sw, hy); g.lineTo(cx + hw, hy); g.lineTo(cx, y1); g.lineTo(cx - hw, hy); g.lineTo(cx - sw, hy); g.closePath();
+  g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = 'rgba(20,10,4,.85)'; g.stroke();
+  const gr = g.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, '#ffe7a3'); gr.addColorStop(1, '#f0a73c'); g.fillStyle = gr; g.fill();
+  g.lineWidth = 1.5; g.strokeStyle = 'rgba(255,250,230,.9)'; g.stroke();
+  return o;
+}
 function pix(img, w, h) { const o = document.createElement('canvas'); o.width = w; o.height = h; const g = o.getContext('2d'); g.drawImage(img, 0, 0, w, h); return new Uint32Array(g.getImageData(0, 0, w, h).data.buffer); }
 
 // 飾りの置き方（128pxの壁の中での [中心x, 上端y, 縮尺]）
@@ -89,7 +99,7 @@ async function loadTextures(set) {
   TEX.wall2 = A.wall2 ? pix(await loadImg(A.wall2), TS, TS) : TEX.wall;
   TEX.floor = pix(await loadImg(A.floor), 256, 256);
   TEX.ceil = pix(await loadImg(A.ceil), 256, 256);
-  for (const k of ['stairs_up', 'stairs_down', 'door_wood', 'door_iron', 'door_bars']) TEX[k] = pix(await loadImg(A[k]), TS, TS);
+  for (const k of ['stairs_up', 'stairs_down', 'door_wood', 'door_iron', 'door_bars']) TEX[k] = pix(k === 'stairs_down' ? downArrow(await loadImg(A[k])) : await loadImg(A[k]), TS, TS);
   TEX.sprite = {};
   for (const k of ['chest', 'chest_open', 'chest_gold', 'chest_gold_open']) { const im = await loadImg(A[k]); TEX.sprite[k] = { w: im.width, h: im.height, px: pix(im, im.width, im.height) }; }
   TEX.deco = {};
