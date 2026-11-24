@@ -540,7 +540,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 63'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 64'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -580,7 +580,7 @@ function townMark(id) {
 // 次の目標（10階ごとの主を順に）
 function nextGoal() {
   if (!G.maxFloor) return '塔に入ってみる';
-  for (let f = 10; f <= TOP_FLOOR; f += 10) if (!bossBeat(f)) return G.maxFloor < f ? `${f}階を目指す（${f}階に主がいる）` : `${f}階の主を倒す`;
+  for (let f = 10; f <= TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(f * .8); return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
   return '誰も行ったことのない、さらに上へ';
 }
 function townMap() {
@@ -1433,7 +1433,7 @@ const monPool = n => { const L = MONSTERS.filter(m => m.from <= n && n <= m.to);
 function pickMonster() {
   const pool = monPool(floorNo);
   if (TODAY.goblin && floorNo >= 3) pool.push(MONSTERS.find(m => m.id === 'goblin'), MONSTERS.find(m => m.id === 'goblin'));
-  const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = TODAY.danger ? 1.2 : 1, rw = TODAY.danger ? 1.4 : 1;
+  const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = (TODAY.danger ? 1.2 : 1) * (floorNo >= 6 && floorNo <= 10 ? 1.12 : 1), rw = TODAY.danger ? 1.4 : 1;  // 6〜10階は少し強く
   // 2026-11-24: 全体に少し強く（HP×1.2・攻撃×1.12）
   return { ...base, hp: Math.round(base.hp * k * dz * 1.2), atk: Math.round(base.atk * k * dz * 1.12), def: Math.round(base.def * k), exp: Math.round(base.exp * k * rw), gold: Math.round(base.gold * k * rw) };
 }
@@ -1625,6 +1625,7 @@ function doSkill(id) {
       if (s.heal) t += `HPが${healMe(s.heal + G.lv * 3)}回復。`;
       if (s.stun) for (const x of s.all ? alive() : [m]) if (x.hp > 0 && !x.boss && R() < s.stun) { x.stun = true; t += `${x.name}は動けない！`; }
       if (s.guardToo) B.cut = Math.min(B.cut, .5);
+      if (s.cutToo) B.cut = Math.min(B.cut, s.cutToo);
       if (s.stealToo && m.hp > 0 && R() < (has('p_steal') ? .7 : .4)) { const k = Object.keys(m.drop)[0]; add(G.carry, k, 1); t += `${NAMES[k]}を奪った！`; }
       log(t); break;
     }
