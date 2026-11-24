@@ -251,6 +251,8 @@ const MON_UP = [
   ['goldswarm','金の甲虫の群れ',64,1.0,{cursed_gold:2},.8], ['royalcat','王の猫',61,.95,{cursed_gold:1},.72], ['colossushand','崩れた巨像の手',67,1.25,{rock_core:2},.78], ['sealedbox','封印の箱',68,1.15,{cursed_gold:2,raw_gem:1},.72],
   ['rockrhino','岩のサイ',73,1.25,{rock_core:2},.8], ['frilllizard','火吹きトカゲ',71,1.0,{scale:1,ember_stone:1},.72], ['canyonbat','峡谷の大コウモリ',72,.95,{feather:1,beast_fang:1},.76], ['stoneeye','石化の目玉',74,1.0,{rock_core:1,raw_gem:1},.68],
   ['firesprite','炎の精',75,.95,{ember_stone:1},.7], ['obsidian','黒曜石のゴーレム',77,1.3,{rock_core:2,ember_stone:1},.86], ['scorpionking','巨大サソリの王',76,1.2,{hard_shell:3},.74], ['lavasnake','溶岩の蛇',78,1.1,{ember_stone:1,scale:1},.74],
+  ['cloudsheep','雲の羊',81,.95,{feather:1,star_dust:1},.72], ['lightningsprite','稲妻の精',83,1.0,{star_dust:1,ice_shard:1},.78], ['jellyking','空の海月の王',86,1.15,{star_dust:2},.8], ['skyrider','天空の騎兵',85,1.2,{feather:2,dark_steel:1},.84],
+  ['moonrabbit','月の兎',82,.9,{beast_pelt:1,star_dust:1},.66], ['glacierserpent','氷河の大蛇',84,1.15,{ice_shard:2,scale:1},.76], ['rainbowbird','虹の鳥',87,1.05,{feather:3},.8], ['cloudhand','雲の巨人の手',88,1.25,{star_dust:2,rock_core:1},.8],
   ['courtmage','宮廷魔術師の亡霊',92,1.05,{star_dust:2},.8], ['rose','血の色の薔薇',91,1.0,{old_wood:2,spore:2},.74], ['portrait','肖像画の魔物',93,1.0,{cursed_gold:2},.78], ['candleknight','燭台の騎士',94,1.15,{dark_steel:1,ember_stone:1},.82],
   ['wolfking','黒い狼の王',95,1.25,{beast_pelt:3,dark_steel:1},.82], ['hangingarmor','吊るし鎧',96,1.15,{dark_steel:2},.85], ['jester','道化の人形',97,1.0,{old_cloth:2,star_dust:1},.78], ['shadowhand','影の王の手',98,1.2,{dark_steel:1,star_dust:2},.8],
 ];
