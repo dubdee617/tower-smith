@@ -161,6 +161,43 @@ function jobScene(j) {
   if (!img) return;
   showFig(`assets/jobs/job_${img}.webp`, { who: 'hero', label: j });
 }
+// ステータス画面: 主人公（今のジョブの姿）を真ん中に、左右に強さのバー。装備やジョブを変えるとバーが動き、増減が出る
+function jobImg(j) { let img = JOBS[j] && JOBS[j].img; if (!img) { const u = UPPERS.find(x => x.job === j); if (u) img = JOBS[WEAPON_TYPES[u.hold].job].img; } return img ? `assets/jobs/job_${img}.webp` : null; }
+function statNow() {
+  return { hp: G.mhp, atk: atkPower(), def: defPower(), ap: apBase(), eva: Math.round(evade() * 100), crit: hurt('head') ? 0 : 8 + (has('p_crit') ? 15 : 0) };
+}
+const STAT_DEF = [['hp', '最大HP', l => 40 + l * 12, '#d9553f'], ['atk', '攻撃', l => 14 + l * 4, '#ff8a3d'], ['def', '防御', l => 10 + l * 3, '#8fb3d9'],
+  ['ap', 'AP', () => 6, '#5fb0e6'], ['eva', '回避', () => 30, '#9ad97a'], ['crit', '会心', () => 40, '#ffd75a']];
+function statusView() {
+  const t = $('town'); if (!t || t.style.display === 'none') return;
+  const now = statNow(), prev = statusView.prev || now, j = job(), src = jobImg(j);
+  let v = t.querySelector('.status'); if (v) delete v.dataset.stale;
+  if (!v) {
+    v = document.createElement('div'); v.className = 'status';
+    const col = side => `<div class="scol ${side}">` + STAT_DEF.filter((_, i) => side === 'L' ? i < 3 : i >= 3).map(([k, name, , c]) =>
+      `<div class="srow" data-k="${k}"><div class="sl"><span>${name}</span><b></b><em></em></div><div class="sbar"><i style="background:${c}"></i></div></div>`).join('') + '</div>';
+    v.innerHTML = col('L') + `<div class="shero"><img alt=""><div class="sjob"></div></div>` + col('R');
+    t.appendChild(v);
+  }
+  const im = v.querySelector('.shero img');
+  if (src && im.getAttribute('src') !== src) { im.classList.remove('in'); void im.offsetWidth; im.src = src; im.classList.add('in'); }
+  v.querySelector('.sjob').textContent = `Lv${G.lv}　${j}`;
+  for (const [k, , mx] of STAT_DEF) {
+    const row = v.querySelector(`.srow[data-k="${k}"]`), val = now[k], d = val - prev[k];
+    row.querySelector('b').textContent = k === 'eva' || k === 'crit' ? val + '%' : val;
+    const em = row.querySelector('em'); em.textContent = d ? (d > 0 ? '+' : '') + d : ''; em.className = d > 0 ? 'up' : d < 0 ? 'down' : '';
+    requestAnimationFrame(() => { row.querySelector('i').style.width = Math.min(100, 100 * val / mx(G.lv)) + '%'; });
+  }
+  statusView.prev = now;
+}
+function statusMenu(back) {
+  statusView.prev = null; clearFig();
+  const r = gearBy(G.equip.r), l = gearBy(G.equip.l), a = gearBy(G.equip.armor);
+  buttons([{ title: `右 ${r ? r.name : 'なし'}／左 ${l ? l.name : 'なし'}／鎧 ${a ? a.name : 'なし'}` },
+    { t: '装備を変える', s: job(), hot: true, f: () => equipMenu(back) }, { t: 'ジョブ', s: '一覧', f: () => jobList(back) }, { t: '戻る', f: back }]);
+  statusView();
+  log(`経験値 ${G.exp}/${expNeed()}${G.injuries.length ? '\nケガ: ' + G.injuries.map(k => INJURIES[k].name).join('・') : ''}`, true);
+}
 // 立ち絵を出す。左右と「全身／腰から上」を毎回選び直して、入ってくる動きをつける
 // opt: who(話したとき弾ませる相手のid) side('L'|'R') mode('full'|'bust'|'wide') label
 function showFig(src, opt) {
@@ -196,7 +233,7 @@ buttons.tab = {}; buttons.pg = {};
 function buttons(list, cls) {
   const box = $('ctl'); box.innerHTML = '';
   // 主人公の立ち絵は、その画面で jobScene がもう一度呼ばれなければ消す
-  for (const f of document.querySelectorAll('.fig[data-who="hero"]')) { f.dataset.stale = '1'; setTimeout(() => { if (f.dataset.stale) f.remove(); }, 0); }
+  for (const f of document.querySelectorAll('.fig[data-who="hero"], .status')) { f.dataset.stale = '1'; setTimeout(() => { if (f.dataset.stale) f.remove(); }, 0); }
   const isTail = b => !b.title && (b.tail || TAIL_T.includes(b.t));
   const tail = list.filter(isTail), body = list.filter(b => !isTail(b));
   const top = [], secs = []; let lead = null;
@@ -418,7 +455,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 16'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 17'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -518,11 +555,11 @@ function homeMenu() {
   buttons([{ title: `工房の素材: ${matText(G.store)}` },
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true); } },
+    { t: 'ステータス', s: `Lv${G.lv} ${job()}`, f: () => statusMenu(homeMenu) },
     { t: '装備を変える', s: job(), f: () => equipMenu(homeMenu) },
     { t: 'ツール', s: toolName(), f: () => toolMenu(homeMenu) },
     { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(homeMenu) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(homeMenu) },
-    { t: 'ジョブ', s: '一覧', f: () => jobList(homeMenu) },
     ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
     { t: G.als ? 'アルスと行く' : 'アルスを誘う', s: G.als ? '準備できてる' : '1〜10階', off: G.als, f: () => { G.als = true; save(); npcFig('als'); homeMenu(); log(pick(['アルス[laugh]「本当ですか！ 師匠と一緒に塔へ……！ すぐ準備します！」', 'アルス[smile]「はい！ 足手まといにはなりません。特訓の成果、見ててください！」']), true); } },
     leave]);
@@ -620,7 +657,7 @@ function useTool() {
 }
 function prepMenu() {
   const back = () => prepMenu();
-  buttons([{ t: '装備を変える', s: job(), f: () => equipMenu(back) },
+  buttons([{ t: 'ステータス', s: `Lv${G.lv} ${job()}`, f: () => statusMenu(back) }, { t: '装備を変える', s: job(), f: () => equipMenu(back) },
     { t: 'ツールを選ぶ', s: toolName(), hot: !G.equip.tool && G.gear.some(g => g.type === 'tool'), f: () => toolMenu(back) },
     { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(back) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(back) },
@@ -654,7 +691,7 @@ function forge(msg, face) {
 }
 // 装備: 武器を押すたびに 右手 → 左手 → 外す と切り替わる（盾は左手だけ、両手武器は右手だけ）
 function equipMenu(back) {
-  back = back || homeMenu; if (equipMenu.back !== back) equipMenu.last = null; equipMenu.back = back;
+  back = back || homeMenu; if (equipMenu.back !== back) { equipMenu.last = null; statusView.prev = null; } equipMenu.back = back;
   const r = gearBy(G.equip.r), l = gearBy(G.equip.l), a = gearBy(G.equip.armor);
   const tl = gearBy(G.equip.tool);
   const L = [{ title: `右 ${r ? r.name : 'なし'}／左 ${l ? l.name : 'なし'}／鎧 ${a ? a.name : 'なし'}` }];
@@ -669,7 +706,7 @@ function equipMenu(back) {
   let note = '';
   if (w) { const t = w.type, next = UPPERS.filter(u => u.hold === t && !upperReady(u)).map(u => `${u.job}(${WEAPON_TYPES[u.exp].name}${G.prof[u.exp] || 0}/${UPPER_NEED.exp})`); if (next.length) note = `\n進化(${WEAPON_TYPES[t].name}${G.prof[t] || 0}/${UPPER_NEED.hold}): ` + next.join(' '); }
   if (equipMenu.last && equipMenu.last !== j) say('smug', `「${j}か。悪くない」${note}`, true); else log(`今のジョブ: ${j}（押すたびに 右手→左手→外す）${note}`, true);
-  equipMenu.last = j; jobScene(j);
+  equipMenu.last = j; clearFig(); statusView();
 }
 function equipItem(g) {
   const E = G.equip, r = gearBy(E.r);
