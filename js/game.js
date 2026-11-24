@@ -498,7 +498,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 46'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 47'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1627,8 +1627,13 @@ function drawFx() {
 const SKILL_FX = {
   double:['slash_x'], lunge:['thrust'], iai:['iai'], tsubame:['tsubame'], frenzy:['flurry'], flurry:['flurry'], cleave:['impact_heavy'], heavyslash:['slash_v','impact_heavy'], smash:['impact_heavy'], rage:['impact_heavy'],
   stab:['thrust'], assassin:['thrust','crit'], snipe:['arrow'], aim:['arrow'], volley:['arrow','arrow'], kagenui:['thrust','dark_mist'], plunder:['impact_heavy'], punch:['impact'], monkstrike:['impact','heal'],
-  shieldbash:['impact'], fire:['m_fire1'], sagefire:['m_fire2','heal'], ice:['m_ice1'], bolt:['m_bolt1'], holy:['m_holy1'],
-  fire2:['m_fire2'], fire3:['m_fire3'], ice2:['m_ice2'], ice3:['m_ice3'], bolt2:['m_bolt2'], bolt3:['m_bolt3'], holy2:['m_holy2'], holy3:['m_holy3'], dark1:['m_dark1'], dark2:['m_dark2'], dark3:['m_dark3'], magicblade:['slash_x','fire_s'], darkblade:['dark_blade','dark_mist'],
+  shieldbash:['impact'], sagefire:['fire_l',['heal',200]],
+  // 魔法: 新しい絵（m_）に、前からあるエフェクトを重ねる。[名前, 遅れms, 大きさ]
+  fire:['m_fire1',['fire_s',260,.5]], fire2:['fire_s','m_fire2',['fire_l',260,.8]], fire3:['m_fire3',['explosion',420,1.2],['fire_l',620,1.3]],
+  ice:['m_ice1',['ice_burst',300,.45]], ice2:['ice_spear','m_ice2',['ice_burst',260,.9]], ice3:['m_ice3',['ice_burst',450,1.3],['ice_spear',650,1]],
+  bolt:['m_bolt1',['spark',120,.5]], bolt2:['m_bolt2',['thunder_ball',220,.8]], bolt3:['m_bolt3',['thunder',380,1.3],['thunder_ball',560,1.1],['paralyze',760,.9]],
+  holy:['m_holy1',['sparkle',140,.6]], holy2:['m_holy2',['holy_pillar',200,.9]], holy3:['m_holy3',['holy_cross',420,1.2],['blessing',640,1.1]],
+  dark1:['m_dark1',['dark_mist',260,.5]], dark2:['dark_mist','m_dark2',['dark_blade',300,1]], dark3:['m_dark3',['dark_mist',420,1.4],['dark_blade',640,1.3]], magicblade:['slash_x','fire_s'], darkblade:['dark_blade','dark_mist'],
   arcanearrow:['magic_circle','magic_arrow'], bomb:['explosion'], heal:['heal'], guard:['barrier'], wall:['barrier'], holyguard:['barrier','pray'], counter:['barrier'], mikiri:['afterimage'],
   hone:['power'], bunshin:['bunshin'], steal:['sparkle'],
 };
@@ -1654,7 +1659,10 @@ function skillFx(id) {
   if (id === 'attack') { const w = mainWeapon(); weaponFx(w ? w.type : null); return; }
   if (!list) return;
   const self = ['heal', 'guard', 'wall', 'holyguard', 'counter', 'mikiri', 'hone', 'bunshin'].includes(id);
-  list.forEach((n, i) => playFx(n, { delay: i * 160, self, size: /^m_\w+1$/.test(n) ? .7 : /^m_\w+2$/.test(n) ? 1.15 : /^m_\w+3$/.test(n) ? 1.75 : undefined }));
+  list.forEach((e, i) => {
+    const [n, dl, sz] = Array.isArray(e) ? e : [e, i * 160];
+    playFx(n, { delay: dl, self: self || (n === 'heal' || n === 'blessing'), size: sz || (/^m_\w+1$/.test(n) ? .7 : /^m_\w+2$/.test(n) ? 1.15 : /^m_\w+3$/.test(n) ? 1.75 : undefined) });
+  });
 }
 function drawMonsterImg(m, t) {
   const A = B.anim || {}, dt = t - (A.t0 || -1e9);
