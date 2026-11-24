@@ -525,7 +525,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 55'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 56'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1513,7 +1513,8 @@ function runPlan() {
     const a = list[i++], r = a.id === 'item' ? doItem(a.k) : doSkill(a.id);
     hud();
     if (r === 'end' || !B || B.over) { if (B) B.running = false; return; }
-    if (i < list.length) setTimeout(step, 750); else setTimeout(() => { if (!B || B.over) return; B.running = false; endTurn(); }, 700);
+    const extra = a.id !== 'item' && SKILL_SHOW[a.id] ? SKILL_SHOW[a.id].len || 0 : 0;  // 長い技は、終わるまで次を待つ
+    if (i < list.length) setTimeout(step, 750 + extra); else setTimeout(() => { if (!B || B.over) return; B.running = false; endTurn(); }, 700 + extra);
   };
   setTimeout(step, 450);
 }
@@ -1529,23 +1530,31 @@ const carryMax = () => 1 + (has('p_carry') ? 1 : 0);
 function dmgTo(m, power, pierce, critBonus) {
   let d = Math.max(1, Math.round((power - (pierce ? 0 : Math.max(0, m.def - B.broken))) * (.85 + R() * .3)));
   const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0);
-  if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: 120, size: .7 }); } else B.lastCrit = false;
-  m.hp -= d; popNum(d, 'mon', crit ? 'crit' : '', m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; if (m.hp <= 0 && !m.dying) m.dying = performance.now(); fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); return d;
+  const dl = B.hitDelay || 0;  // 技の当たる瞬間に合わせて、数字や揺れを遅らせる
+  if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: dl + 120, size: .7 }); } else B.lastCrit = false;
+  m.hp -= d; if (m.hp <= 0 && !m.dying) m.dying = performance.now() + dl;
+  const show = () => { popNum(d, 'mon', crit ? 'crit' : '', m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
+  if (dl) setTimeout(show, dl); else show();
+  return d;
 }
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
 function doSkill(id) {
   if (B.over) return 'end'; const s = SKILLS[id], m = target();
-  FX_AT = s.all ? null : m; skillFx(id); FX_AT = null;
+  const sh = SKILL_SHOW[id];
+  if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; skillFx(id); FX_AT = null; }
+  // 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる
+  const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; sh.hit(i, dl, tg); FX_AT = null; B.hitDelay = dl + (sh.at || 0); };
   const power = atkPower() * (s.mult || 1) * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0);
   switch (s.kind) {
     case 'atk': {
       if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; m.dying = performance.now(); fx.hit = 1; m.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ ${m.name}の急所を貫いた。`); break; }
       const ds = []; let crit = false;
-      if (s.all) { for (const x of alive()) { ds.push(dmgTo(x, power, s.pierce, s.crit)); crit = crit || B.lastCrit; } }   // 全体に当たる
+      if (s.all) { for (const x of alive()) { hitAt(0, x); ds.push(dmgTo(x, power, s.pierce, s.crit)); crit = crit || B.lastCrit; } }   // 全体に当たる
       else for (let i = 0; i < (s.hits || 1) + (s.twice && R() < s.twice ? 1 : 0); i++) {
         const tg = s.spread && i > 0 && alive().length ? pick(alive()) : m.hp > 0 ? m : alive()[0];   // 連続攻撃は、ほかの敵にも散る
-        if (!tg) break; ds.push(dmgTo(tg, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (allDead()) break;
+        if (!tg) break; hitAt(i, tg); ds.push(dmgTo(tg, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (allDead()) break;
       }
+      B.hitDelay = 0;
       let t = `${s.name}！ ${B.ms.length > 1 && !s.all && !s.spread ? m.name + 'に' : ''}${ds.join('と')}のダメージ。${crit ? '会心！' : ''}`;
       if (s.break) { B.broken += s.break; t += '守りが崩れた。'; }
       if (s.self) { const c = Math.ceil(G.mhp * s.self); G.hp = Math.max(1, G.hp - c); t += `HPを${c}削った。`; }
@@ -1740,6 +1749,63 @@ const SKILL_FX = {
   hone:['power'], bunshin:['bunshin'], steal:['sparkle'],
 };
 const WEAPON_FX = { sword:'slash_h', katana:'iai', axe:'impact_heavy', greatsword:'slash_v', hammer:'impact_heavy', dagger:'thrust', bow:'arrow', book:'magic_arrow', staff:'impact' };
+// ---------- 技の見せ方（2026-11-24）: 技のイメージに合わせて、絵・コードの光・音を1回ずつ重ねる ----------
+const shakeAt = (dl, n) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n); }, dl);
+// 画面を暗くする（ためる・闇）
+function fxDark(dl, dur, al, c) { codeFx(dl, dur, k => { ctx.globalAlpha = (k < .25 ? k / .25 : 1 - (k - .25) / .75) * al; ctx.fillStyle = c || '#05030a'; ctx.fillRect(0, 0, VW, VH); }); }
+// 横一閃の光（居合）
+function fxBeam(dl, c) {
+  const y = VH * .5;
+  codeFx(dl, 380, k => { const w = k < .2 ? k / .2 : 1, a = k < .3 ? 1 : 1 - (k - .3) / .7; ctx.globalCompositeOperation = 'lighter';
+    for (const [h, al, col] of [[18, .25, c], [7, .6, c], [2.5, 1, '#ffffff']]) { ctx.globalAlpha = a * al; ctx.fillStyle = col; ctx.fillRect(VW / 2 - VW * w / 2, y - h / 2 * (1 - k * .5), VW * w, h * (1 - k * .5)); } });
+}
+// 狙いの照準が絞られていく（弓）
+function fxReticle(dl, dur, c) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .5;
+  codeFx(dl, dur, k => { const r = VH * (.32 - .22 * easeOut(Math.min(1, k / .8))), a = k < .85 ? 1 : 1 - (k - .85) / .15; ctx.globalAlpha = a * .9; ctx.strokeStyle = c; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.stroke(); for (let i = 0; i < 4; i++) { const an = i * Math.PI / 2 + k; ctx.beginPath(); ctx.moveTo(x + Math.cos(an) * r * .6, y + Math.sin(an) * r * .6); ctx.lineTo(x + Math.cos(an) * r * 1.25, y + Math.sin(an) * r * 1.25); ctx.stroke(); }
+    ctx.fillStyle = c; ctx.fillRect(x - 1, y - 1, 2, 2); });
+}
+// 集中線（踏み込む・突く）
+function fxSpeed(dl, dur, c) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .52, seed = R() * 9;
+  codeFx(dl, dur, k => { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * .6; ctx.strokeStyle = c || '#ffffff'; ctx.lineWidth = 1.5;
+    for (let i = 0; i < 22; i++) { const an = seed + i * 2.399, r1 = VH * (.75 - .45 * k) * (0.7 + (i % 3) * .15), r2 = r1 + VH * .25; ctx.beginPath(); ctx.moveTo(x + Math.cos(an) * r1, y + Math.sin(an) * r1); ctx.lineTo(x + Math.cos(an) * r2, y + Math.sin(an) * r2); ctx.stroke(); } });
+}
+// 影の針（影縫い）
+function fxPins(dl, c) {
+  const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .82;
+  codeFx(dl, 600, k => { const e = easeOut(Math.min(1, k / .3)), a = k < .6 ? 1 : 1 - (k - .6) / .4; ctx.globalAlpha = a; ctx.strokeStyle = c; ctx.lineWidth = 2;
+    for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(x + i * 14, y - 40 * e); ctx.lineTo(x + i * 14, y); ctx.stroke(); } ctx.globalAlpha = a * .5; ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(x, y, 46, 8, 0, 0, 7); ctx.fill(); });
+}
+const WHITE = '#ffffff';
+// pre: 技の始まり（ため・照準など） wait: 1回目までの待ち gap: 2回目からの間隔 at: 絵が出てから当たるまで len: 技の長さ（次の行動を待つ）
+const SKILL_SHOW = {
+  double:   { gap: 300, at: 60, len: 250, hit: (i, dl) => { playFx('slash_h', { delay: dl, rot: i ? .55 : -.55, size: 1.05 }); fxArc(dl, WHITE, 3, i ? .6 + Math.PI : -.6); fxSparks(dl + 50, WHITE, 8); shakeAt(dl + 50, 4); } },
+  lunge:    { pre: () => fxSpeed(0, 260), wait: 160, at: 80, len: 150, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.1 }); fxRing(dl + 80, WHITE, .22, 3); shakeAt(dl + 80, 4); } },
+  iai:      { pre: () => { fxDark(0, 700, .55); sfx('swing', { vol: .5 }); }, wait: 380, at: 40, len: 450, hit: (i, dl) => { fxBeam(dl, '#cfe3ff'); playFx('iai', { delay: dl, rot: 0, size: 1.4 }); fxSparks(dl + 40, WHITE, 18); fxTint(dl + 30, WHITE, .3); shakeAt(dl + 40, 9); } },
+  tsubame:  { gap: 260, at: 60, len: 300, hit: (i, dl) => { playFx(i ? 'tsubame' : 'slash_v', { delay: dl, rot: i ? Math.PI + .3 : .3, size: 1.2 }); fxArc(dl, '#cfe3ff', 4, i ? -Math.PI / 2 - .4 : Math.PI / 2 - .4); fxSparks(dl + 60, WHITE, 10); shakeAt(dl + 60, 6); } },
+  frenzy:   { gap: 150, at: 40, len: 450, hit: (i, dl) => { const r = (R() - .5) * 2.4; playFx('slash_h', { delay: dl, rot: r, size: .85 }); fxArc(dl, '#ffd0a0', 2, r * 1.5, VH * (.22 + R() * .12)); shakeAt(dl + 40, 3); } },
+  flurry:   { gap: 140, at: 30, len: 400, hit: (i, dl) => { playFx('impact', { delay: dl, size: .6, x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 40, y: VH * (.42 + R() * .18) }); fxRing(dl, WHITE, .12, 2); shakeAt(dl + 30, 3); } },
+  punch:    { at: 60, len: 100, hit: (i, dl) => { fxSpeed(dl, 200); playFx('impact', { delay: dl + 60, size: 1 }); fxRays(dl + 60, WHITE, 8, .35); shakeAt(dl + 60, 5); } },
+  volley:   { gap: 150, at: 260, len: 500, hit: (i, dl) => { playFx('arrow', { delay: dl, size: .8 }); fxSparks(dl + 260, '#ffe0a0', 5); } },
+  aim:      { pre: () => fxReticle(0, 380, '#ffe08a'), wait: 300, at: 260, len: 450, hit: (i, dl) => { playFx('arrow', { delay: dl, size: .95 }); fxRing(dl + 260, '#ffe08a', .2, 3); shakeAt(dl + 260, 4); } },
+  snipe:    { pre: () => fxReticle(0, 520, '#ff7a5c'), wait: 420, at: 260, len: 550, hit: (i, dl) => { fxDark(0, 600, .35); playFx('arrow', { delay: dl, size: 1.1 }); fxRays(dl + 260, '#ff7a5c', 10, .45); shakeAt(dl + 260, 6); } },
+  stab:     { at: 120, len: 100, hit: (i, dl) => { fxSpeed(dl, 180, '#ffcfcf'); playFx('thrust', { delay: dl, size: .9 }); fxSparks(dl + 120, '#ff9a8a', 8); shakeAt(dl + 120, 4); } },
+  assassin: { pre: () => { fxDark(0, 800, .6); playFx('dark_mist', { size: .7 }); }, wait: 360, at: 80, len: 500, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.2 }); fxTint(dl + 80, '#ff2030', .35); fxRays(dl + 80, '#ff5060', 12, .5); shakeAt(dl + 80, 8); } },
+  kagenui:  { at: 120, len: 400, hit: (i, dl) => { playFx('dark_mist', { delay: dl, size: .8 }); playFx('thrust', { delay: dl + 80, size: .9 }); fxPins(dl + 160, '#8a5cff'); shakeAt(dl + 120, 4); } },
+  smash:    { at: 90, len: 150, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.2 }); playFx('rocks', { delay: dl + 60, size: .7, parts: 16 }); fxRing(dl + 60, '#d9b07a', .34, 5); shakeAt(dl + 90, 9); } },
+  rage:     { pre: () => fxTint(0, '#ff2010', .35), wait: 120, at: 90, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.45 }); fxRays(dl + 60, '#ff5030', 12, .6); fxRing(dl + 60, '#ff7050', .42, 6); shakeAt(dl + 90, 12); } },
+  heavyslash:{ at: 150, len: 250, hit: (i, dl) => { playFx('slash_v', { delay: dl, rot: 0, size: 1.45, slow: 1.2 }); fxArc(dl, WHITE, 5, Math.PI / 2 - 1.1 + .55); playFx('impact_heavy', { delay: dl + 140, size: .85 }); fxRing(dl + 150, WHITE, .36, 5); shakeAt(dl + 150, 10); } },
+  cleave:   { pre: () => { const k = FX_AT; FX_AT = null; fxArc(0, '#ffd8a0', 6, Math.PI / 2 - .2, VH * .55); playFx('slash_h', { size: 1.7, rot: 0, x: VW / 2 }); FX_AT = k; }, wait: 160, at: 40, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: .75, parts: 6 }); shakeAt(dl + 40, 9); } },
+  plunder:  { at: 100, len: 200, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.1 }); fxSparks(dl + 80, '#ffd24a', 20); playFx('sparkle', { delay: dl + 160, size: .6 }); shakeAt(dl + 100, 7); } },
+  shieldbash:{ at: 80, len: 150, hit: (i, dl) => { fxSpeed(dl, 160); playFx('impact', { delay: dl + 60, size: 1.1 }); fxRing(dl + 80, '#cfe3ff', .3, 5); playFx('barrier', { delay: dl + 60, size: .5, self: false }); shakeAt(dl + 80, 6); } },
+  monkstrike:{ at: 80, len: 300, hit: (i, dl) => { playFx('impact', { delay: dl, size: 1 }); fxRays(dl + 60, '#ffe9a0', 10, .45); playFx('heal', { delay: dl + 240, self: true, size: .8 }); shakeAt(dl + 80, 5); } },
+  magicblade:{ at: 100, len: 250, hit: (i, dl) => { playFx('slash_x', { delay: dl, size: 1.1 }); fxArc(dl, '#ff9a4a', 4, -.6); playFx('fire_s', { delay: dl + 120, size: .8 }); fxSparks(dl + 120, '#ffb060', 14); shakeAt(dl + 100, 6); } },
+  darkblade:{ pre: () => fxDark(0, 700, .5, '#12001a'), wait: 200, at: 120, len: 400, hit: (i, dl) => { playFx('dark_blade', { delay: dl, size: 1.3 }); fxArc(dl, '#b45cff', 5, .6 + Math.PI); playFx('dark_mist', { delay: dl + 140, size: 1 }); fxRing(dl + 140, '#b45cff', .4, 5); shakeAt(dl + 120, 9); } },
+  bomb:     { pre: () => fxTint(160, '#ff9030', .3), wait: 120, at: 60, len: 300, hit: (i, dl) => { playFx('explosion', { delay: dl, size: 1.05 }); playFx('rocks', { delay: dl + 80, size: .6, parts: 12 }); shakeAt(dl + 60, 11); } },
+  arcanearrow:{ pre: () => playFx('magic_circle', { y: VH * .78, size: .6, parts: 8 }), wait: 200, gap: 220, at: 260, len: 450, hit: (i, dl) => { playFx('magic_arrow', { delay: dl, size: .9 }); fxRing(dl + 260, '#c08cff', .2, 3); } },
+};
 // ---------- 武器の強さで足すエフェクト（コードで描く） ----------
 // 段階: 銅・骨・魔石=1、鉄=2、銀=3、ミスリル=4、オリハルコン・竜=5。金床の+2ごとに1段上がる
 const W_COLOR = { copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
@@ -1832,7 +1898,7 @@ function drawMonsterImg(m, t, i) {
   sy = 1 + Math.sin(t / 420) * .015; sx = 1 - Math.sin(t / 420) * .008;
   if (A.kind === 'attack' && dt < 480) { pose = 'attack'; const k = Math.sin(Math.min(1, dt / 480) * Math.PI); sx *= 1 + k * .14; sy *= 1 + k * .14; oy = k * 10; }
   if (A.kind === 'hit' && dt < 360) { pose = 'hit'; const k = 1 - dt / 360; ox = Math.sin(dt / 25) * 5 * k; oy = -4 * k; white = dt < 90 ? .75 : 0; }
-  if (m.dying) { const d = Math.min(1, (t - m.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
+  if (m.dying && t >= m.dying) { const d = Math.min(1, (t - m.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
   const img = (monImg(m, pose) && monImg(m, pose).complete && monImg(m, pose).naturalWidth ? monImg(m, pose) : null) || monImg(m, 'idle');
   const H = VH * (m.size || .7) * sc, W = H * img.width / img.height, cx = VW * px + ox, by = VH * (.93 + dy) + oy; m.cx = VW * px; m.top = by - H;
   ctx.save(); ctx.globalAlpha = alpha;
