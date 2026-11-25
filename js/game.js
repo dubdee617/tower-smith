@@ -571,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 85'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 86'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -668,10 +668,12 @@ function talkTo(who, back) {
   if (st) { const now = talkStage(), order = ['clear'].concat(TALK_STAGES.slice().reverse()).filter(k => k === now || (now === 'clear' ? true : k !== 'clear' && k <= now));
     for (const k of order) { const L = st[k] || []; const j = L.findIndex((_, n) => !used.includes(k + '-' + n)); if (j >= 0) { stKey = k + '-' + j; stT = L[j]; break; } } }
   const close = (G.seen || {})[who] && TALKS_CLOSE[who], key = close ? who + '_close' : who;
-  const list = close || TALKS[who], i = (G.talkIdx[key] || 0) % list.length, T = stT || list[i];
+  // 親密度ごとの話（まだ聞いていないもの優先。全部聞いたら、前からの会話と交互に）
+  let tr = null; if (!stT && typeof TALKS_TIER !== 'undefined' && TALKS_TIER[who]) { const P = TALKS_TIER[who][affTier(who)], fresh = P.some((_, n) => !used.includes(`${affTier(who)}-${n}`)); if (fresh || R() < .5) tr = tierTalk(who); }
+  const list = close || TALKS[who], i = (G.talkIdx[key] || 0) % list.length, T = stT || (tr && tr.T) || list[i];
   log(T.q, true);
   buttons(T.a.map(([ans, pt, reply]) => ({ t: ans, f: () => {
-    const before = G.aff[who] || 0, capped = affAdd(who, pt); if (stKey) used.push(stKey); else G.talkIdx[key] = i + 1; G.talkRun[who] = G.runs; save();
+    const before = G.aff[who] || 0, capped = affAdd(who, pt); if (stKey) used.push(stKey); else if (tr) { G.talkUsed[who].push(tr.key); (G.tierLast = G.tierLast || {})[who] = tr.key; } else G.talkIdx[key] = i + 1; G.talkRun[who] = G.runs; save();
     log(reply + (capped ? `\n（……今はまだ、これ以上は近づけない気がする。${affNext()}階まで登れば、何か変わるだろうか）` : ''), true);
     const done = () => buttons([{ t: '戻る', hot: true, f: back }]);
     if (before < AFF_NEED && G.aff[who] >= AFF_NEED) { buttons([{ t: '……', hot: true, f: () => { affEvent(who); buttons([{ t: '……！', hot: true, f: () => { log(`親密度の特典: ${AFF_PERKS[who]}`, true); done(); } }]); } }]); return; }

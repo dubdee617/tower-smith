@@ -291,7 +291,7 @@ function runSeq(L, i, end, setup) {
   if (P.music !== undefined) SND.scene = P.music;
   if (P.clear) clearFig();
   if (P.fig) npcFig(P.fig);
-  if (P.ev) { const t = $('town'); let pe = t.querySelector('.portrait.ev'); if (!pe) { pe = document.createElement('div'); pe.className = 'portrait npc ev'; pe.innerHTML = '<img alt="">'; t.appendChild(pe); } pe.querySelector('img').src = `assets/event/${P.ev}.webp`; }
+  if (P.ev) { const t = $('town'); let pe = t.querySelector('.portrait.ev'); if (!pe) { pe = document.createElement('div'); pe.className = 'portrait npc ev'; pe.innerHTML = '<img alt="">'; t.appendChild(pe); } pe.querySelector('img').src = `assets/event/${P.ev}.webp`; pe.classList.toggle('wide', /^end_/.test(P.ev)); }
   if (P.night) { const im = $('town').querySelector('img'); if (im) { im.style.transition = 'filter 1.2s'; im.style.filter = 'brightness(.38) saturate(.6) hue-rotate(195deg)'; } }
   if (P.sfx) sfx(P.sfx, { vol: .6, max: 2 });
   if (P.hero) say(P.hero, P.t, true); else log(P.t, true);
@@ -402,8 +402,8 @@ const ENDING_LOVE = {
     yes: [
       { hero: 'smile', t: '「店と工房の間の壁、ぶち抜かないか。\n……これからも、ずっと隣にいてくれ。ジェニー」' },
       { ev: 'jenny_love_2', t: 'ジェニー[shock]「……は？」' },
-      { ev: 'jenny_love_3', t: 'ジェニー[inlove]「……ばか。……遅いのよ。\nずっと、ずっと待ってたんだから。……うん。隣にいる」' },
-      { t: 'こうして、町の武具屋と鍛冶屋は、ひとつの店になった。\n看板には『鍛冶と武具の店』と、ふたりの名前が並んでいる。' },
+      { ev: 'end_jenny', t: 'ジェニー[inlove]「……ばか。……遅いのよ。\nずっと、ずっと待ってたんだから。……うん。隣にいる」' },
+      { ev: 'end_jenny', t: 'こうして、町の武具屋と鍛冶屋は、ひとつの店になった。\n看板には『鍛冶と武具の店』と、ふたりの名前が並んでいる。' },
     ],
     no: [
       { hero: 'smile', t: '「これからも、俺の打った剣を、お前の店に置いてくれ」' },
@@ -420,8 +420,8 @@ const ENDING_LOVE = {
     yes: [
       { hero: 'calm', t: '小さな銀の指輪を、手のひらにのせて差し出した。\n「花の日を、これから毎日にしよう。……ここに、帰ってくる」' },
       { ev: 'ellie_b_2', t: 'エリー[shock]「……え。……これ、って……」' },
-      { ev: 'ellie_b_3', t: 'エリー[happy]「……はい。……はいっ。\n……もう、泣くのは帰ってきてからって、決めてたのに」' },
-      { t: 'カレンダーは、その日から、花の絵でいっぱいになった。' },
+      { ev: 'end_elly', t: 'エリー[happy]「……はい。……はいっ。\n……もう、泣くのは帰ってきてからって、決めてたのに」' },
+      { ev: 'end_elly', t: 'カレンダーは、その日から、花の絵でいっぱいになった。' },
     ],
     no: [
       { hero: 'smile', t: '「いつもの薬を、もらいに来た。……それと、顔を見に」' },
@@ -439,8 +439,8 @@ const ENDING_LOVE = {
     yes: [
       { hero: 'calm', t: '「……ペン、借りていいか」\nその下に、太い字で書き足した。『俺もだ』' },
       { ev: 'ria_b_3', t: 'リア[happy]「……っ。……字、汚いです。\n……でも、いちばん好きな記録です」' },
-      { hero: 'smile', t: '「続きは、新しい帳面に書こう。……ふたりで」' },
-      { t: 'ギルドの記録棚には、それから一冊ずつ、ふたりの帳面が増えていった。' },
+      { ev: 'end_ria', hero: 'smile', t: '「続きは、新しい帳面に書こう。……ふたりで」' },
+      { ev: 'end_ria', t: 'ギルドの記録棚には、それから一冊ずつ、ふたりの帳面が増えていった。' },
     ],
     no: [
       { hero: 'calm', t: '「……いい記録だな。大事にしてくれ」' },
@@ -458,8 +458,8 @@ const ENDING_LOVE = {
       { hero: 'calm', t: '手のひらにのせたのは、真新しい鍵だった。\n「窓じゃなくて、玄関から入ってこい。……ここを、お前の帰る場所にしてくれ」' },
       { ev: 'fuuka_b_2', t: 'フウカ[shy]「……工房の、鍵ですか。……忍びの務めは、続けます。それでも、よろしいのですか」' },
       { hero: 'smile', t: '「ああ。お前はお前のままでいい」' },
-      { ev: 'fuuka_b_4', t: 'フウカ[love]「……はい。……ただいま、と言ってもよろしいですか」\n「ああ。おかえり」' },
-      { t: 'その夜から、工房の炉の前に、椅子がひとつ増えた。\n任務のない夜、フウカはそこで、静かに火を見ている。' },
+      { ev: 'end_fuuka', t: 'フウカ[love]「……はい。……ただいま、と言ってもよろしいですか」\n「ああ。おかえり」' },
+      { ev: 'end_fuuka', t: 'その夜から、工房の炉の前に、椅子がひとつ増えた。\n任務のない夜、フウカはそこで、静かに火を見ている。' },
     ],
     no: [
       { hero: 'smile', t: '「今夜も、頼む」' },
