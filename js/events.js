@@ -634,7 +634,7 @@ function homeCall() {
 // 3. 90階に着いたあと、塔に入ろうとすると、塔の門でジェニーが待っている
 const JENNY_STORY = {
   s1: [
-    { bg: 'weapon_in.jpg', fig: 'weapon', t: '武具屋に入ると、ジェニーが店の奥から、一本の剣を出してきた。' },
+    { bg: 'weapon_in.jpg', ev: 'jenny_story_1', t: '武具屋に入ると、ジェニーが店の奥から、一本の剣を出してきた。' },
     { t: 'ジェニー「10階の主を倒した剣、見せて。……ふうん。いい刃ね。あんたらしい」' },
     { t: 'ジェニー「ねえ、覚えてる？ あんたが初めて、うちの店に剣を持ってきた日のこと」' },
     { t: 'ジェニー[laugh]「父さんがまだ店にいて、私はカウンターの下から、こっそり見てたの。\nあんた、緊張して、ずっと黙ってた」', ch: [
@@ -645,27 +645,27 @@ const JENNY_STORY = {
     { t: 'ジェニー「……10階なんて、あの頃のあんたからは想像もつかないわね。\nほら、刃こぼれしてる。研いでから行きなさいよ」' },
   ],
   s2: [
-    { bg: 'weapon_in.jpg', fig: 'weapon', t: '武具屋は、いつもより静かだった。\nジェニーがカウンターに肘をついて、窓の外の塔を見ていた。' },
+    { bg: 'weapon_in.jpg', night: true, ev: 'jenny_story_2', t: '武具屋は、いつもより静かだった。\nジェニーがカウンターに肘をついて、窓の外の塔を見ていた。' },
     { t: 'ジェニー「……お城に呼ばれたんですって。王様に。……すごいじゃない」' },
-    { fig: 'weapon_worried', t: 'ジェニー[worried]「……ねえ。なんかね、あんたが、どんどん遠くへ行っちゃう気がするの」' },
+    { ev: 'jenny_story_2', t: 'ジェニー[worried]「……ねえ。なんかね、あんたが、どんどん遠くへ行っちゃう気がするの」' },
     { t: 'ジェニー[worried]「前は、通りをはさんで、毎日顔を見てた。\n今は、塔の上の、私の知らない場所にいる」', ch: [
       ['「どこにも行かない。工房はここだ」', 'ジェニー[shy]「……うん。わかってる。……わかってるけど、聞きたかったの」'],
       ['「お前の店があるから、帰ってくる」', 'ジェニー[shy]「……な、何よそれ。……ずるい言い方」'],
       ['黙って隣に立つ', 'ジェニー[smile]「……ありがと。何も言わないの、あんたらしいわ」'],
     ] },
-    { fig: 'weapon', t: 'ジェニー[angry]「……な、なんでもない！ 今の、忘れなさい！\nほら、王様に会うんでしょ。その格好じゃだめ。ちゃんとした服、選んであげる」' },
+    { ev: '', fig: 'weapon', t: 'ジェニー[angry]「……な、なんでもない！ 今の、忘れなさい！\nほら、王様に会うんでしょ。その格好じゃだめ。ちゃんとした服、選んであげる」' },
   ],
   s3: [
     { bg: 'tower.jpg', aspect: 941 / 1672, t: '塔の門の前に、見慣れた姿が立っていた。\n……ジェニーだ。' },
-    { fig: 'weapon', t: 'ジェニー「……やっぱり来た。今日から、いちばん上を目指すんでしょ」' },
+    { ev: 'jenny_story_3', t: 'ジェニー「……やっぱり来た。今日から、いちばん上を目指すんでしょ」' },
     { t: 'ジェニー「店、閉めてきちゃった。……見送りくらい、させなさいよ」' },
-    { fig: 'weapon_worried', t: 'ジェニー[worried]「……ねえ。私、ずっと言えなかったことがあるの。\n……でも、今は言わない。帰ってきてから言う」' },
+    { ev: 'jenny_story_3', t: 'ジェニー[worried]「……ねえ。私、ずっと言えなかったことがあるの。\n……でも、今は言わない。帰ってきてから言う」' },
     { t: 'ジェニー[worried]「だから、ちゃんと帰ってきなさいよ。……約束して」', ch: [
       ['「約束する」', 'ジェニー[smile]「……うん。破ったら、一生許さないから」'],
       ['「今、言ってもいいんだぞ」', 'ジェニー[shy]「……だめ。言ったら、あんたが帰ってこない気がするもの」'],
       ['「帰ったら、聞かせてくれ」', 'ジェニー[shy]「……うん。覚悟しておきなさいよね」'],
     ] },
-    { fig: 'weapon', t: 'ジェニー[laugh]「……行ってらっしゃい。あんたの剣は、いつだって最高よ」' },
+    { ev: 'jenny_story_3', t: 'ジェニー[laugh]「……行ってらっしゃい。あんたの剣は、いつだって最高よ」' },
   ],
 };
 function jennyStoryKey() {
@@ -682,6 +682,9 @@ function jennySeq(key, done) {
     if (i >= L.length) { clearFig(); done(); return; }
     const P = L[i++];
     if (P.bg) { mode = 'town'; showTown(true, P.aspect || 4 / 3); const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${P.bg}" alt="">`; }
+    if (P.night) { const im = $('town').querySelector('img'); if (im) im.style.filter = 'brightness(.45) saturate(.7) hue-rotate(200deg)'; }
+    if (P.ev === '') { const pe = $('town').querySelector('.portrait.ev'); if (pe) pe.remove(); }
+    if (P.ev) { clearFig(); const t = $('town'); let pe = t.querySelector('.portrait.ev'); if (!pe) { pe = document.createElement('div'); pe.className = 'portrait npc ev'; pe.innerHTML = '<img alt="">'; t.appendChild(pe); } pe.querySelector('img').src = `assets/event/${P.ev}.webp`; }
     if (P.fig) npcFig(P.fig);
     log(P.t, true);
     if (P.ch) { buttons(P.ch.map(([a, r]) => ({ t: a, f: () => { affAdd('jenny', 1); log(r, true); buttons([{ t: '次へ', hot: true, f: step }]); } })), 'three'); return; }
