@@ -68,7 +68,7 @@ const ONE_HAND_NEED = 15; // 両手武器をこの熟練度まで使い込むと
 // 基本職: 持っている武器（右手）で決まる
 // 上級職: 「持っている武器」＋「過去に使い込んだ別の武器の熟練度」で進化する（順番で別のジョブになる）
 // 熟練度: その武器を持って戦闘に勝つと1上がる
-const UPPER_NEED = { hold: 10, exp: 10 }; // 上級職の条件（仮）: 持つ武器の熟練10、経験する武器の熟練10
+const UPPER_NEED = { hold: 30, exp: 30 };  // 2026-11-25: 10→30（すぐ上級職になれすぎた） // 上級職の条件（仮）: 持つ武器の熟練10、経験する武器の熟練10
 const UPPERS = [
   { job:'魔法剣士', hold:'sword',      exp:'book'   },
   { job:'賢者',     hold:'book',       exp:'staff'  },
@@ -86,38 +86,38 @@ const UPPERS = [
 // 最上級職: 70階より上が目安。条件はまだ決めていない（一覧には？？？で出る）
 // 2026-11-24 条件を決めた: 持つ武器の熟練30＋上級職での勝利数。鍛冶師範は、上級職3つ以上で10勝ずつ
 const TOPS = [
-  { job:'剣聖',     hold:'sword',  prof:30, wins:{ '剣豪':20, '魔法剣士':10 }, hint:'剣の熟練30、剣豪で20勝、魔法剣士で10勝' },
-  { job:'大魔導',   hold:'book',   prof:30, wins:{ '賢者':20, '魔弓士':10 },   hint:'魔導書の熟練30、賢者で20勝、魔弓士で10勝' },
-  { job:'鍛冶師範', hold:'hammer', prof:30, uppers:3,                          hint:'槌の熟練30、上級職3つ以上でそれぞれ10勝' },  // 鍛冶屋を極めた先
+  { job:'剣聖',     hold:'sword',  prof:80, wins:{ '剣豪':60, '魔法剣士':30 }, hint:'剣の熟練80、剣豪で60勝、魔法剣士で30勝' },
+  { job:'大魔導',   hold:'book',   prof:80, wins:{ '賢者':60, '魔弓士':30 },   hint:'魔導書の熟練80、賢者で60勝、魔弓士で30勝' },
+  { job:'鍛冶師範', hold:'hammer', prof:80, uppers:3,                          hint:'槌の熟練80、上級職3つ以上でそれぞれ30勝' },  // 鍛冶屋を極めた先
 ];
 // grow: レベルアップ時の伸び方。learn: そのジョブで勝った回数で覚える技（[回数, 技]）。覚えた技はずっと使える
 // img: 立ち絵（assets/jobs/job_○○.webp）
 const JOBS = {
-  '鍛冶屋':     { img:'smith',     grow:{hp:6, atk:1, def:2}, learn:[[0,'smash'],[3,'hone'],[6,'p_keep'],[10,'p_loot']] },
-  '剣士':       { img:'swordsman', grow:{hp:7, atk:2, def:1}, learn:[[0,'double'],[3,'lunge'],[7,'p_atk']] },
-  '魔導士':     { img:'wizard',    grow:{hp:4, atk:1, def:0}, learn:[[0,'fire'],[3,'ice'],[6,'bolt'],[8,'dark1'],[10,'p_ap']] },
-  '僧侶':       { img:'cleric',    grow:{hp:6, atk:1, def:1}, learn:[[0,'heal'],[3,'holy'],[6,'p_regen'],[9,'p_herb']] },
-  '盗賊':       { img:'thief',     grow:{hp:5, atk:1, def:1}, learn:[[0,'steal'],[3,'stab'],[6,'p_steal'],[9,'p_loot']] },
-  '山賊':       { img:'bandit',    grow:{hp:9, atk:3, def:0}, learn:[[0,'rage'],[3,'cleave'],[7,'p_hp']] },
-  '侍':         { img:'samurai',   grow:{hp:6, atk:3, def:0}, learn:[[0,'iai'],[3,'mikiri'],[7,'p_crit']] },
-  '騎士':       { img:'knight',    grow:{hp:8, atk:2, def:2}, learn:[[0,'heavyslash'],[3,'wall'],[7,'p_def']] },
-  'アーチャー': { img:'archer',    grow:{hp:5, atk:2, def:1}, learn:[[0,'aim'],[3,'volley'],[7,'p_first']] },
-  '魔法剣士':   { img:'spellsword', grow:{hp:6, atk:2, def:1}, learn:[[0,'magicblade'],[3,'bolt2'],[5,'p_ap'],[15,'bolt3']] },
-  '賢者':       { img:'sage', grow:{hp:5, atk:2, def:1}, learn:[[0,'sagefire'],[2,'fire2'],[4,'ice2'],[5,'p_regen'],[6,'holy2'],[15,'fire3'],[18,'holy3']] },
-  '僧兵':       { img:'monk', grow:{hp:8, atk:2, def:2}, learn:[[0,'monkstrike'],[5,'p_def']] },
-  '狩人':       { img:'hunter', grow:{hp:6, atk:2, def:1}, learn:[[0,'snipe'],[5,'p_loot']] },
-  '魔弓士':     { img:'magearcher', grow:{hp:5, atk:3, def:0}, learn:[[0,'arcanearrow'],[3,'ice2'],[5,'p_focus'],[15,'ice3']] },
-  '略奪者':     { img:'marauder', grow:{hp:9, atk:3, def:0}, learn:[[0,'plunder'],[3,'bomb'],[5,'p_steal']] },
-  '狂戦士':     { img:'berserker', grow:{hp:10,atk:4, def:0}, learn:[[0,'frenzy'],[5,'p_carry']] },
-  '聖騎士':     { img:'paladin', grow:{hp:9, atk:2, def:3}, learn:[[0,'holyguard'],[3,'holy2'],[5,'p_guard'],[16,'holy3']] },
-  '黒騎士':     { img:'blackknight', grow:{hp:8, atk:4, def:1}, learn:[[0,'darkblade'],[3,'dark2'],[5,'p_atk'],[15,'dark3']] },
-  '剣豪':       { img:'kengo', grow:{hp:7, atk:4, def:0}, learn:[[0,'tsubame'],[5,'p_focus']] },
-  '忍者':       { img:'ninja',     grow:{hp:6, atk:2, def:1}, learn:[[0,'bunshin'],[3,'kagenui'],[6,'p_first']] },
-  'アサシン':   { img:'assassin', grow:{hp:5, atk:3, def:0}, learn:[[0,'assassin'],[5,'p_crit']] },
-  '剣聖':       { img:'kensei',      grow:{hp:9, atk:5, def:2}, learn:[[0,'kensei'],[5,'p_crit'],[12,'senken']] },
-  '大魔導':     { img:'archmage',    grow:{hp:7, atk:5, def:1}, learn:[[0,'fire3'],[0,'ice3'],[0,'bolt3'],[0,'dark3']] },
-  '鍛冶師範':   { img:'mastersmith', grow:{hp:10,atk:5, def:3}, learn:[[0,'temper'],[5,'masterstrike'],[10,'p_keep']] },
-  '素手':       { grow:{hp:6, atk:1, def:1}, learn:[[0,'punch'],[5,'flurry']] },  // 何も持たないと覚える（2026-11-25）
+  '鍛冶屋':     { img:'smith',     grow:{hp:6, atk:1, def:2}, learn:[[0,'smash'],[10,'hone'],[15,'p_keep'],[25,'mine'],[35,'p_loot'],[45,'tettsui']] },
+  '剣士':       { img:'swordsman', grow:{hp:7, atk:2, def:1}, learn:[[0,'double'],[10,'lunge'],[20,'p_atk'],[25,'nagi'],[45,'kabuto']] },
+  '魔導士':     { img:'wizard',    grow:{hp:4, atk:1, def:0}, learn:[[0,'fire'],[10,'ice'],[25,'bolt'],[35,'p_ap'],[45,'dark1'],[55,'nemuri'],[70,'maryoku']] },
+  '僧侶':       { img:'cleric',    grow:{hp:6, atk:1, def:1}, learn:[[0,'heal'],[10,'holy'],[20,'p_regen'],[30,'hikari'],[45,'p_herb'],[60,'ooinori']] },
+  '盗賊':       { img:'thief',     grow:{hp:5, atk:1, def:1}, learn:[[0,'steal'],[10,'stab'],[20,'p_steal'],[25,'nigeashi'],[40,'p_loot'],[50,'bundoru']] },
+  '山賊':       { img:'bandit',    grow:{hp:9, atk:3, def:0}, learn:[[0,'rage'],[10,'cleave'],[25,'makiwari'],[35,'p_hp'],[50,'ikari']] },
+  '侍':         { img:'samurai',   grow:{hp:6, atk:3, def:0}, learn:[[0,'iai'],[10,'mikiri'],[25,'zantetsu'],[35,'p_crit'],[60,'munen']] },
+  '騎士':       { img:'knight',    grow:{hp:8, atk:2, def:2}, learn:[[0,'heavyslash'],[10,'wall'],[25,'juji'],[35,'p_def'],[55,'fudou']] },
+  'アーチャー': { img:'archer',    grow:{hp:5, atk:2, def:1}, learn:[[0,'aim'],[10,'volley'],[25,'midare'],[35,'p_first'],[60,'senbon']] },
+  '魔法剣士':   { img:'spellsword', grow:{hp:6, atk:2, def:1}, learn:[[0,'magicblade'],[15,'bolt2'],[35,'p_ap'],[60,'bolt3'],[90,'shigen']] },
+  '賢者':       { img:'sage', grow:{hp:5, atk:2, def:1}, learn:[[0,'sagefire'],[10,'fire2'],[20,'ice2'],[30,'p_regen'],[40,'holy2'],[60,'fire3'],[80,'holy3']] },
+  '僧兵':       { img:'monk', grow:{hp:8, atk:2, def:2}, learn:[[0,'monkstrike'],[20,'kongou'],[40,'p_def']] },
+  '狩人':       { img:'hunter', grow:{hp:6, atk:2, def:1}, learn:[[0,'snipe'],[20,'wana'],[40,'p_loot']] },
+  '魔弓士':     { img:'magearcher', grow:{hp:5, atk:3, def:0}, learn:[[0,'arcanearrow'],[15,'ice2'],[30,'p_focus'],[50,'ryusei'],[70,'ice3']] },
+  '略奪者':     { img:'marauder', grow:{hp:9, atk:3, def:0}, learn:[[0,'plunder'],[15,'bomb'],[30,'p_steal'],[50,'jiware']] },
+  '狂戦士':     { img:'berserker', grow:{hp:10,atk:4, def:0}, learn:[[0,'frenzy'],[20,'daisenpu'],[40,'p_carry']] },
+  '聖騎士':     { img:'paladin', grow:{hp:9, atk:2, def:3}, learn:[[0,'holyguard'],[15,'holy2'],[30,'p_guard'],[50,'seiken'],[80,'holy3']] },
+  '黒騎士':     { img:'blackknight', grow:{hp:8, atk:4, def:1}, learn:[[0,'darkblade'],[15,'dark2'],[30,'p_atk'],[45,'kyuushu'],[70,'dark3']] },
+  '剣豪':       { img:'kengo', grow:{hp:7, atk:4, def:0}, learn:[[0,'tsubame'],[20,'ranbu'],[40,'p_focus']] },
+  '忍者':       { img:'ninja',     grow:{hp:6, atk:2, def:1}, learn:[[0,'bunshin'],[15,'kagenui'],[30,'shuriken'],[45,'p_first']] },
+  'アサシン':   { img:'assassin', grow:{hp:5, atk:3, def:0}, learn:[[0,'assassin'],[20,'noroi'],[40,'p_crit']] },
+  '剣聖':       { img:'kensei',      grow:{hp:9, atk:5, def:2}, learn:[[0,'kensei'],[20,'p_crit'],[50,'senken']] },
+  '大魔導':     { img:'archmage',    grow:{hp:7, atk:5, def:1}, learn:[[0,'fire3'],[0,'ice3'],[0,'bolt3'],[0,'dark3'],[30,'daimahou']] },
+  '鍛冶師範':   { img:'mastersmith', grow:{hp:10,atk:5, def:3}, learn:[[0,'temper'],[20,'masterstrike'],[40,'p_keep']] },
+  '素手':       { grow:{hp:6, atk:1, def:1}, learn:[[0,'punch'],[10,'mawashi'],[25,'flurry'],[40,'kiai'],[60,'hyaku']] },  // 何も持たないと覚える（2026-11-25）
 };
 
 // ---------- 技 ----------
@@ -185,6 +185,40 @@ const SKILLS = {
   masterstrike:{ name:'名工の一撃', ap:3, kind:'atk', mult:4.8, break:3, desc:'武器の芯を知る者の一撃＋守りを大きく崩す' },
   jin1:     { name:'一閃',     ap:3, kind:'atk', mult:4.0, pierce:true, desc:'ジンに教わった奥義。無心から放つ一太刀。守りを無視する' },
   jin2:     { name:'流水',     ap:1, kind:'counter', cut:.1, back:2.2, desc:'ジンに教わった構え。攻撃を流して、倍にして返す' },
+  // 2026-11-25 追加（古い「技一覧」の案から、ひとり旅に合うもの）
+  mine:     { name:'峰打ち',   ap:1, kind:'atk', mult:1.0, mine:true, desc:'この技でとどめを刺すと、戦利品が2倍' },
+  tettsui:  { name:'鉄槌',     ap:2, kind:'atk', mult:2.4, bossx:1.5, desc:'主や番人に1.5倍の重い一撃' },
+  nagi:     { name:'なぎ払い', ap:2, kind:'atk', mult:1.2, all:true, desc:'敵全体を斬る' },
+  kabuto:   { name:'兜割り',   ap:2, kind:'atk', mult:1.8, break:4, desc:'敵の守りを大きく崩す' },
+  nemuri:   { name:'眠りの霧', ap:2, kind:'sleep', stun:.6, desc:'敵全体を眠らせる（主には効きにくい）' },
+  maryoku:  { name:'魔力集中', ap:1, kind:'buff', boost:1.5, desc:'このターンの技が1.5倍' },
+  ooinori:  { name:'大いなる祈り', ap:3, kind:'heal', heal:999, desc:'HPを全回復' },
+  hikari:   { name:'光の守り', ap:1, kind:'guard', cut:.5, heal:10, desc:'守りながら少し回復' },
+  nigeashi: { name:'逃げ足',   ap:1, kind:'flee', sure:true, desc:'必ず逃げられる（主からは逃げられない）' },
+  bundoru:  { name:'ぶんどる', ap:2, kind:'atk', mult:1.4, stealToo:true, desc:'攻撃しながら素材を奪う' },
+  makiwari: { name:'薪割り',   ap:2, kind:'atk', mult:2.0, plantx:2, wood:true, desc:'木や草の魔物に2倍。倒すと丸太が取れる' },
+  ikari:    { name:'怒りの一撃', ap:2, kind:'atk', mult:1.5, rageScale:3, desc:'HPが減っているほど強い（最大4.5倍）' },
+  zantetsu: { name:'斬鉄',     ap:2, kind:'atk', mult:2.6, pierce:true, desc:'硬い敵も斬る。守りを無視' },
+  munen:    { name:'無念無想', ap:4, kind:'atk', mult:5.8, desc:'心を無にした一太刀。APを溜めて撃つ' },
+  juji:     { name:'十字斬り', ap:3, kind:'atk', mult:1.7, hits:2, crit:.2, desc:'十字に斬る2回攻撃' },
+  fudou:    { name:'不動',     ap:2, kind:'guard', cut:0, desc:'このターン、ダメージを受けない' },
+  midare:   { name:'乱れ撃ち', ap:2, kind:'atk', mult:.75, hits:4, spread:true, desc:'4回攻撃' },
+  senbon:   { name:'千本矢',   ap:4, kind:'atk', mult:2.6, all:true, desc:'敵全体に矢の雨。APを溜めて撃つ' },
+  mawashi:  { name:'回し蹴り', ap:2, kind:'atk', mult:1.0, all:true, desc:'敵全体を蹴る' },
+  kiai:     { name:'気合い入れ', ap:1, kind:'buff', boost:1.4, heal:6, desc:'少し回復して、このターンの攻撃1.4倍' },
+  hyaku:    { name:'百烈拳',   ap:3, kind:'atk', mult:.45, hits:7, spread:true, desc:'7回攻撃' },
+  shigen:   { name:'四元の剣', ap:3, kind:'atk', mult:3.0, pierce:true, magic:true, stun:.3, twice:.3, desc:'炎・氷・雷・聖をまとった一撃' },
+  kongou:   { name:'金剛の構え', ap:1, kind:'counter', cut:.3, back:1.6, desc:'受け止めて、強く打ち返す' },
+  wana:     { name:'罠張り',   ap:2, kind:'atk', mult:1.0, stun:.8, desc:'罠にかけて、敵の動きを止める' },
+  ryusei:   { name:'流星の矢', ap:3, kind:'atk', mult:2.2, all:true, pierce:true, magic:true, desc:'敵全体に魔法の矢を降らせる' },
+  jiware:   { name:'地割れ',   ap:3, kind:'atk', mult:1.6, all:true, stun:.3, desc:'敵全体を揺らして、たまに動けなくする' },
+  daisenpu: { name:'大旋風',   ap:3, kind:'atk', mult:2.0, all:true, self:.05, desc:'敵全体を巻き込む回転斬り' },
+  seiken:   { name:'聖剣',     ap:3, kind:'atk', mult:3.0, pierce:true, heal:10, desc:'聖なる一撃。守りを無視して回復' },
+  kyuushu:  { name:'生命吸収', ap:2, kind:'atk', mult:2.2, drain:.5, desc:'与えたダメージの半分、HPを吸う' },
+  ranbu:    { name:'乱舞',     ap:3, kind:'atk', mult:.95, hits:5, crit:.2, spread:true, desc:'5回の舞うような斬撃' },
+  shuriken: { name:'手裏剣',   ap:1, kind:'atk', mult:.6, hits:3, spread:true, desc:'3枚の手裏剣' },
+  noroi:    { name:'呪いの刃', ap:2, kind:'atk', mult:1.8, poisonHit:.4, desc:'呪いで毎ターンダメージ' },
+  daimahou: { name:'大魔法',   ap:4, kind:'atk', mult:7.0, all:true, pierce:true, magic:true, self:.2, desc:'世界を救うはずだった大魔法。撃つと疲れる' },
   flurry:   { name:'連打',     ap:2, kind:'atk', mult:.65, hits:4, desc:'4回攻撃', spread:true },
 };
 

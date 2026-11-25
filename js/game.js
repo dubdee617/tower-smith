@@ -83,7 +83,7 @@ function uppersFor(type) { return UPPERS.filter(u => u.hold === type && upperRea
 function topReady(u) {
   if ((G.prof[u.hold] || 0) < u.prof) return false;
   if (u.wins && Object.entries(u.wins).some(([j, n]) => (G.jobWins[j] || 0) < n)) return false;
-  if (u.uppers && UPPERS.filter(x => (G.jobWins[x.job] || 0) >= 10).length < u.uppers) return false;
+  if (u.uppers && UPPERS.filter(x => (G.jobWins[x.job] || 0) >= 30).length < u.uppers) return false;
   return true;
 }
 function job() {
@@ -135,7 +135,7 @@ function checkLearn(j, quiet) {
   return got;
 }
 checkLearn(job(), true);
-const expNeed = () => Math.floor(10 * Math.pow(G.lv, 1.5));
+const expNeed = () => Math.floor(10 * Math.pow(G.lv, 2));  // 2026-11-25: 1.5乗→2乗（レベルが上がりすぎた）
 const matText = o => Object.entries(o).filter(([, n]) => n > 0).map(([k, n]) => NAMES[k] + n).join(' ') || 'なし';
 function add(o, k, n) { o[k] = (o[k] || 0) + n; if (o === G.carry && n > 0 && mode !== 'town') gotToast(k, n); }
 // ---------- アイテムのアイコン（2026-11-24。assets/icon） ----------
@@ -604,7 +604,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 113'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 114'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2052,6 +2052,7 @@ function mkAfterHit(K, m, total) {
   return t;
 }
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
+const PLANT_RE = /treant|vine|mushroom|tree|cactus|flower|plant|ent|moss|pixie|spore/;  // 薪割りが効く、木や草の魔物
 function doSkill(id) {
   if (B.over) return 'end'; const s = SKILLS[id], m = target();
   const sh = SKILL_SHOW[id]; B.hitDelay = 0;
@@ -2059,10 +2060,11 @@ function doSkill(id) {
   // 振付のない技（魔法など）も、数字と揺れをエフェクトが当たる瞬間に合わせる（大きな魔法は画面が暗くなってから）
   if (!sh && id !== 'attack') { const f = (SKILL_FX[id] || [])[0], n = Array.isArray(f) ? f[0] : f, mv = n && FX_MOVE[n]; B.hitDelay = mv === 'big' ? 380 : mv === 'travel' ? 260 : n ? 120 : 0; }
   if (!sh) magicFlash(id, B.hitDelay);
-  // 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる
+  /* 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる */
   const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; sh.hit(i, dl, tg); FX_AT = null; B.hitDelay = dl + (sh.at || 0); };
   const K = MK(); B.basic = id === 'attack';
-  const power = (atkPower() * (s.mult || 1) * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0)) * (s.magic && K.magic ? K.magic : 1) * (id === 'jin1' && K.issen ? 1.5 : 1);
+  const mult = (s.mult || 1) + (s.rageScale ? s.rageScale * (1 - G.hp / G.mhp) : 0), tgx = (s.bossx && m.boss ? s.bossx : 1) * (s.plantx && PLANT_RE.test(m.id || '') ? s.plantx : 1);
+  const power = (atkPower() * mult * tgx * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0)) * (s.magic && K.magic ? K.magic : 1) * (id === 'jin1' && K.issen ? 1.5 : 1);
   switch (s.kind) {
     case 'atk': {
       if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; m.dying = performance.now(); fx.hit = 1; m.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ ${m.name}の急所を貫いた。`); break; }
@@ -2084,16 +2086,22 @@ function doSkill(id) {
       if (s.guardToo) B.cut = Math.min(B.cut, .5);
       if (s.cutToo) B.cut = Math.min(B.cut, s.cutToo);
       if (B.basic || !s.magic) t += mkAfterHit(K, m, ds.reduce((a, b) => a + b, 0));
+      if (s.mine && m.hp <= 0) { m.mine = true; t += '峰打ちで仕留めた。戦利品が多く取れそうだ。'; }
+      if (s.wood && m.hp <= 0) { add(G.carry, 'log', 2); t += '塔の丸太が2本取れた。'; }
+      if (s.drain) { const h = healMe(Math.ceil(ds.reduce((a, b) => a + b, 0) * s.drain)); if (h) t += `HPを${h}吸った。`; }
+      if (s.poisonHit && m.hp > 0) { m.poison = Math.max(m.poison || 0, Math.round(atkPower() * s.poisonHit)); t += `${m.name}は呪われた。`; }
       if (s.stealToo && m.hp > 0 && R() < (has('p_steal') ? .7 : .4)) { const k = Object.keys(m.drop)[0]; add(G.carry, k, 1); t += `${NAMES[k]}を奪った！`; }
       log(t); break;
     }
     case 'heal': log(`${s.name}。HPが${healMe(s.heal + G.lv * 4)}回復。`); break;
     case 'guard': B.cut = Math.min(B.cut, s.cut * (has('p_guard') ? .7 : 1)); log(`${s.name}。守りを固めた。${s.heal ? `HPが${healMe(s.heal + G.lv * 3)}回復。` : ''}`); break;
     case 'counter': B.counter = { cut: s.cut, back: s.back }; log(`${s.name}。次の攻撃に備えた。`); break;
-    case 'buff': B.boost = s.boost; log(`${s.name}。このターンの攻撃が強くなる。`); break;
+    case 'buff': B.boost = s.boost; log(`${s.name}。このターンの攻撃が強くなる。${s.heal ? `HPが${healMe(s.heal + G.lv * 2)}回復。` : ''}`); break;
+    case 'sleep': { let n = 0; for (const x of alive()) if (R() < (x.boss ? s.stun * .35 : s.stun)) { x.stun = true; x.charge = false; n++; } log(`${s.name}。${n ? `${n}体が眠った。` : '……効かなかった。'}`); break; }
     case 'dodge': B.dodge = s.dodge; log(`${s.name}！`); break;
     case 'steal': { const k = Object.keys(m.drop)[0]; if (R() < (has('p_steal') ? .8 : .5)) { add(G.carry, k, 1); log(`${NAMES[k]}を盗んだ！`); } else log('盗めなかった。'); break; }
-    case 'flee': if (R() < (hurt('leg') ? .25 : .5)) { allyTick(); log('逃げ出した！', true); B = null; mode = 'dungeon'; dungeonUI(); hud(); return 'end'; } log('逃げられない！'); break;
+    case 'flee': if (s.sure && B.ms.some(x => x.boss)) { log('主からは、逃げられない！'); break; }
+      if (s.sure || R() < (hurt('leg') ? .25 : .5)) { allyTick(); log('逃げ出した！', true); B = null; mode = 'dungeon'; dungeonUI(); hud(); return 'end'; } log('逃げられない！'); break;
   }
   if (allDead()) { win(); return 'end'; }
   return 'ok';
@@ -2155,7 +2163,7 @@ function chargeStart(m) {
 function win() {
   // 倒した敵（群れ）の分をまとめてもらう
   const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1), gold = Math.round(ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1) * ECON.mon), drop = {};
-  for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') || K.loot ? .12 : 0))) add(drop, k, n);
+  for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') || K.loot ? .12 : 0))) add(drop, k, n * (x.mine ? 2 : 1));
   sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
   B.over = true; for (const x of ms) { if (!x.dying) x.dying = performance.now(); dexMon(x, true); }
   G.exp += exp; G.gold += gold; allyTick();
@@ -2460,6 +2468,41 @@ const SKILL_SHOW = {
   monkstrike:{ at: 40, len: 320, hit: (i, dl) => { playFx('s_holyhit', { delay: dl, size: 1.1, snd: 'hit1' }); fxTint(dl + 40, '#ffe08a', .2); playFx('heal', { delay: dl + 240, self: true, size: .8, snd: 'heal1' }); shakeAt(dl + 40, 5); } },
   bomb:     { pre: () => fxTint(140, '#ff9030', .25), wait: 140, at: 40, len: 320, hit: (i, dl) => { playFx('s_boom', { delay: dl, size: 1.35, snd: 'explosion' }); playFx('rocks', { delay: dl + 70, size: .6, parts: 12, snd: null }); fxTint(dl + 30, '#ff9030', .38); shakeAt(dl + 40, 13); } },
   arcanearrow:{ pre: () => playFx('magic_circle', { y: VH * .78, size: .6, parts: 8 }), wait: 200, gap: 220, at: 260, len: 450, hit: (i, dl) => { playFx('magic_arrow', { delay: dl, size: .9 }); fxRing(dl + 260, '#c08cff', .2, 3); } },
+  // ---- 2026-11-25 追加した技 ----
+  mine:     { at: 50, len: 150, hit: (i, dl) => { playFx('s_heavy', { delay: dl, size: .9, snd: 'hit1' }); fxRing(dl + 50, '#ffe08a', .2, 3); shakeAt(dl + 50, 4); } },
+  tettsui:  { pre: () => sfx('swing', { vol: .5 }), wait: 220, at: 50, len: 250, hit: (i, dl, tg) => { playFx('s_heavy', { delay: dl, size: 1.4, snd: 'punch' }); playFx('s_sparks', { delay: dl + 40, size: .9, snd: 'forge2', vol: .6 }); if (tg && tg.boss) fxTint(dl + 30, '#ffb060', .3); shakeAt(dl + 50, 11); } },
+  nagi:     { at: 40, len: 250, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; if (first) { const k = FX_AT; FX_AT = null; playFx('s_sweep', { delay: dl, size: 1.8, x: VW / 2, rot: 0, flip: false, tint: '#dce8ff', snd: 'w_sword' }); FX_AT = k; } fxSparks(dl + 40, WHITE, 6); shakeAt(dl + 40, 6); } },
+  kabuto:   { at: 70, len: 200, hit: (i, dl) => { playFx('s_vslash', { delay: dl, rot: 0, flip: false, size: 1.2, tint: '#ffffff', snd: 'w_sword' }); playFx('s_heavy', { delay: dl + 70, size: .8, snd: 'punch' }); fxRing(dl + 70, '#d9b07a', .3, 5); shakeAt(dl + 70, 8); } },
+  nemuri:   { pre: () => { for (const x of alive()) { FX_AT = x; playFx('sleep', { delay: 120, size: .8, snd: x === alive()[0] ? 'magic' : null }); } FX_AT = null; fxTint(100, '#8a6cff', .18); } },
+  maryoku:  { pre: () => { playFx('magic_circle', { self: true, y: VH * .78, size: .7, snd: 'magic' }); fxSparks(200, '#c08cff', 14); } },
+  ooinori:  { pre: () => { playFx('pray', { self: true, size: .9, snd: 'magic' }); playFx('heal', { self: true, delay: 300, size: 1.2, snd: 'heal3' }); fxTint(300, '#a8ffb0', .25); } },
+  hikari:   { pre: () => { playFx('s_shield', { self: true, size: .85, tint: '#fff0c0', snd: 'buff' }); playFx('heal', { self: true, delay: 200, size: .7, snd: 'heal1' }); } },
+  nigeashi: { pre: () => { playFx('s_ghost', { self: true, size: .8, snd: 'dash' }); playFx('smoke', { self: true, delay: 100, size: .9, snd: null }); } },
+  bundoru:  { at: 60, len: 250, hit: (i, dl) => { playFx('s_thrust', { delay: dl, size: 1, tint: '#ffe0c0', snd: 'w_dagger' }); playFx('s_sparkle', { delay: dl + 120, size: .55, snd: null }); fxSparks(dl + 120, '#ffd24a', 10); shakeAt(dl + 60, 5); } },
+  makiwari: { pre: () => sfx('swing', { vol: .5 }), wait: 200, at: 50, len: 250, hit: (i, dl) => { playFx('s_vslash', { delay: dl, rot: 0, flip: false, size: 1.3, tint: '#ffe2b8', snd: 'w_axe' }); playFx('rocks', { delay: dl + 60, size: .6, parts: 10, snd: null }); fxSparks(dl + 60, '#c89a5a', 14); shakeAt(dl + 50, 9); } },
+  ikari:    { pre: () => fxTint(0, '#ff2010', .25 + .3 * (1 - G.hp / G.mhp)), wait: 160, at: 40, len: 300, hit: (i, dl) => { playFx('s_shock', { delay: dl, size: 1.2 + .6 * (1 - G.hp / G.mhp), snd: 'w_axe' }); playFx('impact_heavy', { delay: dl + 40, size: 1, snd: 'punch' }); fxRays(dl + 40, '#ff5030', 12, .55); shakeAt(dl + 40, 12); } },
+  zantetsu: { pre: () => { fxDark(0, 600, .45); sfx('swing', { vol: .45 }); }, wait: 320, at: 30, len: 350, hit: (i, dl) => { playFx('s_slash', { delay: dl, rot: -.1, size: 1.4, tint: '#cfe3ff', snd: 'w_katana' }); playFx('spark', { delay: dl + 30, size: .8, parts: 16, snd: 'hit' }); fxTint(dl + 30, '#cfe3ff', .25); shakeAt(dl + 30, 9); } },
+  munen:    { pre: () => { fxDark(0, 1200, .7); sfx('swing', { vol: .35 }); fxRing(200, WHITE, .14, 2); fxRing(500, WHITE, .1, 2); }, wait: 700, at: 30, len: 700, hit: (i, dl) => { fxBeam(dl, WHITE); playFx('s_flash', { delay: dl, rot: -.35, size: 2.1, tint: '#ffffff', snd: 'slash' }); playFx('s_slash', { delay: dl + 60, rot: .2, size: 1.5, tint: '#cfe3ff', snd: null }); fxTint(dl + 30, WHITE, .5); fxSparks(dl + 40, WHITE, 26); shakeAt(dl + 40, 14); } },
+  juji:     { gap: 220, at: 50, len: 250, hit: (i, dl) => { if (!i) playFx('s_vslash', { delay: dl, rot: 0, flip: false, size: 1.2, tint: '#dce8ff', snd: 'w_sword' }); else playFx('s_flash', { delay: dl, rot: 0, flip: false, size: 1.5, tint: '#dce8ff', snd: 'w_sword' }); fxSparks(dl + 50, WHITE, 8); if (i) fxTint(dl + 30, WHITE, .15); shakeAt(dl + 50, 6); } },
+  fudou:    { pre: () => { playFx('s_barrier', { self: true, size: 1.3, tint: '#ffe08a', snd: 'buff' }); playFx('s_shield', { self: true, delay: 120, size: .8, snd: null }); fxTint(120, '#ffe08a', .2); } },
+  midare:   { gap: 120, at: 260, len: 500, hit: (i, dl) => { playFx('s_arrow', { delay: dl, size: .7, tint: '#fff0c8', x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 40, snd: 'w_bow' }); playFx('s_hit', { delay: dl + 260, size: .35, parts: 3, snd: 'hit1', vol: .6 }); } },
+  senbon:   { pre: () => { fxDark(0, 1300, .45); for (let j = 0; j < 12; j++) { const t = 120 + j * 60; playFx('s_arrow', { delay: t, size: .5, rot: Math.PI / 2, x: VW * (.12 + R() * .76), y: VH * (.35 + R() * .3), parts: 2, tint: '#fff0c8', snd: j % 4 ? null : 'w_bow', vol: .6 }); } }, wait: 950, at: 40, len: 600, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; playFx('s_hit', { delay: dl, size: .7, snd: first ? 'hit' : null }); if (first) fxTint(dl + 20, '#fff0c8', .3); shakeAt(dl + 40, 9); } },
+  mawashi:  { at: 50, len: 250, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; if (first) { const k = FX_AT; FX_AT = null; playFx('s_sweep', { delay: dl, size: 1.7, x: VW / 2, rot: 0, flip: true, tint: '#ffffff', snd: 'swing' }); FX_AT = k; } playFx('s_hit', { delay: dl + 50, size: .45, parts: 4, snd: first ? 'punch' : null }); shakeAt(dl + 50, 6); } },
+  kiai:     { pre: () => { playFx('power', { self: true, size: .9, snd: 'buff' }); fxTint(100, '#ff9030', .18); fxRing(100, '#ffb060', .3, 3); } },
+  hyaku:    { gap: 90, at: 0, len: 600, hit: (i, dl) => { playFx(i === 6 ? 's_fist' : 's_hit', { delay: dl, size: i === 6 ? 1 : .45, x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 60, y: VH * (.4 + R() * .2), parts: 3, snd: i === 6 ? 'punch' : 'hit1', vol: i === 6 ? 1 : .6 }); shakeAt(dl, i === 6 ? 9 : 3); if (i === 6) fxTint(dl, WHITE, .2); } },
+  shigen:   { pre: () => { fxDark(0, 700, .5); }, wait: 260, at: 60, len: 450, hit: (i, dl) => { playFx('s_slash', { delay: dl, rot: -.2, size: 1.5, tint: '#ffffff', snd: 'w_sword' }); ['m_fire1', 'm_ice1', 'm_bolt1', 'm_holy1'].forEach((n, j) => playFx(n, { delay: dl + 40 + j * 70, size: .5, vol: .45, snd: j ? null : undefined })); fxRays(dl + 60, '#ffe08a', 14, .5); fxTint(dl + 60, WHITE, .3); shakeAt(dl + 60, 10); } },
+  kongou:   { pre: () => { playFx('s_shield', { self: true, size: .9, tint: '#ffe08a', snd: 'buff' }); fxRing(80, '#ffe08a', .3, 4); } },
+  wana:     { at: 120, len: 350, hit: (i, dl) => { playFx('s_needle', { delay: dl, size: .6, y: VH * .7, snd: 'hit1' }); playFx('paralyze', { delay: dl + 120, size: .7, snd: null }); fxPins(dl + 120, '#c8a060'); shakeAt(dl + 120, 4); } },
+  ryusei:   { pre: () => { playFx('magic_circle', { y: VH * .78, size: .7, parts: 8, snd: 'magic' }); for (let j = 0; j < 8; j++) playFx('magic_arrow', { delay: 200 + j * 70, size: .5, x: VW * (.15 + R() * .7), snd: null }); }, wait: 700, at: 40, len: 500, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; playFx('s_hit', { delay: dl, size: .6, tint: '#c08cff', snd: first ? 'shock1' : null, vol: .6 }); if (first) fxTint(dl, '#c08cff', .28); shakeAt(dl + 40, 8); } },
+  jiware:   { pre: () => sfx('swing', { vol: .5 }), wait: 180, at: 60, len: 400, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; if (first) { playFx('s_heavy', { delay: dl, size: 1.5, x: VW / 2, y: VH * .7, snd: 'punch' }); playFx('rocks', { delay: dl + 60, size: 1, x: VW / 2, parts: 18, snd: 'rockbreak' }); fxTint(dl + 40, '#d9b07a', .25); } shakeAt(dl + 60, 13); } },
+  daisenpu: { pre: () => fxTint(0, '#ff9050', .2), wait: 150, at: 40, len: 400, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; if (first) { const k = FX_AT; FX_AT = null; playFx('s_sweep', { delay: dl, size: 2, x: VW / 2, rot: 0, flip: false, tint: '#ffd8a0', snd: 'w_axe' }); playFx('s_sweep', { delay: dl + 120, size: 1.8, x: VW / 2, rot: Math.PI, flip: true, tint: '#ffd8a0', snd: 'w_axe', vol: .7 }); FX_AT = k; } fxSparks(dl + 60, '#ffd8a0', 8); shakeAt(dl + 60, 10); } },
+  seiken:   { pre: () => { fxDark(0, 600, .4); }, wait: 220, at: 50, len: 400, hit: (i, dl) => { playFx('s_vslash', { delay: dl, rot: 0, flip: false, size: 1.5, tint: '#fff0b0', snd: 'w_sword' }); playFx('holy_pillar', { delay: dl + 50, size: .9, snd: 'holy' }); fxTint(dl + 50, '#fff0b0', .32); playFx('heal', { self: true, delay: dl + 250, size: .7, snd: null }); shakeAt(dl + 50, 9); } },
+  kyuushu:  { at: 60, len: 400, hit: (i, dl) => { playFx('s_darkslash', { delay: dl, size: 1.2, rot: 0, flip: false, snd: 'w_sword' }); playFx('dark_mist', { delay: dl + 80, size: .8, snd: 'dark' }); playFx('heal', { self: true, delay: dl + 260, size: .7, snd: 'heal1', vol: .6 }); fxTint(dl + 60, '#7a2cff', .2); shakeAt(dl + 60, 7); } },
+  ranbu:    { gap: 130, at: 40, len: 550, hit: (i, dl) => { const r = (R() - .5) * 2.8; playFx('s_slash', { delay: dl, rot: r, flip: R() < .5, size: .85, tint: i % 2 ? '#cfe3ff' : '#ffe0c0', snd: 'w_katana' }); fxArc(dl, '#cfe3ff', 2, r * 1.5, VH * (.2 + R() * .12)); if (i === 4) fxTint(dl + 30, WHITE, .2); shakeAt(dl + 40, 4); } },
+  shuriken: { gap: 90, at: 200, len: 300, hit: (i, dl) => { playFx('s_sparkle', { delay: dl, size: .35, tint: '#dce8ff', mv: 'travel', snd: 'swing', vol: .6 }); playFx('s_hit', { delay: dl + 200, size: .3, parts: 3, snd: 'hit1', vol: .5 }); } },
+  noroi:    { at: 60, len: 400, hit: (i, dl) => { playFx('s_darkslash', { delay: dl, size: 1.1, rot: 0, flip: true, snd: 'w_dagger' }); playFx('poison', { delay: dl + 100, size: .8, snd: 'poison2' }); fxTint(dl + 60, '#5a2080', .25); shakeAt(dl + 60, 6); } },
+  daimahou: { pre: () => { fxDark(0, 2000, .75, '#05030f'); playFx('magic_circle', { y: VH * .78, size: 1.1, parts: 20, snd: 'magic' }); fxRing(300, '#c08cff', .5, 3); fxRing(600, '#ffe08a', .6, 3); sfx('thunder3', { delay: 500, vol: .5, max: 1.5 }); }, wait: 1000, at: 300, len: 1000,
+              hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; if (first) { ['m_fire3', 'm_bolt3', 'm_holy3'].forEach((n, j) => playFx(n, { delay: dl + j * 120, size: 1, snd: j ? null : undefined })); fxTint(dl + 300, WHITE, .6); fxRays(dl + 300, '#ffe08a', 20, .8); fxRing(dl + 300, WHITE, .7, 8); setTimeout(() => { fx.flash = Math.max(fx.flash || 0, .7); }, dl + 300); } shakeAt(dl + 300, 15); } },
   // ---- 守り・補助（自分に） ----
   guard:    { pre: () => playFx('s_shield', { self: true, size: .9, snd: 'buff' }) },
   wall:     { pre: () => { playFx('s_barrier', { self: true, size: 1.2, snd: 'buff' }); fxTint(80, '#6ab8ff', .15); } },
