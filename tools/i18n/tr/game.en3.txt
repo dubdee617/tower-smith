@@ -1,0 +1,303 @@
+701|Boltz[laugh]「Hey, chief! Got it all in usable shape for ya.」
+702|Boltz[smile]「Good loot. Gets my hands itching.」
+703|Boltz[think]「Hmm... Well, in my hands it'll be material.」
+704|Boltz「There ya go, processed. I'll have it sent to the workshop.」
+705|Boltz[smile]「Thanks as always! Count on me next time too, chief.」
+706|Boltz[shock]「That's a haul! Chief, you sure you're a blacksmith?」
+707|Boltz[shock]「Whoa whoa, did you bring the whole cart?!」
+708|Boltz[laugh]「Oh, a decent pile today!」
+709|Boltz[smile]「Not a bad day's earnings, chief.」
+710|+ Bonus {0}
+711|+ Bonus
+712|{0}\nReward {1}G / To workshop: {2}{3}
+713|\nReward
+714|G / To workshop:
+715|Bring In
+716|{0} loot → materials + reward
+717|Loot
+718| → materials + reward
+719|No loot
+720|Sell Materials
+721|{0} workshop materials
+722|Workshop materials
+723|No materials
+724|Buy Materials
+725|Prices rising
+726|Climb Records
+727|{0} F{1}
+728|(Defeated the floor 10 lord)
+729|Highest: Guard Captain Gaban F86 / {0} F{1}{2}
+730|Highest: Guard Captain Gaban F86 /
+731|Sell Materials (workshop stock)
+732|No materials to sell
+733|Half ({0})
+734|Half (
+735|Ria「I'll buy materials from your workshop. Bulk is fine too.」
+736|Buy Materials (On hand {0}G)
+737|Buy Materials (On hand
+738|Buy one {0}
+739|Buy one
+740|Buy one {0} for {1}G? (On hand {2}G)
+741|Bought the {0} for {1}G.\n「...Pricey. That's why I go get it myself.」
+742|G.\n「...Pricey. That's why I go get it myself.」
+743|Ria「Tower materials keep going up in price... I'm sorry.」
+744|Test mode can be used while in town.
+747|Go to any floor
+748|Floors 1-100
+749|Match strength to floor
+750|Now Lv{0}
+751|Now Lv
+752|Gold & Materials
+753|+20000G, materials +30
+754|Added gold and materials.
+755|Max out the workshop
+756|Maxed the forge, anvil, and workbench.
+757|All masterwork blueprints
+758|Got all {0} masterwork blueprints.
+759|Got all masterwork blueprints:
+760|.
+761|Max affection
+762|4 heroines & Jin
+763|Maxed affection with the 4 heroines and Jin.\n(Events happen at each of their places)
+764|Fight the Mirror
+765|Floor 100
+766|Watch the ending
+767|Exit test mode
+768|Test mode. Changes here are saved to your current save as-is.\nTo be safe, save to another slot before trying things.
+769|F{0}
+770|Which floor? (counts as having climbed that far)
+771|For F{0}
+772|For F
+773|\nGear: {0}
+774|\nGear:
+775|Set to Lv{0}.{1}
+776|.
+777|Match to which floor? (level, plus weapons and armor for that stage)
+778|Holy
+779|Dragon Breath
+780|Brute Force
+781|Curse
+782|Magic
+783|Poison
+784|Fang
+785|Claw
+786|Slash
+787|Easy to use one-handed. Pairs with a shield. The most honest weapon there is.
+788|A heavy two-handed weapon. Known for crits and iaido strikes.
+789|A heavy two-handed weapon. The knight's sword, strong in attack and defense.
+790|Smash
+791|A heavy two-handed weapon. Every hit is heavy, and it sweeps whole packs.
+792|Strike
+793|The blacksmith's partner. One-handed. Good at guard-breaking "Smash."
+794|Stab
+795|Light and one-handed. Makes you nimble and better at dodging (Evasion +5%).
+796|Shoot
+797|Two-handed, but not heavy. Aim and shoot from afar.
+798|Low attack numbers, but magic ignores enemy defense.
+799|Learn healing prayers. More reliable the longer the fight.
+800|Held in the left hand. Can't be used with two-handed weapons (unless mastery lets you hold them one-handed).
+801|Crits come easy (+{0}%)
+802|Crits come easy (+
+803|%)
+804|DEF{0} when held
+805|DEF when held
+806|Attacks carry fire
+807|Dig rock and ore veins
+808|Cut trees
+809|Dig sand and dirt
+810|. Wears down with use (Durability {0})
+811|Heavy: normal attacks cost 2 AP
+812|Forged from masterwork blueprints (found from F{0})
+813|Forged from masterwork blueprints (found from F
+814|)
+815|Castle reward (royal treasure)
+816|Castle reward
+817|Forge in workshop / Item Shop
+818|(Forge Lv{0})
+819|(Forge Lv
+820|Forge in workshop{0}
+821|Forge in workshop
+822|Guide
+823|Gear
+824|Monsters
+825|Monsters met
+826|Masterworks with blueprints found
+827|Gear obtained
+830| lord
+831| area
+835|Lord
+836|Floor {0} lord
+837| lord
+838|F{0}-{1}
+839|Weakness: {0}
+840|Weakness:
+841|Weakness: none
+845|No blueprint yet. Found rarely in chests, mimics, and from lords.
+846|Not obtained yet. {0}.
+847|Not obtained yet.
+849|. Sells for
+850|Durability {0}
+851|  Two-handed
+852|  (not forged yet)
+856|Weapon Types
+857|Material Tiers
+858|Elements & Weaknesses
+859|Masterworks & Blueprints
+860|Jobs & Evolution
+861|Tales of the Goddesses
+862|, two-handed
+863|, heavy
+867|Copper/Bone/Leather
+868|F1-10
+869|Starter gear
+870|F5+, golems
+871|Proper gear
+872|Silver ore F21+
+873|1.6x iron
+874|Mithril ore F41+
+875|2.3x iron
+876|Blacksteel shards F61+
+877|Crit +10%, DEF -3
+878|Raw ore F71+
+879|3.7x iron
+880|Dragon monsters, F85+
+881|The strongest, fire
+885|Ice and poison monsters (bugs, plants)
+886|Fire magic, dragon weapons, Flame Sword
+887|Fire and dragon monsters
+888|Ice magic, Ice Katana, Frost Bow
+889|Beast and dragon monsters
+890|Thunder magic, Thunder Halberd, Storm Sword
+891|Ghosts and undead
+892|Holy Light, Holy Staff, Sun Greatsword
+893|Spellcasting monsters (spirits, etc.)
+894|Dark magic, Dark Greatsword
+901|<br>Evolves: {0}
+902|<br>Evolves:
+905|Off
+906|Slow
+907|Normal
+908|Fast
+909|Instant
+910|Weak
+911|Strong
+924|Save
+925|Bestiary
+932|「Well then, let's pick up where we left off.」
+933|You can change your name while in town.
+934|Back to Title
+935|Return without saving
+936|Start over? (Autosave will be overwritten. Slot saves remain.)
+937|Start
+938|up
+939|down
+940|Floor {0}. There's a {1} staircase behind you.
+941|. Behind you is a
+942| staircase.
+943|The incense you lit has worn off.
+944|Floor 100. The very top of the tower. ...The mirror is still there.
+945|Floor 100. The air is perfectly still.\nSomething waits beyond this floor's up staircase.
+946|Als「Past here is still beyond me... Master, I'll head back to town first! Stay safe!」
+947|Turn Left
+948|Forward
+949|Turn Right
+950|Left
+951|Back
+952|Right
+953|Fancy Chest
+954|Chest
+955|Searched
+956|Up Stairs
+957|Down Stairs
+958|Search
+959|{0} x{1}
+960| x
+961|Herbs, feathers, etc.
+962|Loot carried: {0} (lost if you fall)
+963|Loot carried:
+964|(lost if you fall)
+965|You pushed open the heavy iron door.
+966|You opened the door.
+967|Use stairs from the front.
+968|It's a wall.
+969|An opened chest.
+970|There's a chest. Let's open it.
+971|Something's in the way.
+972|A tree blocks the way.
+973|Up stairs. Heavy footsteps from above...\n(▲ to climb)
+974|There are stairs up. (▲ to climb)
+975|Down stairs. You can return to town. (▲ to go down)
+976|There are stairs down. (▲ to go down)
+977|Gem
+978|There's an opened chest.
+979|There's a fancy chest!
+980|There's a chest.
+981|(searched)
+982|There's a {0}. {1}
+983|There's a
+984|The end of the passage glows faintly.\n...Someone is standing in the light.
+985|A figure is visible down the passage...
+986|Someone is standing deep in the darkness.
+987|...Footsteps. There's a dark shadow down the passage.
+988|Approach
+989|Back away
+990|You looked away from the light and moved on.
+991|You avoided the figure and took another path.
+992|Dan「What, what's a blacksmith doing in a place like this? ...Here, I had extra. I was gonna toss it anyway.」
+993|Dan[laugh]「Still alive, huh? Stubborn. ...Take this. If you die, I'll sleep badly.」
+994|Dan「Don't get the wrong idea. My bag's just heavy.」
+995|Got {1} {0}.
+996| received.
+997|Dan「...I don't need your thanks.」
+998|Gaban[laugh]「Master Smith! To meet you up this high! Here, the Royal Guard's secret medicine. Please, take it!」
+999|Gaban「I made it this far myself. ...You can go beyond, Master Smith!」
+1000|\nGaban fights alongside you ({0} battles).
+1001|\nGaban fights alongside you (
+1002| battles).
+1003|HP fully restored. You got a Big Herb.{0}
+1004|HP fully restored. You got a Big Herb.
+1005|「Thanks, Gaban.」
+1006|Gaban[laugh]「Sir! Good fortune in battle!」
+1007|Gurugamo[laugh]「Hey, blacksmith! I was just getting bored. I'll tag along a bit.」
+1008|Gurugamo fights alongside you ({0} battles).
+1009|Gurugamo fights alongside you (
+1010|「Good to have you.」
+1011|Fuuka「...I shall accompany you for a while.」\nFuuka fights alongside you ({0} battles).
+1012|Fuuka「...I shall accompany you for a while.」\nFuuka fights alongside you (
+1013|Keep going
+1014|(You received the {0}'s blessing. You can now come to floor {1} from the goddess statues at the tower gate)
+1015|'s blessing. From the goddess statues at the tower gate,
+1016| can now be reached)
+1017|{0}[smile]「Now, what would you like?」
+1018|[smile]「Now, what would you like?」
+1019|Receive loot
+1020|(Some rare things too!)
+1021|{0}[laugh]「Take it with you.」\nYou received {1}.{2}
+1022|[laugh]「Take it with you.」\n
+1023| received.
+1024|Get healed
+1025|From affection {0}
+1026|Affection
+1027|from
+1028|{0}[smile]「Rest a little.」\nHP fully restored.
+1029|[smile]「Rest a little.」\nHP fully restored.
+1030|Fuuka[angry]「...Here I come.」
+1031|Fuuka「Leave your back to me.」
+1032|Fuuka[smile]「The wound is shallow. ...I will close it at once.」
+1033|Fuuka「From the shadows, one strike.」
+1034|Fuuka[think]「I have read its movements.」
+1035|Fuuka[shy]「...Fighting at your side is easy.」
+1036|Fuuka[angry]「You will not lay a finger on him.」
+1037|Fuuka[smile]「Rest a moment. I will go.」
+1038|Gurugamo[laugh]「Hrrraaah!」
+1039|Gurugamo[angry]「I'll make you rust on my axe!」
+1040|Gurugamo[laugh]「Gahaha! Glad to see you haven't gone soft!」
+1041|Gurugamo「Blacksmith, leave the right to me!」
+1042|Gurugamo[smile]「Nice axe, right? ...The one you sharpened for me.」
+1043|Gurugamo[angry]「Raaah! Come at me all at once!」
+1044|Gaban[angry]「Taste the blade of the Guard Captain!」
+1045|Gaban「Master Smith, stand back!」
+1046|Gaban[laugh]「Hahaha! This is the kingdom's sword!」
+1047|Gaban[smile]「The sword you forged cuts true, Master Smith!」
+1048|Gaban[angry]「Haaah!」
+1049|Gaban「What I learned on floor 86, I'll put to use here!」

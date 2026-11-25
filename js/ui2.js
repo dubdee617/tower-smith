@@ -35,7 +35,7 @@
   function who() {
     const w = $('who'), raw = w.textContent; if (w.dataset.raw === raw) return;
     const parts = raw.split(/\s+/).filter(Boolean);
-    w.innerHTML = parts.map(s => `<i class="${/G$/.test(s) ? 'g' : /^ケガ/.test(s) ? 'hurt' : ''}">${/G$/.test(s) ? s.slice(0, -1) : s}</i>`).join('');
+    w.setAttribute('translate', 'no'); w.innerHTML = parts.map(s => `<i class="${/G$/.test(s) ? 'g' : /^ケガ/.test(s) ? 'hurt' : ''}">${tr(/G$/.test(s) ? s.slice(0, -1) : s)}</i>`).join('');
     w.dataset.raw = w.textContent;
   }
   new MutationObserver(icons).observe($('ctl'), { childList: true, subtree: true });
@@ -46,8 +46,9 @@
     const on = typeof mode !== 'undefined' && mode === 'dungeon' && F;
     hd.style.display = cp.style.display = on ? '' : 'none'; if (!on) return;
     const a = areaOf(floorNo), n = Object.values(G.carry || {}).reduce((s, v) => s + v, 0);
-    const h = `<div class="fl"><small>${a[2]}</small>${floorNo}F</div><div class="bag">${n}</div>`; if (hd.innerHTML !== h) hd.innerHTML = h;
-    const c = `<span>${NAME[(dir + 3) % 4]}</span><b>${NAME[dir]}</b><span>${NAME[(dir + 1) % 4]}</span>`; if (cp.innerHTML !== c) cp.innerHTML = c;
+    hd.setAttribute('translate', 'no'); cp.setAttribute('translate', 'no');
+    const h = `<div class="fl"><small>${tr(a[2])}</small>${floorNo}F</div><div class="bag">${n}</div>`; if (hd.innerHTML !== h) hd.innerHTML = h;
+    const NM = I18N.on ? ['E', 'S', 'W', 'N'] : NAME, c = `<span>${NM[(dir + 3) % 4]}</span><b>${NM[dir]}</b><span>${NM[(dir + 1) % 4]}</span>`; if (cp.innerHTML !== c) cp.innerHTML = c;
   }, 150);
   icons(); who();
 })();

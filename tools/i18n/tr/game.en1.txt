@@ -1,0 +1,317 @@
+0|{0},
+2|\nInjury: {0}
+4| Injury {0}
+8|{0} (Rec. Lv{1}{2})
+9| (Rec. Lv
+11|{0} ({1})
+13|\nBlessing: {0}
+15| ATK{0}
+16| ATK
+17| DEF{0}
+18| DEF
+19| ATK{0}{1}
+20| DEF{0}{1}
+21|\nEvolves ({0}{1}/{2}): {3}
+22|\nEvolves (
+23|{0}. Wears down with use (Durability {1})
+24|. Wears down with use (Durability
+25|ATK{0}
+26|ATK
+28|<p class="note">Heard when you first meet each goddess (1st round: floors 11-50, 2nd round: floors 51-90).</p>
+29|Slot {0}
+30|Slot
+32|<p class="note">Loading starts you in town.</p>
+33|You can see a vein of {0}. Looks like you could dig it with a tool.
+35|Go down to floor {0}
+36| floor
+37|{0} monsters
+38| monsters
+39|{0}
+41|Materials: {0}
+42|Materials:
+43|Old Hammer
+44|Wand
+45|Autosave
+46|Empty
+47|{0} Lv{1} / Best F{2} / {3}G{4}
+48| / Best F
+49| /
+50|Bare Hands
+51|Newly learned: {0}
+52|Newly learned:
+53|Learned {1} as a {0}!
+54| learned!
+55|None
+56|!
+57|?
+58|Max HP
+59|Defense
+60|Evasion
+61|R: {0} / L: {1} / Armor: {2}
+62|R:
+63| / L:
+64| / Armor:
+65|Change Gear
+66|Job
+67|List
+68|Back
+69|EXP {0}/{1}{2}
+70|EXP
+71|Lv{0} {1}  ATK{2} DEF{3}  {4}G{5}
+72|  ATK
+73|Tower Gate
+74|Castle
+75|Town of Eldia
+76|Tower F{0}
+77|Tower
+78|F
+79|Go Outside
+80|Enter
+81|To Town
+82|To Workshop
+83|Lord's Chamber
+84|Workshop (Home)
+85|Als「Welcome back, Master! What's today's words of wisdom?」
+86|Chicchi「Cleaned up, boss. Oh, and I kept the forge fire going, yo.」
+87|Chicchi[laugh]「Polished your sword, boss! ...Didn't steal it, yo?」
+88|Chicchi[shy]「Als told me "Chicchi, your cooking's the best." ...Kinda embarrassing, yo.」
+89|Chicchi[think]「I can open any lock, yo. Locks of the heart? ...No clue, yo.」
+90|There's game left on the floor. Must be Org.
+91|Armory
+92|Jenny「Show me what you forged. I'll set the price.」
+93|Jenny[laugh]「Give it a whack and it's fixed. Except life.」
+94|Jenny「You again? ...Not like I was waiting or anything.」\n「I see. Then I'll sell and go.」
+95|Jenny[angry]「If you die in that tower, who's gonna supply my shop? ...That's ALL I mean, okay?」\n「Ah, a business thing. Got it.」
+96|Clinic
+97|Elly[smile]「Oh, welcome back! You're not hurt today, are you?」
+98|Elly「The gods are listening, you know. ...They're just slow to reply sometimes.」
+99|Elly[smile]「This is a charm for you. I made it myself...」\n「Thanks. Something new the clinic's selling?」
+100|Elly「Please don't do anything reckless. ...I pray for you every night, you know.」\n「Sorry to keep the gods busy.」
+101|Guild
+102|Jiro「Goro says the tower's in a bad mood today.」
+103|Ria「The highest record is floor 86. That's Captain Gaban of the Royal Guard.」
+104|Ria[smile]「Requests are still being prepared. ...Please wait a little longer.」
+105|Ria「I write up your climb records every time, Mr. Smith. ...Everyone else's I leave to the new hires.」\n「Huh. Sounds like a lot of work.」
+106|Ria[smile]「When you set a new record, shall we celebrate? ...Just the two of us.」\n「Sounds good. Let's invite the whole guild.」
+107|Boltz[laugh]「Chief! Got loot? Bring it round back. Processing's my job.」
+108|Item Shop
+109|Dora「Take plenty of herbs. You can't buy 'em in the tower.」
+110|Dora[laugh]「Listen, youngster. Well, not so young. Don't you go dying.」
+111|Bank
+112|Bernardo「Money you deposit stays safe even if you fall in the tower.」
+113|Bernardo[think]「Money never betrays you. Unlike people.」
+114|Inn
+115|Gaston「Bring me materials. I'll cook 'em up nice.」
+116|Tower
+117|Gatekeeper「Off to the tower? Nobody's ever been past floor 86.」
+118|Even looking straight up, the top is lost in the clouds.
+119|Swordsman Statue
+120|In the middle of the square stands a statue of a swordsman holding a flag.
+121|At the statue's feet, children are playing "tower climbers."
+122|Town Gate
+123|Gatekeeper「Heading to another country? ...Nah, your business is the tower.」
+124|Als「Master's going up the tower... It's all anyone in town can talk about.」
+125|Chicchi「Boss, you're seriously going? You're a blacksmith, yo.」
+126|Als[smile]「Done with 500 practice swings this morning! Master, take me adventuring any time!」
+127|Als「Chicchi, I'll help you sort the storeroom.」\nChicchi「You're so earnest, Als... It's blinding, yo.」
+128|Als「Floor 5! ...I'm writing that in my diary.」
+129|Chicchi「A neighbor asked if you used to be an adventurer, boss.」
+130|Als「The guild's in an uproar over you beating the floor 10 lord. ...Not that I'm surprised. It's you, Master.」
+131|Chicchi[laugh]「Boss, the neighbors sent a mountain of food! Can't finish it all, yo!」
+132|Jenny[shock]「Huh? Climb the tower? You're a BLACKSMITH!」
+133|Jenny[angry]「A craftsman gathering his own materials? Never heard of such a thing.」
+134|Jenny「Floor 5... Dumb luck, that's all. ...Are you hurt?」
+135|Jenny[laugh]「The floor 10 lord, huh. ...Well, I figured you'd pull it off.」
+136|Jenny「Customers keep buying stuff saying "with that blacksmith's gear, I can climb." Business is booming... wait, that's good, actually.」
+137|Elly[shock]「Eh?! You're going to the tower?! The best blacksmith in town...?」
+138|Elly「I heard you made it to floor 5. ...Please, really, don't push yourself.」
+139|Elly[smile]「The floor 10 lord...! Everyone was shocked, but I believed in you.」
+140|Ria[shock]「A blacksmith registering as an adventurer...? There's no precedent. ...I'll go find the forms.」
+141|The adventurers are whispering as they look at you.
+142|Ria「Floor 5 reached. Recorded. The adventurers suddenly got very quiet.」
+143|Ria[smile]「Floor 10 lord defeated. ...The whole town has that "of course it was him" look.」
+144|Adventurer「Heard that blacksmith climbed again.」「Well, obviously.」
+145|Dora[shock]「YOU, in the tower? ...Act your age, would you.」
+146|Dora「Herbs are running low again. No complaints, as long as you come back alive.」
+147|Dora[laugh]「The floor 10 lord? Hah. Always knew you were a tough old nail.」
+148|Bernardo[think]「The tower...? Craftsmen are usually more prudent than that.」
+149|Bernardo「Your deposits have grown a little. ...You're not a bad investment, you know.」
+150|Bernardo[smile]「The floor 10 lord. ...Yes, the ledger said you'd do it.」
+151|Gaston[shock]「That blacksmith went to the tower? The tavern's taking bets on which floor he'll come back from.」
+152|Gaston[laugh]「Whoever bet on floor 5 lost big. Wahaha.」
+153|Gaston[laugh]「The floor 10 lord! You'll be keeping my tavern busy tonight.」
+154|Patron「That blacksmith? Yeah, he'd do it.」
+155|Buppa[eat]「Oh, boss. That meat in the kitchen... I already ate it.」
+156|Buppa[laugh]「Gahahaha! Another peaceful day!」
+157|Buppa[shock]「Whoa! ...Oh, it's just you, boss. I was sleeping, sleeping.」
+158|Buppa[tired]「...This spot's just so comfy.」
+159|Buppa[grumpy]「...Don't wake me up...」
+160|Lou[smile]「Boss, I raised the forge temperature!」
+161|Lou[laugh]「Look! I hammered a nail in straight for the first time!」
+162|Lou「Chicchi's teaching me to pick locks. ...Nothing to do with smithing, though.」
+163|Lou[laugh]「Als is doing practice swings again. He's amazing.」
+165|Ria[smile]「Welcome back! I'm glad you're safe.\n...I'll pass your loot to Boltz.」
+166|Ria[smile]「Welcome back. I'll write up your record.\nBring-ins go over there.」
+167|Ria「Welcome back. ...You're not hurt, are you?\nOh, loot goes here.」
+168|Ria[smile]「Welcome back. How far did you get today?\n...Tell me all about it later, okay?」
+169|Ria[smile]「Welcome back. ...Empty-handed today?\nComing back alive is what matters most.」
+170|Ria「Welcome back. I'll just write up the record.」
+171|Ria[smile]「Welcome back. There's always tomorrow.」
+172|Ria[happy]「Welcome back. ...I was waiting.\nI really was waiting, you know.」
+173|Ria[happy]「Welcome back. Even empty-handed,\nI'm happy just to see your face.」
+174|{0}「...Phew. Made it back.」
+175|「...Phew. Made it back.」
+176|A letter has arrived from the castle.\nYou can now go to the castle through the town gate.
+177|Loot brought back: {0}
+178|Loot brought back:
+179|To the Guild
+180|Get your record written up
+181|Have loot made into materials
+182|In the heart of the Kingdom of Eldia\nstands a great tower that reaches the heavens.\nNo one has ever seen its top.
+183|People dig ore in the tower,\nhunt its monsters, eat them, sell them.\nThe tower's bounty kept the kingdom alive.
+184|In time, more and more people came for the tower.\nMaterials grew pricey, and quality fell.\nA real headache for a blacksmith.
+185|In the town lived a blacksmith.\nForty years old. A skilled craftsman,\nbut about as laid-back as they come.
+186|He forged swords for others,\nand some days waited for people who never returned.\nStill, today, he strikes the iron.
+187|One day, the blacksmith had a thought.\n"If materials are so expensive...\nwhy not just go get them myself?"
+188|The townsfolk's eyes went wide.\nRoyal Guard Captain Gaban's record: floor eighty-six.\nWhat lies beyond, no one knows.
+189|The blacksmith looked up at the great tower.\n"Eh... it'll probably work out somehow."
+190|New Game
+191|Load
+192|From saved data
+193|Settings
+194|Sound, text speed, shake
+195|Continue
+196|"Well, guess I'll go again today."\nThe workshop fire is still warm.
+197|Tap to start
+198|Try entering the tower
+199|Reach floor {0}
+200| floor
+201|Defeat the floor {0} lord
+202| lord
+203|, iron gear
+204| (Rec. Lv{0}{1})
+205|You stood atop the tower. ...Climbing again doesn't sound so bad
+206|To floor 100. Something waits at the top
+209|<small>Goal</small>{0}
+210|<small>Goal</small>
+211|Tap where you want to go.
+214|You're in front of the {0}.
+215|.
+218|Jenny「...Okay, back to work. Need something?」
+219|Jenny[shy]「...So, what are you buying today?」
+220|Patron
+221|Talk
+222|\n(...I don't think I can get any closer yet. Maybe something will change if I make it to floor {0}.)
+223|\n(...I don't think I can get any closer yet. Maybe something will change if I make it to floor
+224|.)
+225|...!
+226|Affection perk: {0}
+227|Affection perk:
+228|Jenny[inlove]「...Since that rainy night, I've stopped hiding it.\n...So you'd better be ready.」
+229|Jenny[inlove]「Hey... are you this nice to everyone?\n...I wish it was just me.」
+230|Elly[happy]「You're not hurt today. ...Good.\n...I mean, um... I was just happy to see your face.」
+231|Ria[happy]「Talking with you makes me feel at ease, Mr. Smith.\n...Even at work, I keep glancing at the door.」
+232|Fuuka[love]「...When I am with you, I sometimes nearly forget that I am a shinobi.\n...I do not forget. ...Only a little.」
+233|Jin[laugh]「There's something I'd like to teach you someday. ...When the time comes.」
+234|{0}[laugh]「I've taken a liking to you. ...Come see me again.」\n「Sure. I'll drop by again.」
+235|[laugh]「I've taken a liking to you. ...Come see me again.」\n「Sure. I'll drop by again.」
+236|Workshop materials: {0}
+237|Workshop materials:
+238|Talk to {0}
+239|Talk to
+240|is visiting
+241|Smithing
+242|Forge gear
+243|Rest
+244|「...Not sleepy yet.」
+245|\n...Injuries don't heal with sleep. Better visit the clinic.
+246|You slept in your own bed. The sound of the forge is your lullaby.\nHP restored.{0}
+247|You slept in your own bed. The sound of the forge is your lullaby.\nHP restored.
+248|Status
+249|Bookshelf
+250|Bestiary & Weapon Guide
+251|Tools
+252|Choose Skills
+253|Passives
+254|Going with Als
+255|Invite Als
+256|Ready to go
+257|Floors 1-{0}
+258|Als[laugh]「Really?! To the tower with you, Master...! I'll get ready right away!」
+259|Als[smile]「Yes! I won't slow you down. Watch what my training's done!」
+262|「...I'm off.」
+263|Goddess Statue
+264|Warp: {0} spots
+265|Warp:
+266| spots
+267|Not glowing yet
+268|Prepare
+269|The {0}G on hand is lost if you fall.
+270|The
+271|G on hand is lost if you fall.
+272|Your {0} aches.\n「...Eh, it'll probably work out somehow.」
+273| aches.\n「...Eh, it'll probably work out somehow.」
+274|Jin「Ho ho ho. Off to the tower again?」
+275|Jin「You're a blacksmith, aren't you? One who makes swords, swinging them himself. How amusing.」
+276|Jin[smile]「Fine weather today. The statue looks content, don't you think?」
+277|Jin[laugh]「Starting adventures at forty. Not bad at all. Ho ho ho.」
+278|Jin[think]「Hmm... looks like your arm's improved a little.」
+279|Jin「But your shoulders are still too tense. A sword isn't something you just swing with brute force.」
+280|Jin[smile]「Messed up? Ho ho ho. Days you mess up are days you learn the most.」
+281|Jin「No need to hurry. The tower isn't going anywhere.」
+282|Jin[think]「...Oh? You've climbed that high.」
+283|Jin[think]「Have you ever felt something, inside the tower? ...I see. Ho ho ho. No, it's nothing.」
+284|Jin「The air's different up high, isn't it. ...Remember to breathe slowly.」
+285|Jin[laugh]「Ho ho ho. I polished the statue again today. ...Polishing yourself is a strange feeling, mind you.」
+286|Jin「The truly hard thing isn't beating someone. It's learning to get along with yourself.」
+287|Jin[smile]「Well, life has a way of working out.」
+288|Jin「Ho ho ho. We meet again, blacksmith.」
+289|Jin[laugh]「Ho ho ho. You're back. ...What did you see at the top? No, don't tell me. It's written on your face.」
+290|Jin[smile]「You've grown strong. ...No, I don't mean strength. I mean you've got a good face now.」
+291|Jin[smile]「I'm Jin. Sunbathing in front of this statue is more or less my job.\n...Come again, blacksmith.」
+292|Jin[smile]「Ho ho ho. Splendid statue, isn't it?\nLong ago, they say this land had a swordsman of tremendous skill.\n...Well? Does he look strong to you?」
+293|「Yeah, he looks strong.」
+294|Jin[laugh]「Ho ho ho! Doesn't he, doesn't he!\nYou've got a good eye!」
+295|「Isn't he trying a little too hard to look cool?」
+296|Jin[laugh]「Ho ho ho! Harsh!\nWell, statues do tend to come out a bit too handsome.」
+297|「More importantly, I'm hungry.」
+298|Jin[smile]「Ho ho ho. I see, I see.\nWell, today's supper matters more than yesterday's heroes.」
+299|Listen
+300|Jin seems to want to say something
+301|Train with him
+302|Learn a secret art
+303|Learn a skill
+304|From Jin
+305|Jin[think]「...Blacksmith. Perhaps it's time I told you.」
+306|Jin「About the man in this statue...」
+307|Jin[smile]「It's actually me.」
+308|「...Huh?」
+309|Jin[laugh]「Ho ho ho! Can't believe it?\nWell, can't blame you. I've aged quite a bit.」
+310|Jin「When I was young, I wanted to be stronger than anyone.\nBeat strong foes, climb higher than anyone. ...I believed that was strength.」
+311|Jin[think]「But up high in the tower, I felt something strange.\n...That the tower was watching us.」
+312|Jin「It wasn't frightening. Like a child staring at a grown-up it doesn't know... that kind of look.」
+313|Jin[think]「The tower is alive. And it's trying to understand people.\n...That's as much as I could figure out.」
+314|Jin[smile]「What is strength? I thought on it a long time, and finally reached something like an answer.\nTrue strength is knowing yourself.」
+315|Jin[laugh]「Once I understood that, I found I didn't need a sword anymore.\n...Ho ho ho. So here I am, sunbathing.」
+316|Jin[smile]「Now then, how about a little training?」\nJin picked up a stick and turned to face you.
+317|Jin「Don't hold back. Strike at me however you like.」
+318|You struck. ...Missed.\nAgain. ...Missed. Jin has barely moved.
+319|Jin[laugh]「Ho ho ho. Not yet.\nYou're only looking at your opponent.」
+320|Jin「First, look into your own heart.\nFear, haste, greed... all of it is you. There's no need to force it away.」
+321|Jin[think]「Just let your heart grow still.」
+322|You steadied your breath, like standing before the forge.\n...Like that one instant when the hammer comes down.
+323|The stick grazed Jin's sleeve.
+324|Jin[smile]「Ho ho ho. Looks like you've finally got it.\nThat is "no-mind." ...The single stroke loosed from it, I called "Issen."」
+325|Jin「Don't forget.\nNo matter how strong the foe you face... never lose sight of yourself.」
+326|Jin[smile]「...Oh, right. Take this too. How to make the sword I used to carry.」\n(You got the blueprint for the masterwork "Nameless Sword.")
+327|Jin[think]「...Oh? You've climbed that far.」
+328|Jin「Is the tower's eye still on you? ...I see.\nLooks like it's grown quite fond of you, too.」
+329|Jin「One last thing to teach you. "Ryusui."\nYou don't take the blow. You let it flow, and send it back.」
+330|Jin[smile]「I don't know what's waiting up there.\nBut... as long as you don't lose yourself, you'll be fine.」
+331|Jin[laugh]「Ho ho ho. Starting tomorrow, though, I'm just a sunbathing old man again. Nice to know you.」
+332|<b>Skill learned</b><em>{0}</em><small>{1} (usable by any job)</small>
+335|Jin[smile]「Well, it's time for my nap.」
+336|Read the inscription
+337|「Jin the Swordsman — who challenged the tower and saved many」\n...The letters on the pedestal are a little worn.
+338|「Jin... Same name as that old man.」
+339|Jin[laugh]「Ho ho ho. It's a common name.」

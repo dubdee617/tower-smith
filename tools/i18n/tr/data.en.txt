@@ -1,0 +1,951 @@
+0|{0} {1}
+1|
+2|{0} Shield
+3| Shield
+4|{0} Armor
+5| Armor
+6|Blacksteel {0}
+7|Blacksteel
+8|Dragon {0}
+9|Dragon
+10|Royal {0}
+11|Royal
+12|Royal Heirloom {0}
+13|Royal Heirloom
+14|Copper
+15|Iron
+16|Bone
+17|Leather
+18|Manastone
+19|Wood
+20|Silver
+21|Mithril
+22|Orichalcum
+23|Blacksteel
+24|Dragonbone
+25|Giant Rat Pelt
+26|Cursed Bone
+27|Copper Ore
+28|Iron Ore
+29|Silver Ore
+30|Mithril Ore
+31|Raw Orichalcum
+32|Dull Manastone
+33|Ironeater Shell
+34|Golem Core
+35|Ore-Laced Rock
+36|Tower Log
+37|Buried Treasure
+38|Rough Gem
+39|Beast Pelt
+40|Beast Fang
+41|Giant Spider Silk
+42|Hard Shell
+43|Ancient Branch
+44|Magic Spores
+45|Scales
+46|Old Rag
+47|Cursed Goldwork
+48|Rock Core
+49|Big Feather
+50|Unmelting Ice
+51|Burning Stone
+52|Star Fragment
+53|Blacksteel Shard
+54|Dragon Bone
+55|Sandworm Gem
+56|Hammer
+57|Blacksmith
+58|Sword
+59|Swordsman
+60|Grimoire
+61|Mage
+62|Staff
+63|Priest
+64|Dagger
+65|Thief
+66|Axe
+67|Bandit
+68|Katana
+69|Samurai
+70|Greatsword
+71|Knight
+72|Bow
+73|Archer
+74|Shield
+75|Spellsword
+76|Sage
+77|Monk
+78|Hunter
+79|Magic Archer
+80|Marauder
+81|Berserker
+82|Paladin
+83|Dark Knight
+84|Sword Master
+85|Ninja
+86|Assassin
+87|Sword Saint
+88|Sword mastery 80, 60 wins as Sword Master, 30 wins as Spellsword
+89|Archmage
+90|Grimoire mastery 80, 60 wins as Sage, 30 wins as Magic Archer
+91|Master Smith
+92|Hammer mastery 80, 30 wins each in 3+ advanced jobs
+93|Attack
+94|Hit it with your weapon
+95|Guard
+96|Halve damage taken this turn
+97|Item
+98|Use herbs or bandages
+99|Run
+100|50% chance to escape
+101|Smash
+102|Heavy blow + breaks guard
+103|Resharpen
+104|Attacks x1.3 this turn
+105|Double Slash
+106|2 hits. Crits come easy
+107|Lunge
+108|Step in and strike + take a bit less damage this turn
+109|Iaido
+110|A very heavy blow
+111|Read
+112|Parry and strike back hard
+113|Reckless
+114|Trade HP for big damage
+115|Big Swing
+116|Heavy blow to all foes + breaks guard
+117|Steal
+118|Steal materials
+119|Vital Stab
+120|Crits come easy
+121|Aimed Shot
+122|Likely to hit a weak spot
+123|Rapid Fire
+124|3 hits
+125|Prayer
+126|Restores a lot of HP
+127|Holy Light
+128|Holy magic (S). Heals a little
+129|Fire
+130|Fire magic (S). Ignores defense
+131|Ice
+132|Ice magic (S). Sometimes freezes
+133|Thunder
+134|Thunder magic (S). Sometimes hits twice
+135|Blaze
+136|Fire magic (M)
+137|Inferno
+138|Fire magic (L). All foes. Charge AP to cast
+139|Ice Lance
+140|Ice magic (M). Often freezes
+141|Blizzard
+142|Ice magic (L). Freezes all foes
+143|Lightning
+144|Thunder magic (M). May hit twice
+145|Heaven's Bolt
+146|Thunder magic (L). All foes
+147|Holy Cross
+148|Holy magic (M). Heals too
+149|Judgment
+150|Holy magic (L). All foes + big heal
+151|Dark
+152|Dark magic (S). Costs a little HP, hits hard
+153|Darkness
+154|Dark magic (M). Costs HP
+155|Abyss
+156|Dark magic (L). All foes. Costs lots of HP
+157|Stance
+158|Catch the next attack and counter
+159|Iron Wall
+160|Greatly reduce damage this turn
+161|Shield Bash
+162|Hit, then stay guarded
+163|Flurry
+164|4 hits
+165|Swallow Cut
+166|2 heavy hits
+167|Mirage
+168|50% chance to dodge attacks this turn
+169|Shadow Bind
+170|Sometimes stops the foe in its tracks
+171|Assassinate
+172|Sometimes kills in one blow (not on bosses)
+173|Magic Blade
+174|A slash that ignores defense
+175|Healing Flame
+176|Heal while attacking
+177|Cleave
+178|Heavy greatsword blow + breaks guard
+179|Exorcist Staff
+180|Heal while hitting
+181|Vital Shot
+182|Shoots a vital spot
+183|Magic Arrow
+184|Two magic arrows
+185|Plunder
+186|Hit and grab materials
+187|Dark Blade
+188|A big move that pays HP to ignore defense
+189|Holy Guard
+190|Heal and guard
+191|Bomb
+192|Explosion that ignores defense, all foes
+193|Straight Punch
+194|A bare-handed blow
+195|Saint's Flash
+196|A flash that cuts all things. Crits come easy
+197|Thousand Swords
+198|Wraps all foes in a thousand slashes. Charge AP to use
+199|Reforge
+200|Reforge the blade on the spot. Attacks x1.7 this turn
+201|Master's Strike
+202|A blow from one who knows a weapon's core + breaks guard hard
+203|Issen
+204|The secret art Jin taught you. One stroke from an empty mind. Ignores defense
+205|Ryusui
+206|A stance Jin taught you. Let attacks flow past, return them double
+207|Mercy Strike
+208|Finish a foe with this to double the loot
+209|Iron Hammer
+210|A heavy blow, x1.5 on lords and wardens
+211|Sweep
+212|Slash all foes
+213|Helm Splitter
+214|Greatly breaks the foe's guard
+215|Sleep Mist
+216|Puts all foes to sleep (lords resist)
+217|Focus
+218|Skills x1.5 this turn
+219|Great Prayer
+220|Fully restores HP
+221|Light Ward
+222|Guard and heal a little
+223|Fast Feet
+224|Always escape (not from lords)
+225|Snatch
+226|Attack and grab materials
+227|Woodchop
+228|x2 on wood and plant foes. Drops logs when they fall
+229|Wrath
+230|Stronger the lower your HP (up to x4.5)
+231|Steelcutter
+232|Cuts even hard foes. Ignores defense
+233|No-Mind
+234|A stroke from an emptied heart. Charge AP to use
+235|Cross Slash
+236|Two hits in a cross
+237|Immovable
+238|Take no damage this turn
+239|Arrow Storm
+240|Thousand Arrows
+241|A rain of arrows on all foes. Charge AP to use
+242|Roundhouse
+243|Kick all foes
+244|Psych Up
+245|Heal a little, attacks x1.4 this turn
+246|Hundred Fists
+247|7 hits
+248|Four Elements
+249|A blow wrapped in fire, ice, thunder and holy light
+250|Diamond Stance
+251|Take the hit, then hit back hard
+252|Set Trap
+253|Trap the foe and stop it from moving
+254|Meteor Arrows
+255|Rain magic arrows on all foes
+256|Earthsplitter
+257|Shake all foes, sometimes leaving them unable to move
+258|Whirlwind
+259|A spinning slash that catches all foes
+260|Holy Sword
+261|A holy blow. Ignores defense and heals
+262|Life Drain
+263|Drain HP equal to half the damage dealt
+264|Wild Dance
+265|5 dancing slashes
+266|Shuriken
+267|3 shuriken
+268|Cursed Blade
+269|A curse that deals damage every turn
+270|Grand Spell
+271|The grand spell that was supposed to save the world. Tiring to cast
+272|Barrage
+273|Take-Home
+274|Keep half your materials even if you fall
+275|Keen Eye
+276|Monsters drop materials more often
+277|Strongarm
+278|Attack +3
+279|Critical
+280|Sturdy
+281|Max HP +20 (in the tower only)
+282|Light Fingers
+283|Steal succeeds more often
+284|First Strike
+285|Land a hit first at the start of battle
+286|Regen
+287|HP +3 every turn
+288|Herbalist
+289|Herbs heal x1.5
+290|Focus
+291|AP +1 every turn
+292|Iron Skin
+293|Defense +3
+294|Shield Lore
+295|Guard and Iron Wall work better
+296|Reserve
+297|Carry over +1 more AP
+298|Fighting Spirit
+299|Attack x1.5 on the first turn
+300|Copper Hammer
+301|Copper Sword
+302|Bone Dagger
+303|Bone Staff
+304|Manastone Grimoire
+305|Bone Bow
+306|Copper Axe
+307|Copper Shield
+308|Iron Sword
+309|Iron Katana
+310|Iron Greatsword
+311|Iron Axe
+312|Iron Hammer
+313|Iron Shield
+314|Copper Pickaxe
+315|Woodcutter's Axe
+316|Shovel
+317|Leather Armor
+318|Iron Armor
+319|Bow
+320|Blacksteel Shield
+321|Blacksteel Armor
+322|Dragon Shield
+323|Dragon Armor
+324|Flame Sword
+325|Fire on every hit. x1.5 on ice and plant foes
+326|Ice Katana
+327|Ice on every hit. Sometimes freezes
+328|Thunder Halberd
+329|Thunder on every hit. Sometimes hits twice
+330|Holy Staff
+331|Heals a little with every attack
+332|Bloodsucker Dagger
+333|Drain 20% of damage dealt as HP
+334|Twin Swords
+335|Normal attacks always hit twice
+336|Wind Bow
+337|Always strikes first. Fires 2 arrows
+338|Earth Hammer
+339|Sometimes makes foes flinch. Breaks guard
+340|Shadow Knife
+341|Crits come easy, and crits deal x3
+342|Grimoire of Time
+343|AP +1 every turn
+344|Blacksmith's Hammer
+345|Where it all began. More materials after battle
+346|Star Sword
+347|Magic power x1.3
+348|Ogre's Club
+349|Huge attack, but normal attacks cost 2 AP
+350|Thief's Knife
+351|Steals a little gold with every attack
+352|Venom Fang
+353|Poisons on hit (damage every turn)
+354|Guardian Greatsword
+355|25% less damage taken on turns you attack
+356|Sun Greatsword
+357|Holy light. x2 on dark foes
+358|Moon Katana
+359|Attack x1.5 when HP is below half
+360|Serpent Whipsword
+361|Against groups, also hits other foes for 30%
+362|Giant's Axe
+363|Normal attacks hit all foes (60% each)
+364|Nameless Sword
+365|The old sword of the swordsman in the statue. "Issen" x1.5
+366|Lava Axe
+367|Fire. Halves the foe's defense
+368|Frost Bow
+369|Ice. Often freezes
+370|Storm Sword
+371|Thunder. May hit two or three times
+372|Dark Greatsword
+373|Dark. Very strong, but costs a little HP every swing
+374|Light Dagger
+375|Holy. x2 on dark foes and ghosts
+376|Crescent Twin Blades
+377|Always hits twice
+378|Hundred-Fist Knuckles
+379|Punch 4 times
+380|Swallow Bow
+381|Fires 3 arrows
+382|Soul-Eater Staff
+383|Restores HP each time you defeat a foe
+384|Healing Hammer
+385|Attacks sometimes heal injuries
+386|Grimoire of Life
+387|Restores HP every turn
+388|Lightning Dagger
+389|Thunder. AP +1 every turn
+390|Gale Katana
+391|Always strikes first
+392|Charging Greatsword
+393|Golden Axe
+394|Double gold from battles
+395|Lucky Staff
+396|Materials drop more often
+397|Treasure Pickaxe
+398|Doubles what you dig up while you carry it
+399|Judgment Greatsword
+400|50% chance to finish foes below 25% HP
+401|Executioner's Axe
+402|Crits deal x4
+403|Sniper Bow
+404|Always crits. Normal attacks cost 2 AP
+405|Mirror Shield
+406|Reflects 25% of damage taken
+407|Great Tree Shield
+408|Unshakable Armor
+409|You never get injured
+410|Rusty Sword
+411|Grows stronger with use (Attack +1 per win, up to +40)
+412|Cursed Katana
+413|Very strong, but drains HP every turn
+414|Kid's Wooden Sword
+415|Very weak, but double EXP
+416|Cook's Knife
+417|Cooks defeated monsters, sometimes restoring HP
+418|Dragonslayer Spear
+419|x3 on dragons
+420|Forest Goddess's Bow
+421|The Forest Goddess's masterwork. Fires 2 arrows and restores a little HP every turn
+422|Flower Goddess's Staff
+423|The Flower Goddess's masterwork. Heals every turn, helps injuries mend, and heals more on each kill
+424|Sand Goddess's Scimitar
+425|The Sand Goddess's masterwork. Halves the foe's defense and sometimes hits twice
+426|Mountain Goddess's Maul
+427|The Mountain Goddess's masterwork. Makes foes flinch, breaks guard hard, and reduces damage taken
+428|Ice Goddess's Katana
+429|The Ice Goddess's masterwork. Often freezes, and crits come easy
+430|Short Sword
+431|Royal Guard Armor
+432|Royal Shield
+433|Giant Rat
+434|Skeleton
+435|Goblin
+436|Ironeater Centipede
+437|Mine Golem
+438|Forest Wolf
+439|Giant Spider
+440|Treant
+441|Mushroom Man
+442|Venom Moth
+443|Horned Boar
+444|Prank Fairy
+445|Vine Creeper
+446|Giant Scorpion
+447|Sand Lizard
+448|Mummy
+449|Sandworm
+450|Rock Golem
+451|Goat Demon
+452|Wyvern
+453|Yeti
+454|Rock Lizard
+455|Orc
+456|Harpy
+457|Ghost Miner
+458|Giant Serpent
+459|Man-Eating Flower
+460|Forest Tiger
+461|Poison Frog
+462|Great Ape
+463|Bug Swarm
+464|Jungle Shaman
+465|Giant Beetle
+466|Statue Warden
+467|Cursed Pot
+468|Sphinx
+469|Ruin Soldier
+470|Scarab
+471|Sand Serpent
+472|Golden Armor
+473|Grave Hound
+474|Griffin
+475|Rock Crab
+476|Ogre
+477|Magma Slime
+478|Thunderbird
+479|Young Rock Giant
+480|Canyon Harpy
+481|Lava Lizard
+482|Pegasus
+483|Cloud Dragon
+484|Wind Spirit
+485|Storm Bird
+486|Ice Angel
+487|Cloud Whale
+488|Frost Knight
+489|Star Jellyfish
+490|Phantom Knight
+491|Gargoyle
+492|Magic Puppet
+493|Dragoon
+494|Shadow Assassin
+495|Living Armor
+496|Cursed Tome
+497|Mirror Shard
+498|Ice Wolf
+499|Snowman Fiend
+500|Ice Golem
+501|Snow Sprite
+502|Polar Bear
+503|Ice Bird
+504|Frozen Knight
+505|Blizzard Ghost
+506|Desert Vulture
+507|Cactus Fiend
+508|Sand Spirit
+509|Grave Robber's Ghost
+510|Forest Goblin Thief
+511|Giant Slug
+512|Owl Fiend
+513|Stump Fiend
+514|Mossy Tortoise
+515|Queen Bee
+516|Kodama
+517|Withered Scarecrow
+518|Desert Bandit
+519|Camel Fiend
+520|Antlion
+521|Sandstorm Eye
+522|Viper Bundle
+523|Mirage Dancer
+524|Bone Lizard
+525|Chest Crab
+526|Bandit Chief
+527|Wildcat
+528|Rockfall Fiend
+529|Great Eagle
+530|Dwarf Ghost
+531|Ore Centipede
+532|Thunder Goat
+533|Troll
+534|Snow Leopard
+535|Penguin Warrior
+536|Ice Slime
+537|Mammoth
+538|Yuki-onna
+539|Frozen Great Tree
+540|Frost Fox
+541|Icicle Fiend
+542|Chameleon Fiend
+543|Giant Parrot
+544|Pitcher Plant Pack
+545|Croc Warrior
+546|Toadstool Sprite
+547|Giant Leech
+548|Jaguar Warrior
+549|Wooden Mask Spirit
+550|Hawk-Headed Priest
+551|Cursed Tablet
+552|Sand Charioteer
+553|Snake-Haired Woman
+554|Golden Beetle Swarm
+555|The King's Cat
+556|Fallen Colossus Hand
+557|Sealed Box
+558|Rock Rhino
+559|Fire-Breathing Lizard
+560|Canyon Bat
+561|Petrifying Eye
+562|Fire Sprite
+563|Obsidian Golem
+564|Scorpion King
+565|Lava Serpent
+566|Cloud Sheep
+567|Lightning Sprite
+568|Sky Jellyfish King
+569|Sky Cavalier
+570|Moon Rabbit
+571|Glacier Serpent
+572|Rainbow Bird
+573|Cloud Giant's Hand
+574|Court Mage's Ghost
+575|Blood-Red Rose
+576|Portrait Fiend
+577|Candlestick Knight
+578|Black Wolf King
+579|Hanging Armor
+580|Jester Doll
+581|Hand of the Shadow King
+582|Giant Bat
+583|Cave Slime
+584|Wandering Armor
+585|Ore Lizard
+586|Goblin Archer
+587|Bone Dog
+588|Giant Centipede Larva
+589|Rusty Gear Fiend
+590|King of the Sewer Rats
+591|Chain Ghost
+592|Pebble Imp
+593|Candle Fiend
+594|Great Sandworm
+595|Great Bear, Lord of the Forest
+596|Young Dragon
+597|Ice Giant
+598|Great Ape King of the Jungle
+599|King of the Ruins
+600|Old Fire Dragon
+601|Elder Dragon
+602|Goblin Boss
+603|Moss Serpent
+604|Scorpion Queen
+605|Ogre Warlord
+606|Ice Wolf King
+607|Giant Frog King
+608|Anubis Guardian
+609|Chimera
+610|Storm Roc
+611|Black Knight Commander
+612|Herb
+613|Restores a little HP
+614|Restores a little HP
+615|Mid Herb
+616|Restores some HP
+617|Restores a fair amount of HP
+618|Big Herb
+619|Fully restores HP
+620|Homing Feather
+621|Return to town
+622|Takes you back to town
+623|Bandage
+624|Treats an injury for now
+625|Treats one injury for now (get it healed back in town)
+626|Bird Carrier
+627|Send loot to the workshop
+628|A bird carries all your current loot to the workshop (loot only)
+629|Ward Charm
+630|Encounters -30% for 3 floors
+631|Monster encounters -30% (for 3 floors after use)
+632|Lure Charm
+633|Encounters +40% for 3 floors
+634|Monster encounters +40% (for 3 floors after use)
+635|Guiding Lamp
+636|Shows where the stairs are
+637|Puts this floor's up and down stairs on the map, with direction and steps
+638|Leather Stew
+639|Max HP +10
+640|Tough. But it puts strength in your gut.
+641|Bone Soup
+642|HP +6 after every battle won
+643|Warms you slowly. Right to the marrow.
+644|Manastone Soup
+645|AP +1 on the first turn of battle
+646|Your tongue tingles. Your body feels light.
+647|Word is, the tower's the same as usual today.
+648|Rumor has it there are way more chests in the tower today.
+649|The goblins are making a racket, I hear. Might be plenty of copper.
+650|They say the tower's quiet today. Not many monsters.
+651|Word is, monsters are dropping lots of materials.
+652|The monsters are riled up today. Then again, more to gain if you beat 'em.
+653|Broken Arm
+654|Attack -20%
+655|Sprained Ankle
+656|Can't dodge, hard to run
+657|Cracked Rib
+658|AP -1 every turn
+659|Head Bruise
+660|No critical hits
+661|Prayer of Endurance
+662|Once, hang on with 1 HP instead of falling
+663|Prayer of Protection
+664|Damage taken in boss fights -30%
+665|Prayer of Stillness
+666|Fewer monster encounters
+667|Jenny「...Hey, your hand. You burned it again, didn't you?」
+668|「A craftsman's medal.」
+669|Jenny[laugh]「What's that supposed to mean? ...Well, it's kinda cool, I guess.」
+670|「Thanks. I'll be careful.」
+671|Jenny[shy]「I-it's not like I was worried or anything.」
+672|「Your hands are rough too.」
+673|Jenny[angry]「Oh, shut it! I swing a hammer too, you know!」
+674|Jenny「Your sword sold again today. ...'Cause I put it on the best shelf, that's why.」
+675|「That helps. It sells because it's your shop.」
+676|Jenny[happy]「...R-right?! Glad you get it.」
+677|「It's because the sword is good.」
+678|Jenny[angry]「Excuse me? How you display it matters too!」
+679|「Which one's the best shelf?」
+680|Jenny[laugh]「The one facing the door. I polish it every morning.」
+681|Jenny「Is the view nice up the tower? ...I'd like to see it someday.」
+682|「I'll take you someday.」
+683|Jenny[inlove]「...Really? That's a promise, okay?」
+684|「It's dangerous. Don't.」
+685|Jenny[worried]「I know that. ...Same goes for you.」
+686|「It's nothing but stone walls.」
+687|Jenny[laugh]「Wow. Where's your sense of wonder?」
+688|Jenny「Not many customers today, so I'm bored. ...You can stick around a bit, if you want.」
+689|「Just for a little while, then.」
+690|Jenny[shy]「...Hmph. Sit down, why don't you.」
+691|「I need to get back to the workshop.」
+692|Jenny「...Fine. See you later.」
+693|「Want me to watch the counter?」
+694|Jenny[laugh]「With you standing there? The customers would run.」
+695|Elly「Are you eating properly? I worry about what you eat in that tower...」
+696|「I eat at the inn before I go.」
+697|Elly[smile]「Oh, good. If it's Gaston's cooking, I can relax.」
+698|「Thanks for worrying about me.」
+699|Elly[happy]「...N-not at all! It's only natural, as a clinic healer!」
+700|「Monster meat, mostly.」
+701|Elly[shock]「Wha...! Y-you'll ruin your stomach!」
+702|Elly「I wrote a new prayer. Would you listen?」
+703|「I'd love to hear it.」
+704|Elly[shy]「...May Mr. Smith come home safe. ...That's all.」
+705|「Save it for the gods.」
+706|Elly「...R-right. Of course.」
+707|「Keep it short, please.」
+708|Elly[laugh]「Hehe, then just one word. "Welcome home."」
+709|Elly「This flower bloomed behind the clinic. ...Would you like to take it?」
+710|「I'll put it up in the workshop.」
+711|Elly[happy]「Okay! I'll be cross if you let it wilt.」
+712|「It'd get squashed in the tower.」
+713|Elly[smile]「Then please keep it in the workshop.」
+714|「Can you eat it?」
+715|Elly[shock]「You may NOT eat it!」
+716|Ria「I made a clean copy of your climb record. ...Nice handwriting, isn't it?」
+717|「Yeah, easy to read.」
+718|Ria[smile]「Thank you. It's my job.」
+719|「Your handwriting's beautiful, Ria.」
+720|Ria[shy]「...! ...I'll be keeping a record of that remark.」
+721|「As long as the numbers add up.」
+722|Ria「...I suppose so.」
+723|Ria「How far are you going next time? I need to know your plans or I'll worry... I mean, the paperwork will.」
+724|「Only as far as I can manage.」
+725|Ria[happy]「...Yes. That's best.」
+726|「As far as I can go.」
+727|Ria[worried]「...As far as you can still come back from, please.」
+728|「For the paperwork, huh?」
+729|Ria「...Yes. For the paperwork.」
+730|Ria「Boltz was praising you. He says your loot is always handled with care.」
+731|「Boltz is the one with the skill.」
+732|Ria[smile]「Hehe. I'll pass that on.」
+733|「Because you're the one who takes it in, Ria.」
+734|Ria[shy]「...I-I'm just the receptionist.」
+735|「Praise won't change the price.」
+736|Ria[laugh]「That's true enough.」
+737|Fuuka「...So it was you. We meet again.」
+738|「You look well.」
+739|Fuuka[smile]「Yes. And I am glad to see you unharmed.」
+740|「Were you waiting for me?」
+741|Fuuka[shy]「...N-no. It is chance. ...Mere chance.」
+742|「I'm working.」
+743|Fuuka[pout]「...I am aware.」
+744|Fuuka「That katana... no, never mind. Did you forge it?」
+745|「Yeah. Want to hold it?」
+746|Fuuka[love]「...May I? ...It is warm.」
+747|「It's not for sale.」
+748|Fuuka[pout]「I said nothing of wanting it.」
+749|「Want me to forge you one next?」
+750|Fuuka[laugh]「Truly? ...That is a promise, then.」
+751|Fuuka「A shinobi must never give her heart to anyone. ...So I was raised to believe.」
+752|「Is that so. Sounds rough.」
+753|Fuuka[pout]「...You truly are a dense man.」
+754|「Do what you like.」
+755|Fuuka[love]「...Yes. Perhaps I shall.」
+756|「I'm hungry.」
+757|Fuuka[laugh]「...Heh. Whatever does that mean?」
+758|Jin「Oho, a blacksmith who climbs the tower. ...Those hands. Good hands.」
+759|「I've still got a long way to go.」
+760|Jin[laugh]「Good answer. Ho ho ho.」
+761|「Thanks.」
+762|Jin「Mm.」
+763|「You climb too, old man?」
+764|Jin[smile]「That's an old story.」
+765|Jin「What do you suppose the tower is for?」
+766|「For gathering materials... I guess?」
+767|Jin[smile]「That is one answer.」
+768|「No idea. I feel like I'll know once I climb it.」
+769|Jin[laugh]「Good. One who can say "I don't know" is strong.」
+770|「Never thought about it.」
+771|Jin「...I see. The time to think will come.」
+772|Jin「The man in this statue, they say, turned back just short of the top.」
+773|「Why?」
+774|Jin[think]「...Who knows. Perhaps he found something that mattered more than the summit.」
+775|「What a waste.」
+776|Jin[laugh]「Ah, youth.」
+777|「Maybe he got scared.」
+778|Jin「Knowing fear is part of strength, too.」
+779|Sand Goddess「My, a child of man. What brings you this deep into the sand?」
+780|「Looking for materials.」
+781|Sand Goddess[smile]「How honest. I like that.」
+782|「I came to see you.」
+783|Sand Goddess[laugh]「Hehe. Smooth talker, aren't you?」
+784|「I'm lost.」
+785|Sand Goddess「...The exit is that way.」
+786|Sand Goddess「All sand was rock, once. Your sword will be sand someday, too.」
+787|「If it gets used till then, I'll be happy.」
+788|Sand Goddess[smile]「...A fine craftsman.」
+789|「I'll forge it so it won't.」
+790|Sand Goddess[laugh]「So stubborn.」
+791|「Big talk goes over my head.」
+792|Sand Goddess「...I see.」
+793|Forest Goddess「You haven't been cutting my forest's trees without reason, I trust?」
+794|「Only what I need.」
+795|Forest Goddess[smile]「Yes. That's how it should be.」
+796|「I use iron more than wood.」
+797|Forest Goddess「...Then that's fine.」
+798|「I burn a lot of firewood.」
+799|Forest Goddess[angry]「......」
+800|Forest Goddess「I feel like I can smell your forge fire from here.」
+801|「Smells nice, right?」
+802|Forest Goddess[laugh]「Yes. I don't mind it.」
+803|「I'd never burn the forest.」
+804|Forest Goddess[smile]「I know. Not you.」
+805|「Good nose.」
+806|Forest Goddess「I am a goddess, after all.」
+807|Flower Goddess「Do you like flowers?」
+808|「One in the workshop calms me down.」
+809|Flower Goddess[laugh]「Hehe, then have this one.」
+810|「If I can eat it.」
+811|Flower Goddess「...Please don't eat it.」
+812|「To look at, sure.」
+813|Flower Goddess[smile]「That's plenty.」
+814|Flower Goddess「You've climbed all this way. ...Aren't you tired?」
+815|「A little. But it's fun.」
+816|Flower Goddess[smile]「If it's fun, you'll be just fine.」
+817|「Not at all.」
+818|Flower Goddess「Don't push yourself.」
+819|「I'm hungry.」
+820|Flower Goddess[laugh]「Ahaha.」
+821|Ice Goddess「...Aren't you cold?」
+822|「Way cooler than standing at the forge.」
+823|Ice Goddess[smile]「...Strange man.」
+824|「I'm cold.」
+825|Ice Goddess「...I see. I'll ease it, just a little.」
+826|「Not really.」
+827|Ice Goddess「......」
+828|Ice Goddess「Ice melts. But it freezes again. ...I wonder if hearts are the same.」
+829|「Reforge it and a blade gets sharp again too.」
+830|Ice Goddess[laugh]「...Hehe. Spoken like a blacksmith.」
+831|「That's a tough one.」
+832|Ice Goddess「...Yes.」
+833|「Melted ice is water.」
+834|Ice Goddess「......Indeed.」
+835|Mountain Goddess「You've climbed far, child of man. Not out of breath?」
+836|「Not yet.」
+837|Mountain Goddess[laugh]「Heh, reassuring.」
+838|「Let me rest a bit.」
+839|Mountain Goddess[smile]「Honest. Good. On a mountain, pride gets you killed.」
+840|「Mind your own business.」
+841|Mountain Goddess「...I see.」
+842|Mountain Goddess「The crystal on this staff grew for a hundred years, deep in the mountain.」
+843|「A hundred years... that's fine work.」
+844|Mountain Goddess[laugh]「Praise fit for a craftsman.」
+845|「Bet it'd sell for a lot.」
+846|Mountain Goddess[angry]「......」
+847|「Isn't it heavy?」
+848|Mountain Goddess[smile]「You get used to it.」
+849|Weapons and armor sell to Jenny for +25%
+850|Treatment and prayers are half price
+851|+15% reward for loot you bring in
+852|Fuuka fights alongside you 12 times and appears above floor 40
+853|At floor 50 Jin tells you his story and teaches you the secret art "Issen" in training ("Ryusui" too, at floor 90)
+854|The Sand Goddess gives you rare materials and heals you
+855|The Forest Goddess gives you rare materials and heals you. You also get the blueprint for the masterwork "Forest Goddess's Bow"
+856|The Flower Goddess gives you rare materials and heals you
+857|The Mountain Goddess gives you rare materials and heals you
+858|The Ice Goddess gives you rare materials and heals you
+859|Dan
+860|Fuuka
+861|Gurugamo
+862|Gaban
+863|Forest Goddess
+864|Flower Goddess
+865|Sand Goddess
+866|Mountain Goddess
+867|Ice Goddess
+868|Pickaxe
+869|Stone Dungeon
+870|Forest
+871|Desert
+872|Mountains
+873|Snowfield
+874|Jungle
+875|Sand Ruins
+876|Crags & Canyon
+877|Glacier & Clouds
+878|Castle
+879|Old Barrel
+880|Wooden Crate
+881|Burlap Sack
+882|Pot
+883|Scattered Bags
+884|Rubble
+885|Rock
+886|Mine Cart
+887|Rock with a Pickaxe Stuck In It
+888|Crystal
+889|Stacked Stones
+890|Stalagmite
+891|Skeletal Warrior
+892|Fallen Warrior's Bones
+893|Bones Clutching a Shield
+894|Big Bones
+895|Beast Skull
+896|Pile of Skulls
+897|Ribcage
+898|Sword Grave
+899|Decorated Feather
+900|Mimic
+901|Fancy Mimic
+902|Broken Planks
+903|Broken Cart
+904|Mushrooms
+905|Altar
+906|Skull Stand
+907|Carved Stone
+908|Big Rock
+909|Mossy Rock
+910|Cracked Rock
+911|Jagged Rock
+912|Towering Rock
+913|Rock Pillar
+914|Tall Grass
+915|White Flowers
+916|Thicket
+917|Purple Flowers
+918|Brambles
+919|Dry Grass
+920|Berry Bush
+921|Mossy Rock Arch
+922|Rock Arch
+923|Pillar Arch
+924|Row of Pillars
+925|Crumbled Wall
+926|Wall with a Window
+927|Broken Pillar
+928|Fallen Pillar
+929|Spiral Stone
+930|Spiral Pillar
+931|Statue Head
+932|Dead Tree
+933|Dead Roots
+934|Mossy Log
+935|Ice Crystal
+936|Sharp rocks point at the sky.
+937|A rock so tall you have to look up. No way to climb it.
+938|Pillars of rock carved by the wind stand in a row.
+939|Tall grass sways.
+940|Little white flowers are blooming. Even here.
+941|A low, leafy tree.
+942|The purple flowers smell nice.
+943|A tangle of thorny brambles. Better keep your hands off.
+944|The dry grass rustles.
+945|A rock arch covered in moss. Looks like it's been here forever.
+946|The rocks have formed an arch on their own.
+947|A gate where only the pillars remain.
+948|A row of pillars. There must have been a building here once.
+949|A crumbling stone wall.
+950|A wall with only the shape of a window left. Nothing on the other side.

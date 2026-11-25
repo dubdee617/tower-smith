@@ -203,3 +203,22 @@ button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;l
 #montage .theend small{margin-top:.8em;font-size:13px;letter-spacing:.3em;opacity:.7}
 #montage .theend.tap::after{content:"タップで戻る";position:absolute;bottom:10%;font-size:12px;opacity:.5;animation:blink 2s infinite}
 @keyframes blink{50%{opacity:.15}}
+/* 2026-11-25: 戦闘のボタンを低くする。アイコンは名前の左、APは右上の小さな札に（下の段と重ならないように） */
+.dg .ctl .btns.four button,.dg .ctl .btns.sk button{position:relative;display:flex;align-items:center;justify-content:center;min-height:38px;padding:2px 24px 2px 6px;font-size:14px;white-space:nowrap;overflow:hidden}
+.dg .ctl .btns.four button .ic,.dg .ctl .btns.sk button .ic{display:inline-block;margin:0 4px 0 0;width:18px;height:18px;flex:none}
+.dg .ctl .btns.four button small,.dg .ctl .btns.sk button small{position:absolute;right:3px;top:3px;font-size:10px;line-height:1.2;padding:1px 3px;border-radius:3px;background:rgba(0,0,0,.4);color:#8fd0ff!important;overflow:visible}
+.dg .ctl>.btns.sk{grid-auto-rows:minmax(38px,46px)}
+.dg .ctl>.btns.four button{min-height:40px}
+html.en .dg .ctl .btns.four button,html.en .dg .ctl .btns.sk button{font-size:12px;letter-spacing:-.02em}
+/* 打つ前の比べ（今の装備との差） */
+button small .gcmp{margin-left:4px}button small .gcmp b{font-weight:700;margin-right:4px}
+button small .gcmp .up{color:#7dff9a}button small .gcmp .dn{color:#ff8a7a}
+.fcmp{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:rgba(10,7,4,.72);animation:figC .25s ease-out;pointer-events:none}
+.fcmp .in{width:88%;padding:14px 14px 12px;border:2px solid #c9a25d;border-radius:8px;background:linear-gradient(#2a1d12,#17100a);box-shadow:0 6px 20px rgba(0,0,0,.6)}
+.fcmp .hd{margin:0 0 8px;color:#ffc069;font-size:13px;letter-spacing:.1em;text-align:center}
+.fcmp .nm{display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;color:#cdb894;margin-bottom:8px;flex-wrap:wrap;text-align:center}.fcmp .nm b{color:#fff3d6;font-size:17px}
+.fcmp .ar{color:#ffc069}
+.fcmp table{width:100%;border-collapse:collapse;font-size:17px}.fcmp th{color:#cdb894;font-weight:400;text-align:left;width:22%;font-size:14px}
+.fcmp td{text-align:center;padding:3px 2px}.fcmp td b{color:#fff3d6;font-size:19px}
+.fcmp td.up{color:#7dff9a;font-weight:700}.fcmp td.dn{color:#ff8a7a;font-weight:700}
+.fcmp .ds{margin:8px 0 0;color:#9fe0c0;font-size:12.5px;text-align:center}.fcmp .jb{margin:8px 0 0;color:#ffd76a;font-size:13px;text-align:center}

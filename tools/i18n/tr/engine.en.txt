@@ -1,0 +1,31 @@
+0|Barrel
+1|Bleached Bones
+2|Stump
+3|Cluster of Mushrooms
+4|Fallen Log
+5|Cow Skull
+6|Fallen Stone Pillar
+7|Mine Support
+8|Frozen Tree
+9|Snow-Buried Barrel
+10|Icicle Rock
+11|Snowman Remains
+12|Big Fern
+13|Mossy Statue Head
+14|Giant Flower
+15|Fallen Tree
+16|Obelisk
+17|Broken Statue
+18|Golden Pot
+19|Stone Coffin
+20|Lava-Spewing Rock
+21|Charred Tree
+22|Ice Crystal Pillar
+23|Cloud Clump
+24|Heavenly Altar
+25|Frozen Feather
+26|Candlestick
+27|Decorative Armor
+28|Throne
+29|Desk Piled with Books
+30|Big Tree Trunk

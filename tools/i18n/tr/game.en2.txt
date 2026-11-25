@@ -1,0 +1,321 @@
+344|Gate Guard[smile]「Please go ahead, Master Smith. The King awaits.」
+345|King[laugh]「Oho, you've come, blacksmith! Floor 50, you say? Wahaha, splendid!」
+346|King「You might be stronger than I was in my youth! ...Not that I ever climbed it, mind you!」
+347|King[laugh]「Floor 70! The whole kingdom's talking about you. We're counting on you!」
+348|King「You've matched Gaban's record... No, surpass it. It's this kingdom's dream.」
+349|King[laugh]「You did it! You beat Gaban's record! Wahaha, tonight we celebrate!」
+350|King「Floors no one has ever seen... I look forward to your tales.」
+351|Minister「I'm glad to see you safe. If anything troubles you, just say the word.」
+352|Minister[smile]「His Majesty may not look it, but he reads your records every night.」
+353|Minister「If you need any tower lore, I'll open the royal archives for you.」
+354|Minister[smile]「Floor 87... Not even the royal archives hold records beyond it. You are writing the first line.」
+355|Gaban[laugh]「Master Smith! I've wanted to meet you! Did you forge that sword yourself?!」
+356|Gaban「Two years ago, I turned back at floor 86. ...The enemies were too strong.」
+357|Gaban「Floor 70...! I believe you can go beyond it!」
+358|Gaban[laugh]「Floor 86... my record. Past here, the road is yours!」
+359|Gaban「...! Floor 87... Master Smith... I... I...!」\nThe Guard Captain wiped his eyes with his sleeve.
+360|Gaban[laugh]「For two years, I've wanted someone to surpass it. ...Thank you!」
+361|King[laugh]「A gift for passing floor 50! I had them bring one from the royal treasury, same kind as your weapon. Use it!」
+362|King「Floor 60, eh. Take the Royal Guard armor. Same as Gaban's. ...A tad heavy, mind!」
+363|King[laugh]「Floor 70! The Royal Shield. My grandfather's grandfather's shield. Treat it well.」
+364|King「Floor 80... Medicine and gold. If you run short, come again.」
+365|3 Big Herbs, 2 Homing Feathers, 1000G
+366|King「...You've surpassed Gaban's record. This is the greatest treasure in the kingdom. I entrust it to you.」
+367|Reward
+368|Received
+369|Receive reward
+370|For passing floor {0}
+371|For passing floor
+372|<b>The King's Reward</b><em>{0}</em><small>For passing floor {1} (equip it from "Change Gear" in the workshop)</small>
+377|Talk to the King
+378|Talk to the Minister
+379|Talk to Gaban
+382|<div class="statues">{0}</div><div class="name">Goddess Statues</div>
+384|Five goddess statues stand at the tower gate.\nNone of them glow yet. ...If only you could meet the goddesses in the tower.
+385|To F{0}
+386|To F
+387|{0}, {1}
+388|You touched the {0} statue. Light envelops you...
+389| statue. Light envelops you...
+390|The goddess statues glow softly. Where to?
+391|From F1
+392|From F5
+393|Lift
+394|From F10
+395|「...What to do.」
+396|Where to start climbing?
+397|Tool to bring (one at a time)
+398|No tools
+399|Can be forged in the workshop
+400|Durability {0}/{1}
+401|Durability
+402|Use tools with "Tool" while facing a wall.\nPickaxes suit stone walls, woodcutter's axes suit wood, shovels suit sand.
+403|You didn't bring a tool.\n(Choose one with "Prepare" at the tower gate)
+404|Use the {0} while facing a wall.
+405| is used while facing a wall.
+406|Tower Bone
+407|This wall is "tower bone." It can't be dug.
+408|Your {0} is broken. Fix it at the workshop.
+409| is broken. Fix it at the workshop.
+410|Choose Tool
+411|Check Items
+412|{0} / On hand {1}G{2}{3}
+413| / On hand
+414|「Alright, all set.」
+415|Before setting out, check your gear and items.
+416|Armor
+417|Weapons
+418|Armor
+419|Masterworks
+420|Copper/Iron
+421|Dragon
+422|Mithril/Blacksteel
+423|Orichalcum/Dragon
+424|Sword/Katana
+425|Greatsword/Axe/Hammer
+426|Dagger/Bow
+427|Grimoire/Staff
+428|Shield/Armor
+429|. Needs Forge Lv{0}
+430|. Needs Forge Lv
+431| needed
+432|<img class="gearimg" src="{0}" alt=""><b>Blueprint obtained</b><em>{1}</em><small>{2} (forge it under "Masterworks" in the workshop{3})</small>
+436|\n{0}Found the blueprint for the masterwork "{1}"!
+437|Masterwork "
+438|" blueprint found!
+439|Forge
+440|Lets you forge iron
+441|Lets you forge silver
+442|Lets you forge mithril
+443|Lets you forge orichalcum
+444|Copper, bone, leather, manastone only
+445|Up to iron
+446|Up to silver
+447|Up to mithril
+448|Up to orichalcum
+449|Anvil
+450|Forged weapon ATK / armor DEF +{0}
+451|Forged weapon ATK / armor DEF +
+452|Forged gear +{0}
+453|Forged gear +
+454|No upgrade
+455|Workbench
+456|Most-used material -1 (when 3 or more)
+457|Most-used material -1 (when 2 or more)
+458|Also, second most-used material -1
+459|Saves a few materials
+460|Saves materials
+461|Saves lots of materials
+462|No savings
+463|{0}{1} left
+464| left
+465|Workshop Upgrades (On hand {0}G)
+466|Workshop Upgrades (On hand
+467|G)
+468|(Max)
+469|{0}G: {1}
+470|G:
+471|Upgrading the {0} takes {1}G. {2}G short.
+474|Upgrade the {1} to Lv{2} for {0}G?
+478|Upgrade
+479|The {0} is now Lv{1}!\n{2}.
+482|Renovating {0}
+483| renovating
+484|Spend money to strengthen the workshop.\nGood gear comes from a good workshop.
+485|, can make {0}
+486|, can make
+487|Blueprints {0}/{1}{2}
+488|Blueprints
+489|Can make {0}/{1}
+490|Can make
+491|Nothing to make ({0} kinds)
+492|Nothing to make (
+493| kinds)
+494|Workshop Upgrades
+495|Forge{0} Anvil{1} Bench{2}
+496| Anvil
+497| Bench
+498|Maintenance
+499|{0} tools (1 copper each)
+500| tools (1 copper each)
+501|Nothing to fix
+502|「Loot needs processing at the guild first.」
+503|「What should I forge?」
+504|No blueprints yet
+505|Found rarely in chests, from lords, and from mimics
+506|{0}, Durability {1}
+507|, Durability
+508|Needs Forge Lv{0}
+509|Needs Forge Lv
+510|Not enough materials
+511|{0}{1}<span class="sellp">Sells for {2}G</span><br>{3}
+512|<span class="sellp">Sells for
+513|To forge the {0}, I need a stronger forge.\n(Smithing → "Workshop Upgrades" → Forge Lv{1})
+516|To forge the {0}, I'm short on {1}.\nNeeded: {2}
+517|To forge it,
+518| is short.\nNeeded:
+519|The materials in the workshop are shown above. Missing ones show in red.
+520|Forge the {0}? ({1})
+522|Forge as many as possible ({0})
+523|Forge as many as possible (
+524|)
+525|Forge {0}
+526| pieces
+527|\nThere's enough material for {0}. How many to forge?
+528|\nThere's enough material for
+529|. How many to forge?
+530|「{0}, huh...」\nPer piece: {1}{2}
+531|, huh...」\nPer piece:
+532|「{1} {0}. ...That got the blood pumping.」
+534|. ...That got the blood pumping.」
+535|「{0}, done. Not bad.」
+536|, done. Not bad.」
+537|{0}{1}\nForging
+538|\nForging
+539|Maintenance (1 copper makes it good as new)
+540|Fix the {0}
+541|Fix
+542|Durability {0}/{1} / 1 copper ({2})
+543| / 1 copper (
+544|You resharpened the {0}. Good as new.
+545| resharpened. Good as new.
+546|{0}\nMaintaining
+547|\nMaintaining
+548|(Right hand)
+549|(Left hand)
+550|(Equipped)
+551|{0} Durability {1}/{2}
+552| Durability
+553|\nEvolves ({0}{1}/{2}):
+554|「{0}, huh. Not bad.」{1}
+555|, huh. Not bad.」
+556|Current job: {0} (tap to cycle: right hand → left hand → unequip){1}
+557|Current job:
+558|(tap to cycle: right hand → left hand → unequip)
+559|The {0} is two-handed. No shield (one-handed at {1} mastery {2}).
+563|Skills to bring {0}/{1} (Attack, Guard, Item, and Run are always available)
+564|Skills to bring
+565|(Attack, Guard, Item, and Run are always available)
+566|AP{0}, {1}
+567|You can bring up to {0} skills.
+568|You can bring up to
+569| skills.
+570|No skills learned yet. Win battles with a job to learn them.
+571|Tap to select / remove.
+572|Passives {0}/{1} (work with any job)
+573|Passives
+574|(work with any job)
+575|Up to {0} passives.
+576|Up to
+577| passives.
+578|Tap to equip / remove.
+579|No passives learned yet. Win many battles with a job to learn them.
+580|{0}, Mastery {1}, Wins {2}
+581|, Mastery
+582|, Wins
+583|Two-handed weapon.
+584|One-handed weapon (can hold a shield).
+585|{0}: Hold a {1}. {2}
+586|Hold a
+587|???
+588|{0}{1}/{2} + {3}{4}/{5}
+589| +
+590|Unknown job. Requires mastery in the weapon you hold and a weapon you've used.
+591|When holding a {0}, you become a {1}.
+592|When holding a
+593|, you become a
+594|Top-tier job: {0}
+595|Top-tier job:
+596|{0}: Hold a {1} to take this form.
+597|Hold one to take this form.
+598|Unknown job.\nRequirement: {0}
+599|Unknown job.\nRequirement:
+600|Mastery rises when you win while holding that weapon.
+601|Buy
+602|Pricier than forging it yourself
+603|Sell
+604|{0} items
+605|Items
+606| items
+607|Nothing to sell
+608|Invite to the castle
+609|Jenny
+610|The Homing Feather begins to glow blue...
+611|Yes
+612|Sell (On hand {0}G)
+613|Sell (On hand
+614|Sell All
+615|{0} unequipped / {1}G
+616|Unequipped
+617| /
+618|Sell all {0} unequipped items?
+619|Sell all unequipped items:
+620|?
+621|Sold {0} items for {1}G.\nJenny[laugh]「Bringing them all at once? How thoughtful of you.」
+623|G.\nJenny[laugh]「Bringing them all at once? How thoughtful of you.」
+624|{0}G each
+625|Each
+626|Sell the {0} for {1}G?
+627|G?
+628|Jenny「{0}, {1}G. ...It'd sell for more, you know.」
+629|Jenny「
+630|G. ...It'd sell for more, you know.」
+631|How many {0} ({1}) to sell?
+633|Sell one {0} for {1}G?
+635|Sold the {0} for {1}G.
+636|G.
+637|All ({0})
+638|All (
+639|)
+640|Sell {1} {0} for {2}G?
+642|Sold {1} {0} for {2}G.
+643|Equipped items can't be sold
+644|Jenny「What are you selling? I'll buy the ones you forged yourself, too.」
+645|Buy (On hand {0}G)
+646|Buy (On hand
+647|Buy the {0} for {1}G? (On hand {2}G)
+649|Bought the {0}.\nJenny「Thanks for your business. ...The ones you forge are better, though.」
+650| bought.\nJenny「Thanks for your business. ...The ones you forge are better, though.」
+651|Jenny「It's our stock. Pricier than forging it yourself, but if you're in a hurry.」
+652|{0}<small>{1}G, have {2}</small>
+653|G, have
+654|Bought the {0}. {1}.
+655| bought.
+656|On hand {0}G / Deposited {1}G
+657|On hand
+658|G / Deposited
+659|Deposit All
+660|Withdraw All
+661|Hear rumors
+662|Today's tower
+663|Talk to the drunks
+664|Dolf and pals
+665|{0} / {1}
+666| /
+667|Gaston[laugh]「{0}, coming right up!」\n{1} (lasts until you next return from the tower)
+670|(lasts until you next return from the tower)
+671|You just ate {0}. It lasts until you next return from the tower.
+674|\n(The shortfall was taken from the bank)
+675|\nElly[smile]「Pay the rest when you make it big. ...So make sure you make it big, okay?」
+676|Injury: {0}
+677|Injury:
+678|No injuries
+679|Treat injury
+680|No injuries
+681|Elly[angry]「Honestly! I'm seriously angry, you know!」
+682|Elly[think]「...Again? Please be more careful next time.」
+683|Elly[smile]「There, all better. Please don't push yourself.」
+684|{0}{1}\n「Thanks, that helps.」
+685|\n「Thanks, that helps.」
+686|Blessing: {0} (works on your next climb)
+687|Blessing:
+688|(works on your next climb)
+689|Blessings (next climb only, pick one)
+690|{0} / {1}G
+691|Elly[smile]「Gods, please protect this person. ...There. {0}.」
+692|Elly[smile]「Gods, please protect this person. ...There.
+693|.」
+694|<li class="more" style="animation-delay:{0}ms">and {1} more</li>
+697|<small>Bonus: {0}</small>
+698|<small>Bonus:
+699|<b class="gold">+{0}G</b><em>Guild reward</em>{1}{2}

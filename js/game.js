@@ -57,7 +57,7 @@ let fx = { shake: 0, flash: 0, hit: 0 };
 
 // ---------- 設定とセーブ（2026-11-24） ----------
 // オートセーブ: tower_smith_v2（いつも最新）。手動のセーブ: スロット1〜3
-const OPT_DEF = { bgm: 1, sfx: 1, text: 1, shake: 2, auto: true };
+const OPT_DEF = { bgm: 1, sfx: 1, text: 1, shake: 2, auto: true, lang: I18N.on ? 1 : 0 };
 let OPTS = (() => { try { return Object.assign({}, OPT_DEF, JSON.parse(localStorage.getItem('tower_opts') || '{}')); } catch (e) { return { ...OPT_DEF }; } })();
 function saveOpts() { try { localStorage.setItem('tower_opts', JSON.stringify(OPTS)); } catch (e) {} }
 function save() {
@@ -173,8 +173,9 @@ function drawLog(cont) {
   if (logFace) { const i = document.createElement('img'); i.className = 'face'; i.src = `assets/jobs/face_${logFace}.png`; i.alt = ''; el.appendChild(i); }
   const s = document.createElement('div'); el.appendChild(s);
   // 話している人の名前は、名札にして上にのせる
-  const L = logLines.slice(), pm = /^([^\s「」\n（）]{1,8})「/.exec(L[0] || '');
+  const L = I18N.on ? logLines.map(x => tr(x, 1)) : logLines.slice(), pm = (I18N.on ? /^([^「」\n（）]{1,18}?)「/ : /^([^\s「」\n（）]{1,8})「/).exec(L[0] || '');
   if (pm) { const p = document.createElement('span'); p.className = 'plate'; p.textContent = pm[1]; s.appendChild(p); s.appendChild(document.createElement('br')); L[0] = L[0].slice(pm[1].length); }
+  if (I18N.on) for (let i = 0; i < L.length; i++) L[i] = I18N.quote(L[i]);  /* 英語: 「」を "" に */
   // 最後の行だけ、1文字ずつ出す（押すと全部出る）。続きのページ（cont）は、そのページ全体を出す
   let last = cont !== undefined ? cont : (L.pop() || ''), pre = cont !== undefined ? '' : (L.length ? L.join('\n') + '\n' : '');
   const pn = document.createTextNode(pre); s.appendChild(pn);
@@ -186,7 +187,7 @@ function drawLog(cont) {
     const whole = pre + last; pn.textContent = '';
     let lo = 1, hi = whole.length;
     while (lo < hi) { const mid = (lo + hi + 1) >> 1; tx.textContent = whole.slice(0, mid) + ' ▼'; if (over()) hi = mid - 1; else lo = mid; }
-    let cut = lo; const seg = whole.slice(0, cut), m = Math.max(seg.lastIndexOf('\n'), seg.lastIndexOf('。'), seg.lastIndexOf('」'), seg.lastIndexOf('、'), seg.lastIndexOf('！'), seg.lastIndexOf('？'));
+    let cut = lo; const seg = whole.slice(0, cut), m = Math.max(seg.lastIndexOf('\n'), seg.lastIndexOf('。'), seg.lastIndexOf('」'), seg.lastIndexOf('、'), seg.lastIndexOf('！'), seg.lastIndexOf('？'), I18N.on ? Math.max(seg.lastIndexOf('. '), seg.lastIndexOf('! '), seg.lastIndexOf('? '), seg.lastIndexOf(' ')) : -1);
     if (m > cut * .5) cut = m + 1;
     pre = ''; last = whole.slice(0, cut); drawLog.rest = whole.slice(cut).replace(/^\n+/, '');
   }
@@ -355,6 +356,7 @@ function hud() {
 const TAIL_T = ['戻る', 'やめる', '外に出る'];
 buttons.tab = {}; buttons.pg = {}; buttons.lp = {};  // lp: 一覧（list）の1ページの数を、画面の高さごとに覚えておく
 function buttons(list, cls) {
+  { const o = document.querySelector('.fcmp'); if (o) o.remove(); }
   const box = $('ctl'); box.innerHTML = '';
   // 主人公の立ち絵は、その画面で jobScene がもう一度呼ばれなければ消す
   for (const f of document.querySelectorAll('.fig[data-who="hero"], .status')) { f.dataset.stale = '1'; setTimeout(() => { if (f.dataset.stale) f.remove(); }, 0); }
@@ -414,6 +416,23 @@ function buttons(list, cls) {
 }
 // 暗転: 画面を一度黒くしてから切り替える。場所が変わるとき・工房で何かを作るとき
 // o.text: 黒い画面に出す文字（「制作中」など） o.hold: 黒いままにする時間 o.walk: 町を歩く足音 o.sfx: [[音, 遅らせるms]]
+// 2026-11-25: 自宅で眠る演出。夜（星・月・Zzz）→ 朝の光と回復の光（回復の音と同時）→ 戻る
+function sleepScene(then) {
+  if (sleepScene.busy) return; sleepScene.busy = true;
+  const o = document.createElement('div'); o.id = 'sleep';
+  let h = '<div class="dawn"></div><div class="moon"></div>';
+  for (let i = 0; i < 26; i++) h += `<i class="st" style="left:${(R() * 100).toFixed(1)}%;top:${(R() * 60).toFixed(1)}%;animation-delay:${(R() * 1.6).toFixed(2)}s"></i>`;
+  h += '<div class="z" style="animation-delay:.5s">Z</div><div class="z" style="animation-delay:1s;font-size:20px">z</div><div class="z" style="animation-delay:1.4s;font-size:16px">z</div><div class="msg">HP MAX</div>';
+  o.innerHTML = h; document.body.appendChild(o); void o.offsetWidth; o.classList.add('on');
+  SND.bgmDuck && SND.bgmDuck(true);
+  setTimeout(() => {
+    o.classList.add('day'); sfx('heal', { max: 2.2 });
+    for (let i = 0; i < 22; i++) { const p = document.createElement('i'); p.className = 'hp'; p.style.left = (8 + R() * 84).toFixed(1) + '%'; p.style.animationDelay = (R() * .9).toFixed(2) + 's'; const z = 6 + R() * 10; p.style.width = p.style.height = z.toFixed(0) + 'px'; o.appendChild(p); }
+    try { then && then(); hud(); } catch (e) { console.error(e); }
+  }, 2100);
+  setTimeout(() => { o.classList.remove('on'); SND.bgmDuck && SND.bgmDuck(false); }, 4200);
+  setTimeout(() => { o.remove(); sleepScene.busy = false; }, 4750);
+}
 function fadeGo(fn, o) {
   o = o || {}; const f = $('fade');
   if (fadeGo.busy || !f) { fn(); hud(); return; }
@@ -606,7 +625,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 118'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 119'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -742,7 +761,7 @@ function homeMenu() {
     ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', hot: true, f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
     typeof banterBtn === 'function' ? banterBtn() : null,
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
-    { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true); } },
+    { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); sleepScene(() => say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true)); } },
     { t: 'ステータス', s: `Lv${G.lv} ${job()}`, f: () => statusMenu(homeMenu) },
     { t: '書棚', s: `図鑑・武器の手引き`, f: () => { sfx('page', { vol: .6 }); openMenu('dex'); } },
     { t: '装備を変える', s: job(), f: () => equipMenu(homeMenu) },
@@ -950,6 +969,37 @@ function newGear(r, forged) {
   if (a) { if (x.atk) x.atk += a; if (x.def) x.def += a; x.name += `+${a}`; }
   return x;
 }
+// 2026-11-25: 打つ前に、今の装備と比べる（武器は今の武器、盾は左手の盾、鎧は今の鎧と）
+function cmpNow(r) {
+  if (r.type === 'tool') return null;
+  const a = upLv('anvil'), atk = (r.atk || 0) + (r.atk ? a : 0), def = (r.def || 0) + (r.def ? a : 0);
+  let cur = null;
+  if (r.type === 'armor') cur = gearBy(G.equip.armor) || null;
+  else if (r.type === 'shield') { const l = gearBy(G.equip.l); cur = l && l.type === 'shield' ? l : null; }
+  else cur = mainWeapon();
+  return { cur, atk, def, da: atk - (cur ? cur.atk || 0 : 0), dd: def - (cur ? cur.def || 0 : 0) };
+}
+const dTag = (n, l) => n ? `<b class="${n > 0 ? 'up' : 'dn'}">${l}${n > 0 ? '▲' + n : '▼' + (-n)}</b>` : '';
+function cmpText(r) {
+  const c = cmpNow(r); if (!c) return '';
+  const sgn = n => n > 0 ? `▲${n}` : n < 0 ? `▼${-n}` : '±0';
+  const cs = c.cur ? `${c.cur.name}（${c.cur.atk ? '攻' + c.cur.atk : ''}${c.cur.atk && c.cur.def ? ' ' : ''}${c.cur.def ? '守' + c.cur.def : ''}${!c.cur.atk && !c.cur.def ? '－' : ''}）` : 'なし';
+  let t = `今の装備: ${cs}\n打つと: ${c.atk || r.atk ? `攻${c.atk}（${sgn(c.da)}）` : ''}${(c.atk || r.atk) && (c.def || r.def) ? ' ' : ''}${c.def || r.def ? `守${c.def}（${sgn(c.dd)}）` : ''}`;
+  if (!['armor', 'shield'].includes(r.type) && WEAPON_TYPES[r.type]) { const w = mainWeapon(); if (!w || w.type !== r.type) t += `\n持つと、ジョブは${WEAPON_TYPES[r.type].job}系になる`; }
+  return t;
+}
+// 打つ前の比べを、絵の上に大きく出す（今の装備 → 打つ物）
+function cmpCard(r) {
+  const c = cmpNow(r), st = $('stage'); if (!c || !st) return;
+  const row = (l, a, b, d) => (a || b) ? `<tr><th>${l}</th><td>${a}</td><td class="ar">→</td><td><b>${b}</b></td><td class="${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '▲' + d : d < 0 ? '▼' + (-d) : '±0'}</td></tr>` : '';
+  const ca = c.cur ? c.cur.atk || 0 : 0, cd = c.cur ? c.cur.def || 0 : 0;
+  let jobs = '';
+  if (!['armor', 'shield'].includes(r.type) && WEAPON_TYPES[r.type]) { const w = mainWeapon(); if (!w || w.type !== r.type) jobs = `<p class="jb">持つと、ジョブは「${WEAPON_TYPES[r.type].job}」の系統になる</p>`; }
+  const o = document.createElement('div'); o.className = 'fcmp';
+  o.innerHTML = `<div class="in"><p class="hd">今の装備と比べる</p><div class="nm"><span>${c.cur ? c.cur.name : 'なし'}</span><span class="ar">→</span><b>${r.name}${upLv('anvil') && r.type !== 'tool' ? '+' + upLv('anvil') : ''}</b></div>
+    <table>${row('攻撃', ca, c.atk, c.da)}${row('守り', cd, c.def, c.dd)}</table>${r.desc ? `<p class="ds">${r.desc}</p>` : ''}${jobs}</div>`;
+  st.appendChild(o);
+}
 const gearKind = t => t === 'armor' ? '鎧' : t === 'tool' ? 'ツール' : WEAPON_TYPES[t].name;
 // 工房の鍛冶: まず「武器・防具・ツール・手入れ」を選んで、その中の一覧へ。
 // 一覧の各行に「必要な素材（今の数）」を出す。足りない物を押すと、何が足りないかを教える
@@ -960,7 +1010,7 @@ FORGE_CAT.meika = ['名品', r => r.meika && (G.bp || []).includes(r.id)];
 const TIER_OF = r => r.meika ? 0 : /^(dragon)/.test(r.id) ? 6 : /^orichalcum/.test(r.id) ? 5 : /^darksteel/.test(r.id) ? 4 : /^mithril/.test(r.id) ? 3 : /^silver/.test(r.id) ? 2 : 1;
 const SHELF = {
   weapon: [['銅・鉄', r => TIER_OF(r) === 1], ['銀', r => TIER_OF(r) === 2], ['ミスリル', r => TIER_OF(r) === 3], ['黒鋼', r => TIER_OF(r) === 4], ['オリハルコン', r => TIER_OF(r) === 5], ['竜', r => TIER_OF(r) === 6]],
-  armor: [['銅・鉄', r => TIER_OF(r) <= 2], ['ミスリル・黒鋼', r => TIER_OF(r) === 3 || TIER_OF(r) === 4], ['オリハルコン・竜', r => TIER_OF(r) >= 5]],
+  armor: [['銅・鉄', r => TIER_OF(r) <= 1], ['銀', r => TIER_OF(r) === 2], ['ミスリル・黒鋼', r => TIER_OF(r) === 3 || TIER_OF(r) === 4], ['オリハルコン・竜', r => TIER_OF(r) >= 5]],
   meika: [['剣・刀', r => ['sword', 'katana'].includes(r.type)], ['大剣・斧・槌', r => ['greatsword', 'axe', 'hammer'].includes(r.type)], ['短剣・弓', r => ['dagger', 'bow'].includes(r.type)], ['魔導書・杖', r => ['book', 'staff'].includes(r.type)], ['盾・鎧', r => ['shield', 'armor'].includes(r.type)]],
 };
 // ---------- 名品の設計図（2026-11-25） ----------
@@ -1037,7 +1087,8 @@ function forgeList(cat, msg, face) {
   for (const r of list) {
     const ok = canMake(r), stat = (r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`) + (r.desc ? `<em class="mkd">${r.desc}</em>` : '');
     const lock = upLv('furnace') < needFurnace(r);
-    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? `炉Lv${needFurnace(r)}が必要` : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
+    const cm = cmpNow(r);
+    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? `炉Lv${needFurnace(r)}が必要` : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}${cm ? ` <span class="gcmp">${dTag(cm.da, '攻')}${dTag(cm.dd, '守')}</span>` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
       if (lock) { log(`${['', '鉄', '銀', 'ミスリル', 'オリハルコン'][needFurnace(r)]}を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv${needFurnace(r)}に）`, true); return; }
       if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
       forgeConfirm(cat, r);
@@ -1059,6 +1110,7 @@ function forgeConfirm(cat, r) {
     ...qs.map((q, i) => ({ t: q === max && q > 1 && !([1, 2, 3, 5].includes(q)) ? `作れるだけ打つ（${q}本）` : `${q}本打つ`, s: matText(mul(q)), hot: i === 0, f: () => forgeMake(cat, r, q) })),
     { t: 'やめる', f: back }], 'one');
   say('serious', `「${r.name}か……」\n1本につき: ${matText(c)}${max > 1 ? `\n素材は${max}本ぶんある。何本打とうか。` : ''}`, true);
+  cmpCard(r);
 }
 function forgeMake(cat, r, q) {
   for (let i = 0; i < q; i++) { if (!canMake(r)) { q = i; break; } for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n; G.gear.push(newGear(r, true)); }
@@ -1084,7 +1136,7 @@ function equipMenu(back) {
   for (const g of G.gear.filter(x => x.type !== 'tool')) {
     const where = G.equip.r === g.uid ? '（右手）' : G.equip.l === g.uid ? '（左手）' : G.equip.armor === g.uid || G.equip.tool === g.uid ? '（装備中）' : '';
     const kind = g.type === 'tool' ? `${TOOL_NAMES[g.tool]} 耐久${g.dur}/${g.maxDur}` : gearKind(g.type);
-    L.push({ t: g.name + where, s: `${kind}${g.atk ? ' 攻' + g.atk : ''}${g.def ? ' 守' + g.def : ''}`, hot: !!where, f: () => { const before = JSON.stringify(G.equip); equipItem(g); if (JSON.stringify(G.equip) !== before) sfx('equip'); equipMenu(back); checkLearn(job()); save(); } });
+    L.push({ t: g.name + where, s: `${kind}${g.atk ? ' 攻' + g.atk : ''}${g.def ? ' 守' + g.def : ''}`, hot: !!where, f: () => { const before = JSON.stringify(G.equip), jb = job(); equipItem(g); if (JSON.stringify(G.equip) !== before) { if (job() !== jb) { sfx('change'); sfx('equip', { vol: .5, delay: 350 }); } else sfx('equip'); } equipMenu(back); checkLearn(job()); save(); } });
   }
   L.push({ t: '戻る', f: back });
   buttons(L);
@@ -1454,6 +1506,7 @@ function openMenu(tab) {
   const vol = key => `<div class="seg vol">${[0, .25, .5, .75, 1].map(v => `<button data-k="${key}" data-v="${v}" class="${Math.abs(OPTS[key] - v) < .01 ? 'on' : ''}">${v === 0 ? '切' : '▮'.repeat(v * 4)}</button>`).join('')}</div>`;
   let body = '';
   if (tab === 'opt') body = `<dl>
+    <dt>言語 / Language</dt><dd><div class="seg"><button data-k="lang" data-v="0" class="${OPTS.lang === 0 ? 'on' : ''}" translate="no">日本語</button><button data-k="lang" data-v="1" class="${OPTS.lang === 1 ? 'on' : ''}">English</button></div></dd>
     <dt>音楽</dt><dd>${vol('bgm')}</dd><dt>効果音</dt><dd>${vol('sfx')}</dd>
     <dt>文字の速さ</dt><dd>${seg('text', ['ゆっくり', 'ふつう', 'はやい', '一瞬'])}</dd>
     <dt>画面の揺れ</dt><dd>${seg('shake', ['なし', '弱い', 'ふつう', '強い'])}</dd>
@@ -1468,7 +1521,7 @@ function openMenu(tab) {
   m.classList.add('on'); if (tab === 'dex') dexBind(m);
   m.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { sfx('select', { vol: .5 }); openMenu(b.dataset.tab); });
   m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
-    const k = b.dataset.k; OPTS[k] = k === 'auto' ? b.dataset.v === '1' : +b.dataset.v; saveOpts(); applyOpts(); sfx('select', { vol: .5 });
+    const k = b.dataset.k; OPTS[k] = k === 'auto' ? b.dataset.v === '1' : +b.dataset.v; saveOpts(); applyOpts(); sfx('select', { vol: .5 }); if (k === 'lang') { I18N.setLang(OPTS.lang === 1); if (typeof drawLog === 'function' && logLines.length) drawLog(); }
     if (k === 'auto' && OPTS.auto && G) save(); openMenu('opt');
   });
   m.querySelectorAll('[data-save]').forEach(b => b.onclick = () => {
@@ -1613,6 +1666,8 @@ function meetNpc(id) {
     log(`グルガモが一緒に戦ってくれる（${G.ally.left}回）。`);
     buttons([{ t: '「頼もしいな」', hot: true, f: go }]); return;
   }
+  // 2026-11-25: フウカと初めて会うとき。影の中から手裏剣が飛んで、背後の魔物を倒す → 名乗る
+  if (id === 'fuuka' && !(G.met || {}).fuuka && !((G.aff || {}).fuuka > 0) && !(G.allyGone || {}).fuuka) { fuukaFirst(go); return; }
   if (id === 'fuuka' && evReady('fuuka', .6)) { fuukaEvent(go); return; }
   if (id === 'fuuka' && !meetNpc.fr) { const rl = typeof runLine === 'function' ? runLine('fuuka') : null; if (rl) { log(rl, true); buttons([{ t: '次へ', hot: true, f: () => { meetNpc.fr = true; meetNpc(id); meetNpc.fr = false; } }]); return; } }
   if (id === 'fuuka') {
@@ -1622,6 +1677,37 @@ function meetNpc(id) {
       buttons([{ t: '先へ進む', hot: true, f: go }]);
     });
   }
+}
+function fuukaFirst(go) {
+  clearFig(); buttons([]);
+  const next = (t, f) => buttons([{ t: t || '次へ', hot: true, f }]);
+  sfx('swing', { vol: .9 }); log('――ヒュッ。\n頭のすぐ上を、何かがかすめていった。', true);
+  next('「……！？」', () => {
+    sfx('hit', { vol: .8 }); shakeAt(0, 4);
+    log('ドサッ。\n振り返ると、背後に迫っていた魔物が、手裏剣を受けて倒れていた。', true);
+    next(null, () => {
+      sfx('dash', { vol: .6 }); meetShow('fuuka'); const f = document.querySelector('#view .fig'); if (f) { f.style.opacity = 0; f.style.transition = 'opacity .9s'; requestAnimationFrame(() => { f.style.opacity = 1; }); }
+      log('影の中から、黒装束の少女が音もなく降り立った。', true);
+      next(null, () => {
+        log('フウカ「……お怪我は、ありませんか」', true);
+        next('「助かった。……あんたは？」', () => {
+          log('フウカ「フウカと申します。……この塔で、ある任務についている者です」', true);
+          next(null, () => {
+            log('フウカ[think]「あなたは……冒険者には見えませんね。その手……職人の手です」', true);
+            next('「鍛冶屋だ。材料を採りに来た」', () => {
+              log('フウカ[laugh]「……鍛冶屋が、自分で。……ふふ。変わった方ですね」', true);
+              next(null, () => {
+                G.met = G.met || {}; G.met.fuuka = true;
+                G.ally = { id: 'fuuka', left: perk('fuuka') ? 12 : TOWER_NPCS.fuuka.battles }; save();
+                log(`フウカ「この先は、魔物が多い。……しばらく、ご一緒します」\nフウカが一緒に戦ってくれる（${G.ally.left}回）。`, true);
+                buttons([{ t: '先へ進む', hot: true, f: go }]);
+              });
+            });
+          });
+        });
+      });
+    });
+  });
 }
 // 女神: 会話（親密度）→ 戦利品をもらう／回復してもらう（親密度が上がると選べる）
 function meetGod(id, go0, after) {
@@ -2724,7 +2810,7 @@ function drawMonsterBars(t) {
     const x = cx - w / 2;
     ctx.fillStyle = 'rgba(0,0,0,.62)'; ctx.fillRect(x - 4, y - 2, w + 8, 24);
     if (n > 1 && m === tg && !B.over) { ctx.strokeStyle = '#ffc069'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 4, y - 2, w + 8, 24); }
-    ctx.fillStyle = '#efe3cc'; ctx.font = (n > 3 ? '8px' : n > 2 ? '9px' : '11px') + ' Dot, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(m.name, cx, y + 10);
+    ctx.fillStyle = '#efe3cc'; ctx.font = (n > 3 ? '8px' : n > 2 ? '9px' : '11px') + ' Dot, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(tr(m.name), cx, y + 10);
     ctx.fillStyle = '#3a1410'; ctx.fillRect(x, y + 14, w, 5); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y + 14, w * Math.max(0, m.hp) / m.mhp, 5);
     if (n > 1 && m === tg && !B.over && m.top !== undefined) { const b = Math.sin(t / 180) * 2; ctx.fillStyle = '#ffc069'; ctx.beginPath(); ctx.moveTo(cx - 6, m.top - 10 + b); ctx.lineTo(cx + 6, m.top - 10 + b); ctx.lineTo(cx, m.top - 2 + b); ctx.fill(); }
   });
@@ -2746,7 +2832,7 @@ function drawMonsterShape(m, t) {
   // HPバー
   const w = 120, x = cx - w / 2, y = 14;
   ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x - 2, y - 2, w + 4, 10); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y, w * Math.max(0, m.hp) / m.mhp, 6);
-  ctx.fillStyle = '#efe3cc'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(m.name, cx, y + 20);
+  ctx.fillStyle = '#efe3cc'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(tr(m.name), cx, y + 20);
 }
 
 // ---------- 町の絵（仮） ----------
@@ -2757,7 +2843,7 @@ function drawTown(t) {
   for (let i = 0; i < 9; i++) ctx.fillRect(130 + (i % 2) * 4, VH - 20 - i * 24, 60 - (i % 2) * 8, 3);
   ctx.fillStyle = '#120d0a'; for (let i = 0; i < 8; i++) { const x = i * 42 - 10, h = 40 + hash(i, 1, 3) * 40; ctx.fillRect(x, VH - h, 36, h); ctx.beginPath(); ctx.moveTo(x - 4, VH - h); ctx.lineTo(x + 18, VH - h - 18); ctx.lineTo(x + 40, VH - h); ctx.fill(); }
   ctx.fillStyle = '#ffb35a'; for (let i = 0; i < 8; i++) { if (hash(i, 2, 5) < .6) ctx.fillRect(i * 42 + 2, VH - 30, 6, 6 + Math.sin(t / 400 + i) * .5); }
-  ctx.fillStyle = 'rgba(255,190,110,.85)'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left'; ctx.fillText('塔の国　鍛冶屋の工房', 8, 18);
+  ctx.fillStyle = 'rgba(255,190,110,.85)'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left'; ctx.fillText(tr('塔の国　鍛冶屋の工房'), 8, 18);
 }
 
 // ---------- ループ ----------

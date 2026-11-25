@@ -1,0 +1,103 @@
+0|Town in the Land of the Tower
+1|Heard when you first meet each goddess (1st round: floors 11-50, 2nd round: floors 51-90).
+2|Loading starts you in town.
+3|Goal
+6|Tower Gate
+8|Skill learned
+9|{1} (usable by any job)
+10|(usable by any job)
+11|Swordsman Statue
+13|Castle
+15|The King's Reward
+16|For passing floor {1} (equip it from "Change Gear" in the workshop)
+18|Throne Room
+20|Blueprint obtained
+21|{2} (forge it under "Masterworks" in the workshop{3})
+22|Sells for {2}G
+23|Sells for
+24|{1}G, have {2}
+25|and {1} more
+26|Bonus: {0}
+27|Bonus:
+28|Guild reward
+29|Test Mode
+30|{0} will be listed here.
+31|Tap a picture to read more.
+33|F{1}{2}. Not met yet.
+34|. Not met yet.
+35|Weakness:
+36|{3}  HP{4} ATK{5} DEF{6}
+37|Attacks: {7}  {8}
+38|Defeated: {9}
+39|Attacks:
+40|Defeated:
+41|{1}. Sells for {2}G. {3}
+42|Sells for:
+43|Found: {7}{8}
+44|Found:
+45|Heavy weapons cost 2 AP for normal attacks. Two-handed weapons can be held one-handed at mastery {1}.
+48|Material
+49|Where found
+50|Traits
+51|Ore and shards must be processed at the guild before forging. Upgrading the anvil raises the stats of gear you forge.
+52|Element
+53|Strong against
+54|Main users
+55|Hitting a weakness deals x1.5. Monster weaknesses appear on the "Monsters" page (only ones you've met). Magic ignores defense.
+56|{0}What are masterworks?
+57|Named gear with traits normal gear lacks. Double hits, elements, HP drain, easy crits, more gold... and so on.
+58|Blueprints
+59|Found ones go to the workshop
+60|Found in chests 6%, fancy chests 18%, mimics 50%, floor lords 60%. Higher floors give stronger masterwork blueprints (from floors 1, 11, 31, 51, 71).
+61|How to forge
+62|Workshop → "Masterworks"
+63|Forge them with the metal and manastones for their tier. Only the Nameless Sword is handed over when Jin teaches you Issen.
+64|What are masterworks?
+65|Evolves: {0}
+66|Evolves:
+67|Your right-hand weapon decides your job. Train with other weapons and you'll evolve into advanced jobs.
+68|Music
+69|Sound FX
+70|Text Speed
+71|Screen Shake
+72|Name
+73|{4} (change)
+74|On
+75|Off
+76|Autosave records automatically when you return to town or change floors.
+77|(change)
+80|You can only save while in town.
+81|Slot {2}
+82|To Title
+83|Close
+84|Load {0}? Unsaved progress will be lost.
+85|Load
+86|Load it? Unsaved progress will be lost.
+88|Max HP +{1}  ATK +{2}  DEF +{3}
+89|{4} growth
+90|Max HP +
+91| growth
+92|Auto
+93|Stop
+94|Fight with attacks
+95|Act!
+96|Do {0}{1}
+97|End Turn
+98|Skills  AP {0}
+99|Skills  AP
+100|The Blacksmith's Name
+101|Blacksmith
+102|Up to 8 characters. Leave empty for "Blacksmith"
+103|Inside the Workshop
+105|Mirror
+106|{1}'s Adventure Log
+107|Highest Floor
+108|'s Adventure Log
+109|Town Gate
+111|Goddess Masterwork Blueprint
+112|{2} (forge it under "Masterworks" in the workshop)
+113|(forge it under "Masterworks" in the workshop)
+114|{0}. ???
+115|{1}, {2}
+116|. ???
+117|{3}, {4}{5}

@@ -7,7 +7,7 @@ const SND = (() => {
   //  ・効果音と環境音は WebAudio で鳴らす（https で開いたとき）。マナーモードで消えないよう audioSession を playback にする
   //  ・最初のタッチの中で音を「起こす」
   const BGM_DIR = 'assets/bgm/', SFX_DIR = 'assets/sfx/';
-  const VOL = { bgm: .55, amb: .25, sfx: .85 };
+  const VOL = { bgm: .8, amb: .3, sfx: 1 };  /* 2026-11-25: 音の大きさをファイルでそろえた（効果音は大きく、曲は小さく） */
   let on = true; try { on = localStorage.getItem('tower_sound') !== 'off'; } catch (e) {}
   let unlocked = false, ac = null, master = null;
   const web = /^https?:/.test(location.protocol) && (window.AudioContext || window.webkitAudioContext);
@@ -72,7 +72,7 @@ const SND = (() => {
   function unlock() {
     if (unlocked) { if (ac && ac.state !== 'running') ac.resume(); if (on && cur && music.paused) startMusic(); return; }
     unlocked = true;
-    if (web) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = on ? 1 : 0; master.connect(ac.destination); ac.resume(); const s = ac.createBufferSource(); s.buffer = ac.createBuffer(1, 1, 22050); s.connect(ac.destination); s.start(0); } catch (e) { ac = null; } }
+    if (web) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = on ? 1 : 0; { const cp = ac.createDynamicsCompressor(); cp.threshold.value = -6; cp.knee.value = 6; cp.ratio.value = 8; cp.attack.value = .003; cp.release.value = .15; master.connect(cp).connect(ac.destination); }  /* 重なっても割れないように */ ac.resume(); const s = ac.createBufferSource(); s.buffer = ac.createBuffer(1, 1, 22050); s.connect(ac.destination); s.start(0); } catch (e) { ac = null; } }
     // <audio> をタッチの中で一度鳴らしておく（これで後から曲を替えても鳴る）
     if (!music.src) music.src = SILENT; { const p = music.play(); if (p && p.catch) p.catch(() => {}); }
     for (const a of pool) { a.src = SILENT; const p = a.play(); if (p && p.catch) p.catch(() => {}); }

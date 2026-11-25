@@ -224,7 +224,7 @@ function homeVisit() {
     save();
   }
   const w = G.visit.who; if (!w.length) return null;
-  setTimeout(() => npcFig(VISIT_FIG[w[0]]), 0);
+  if (G.visit.line) setTimeout(() => npcFig(VISIT_FIG[w[0]]), 0);
   if (G.visit.line) return w.length > 1 ? `${VNAME[w[0]]}と${VNAME[w[1]]}が、まだ工房でくつろいでいる。` : `${VNAME[w[0]]}が、まだ工房にいる。`;
   const a = w[0], used = (G.visitUsed = G.visitUsed || {})[a] = G.visitUsed[a] || [];
   const L = (G.homeEv || {})[a] ? VISIT[a] : VISIT_MID[a];
@@ -233,7 +233,12 @@ function homeVisit() {
   G.visit.line = true; const gift = VISIT_GIFT[a](); save();
   // 前回の塔のぼりのひとこと（来た人が、まだ話していなければ）を先に
   const rl = typeof runLine === 'function' ? runLine(a) : null;
-  return (rl || (w.length > 1 ? pick(VISIT_TWO)(VNAME[w[0]], VNAME[w[1]]) : L[j])) + '\n' + gift;
+  const line = (rl || (w.length > 1 ? pick(VISIT_TWO)(VNAME[w[0]], VNAME[w[1]]) : L[j])) + '\n' + gift;
+  // 2026-11-25: 来たときは、まずノックの音。少しして戸が開き、その人が入ってくる（フウカは窓から）
+  clearTimeout(homeVisit.tm); setTimeout(() => clearFig && clearFig(), 0);
+  sfx('knock', { delay: 150 });
+  homeVisit.tm = setTimeout(() => { if (place !== 'home' || mode !== 'town') return; sfx(a === 'fuuka' ? 'step_wet_1' : 'door', { vol: .7 }); npcFig(VISIT_FIG[w[0]]); log(line, true); }, 1500);
+  return a === 'fuuka' ? 'こつん、と窓が鳴った。' : 'コンコン、と工房の戸を叩く音がした。';
 }
 
 // ---------- 会話の種類を増やす（同じことばかり言わないように。1人4〜5種類） ----------

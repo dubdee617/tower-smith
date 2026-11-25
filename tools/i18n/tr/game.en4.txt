@@ -1,0 +1,288 @@
+1050|Als[angry]「Hyah!」
+1051|Als[laugh]「Master, watch this!」
+1052|Als「The fruits of my training!」
+1053|Als[smile]「I'll guard your back, Master!」
+1054|Als[shock]「W-whoa... but I won't lose!」
+1055|Als[angry]「With Master's sword... I'll cut you down!」
+1056|Als slashes! {0} damage.
+1057|Als slashes!
+1058| damage.
+1059|Fuuka attacks! {0} damage. She restored {1} HP.
+1060|Fuuka attacks!
+1061| damage. Restored HP by
+1062|.
+1063|Gurugamo's axe! {0} damage.
+1064|Gurugamo's axe!
+1065|Gaban's sword! {0} damage.
+1066|Gaban's sword!
+1067|Gaban[laugh]「This is as far as I go! Master Smith, the rest... I beg you!」
+1068|Gurugamo「Whoops, gotta head home or the missus'll have my head! See ya!」
+1069|Fuuka[shy]「...I must return to my mission. ...We will meet again, won't we?」
+1070|Found {0}.
+1071| found.
+1072|Found {0}G.
+1073|G found.
+1074|{0}. Already searched.
+1075|. Already searched.
+1076|Up stairs. Step forward to climb to floor {0}.
+1077|Up stairs. Step forward to climb to floor
+1078|.
+1079|return to town
+1080|Down stairs. Step forward to {0}.
+1081|Down stairs. Step forward to
+1082|Nothing in particular.
+1083|...Seems there's nothing here.
+1084|You looked around your feet. Nothing.
+1085|You picked up a {0}. ...A Homing Feather!
+1086|. ...A Homing Feather!
+1087|CHOMP! The {0} bit you! {1} damage.\nThe mimic spat out its contents and fled. You got {2}G and {3}.
+1088|CHOMP!
+1089| bit you!
+1090| damage.\nThe mimic spat out its contents and fled.
+1091|G and
+1092| obtained.
+1093|There's a {0}.
+1094|Some herbs were mixed in with the bushes. You got an Herb.
+1095|Red berries are growing. ...Sour. Nothing else.
+1096|An herb was growing at the base of the mushroom.
+1097|...You took a bite. Poison mushroom. {0} damage.
+1098|...You took a bite. Poison mushroom.
+1099|You searched the {0}. {1}
+1100|You searched it.
+1101|You searched the {0}. ...Nothing.
+1102|You searched it. ...Nothing.
+1103|Broken
+1104|It cracked.
+1105|The crack spread.
+1106|It's about to crumble.
+1107|({0} durability left: {1})
+1108| durability left:
+1109|CLANG! {0}{1}
+1110|CLANG!
+1111|\nGot {0}.
+1112|\n...Nothing came out.
+1113|CRASH... the wall crumbled!{0}
+1114|CRASH... the wall crumbled!
+1115|Your {0} broke. Fix it at the workshop.
+1116| broke. Fix it at the workshop.
+1117|...Drawn by the noise, a monster has appeared!
+1118|The fancy chest snapped its mouth open! A mimic!
+1119|The chest snapped its mouth open! A mimic!
+1120|At the bottom of the chest,
+1121|Inside the chest the mimic guarded: {0}, {1}G.{2}
+1122|Inside the chest the mimic guarded:
+1123|You opened the chest! {0}, {1}G.{2}
+1124|You opened the chest!
+1125|You left the tower.
+1126|Floors above {0} aren't built yet.
+1127| and up aren't built yet.
+1128|Used {0}. Restored {1} HP.
+1129| used. HP restored by
+1130| restored.
+1131|No injury that needs a bandage.
+1132|You wrapped a bandage. Your {0} feels better for now.\n(Visit the clinic when back in town)
+1133|You wrapped a bandage.
+1134| feels better for now.\n(Visit the clinic when back in town)
+1135|No loot to send.
+1136|The bird grabbed your loot in its talons and flew out the window.\nTo workshop: {0}
+1137|The bird grabbed your loot in its talons and flew out the window.\nTo workshop:
+1138|You burned a Ward Charm. The monsters' presence fades. (3 floors)
+1139|You burned a Lure Charm. The monsters' presence draws closer... (3 floors)
+1140|The lamp only flickered.
+1141|east
+1142|southeast
+1143|south
+1144|southwest
+1145|west
+1146|northwest
+1147|north
+1148|northeast
+1149|{0} stairs: to the {1}, about {2} steps.
+1150| stairs: to the
+1151|, about
+1152| steps.
+1153|You lit the Guiding Lamp. The flame leaned toward the stairs.\n{0}\n(The stairs now show on the map)
+1154|You lit the Guiding Lamp. The flame leaned toward the stairs.\n
+1155|\n(The stairs now show on the map)
+1156|{0}, {1}
+1157|,
+1158|You have no items
+1159|{0}: {1} floors left
+1160|:
+1161| floors left
+1162|Use which?
+1163|Use the {0}? ({1} left)
+1164|? (left:
+1165|Use
+1166|Your HP isn't down. No need to use it now.
+1167|{0} left
+1168|Left:
+1169|No items usable in battle
+1170|Choose an item to use (AP1).
+1171|Used an Herb. Restored {0} HP.
+1172|Used an Herb. HP restored by
+1173|.
+1174|{0} appeared!\n(Tap a monster to choose your target)
+1175| appeared!\n(Tap a monster to choose your target)
+1176|{0} appeared!
+1177| appeared!
+1178|{0} fights alongside you ({1} more battles).
+1179| fights alongside you (
+1180|Als readies his sword too.
+1181|...From somewhere, the shadow of an old man with a cane appeared.\nOne flash. The monster fell, and the shadow was gone.
+1182|First strike! {0} damage.
+1183|First strike!
+1184|<b>LEVEL UP!</b><em>Lv {0}</em><span>Max HP +{1}  ATK +{2}  DEF +{3}</span><small>{4} growth</small>
+1189|Strong Foe
+1190|Encounter
+1191|<b>{0}!</b><span>{1}</span>
+1193|Not enough AP
+1194|You can't run from a boss
+1195|Planning to run
+1196|Acting...
+1197|Choose, then "Act!"
+1198|Undo
+1199|Auto<small>Stop</small>
+1200|Auto<small>Fight with attacks</small>
+1201|, carry over AP{0}
+1202|, carry over AP
+1203|
+1204|Act!<small>Do {0}{1}</small>
+1207|Carry over AP{0}
+1208| carried over
+1209|Do nothing
+1210|End Turn<small>{0}</small>
+1212|<div class="skh"><span>Skills  AP {0}</span><button class="x">✕</button></div>
+1214|({0})
+1215|Fighting on auto. (Tap again to stop)
+1216|HP is dangerously low! Auto stopped.
+1217|{0} (AP{1}): {2}
+1218| (AP
+1219|):
+1220|Didn't use {0}.
+1221| wasn't used.
+1222|Drained {0} HP.
+1223|Drained HP:
+1224|
+1225|Restored {0} HP.
+1226|HP restored:
+1227|{0} froze solid!
+1228| froze solid!
+1229|{0} flinched!
+1230| flinched!
+1231|{0} was poisoned.
+1232| was poisoned.
+1233|Stole {0}G.
+1234|G stolen.
+1235|{0} was judged!
+1236| was judged!
+1237|Paid {0} HP.
+1238| paid.
+1239|{0} healed!
+1240| healed!
+1241|{0}! Pierced {1}'s weak spot.
+1242|!
+1243|'s weak spot was pierced.
+1244|Critical!
+1245|{0}! {1}{2} damage.{3}
+1246|Guard broken.
+1247|{0} can't move!
+1248| can't move!
+1249|A mercy strike finished it. Looks like extra loot.
+1250|Got 2 Tower Logs.
+1251|{0} was cursed.
+1252| was cursed.
+1253|Snatched {0}!
+1254| snatched!
+1255|{0}. Restored {1} HP.
+1256|. HP restored:
+1257|{0}. Defense up.{1}
+1258|. Defense up.
+1259|{0}. Ready for the next attack.
+1260|. Ready for the next attack.
+1261|{0}. Attacks are stronger this turn.{1}
+1262|. Attacks are stronger this turn.
+1263|{0} fell asleep.
+1264| fell asleep.
+1265|...It had no effect.
+1266|{0}!
+1267|Stole {0}!
+1268| stolen!
+1269|Couldn't steal anything.
+1270|You can't run from a lord!
+1271|You got away!
+1272|Couldn't escape!
+1273|Its stance broke!
+1274|{0} can't move.{1}
+1275| can't move.
+1276|{0} attacks. Dodged!
+1277| attacks. Dodged!
+1278|All-Out Blow
+1279|Fierce Blow
+1280|Big Move
+1281|{0}'s {1}!
+1282|The you in the mirror opened its mouth.\n「...{name}. Why do you climb?」
+1283|You thought you heard Jin's voice.\n「No matter how strong the foe you face... never lose sight of yourself.」
+1284|The you in the mirror used {0}!
+1285|The you in the mirror used
+1286|!
+1287|Caught it and countered! {0} damage.
+1288|Caught it and countered!
+1289|The Mirror Shield returned {0} damage.
+1290|The Mirror Shield returned
+1291| damage.
+1292|{0} attacks. You took {1} damage.
+1293| attacks.
+1294| damage taken.
+1295|{0}! ({1})
+1296|! (
+1297|「...Not yet!」\nElly's prayer kept you standing!
+1298|The Cursed Katana drained your HP.
+1299|{0} takes {1} poison damage.
+1300| takes poison damage:
+1301|(A strong blow is coming next turn. Take it with "Guard," or take it down first)
+1302|{0} winds up for a big swing!
+1303| winds up for a big swing!
+1304|{0} is gathering power...!
+1305| is gathering power...!
+1306|{0} braces itself. Something's coming!
+1307| braces itself. Something's coming!
+1308|You absorbed its soul and restored {0} HP.
+1309|You absorbed its soul. HP restored:
+1310|You butchered the monster, grilled it on the spot, and ate. Restored {0} HP.
+1311|You butchered the monster, grilled it on the spot, and ate. HP restored:
+1312|The rust on the {0} seems to have come off a little.
+1313|'s rust seems to have come off a little.
+1314|Defeated {0}! {1} EXP, {2}G.{3}
+1315| defeated! EXP
+1316|\nReached level {0}!
+1317|\nLevel
+1318| reached!
+1319|\nDefeated the floor {0} warden again.
+1320| warden defeated again.
+1321|warden
+1322|lord
+1323|\nDefeated the floor {0} {1}. The way up is open.
+1324| floor
+1325| defeated. The way up is open.
+1326|Your {0} experience is paying off. Hold a {1} to become a {2}!
+1327| experience is paying off.
+1328| held, you become
+1329|!
+1330|You can now wield the {0} one-handed!
+1331| can now be wielded one-handed!
+1332|Where the lord fell,
+1333|The mirror glows quietly again. ...The tower is watching people today, too.
+1334|\nThanks to Take-Home, the {0} stayed in the workshop.
+1335|\nThanks to Take-Home,
+1336| stayed in the workshop.
+1337|You fell... Your materials ({0}) and {1}G on hand are gone.{2}
+1338|You fell... Your materials (
+1339|) and on-hand
+1340|G are gone.
+1341|Elly[worried]「...Thank goodness. You're awake. You slept for a whole day.」
+1342|Elly「When they carried you in, I really didn't know what would happen... Your level and gear are safe.」
+1343|...\nYou woke up in a clinic bed.
+1344|Land of the Tower — The Blacksmith's Workshop
+1345|Targeting {0}.
+1346| targeted.

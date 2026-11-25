@@ -1,0 +1,30 @@
+言語 / Language|Language
+日本語|日本語
+ジェニー|Jenny
+エリー|Elly
+リア|Ria
+チッチ|Chicchi
+アルス|Als
+ルゥ|Lou
+ブッパ|Buppa
+ジン|Jin
+ボルツ|Boltz
+ドーラ|Dora
+ベルナルド|Bernardo
+ガストン|Gaston
+ガンター|Gunter
+王様|King
+大臣|Minister
+門兵|Gate Guard
+門番|Gatekeeper
+冒険者|Adventurer
+オルグ|Org
+ジロ|Jiro
+ゴロー|Goro
+エルディア|Eldia
+守{0}|DEF{0}
+攻{0}|ATK{0}
+{0}の中|Inside the {0}
+{0}の外観|The {0}
+{0}の像|{0} Statue
+音のオンオフ|Sound on/off
