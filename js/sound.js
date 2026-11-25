@@ -157,6 +157,9 @@ const FX_SFX = {
   holy_pillar: 'holy', holy_cross: 'holy', dark_mist: 'dark', magic_circle: 'magic', blessing: 'holy', pray: 'magic', warp: 'magic',
   heal: 'heal1', heal_leaf: 'heal3', barrier: 'buff', power: 'buff', bunshin: 'dash', afterimage: 'miss',
   poison: 'poison1', poison_bubble: 'poison2', claw: 'punch', bite: 'bite', rocks: 'rockbreak',
+  // 技の部品（2026-11-25）。技ごとに snd で変えることが多い
+  s_slash: 'w_sword', s_vslash: 'heavy', s_sweep: 'w_axe', s_flash: 'slash', s_thrust: 'swing', s_arrow: 'w_bow', s_sword: null, s_needle: 'hit1', s_fireslash: 'fire1', s_darkslash: 'dark',
+  s_ghost: 'dash', s_fist: 'punch', s_hit: 'hit1', s_heavy: 'punch', s_shock: 'punch', s_holyhit: 'holy', s_shield: 'buff', s_barrier: 'buff', s_water: 'swing', s_sparks: 'forge2', s_sparkle: null, s_coins: 'register', s_boom: 'explosion', s_blade: 'buff',
 };
 // 足音（エリアごと。2026-11-24 見直し）: 1歩ごとに、エリアの足音を混ぜて選ぶ（[種類, 重み]）
 // stone=革靴で歩く dirt=土の上 grass=芝生 bush=草むら sand=砂の上 snow=雪の上 wet=雨で濡れた道路

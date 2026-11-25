@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 104'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 105'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1920,7 +1920,7 @@ function dmgTo(m, power, pierce, critBonus) {
   let d = Math.max(1, Math.round((power - (pierce ? 0 : def)) * (.85 + R() * .3) * weaponMult(m)));
   const crit = !hurt('head') && (K.alwaysCrit && B.basic || R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0) + ((mainWeapon() || {}).crit || 0) + (K.crit || 0));  // 黒鋼・名品は会心が出やすい
   const dl = B.hitDelay || 0;  // 技の当たる瞬間に合わせて、数字や揺れを遅らせる
-  if (crit) { d = Math.round(d * (K.critMul || 1.8)); B.lastCrit = true; playFx('crit', { delay: dl + 120, size: .7 }); } else B.lastCrit = false;
+  if (crit) { d = Math.round(d * (K.critMul || 1.8)); B.lastCrit = true; playFx('crit', { delay: dl, size: .7 }); /* 会心の光と音も、当たる瞬間に */ } else B.lastCrit = false;
   m.hp -= d; if (m.hp <= 0 && !m.dying) m.dying = performance.now() + dl;
   const ally = B.ally, show = () => { popNum(d, 'mon', (crit ? 'crit' : '') + (ally ? ' ally' : ''), m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
   if (dl) setTimeout(show, dl); else show();
@@ -1950,6 +1950,7 @@ function doSkill(id) {
   if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; skillFx(id); FX_AT = null; }
   // 振付のない技（魔法など）も、数字と揺れをエフェクトが当たる瞬間に合わせる（大きな魔法は画面が暗くなってから）
   if (!sh && id !== 'attack') { const f = (SKILL_FX[id] || [])[0], n = Array.isArray(f) ? f[0] : f, mv = n && FX_MOVE[n]; B.hitDelay = mv === 'big' ? 380 : mv === 'travel' ? 260 : n ? 120 : 0; }
+  if (!sh) magicFlash(id, B.hitDelay);
   // 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる
   const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; sh.hit(i, dl, tg); FX_AT = null; B.hitDelay = dl + (sh.at || 0); };
   const K = MK(); B.basic = id === 'attack';
@@ -2123,6 +2124,22 @@ let fxList = [], fxParts = [], FX_AT = null;  // FX_AT: 技のエフェクトを
 // 5属性×小・中・大の魔法（ファイルから読む）
 const MAGIC_C = { fire:'#ff8a3d', ice:'#8fd8ff', bolt:'#ffe14a', holy:'#fff0b0', dark:'#b45cff' };
 for (const [el, c] of Object.entries(MAGIC_C)) for (let k = 1; k <= 3; k++) { const n = `m_${el}${k}`, i = new Image(); i.src = `assets/fx/${n}.webp`; FXI[n] = i; if (typeof FX_META !== 'undefined') FX_META[n] = { c, add: el !== 'dark' }; }
+// 2026-11-25: 技の部品（assets/fx/s_*.webp）。白い部品は tint で色を付けて使う。[光の色, 加算で描くか]
+const PART_META = {
+  s_slash: ['#dce8ff', 1], s_flash: ['#dce8ff', 1], s_vslash: ['#dce8ff', 1], s_sweep: ['#ffe2b8', 1], s_thrust: ['#dce8ff', 1], s_arrow: ['#fff0c8', 1], s_sword: ['#cfe3ff', 1], s_needle: ['#8a5cff', 0],
+  s_fireslash: ['#ff8a3d', 1], s_darkslash: ['#9a4cff', 0], s_ghost: ['#8fc8ff', 1], s_fist: ['#ffffff', 1],
+  s_hit: ['#ffffff', 1], s_heavy: ['#cfe3ff', 0], s_shock: ['#ff5030', 1], s_holyhit: ['#ffe08a', 1], s_shield: ['#8fc8ff', 1], s_barrier: ['#6ab8ff', 1],
+  s_water: ['#7fd8ff', 1], s_sparks: ['#ffb060', 1], s_sparkle: ['#ffe08a', 1], s_coins: ['#ffd24a', 0], s_boom: ['#ff9030', 0], s_blade: ['#cfe3ff', 1],
+};
+for (const [n, [c, add]] of Object.entries(PART_META)) { const i = new Image(); i.src = `assets/fx/${n}.webp`; FXI[n] = i; if (typeof FX_META !== 'undefined') FX_META[n] = { c, add: !!add }; }
+// 白い部品に色を付けた絵（色ごとに一度だけ作る）
+const TINT = {};
+function tintOf(img, c) {
+  if (!img.complete || !img.naturalWidth) return img; const k = img.src.slice(-24) + c; if (TINT[k]) return TINT[k];
+  const o = document.createElement('canvas'); o.width = img.naturalWidth; o.height = img.naturalHeight; const g = o.getContext('2d');
+  g.drawImage(img, 0, 0); g.globalCompositeOperation = 'multiply'; g.fillStyle = c; g.fillRect(0, 0, o.width, o.height); g.globalCompositeOperation = 'destination-in'; g.drawImage(img, 0, 0);
+  return (TINT[k] = o);
+}
 let fxDim = 0;  // 大きな魔法の前に、画面を暗くする
 // 動き方: slash=さっと広がって消える burst=はじける travel=下から飛んでいって当たる rise=足元から昇る screen=画面全体に
 const FX_MOVE = {
@@ -2134,7 +2151,9 @@ const FX_MOVE = {
   m_fire1:'travel', m_ice1:'travel', m_dark1:'travel', m_bolt1:'burst', m_holy1:'burst', m_fire2:'burst', m_ice2:'burst', m_bolt2:'burst', m_holy2:'burst', m_dark2:'burst',
   m_fire3:'big', m_ice3:'big', m_bolt3:'big', m_holy3:'big', m_dark3:'big',
 };
-const FX_DUR = { slash: 380, burst: 520, travel: 520, rise: 900, screen: 700, big: 1100 };
+const FX_DUR = { slash: 380, burst: 520, travel: 520, rise: 900, screen: 700, big: 1100, drop: 620, fade: 650 };
+Object.assign(FX_MOVE, { s_slash: 'slash', s_flash: 'slash', s_vslash: 'slash', s_sweep: 'slash', s_fireslash: 'slash', s_darkslash: 'slash', s_thrust: 'burst', s_arrow: 'travel', s_sword: 'drop', s_needle: 'burst', s_ghost: 'fade',
+  s_fist: 'burst', s_hit: 'burst', s_heavy: 'burst', s_shock: 'burst', s_holyhit: 'burst', s_shield: 'burst', s_barrier: 'rise', s_water: 'rise', s_sparks: 'burst', s_sparkle: 'burst', s_coins: 'burst', s_boom: 'burst', s_blade: 'rise' });
 // 回るエフェクト（1回の表示のあいだに回る角度）
 const SPIN = { magic_circle: 2.2, dark_mist: 1.4, barrier: .5 };
 // ばらばらに飛ぶエフェクト: n=数 up=上向きの強さ sp=速さ g=重さ spin=回転 flip=裏返り sz=大きさ dur=長さ fall=上から舞い落ちる tw=またたく keep=元の絵も出す
@@ -2204,7 +2223,7 @@ function playFx(name, opt = {}) {
   // ばらばらに飛ぶ・舞うエフェクト（岩・氷・葉・きらめき）
   if (DEBRIS[name]) { debrisFx(img, x, y, opt, DEBRIS[name]); if (!DEBRIS[name].keep) return; }
   if (name === 'explosion') playFx('rocks', { delay: (opt.delay || 0) + 60, size: (opt.size || .9) * .8, x, y });
-  fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: R() < .5 && mv === 'slash', spin: SPIN[name] || 0, wob: name === 'dark_mist' });
+  fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: opt.flip !== undefined ? opt.flip : R() < .5 && mv === 'slash', spin: SPIN[name] || 0, wob: name === 'dark_mist', tint: opt.tint });
   // 同じ色の粒
   const n = opt.parts !== undefined ? opt.parts : mv === 'rise' ? 18 : 14;
   for (let i = 0; i < n; i++) {
@@ -2228,14 +2247,17 @@ function drawFx() {
     if (e.mv === 'travel') { const q = Math.min(1, k / .5); x = VW / 2 + (e.x - VW / 2) * q; y = VH * 1.05 + (e.y - VH * 1.05) * q; s = .6 + q * .5; a = k < .5 ? 1 : 1 - (k - .5) / .5; }
     if (e.mv === 'rise') { s = .9 + k * .15; y = e.y - k * 18; a = k < .2 ? k / .2 : 1 - (k - .2) / .8; }
     if (e.mv === 'screen') { s = 1 + k * .2; a = k < .1 ? k / .1 : 1 - (k - .1) / .9; }
+    if (e.mv === 'drop') { const q = Math.min(1, k / .35); y = e.y - VH * .5 * (1 - q * q); a = k < .35 ? 1 : 1 - (k - .35) / .65; s = 1; }
+    if (e.mv === 'fade') { s = 1 + k * .08; a = k < .2 ? k / .2 : 1 - (k - .2) / .8; }
     if (e.mv === 'big') { s = .75 + Math.pow(k, .35) * .45; a = k < .1 ? k / .1 : k < .7 ? 1 : 1 - (k - .7) / .3; }
     // うしろの光（絵と同じ色）
     ctx.globalCompositeOperation = e.meta.add ? 'lighter' : 'source-over';
     const r = Math.max(w, h) * s * .55, gr = ctx.createRadialGradient(x, y, 0, x, y, r);
-    gr.addColorStop(0, e.meta.c + (e.meta.add ? '66' : '33')); gr.addColorStop(1, e.meta.c + '00');
+    const gc = e.tint || e.meta.c; gr.addColorStop(0, gc + (e.meta.add ? '66' : '33')); gr.addColorStop(1, gc + '00');
     ctx.globalAlpha = a; ctx.fillStyle = gr; ctx.fillRect(x - r, y - r, r * 2, r * 2);
     ctx.translate(x, y); ctx.rotate(e.rot + e.spin * k); if (e.flip) ctx.scale(-1, 1); if (e.wob) ctx.scale(1 + Math.sin(k * 9) * .08, 1 - Math.sin(k * 9) * .06);
-    ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s);
+    ctx.drawImage(e.tint ? tintOf(e.img, e.tint) : e.img, -w * s / 2, -h * s / 2, w * s, h * s);
+    if (e.tint) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .3; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); }  // 芯は白く
     if (e.meta.add && k < .35) { ctx.globalAlpha = a * .5; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); } // 最初だけ強く光らせる
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
@@ -2294,40 +2316,58 @@ function fxPins(dl, c) {
 const WHITE = '#ffffff';
 // pre: 技の始まり（ため・照準など） wait: 1回目までの待ち gap: 2回目からの間隔 at: 絵が出てから当たるまで len: 技の長さ（次の行動を待つ）
 const SKILL_SHOW = {
-  double:   { gap: 300, at: 60, len: 250, hit: (i, dl) => { playFx('slash_h', { delay: dl, rot: i ? .55 : -.55, size: 1.05 }); fxArc(dl, WHITE, 3, i ? .6 + Math.PI : -.6); fxSparks(dl + 50, WHITE, 8); shakeAt(dl + 50, 4); } },
-  lunge:    { pre: () => fxSpeed(0, 260), wait: 160, at: 80, len: 150, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.1 }); sfx('hit1', { delay: dl + 80, vol: .8 }); fxRing(dl + 80, WHITE, .22, 3); shakeAt(dl + 80, 4); } },
-  iai:      { pre: () => { fxDark(0, 700, .55); sfx('swing', { vol: .5 }); }, wait: 380, at: 40, len: 450, hit: (i, dl) => { fxBeam(dl, '#cfe3ff'); playFx('iai', { delay: dl, rot: 0, size: 1.4 }); fxSparks(dl + 40, WHITE, 18); fxTint(dl + 30, WHITE, .3); shakeAt(dl + 40, 9); } },
-  tsubame:  { gap: 260, at: 60, len: 300, hit: (i, dl) => { playFx(i ? 'tsubame' : 'slash_v', { delay: dl, rot: i ? Math.PI + .3 : .3, size: 1.2, snd: 'w_katana' }); fxArc(dl, '#cfe3ff', 4, i ? -Math.PI / 2 - .4 : Math.PI / 2 - .4); fxSparks(dl + 60, WHITE, 10); shakeAt(dl + 60, 6); } },
-  frenzy:   { gap: 150, at: 40, len: 450, hit: (i, dl) => { const r = (R() - .5) * 2.4; playFx('slash_h', { delay: dl, rot: r, size: .85 }); fxArc(dl, '#ffd0a0', 2, r * 1.5, VH * (.22 + R() * .12)); shakeAt(dl + 40, 3); } },
-  flurry:   { gap: 140, at: 30, len: 400, hit: (i, dl) => { playFx('impact', { delay: dl, size: .6, x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 40, y: VH * (.42 + R() * .18) }); fxRing(dl, WHITE, .12, 2); shakeAt(dl + 30, 3); } },
-  punch:    { at: 60, len: 100, hit: (i, dl) => { fxSpeed(dl, 200); playFx('impact', { delay: dl + 60, size: 1 }); fxRays(dl + 60, WHITE, 8, .35); shakeAt(dl + 60, 5); } },
-  volley:   { gap: 150, at: 260, len: 500, hit: (i, dl) => { playFx('arrow', { delay: dl, size: .8 }); fxSparks(dl + 260, '#ffe0a0', 5); } },
-  aim:      { pre: () => fxReticle(0, 380, '#ffe08a'), wait: 300, at: 260, len: 450, hit: (i, dl) => { playFx('arrow', { delay: dl, size: .95 }); fxRing(dl + 260, '#ffe08a', .2, 3); shakeAt(dl + 260, 4); } },
-  snipe:    { pre: () => fxReticle(0, 520, '#ff7a5c'), wait: 420, at: 260, len: 550, hit: (i, dl) => { fxDark(0, 600, .35); playFx('arrow', { delay: dl, size: 1.1 }); fxRays(dl + 260, '#ff7a5c', 10, .45); shakeAt(dl + 260, 6); } },
-  stab:     { at: 120, len: 100, hit: (i, dl) => { fxSpeed(dl, 180, '#ffcfcf'); playFx('thrust', { delay: dl, size: .9, snd: 'w_dagger' }); fxSparks(dl + 120, '#ff9a8a', 8); shakeAt(dl + 120, 4); } },
-  assassin: { pre: () => { fxDark(0, 800, .6); playFx('dark_mist', { size: .7 }); }, wait: 360, at: 80, len: 500, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.2, snd: 'w_dagger' }); fxTint(dl + 80, '#ff2030', .35); fxRays(dl + 80, '#ff5060', 12, .5); shakeAt(dl + 80, 8); } },
-  kagenui:  { at: 120, len: 400, hit: (i, dl) => { playFx('dark_mist', { delay: dl, size: .8 }); playFx('thrust', { delay: dl + 80, size: .9 }); sfx('hit1', { delay: dl + 160, vol: .7 }); fxPins(dl + 160, '#8a5cff'); shakeAt(dl + 120, 4); } },
-  smash:    { at: 90, len: 150, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.2 }); playFx('rocks', { delay: dl + 60, size: .7, parts: 16 }); fxRing(dl + 60, '#d9b07a', .34, 5); shakeAt(dl + 90, 9); } },
-  rage:     { pre: () => fxTint(0, '#ff2010', .35), wait: 120, at: 90, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.45, snd: 'w_axe' }); fxRays(dl + 60, '#ff5030', 12, .6); fxRing(dl + 60, '#ff7050', .42, 6); shakeAt(dl + 90, 12); } },
-  heavyslash:{ at: 150, len: 250, hit: (i, dl) => { playFx('slash_v', { delay: dl, rot: 0, size: 1.45, slow: 1.2 }); fxArc(dl, WHITE, 5, Math.PI / 2 - 1.1 + .55); playFx('impact_heavy', { delay: dl + 140, size: .85 }); fxRing(dl + 150, WHITE, .36, 5); shakeAt(dl + 150, 10); } },
-  cleave:   { pre: () => { const k = FX_AT; FX_AT = null; fxArc(0, '#ffd8a0', 6, Math.PI / 2 - .2, VH * .55); playFx('slash_h', { size: 1.7, rot: 0, x: VW / 2, snd: 'w_axe' }); FX_AT = k; }, wait: 160, at: 40, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: .75, parts: 6 }); shakeAt(dl + 40, 9); } },
-  plunder:  { at: 100, len: 200, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.1, snd: 'w_axe' }); fxSparks(dl + 80, '#ffd24a', 20); playFx('sparkle', { delay: dl + 160, size: .6 }); shakeAt(dl + 100, 7); } },
-  shieldbash:{ at: 80, len: 150, hit: (i, dl) => { fxSpeed(dl, 160); playFx('impact', { delay: dl + 60, size: 1.1, snd: 'punch' }); fxRing(dl + 80, '#cfe3ff', .3, 5); playFx('barrier', { delay: dl + 60, size: .5, self: false, snd: null }); shakeAt(dl + 80, 6); } },
-  monkstrike:{ at: 80, len: 300, hit: (i, dl) => { playFx('impact', { delay: dl, size: 1 }); fxRays(dl + 60, '#ffe9a0', 10, .45); playFx('heal', { delay: dl + 240, self: true, size: .8 }); shakeAt(dl + 80, 5); } },
-  magicblade:{ at: 100, len: 250, hit: (i, dl) => { playFx('slash_x', { delay: dl, size: 1.1 }); fxArc(dl, '#ff9a4a', 4, -.6); playFx('fire_s', { delay: dl + 120, size: .8 }); fxSparks(dl + 120, '#ffb060', 14); shakeAt(dl + 100, 6); } },
-  darkblade:{ pre: () => fxDark(0, 700, .5, '#12001a'), wait: 200, at: 120, len: 400, hit: (i, dl) => { playFx('dark_blade', { delay: dl, size: 1.3 }); fxArc(dl, '#b45cff', 5, .6 + Math.PI); playFx('dark_mist', { delay: dl + 140, size: 1 }); fxRing(dl + 140, '#b45cff', .4, 5); shakeAt(dl + 120, 9); } },
-  bomb:     { pre: () => fxTint(160, '#ff9030', .3), wait: 120, at: 60, len: 300, hit: (i, dl) => { playFx('explosion', { delay: dl, size: 1.05 }); playFx('rocks', { delay: dl + 80, size: .6, parts: 12 }); shakeAt(dl + 60, 11); } },
-  // 2026-11-25: 音もエフェクトもなかった技
-  kensei:   { pre: () => { fxDark(0, 900, .62); sfx('swing', { vol: .45 }); fxRing(120, '#ffe08a', .18, 2); }, wait: 440, at: 40, len: 600, hit: (i, dl) => { fxBeam(dl, '#ffe08a'); playFx('jin', { delay: dl, rot: 0, size: 1.6, snd: 'slash' }); fxTint(dl + 30, '#ffd060', .35); fxSparks(dl + 40, '#ffe08a', 26); fxRays(dl + 40, '#ffe08a', 14, .6); shakeAt(dl + 40, 12); } },
-  senken:   { pre: () => { fxDark(0, 1300, .5, '#05081a'); for (let j = 0; j < 16; j++) { const t = 120 + j * 55, x = VW * (.15 + R() * .7), r = (R() - .5) * 3; fxArc(t, j % 3 ? '#cfe3ff' : WHITE, 2, r, VH * (.18 + R() * .14)); playFx('slash_h', { delay: t, size: .55, rot: r, x, y: VH * (.35 + R() * .3), parts: 3, snd: j % 4 ? null : 'w_sword', vol: .6 }); } },
-              wait: 1000, gap: 90, at: 40, len: 700, hit: (i, dl, tg) => { playFx('slash_x', { delay: dl, size: 1.3, snd: tg && tg !== alive()[0] ? null : 'slash' }); fxTint(dl + 20, WHITE, .3); fxSparks(dl + 40, WHITE, 16); shakeAt(dl + 40, 10); } },
-  masterstrike:{ pre: () => { playFx('power', { self: true, size: .8, snd: null }); sfx('forge1', { vol: .7 }); fxSparks(120, '#ffb060', 10); }, wait: 420, at: 60, len: 450, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.5, snd: 'punch' }); sfx('forge2', { delay: dl + 40, vol: .7 }); fxSparks(dl + 50, '#ffb060', 32); fxRing(dl + 60, '#ffb060', .45, 6); fxRays(dl + 60, '#ffcf80', 12, .5); fxTint(dl + 40, '#ff9030', .25); shakeAt(dl + 60, 11); } },
-  jin1:     { pre: () => { fxDark(0, 800, .66); sfx('swing', { vol: .4 }); }, wait: 460, at: 30, len: 500, hit: (i, dl) => { fxBeam(dl, WHITE); playFx('jin', { delay: dl, rot: 0, size: 1.5, snd: 'slash' }); fxTint(dl + 20, WHITE, .4); fxSparks(dl + 30, WHITE, 20); shakeAt(dl + 30, 10); } },
-  jin2:     { pre: () => { playFx('afterimage', { self: true, size: 1, snd: 'swing' }); fxRing(80, '#9fd8ff', .26, 3); fxRing(260, '#9fd8ff', .34, 2); } },
-  temper:   { pre: () => { playFx('power', { self: true, size: .9, snd: null }); sfx('forge1', { vol: .7 }); fxSparks(150, '#ffb060', 18); fxTint(150, '#ff9030', .18); } },
-  steal:    { pre: () => { playFx('afterimage', { size: .8, snd: 'dash' }); playFx('sparkle', { delay: 260, size: .6, snd: null }); fxSparks(260, '#ffd24a', 10); } },
+  // ---- 剣・刀・大剣・斧（2026-11-25: 部品の絵 s_* を、技ごとに回数・向き・色を変えて出す。音は絵が出る瞬間に鳴らす） ----
+  double:   { gap: 280, at: 50, len: 250, hit: (i, dl) => { playFx('s_slash', { delay: dl, rot: i ? .2 : -.2, flip: !!i, size: 1.15, tint: '#dce8ff', snd: 'w_sword' }); fxSparks(dl + 50, WHITE, 8); if (i) fxTint(dl + 30, WHITE, .14); shakeAt(dl + 50, 4 + i * 2); } },
+  frenzy:   { gap: 120, at: 30, len: 450, hit: (i, dl) => { const r = (R() - .5) * 2.6; playFx('s_slash', { delay: dl, rot: r, flip: R() < .5, size: .75, tint: i % 2 ? '#ffe0c0' : '#dce8ff', x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 60, y: VH * (.42 + R() * .16), parts: 4, snd: 'w_sword' }); shakeAt(dl + 30, 3); } },
+  iai:      { pre: () => { fxDark(0, 750, .6); sfx('swing', { vol: .5 }); }, wait: 380, at: 30, len: 450, hit: (i, dl) => { fxBeam(dl, '#cfe3ff'); playFx('s_flash', { delay: dl, rot: 0, flip: false, size: 1.9, tint: '#cfe3ff', snd: 'slash' }); playFx('iai', { delay: dl, rot: 0, size: 1.3, snd: null }); fxSparks(dl + 30, WHITE, 18); fxTint(dl + 20, '#cfe3ff', .35); shakeAt(dl + 30, 9); } },
+  tsubame:  { gap: 250, at: 50, len: 300, hit: (i, dl) => { if (!i) playFx('s_vslash', { delay: dl, rot: 0, flip: false, size: 1.2, tint: '#cfe3ff', snd: 'w_katana' }); else playFx('s_slash', { delay: dl, rot: Math.PI - .4, flip: true, size: 1.2, tint: '#cfe3ff', snd: 'w_katana' }); fxSparks(dl + 50, WHITE, 10); if (i) fxTint(dl + 30, '#cfe3ff', .18); shakeAt(dl + 50, 6); } },
+  lunge:    { pre: () => fxSpeed(0, 260), wait: 160, at: 60, len: 150, hit: (i, dl) => { playFx('s_thrust', { delay: dl, size: 1.15, tint: '#ffffff', snd: 'swing' }); playFx('impact', { delay: dl + 60, size: .55, parts: 6, snd: 'hit1' }); fxRing(dl + 60, WHITE, .22, 3); shakeAt(dl + 60, 5); } },
+  heavyslash:{ at: 120, len: 300, hit: (i, dl) => { playFx('s_vslash', { delay: dl, rot: 0, flip: false, size: 1.6, slow: 1.2, tint: '#ffffff', snd: 'heavy' }); playFx('s_heavy', { delay: dl + 120, size: .9, snd: 'punch' }); fxTint(dl + 120, WHITE, .22); fxRing(dl + 130, WHITE, .36, 5); shakeAt(dl + 120, 11); } },
+  smash:    { at: 60, len: 200, hit: (i, dl) => { playFx('s_heavy', { delay: dl, size: 1.35, snd: 'punch' }); playFx('rocks', { delay: dl + 60, size: .7, parts: 14, snd: 'rockbreak' }); fxRing(dl + 60, '#d9b07a', .34, 5); fxTint(dl + 40, '#ffd8a0', .15); shakeAt(dl + 60, 10); } },
+  cleave:   { at: 60, len: 250, hit: (i, dl) => { const k = FX_AT; FX_AT = null; playFx('s_sweep', { delay: dl, rot: 0, flip: false, size: 1.9, x: VW / 2, tint: '#ffd8a0', snd: 'w_axe' }); fxArc(dl, '#ffd8a0', 6, Math.PI / 2 - .2, VH * .55); FX_AT = k; playFx('impact_heavy', { delay: dl + 120, size: .7, parts: 6, snd: 'punch' }); shakeAt(dl + 120, 9); } },
+  rage:     { pre: () => fxTint(0, '#ff2010', .3), wait: 150, at: 40, len: 300, hit: (i, dl) => { playFx('s_shock', { delay: dl, size: 1.5, snd: 'w_axe' }); playFx('impact_heavy', { delay: dl + 40, size: 1, parts: 10, snd: 'punch' }); fxTint(dl + 40, '#ff3010', .38); fxRays(dl + 40, '#ff5030', 12, .6); shakeAt(dl + 40, 13); } },
+  plunder:  { at: 60, len: 350, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.1, snd: 'w_axe' }); playFx('s_coins', { delay: dl + 140, size: .8, snd: 'register', vol: .55 }); fxSparks(dl + 140, '#ffd24a', 16); shakeAt(dl + 60, 7); } },
+  magicblade:{ at: 60, len: 300, hit: (i, dl) => { playFx('s_fireslash', { delay: dl, size: 1.35, rot: 0, flip: false, snd: 'w_sword' }); playFx('fire_s', { delay: dl + 90, size: .8, snd: 'fire1' }); fxTint(dl + 60, '#ff8a3d', .22); fxSparks(dl + 90, '#ffb060', 14); shakeAt(dl + 60, 7); } },
+  darkblade:{ pre: () => fxDark(0, 750, .55, '#12001a'), wait: 220, at: 60, len: 400, hit: (i, dl) => { playFx('s_darkslash', { delay: dl, size: 1.45, rot: 0, flip: false, snd: 'w_sword' }); playFx('dark_mist', { delay: dl + 120, size: .9, snd: 'dark' }); fxRing(dl + 120, '#b45cff', .4, 5); fxTint(dl + 60, '#7a2cff', .2); shakeAt(dl + 60, 9); } },
+  kensei:   { pre: () => { fxDark(0, 950, .65); sfx('swing', { vol: .45 }); fxRing(120, '#ffe08a', .18, 2); }, wait: 440, at: 30, len: 650, hit: (i, dl) => { fxBeam(dl, '#ffe08a'); playFx('s_flash', { delay: dl, rot: 0, flip: false, size: 2.1, tint: '#ffe08a', snd: 'slash' }); playFx('s_holyhit', { delay: dl + 60, size: 1.1, snd: null }); fxTint(dl + 30, '#ffd060', .42); fxSparks(dl + 40, '#ffe08a', 26); fxRays(dl + 40, '#ffe08a', 14, .6); shakeAt(dl + 40, 13); } },
+  senken:   { pre: () => { fxDark(0, 1400, .55, '#05081a'); for (let j = 0; j < 14; j++) { const t = 100 + j * 60, x = VW * (.14 + R() * .72), y = VH * (.45 + R() * .2); playFx('s_sword', { delay: t, size: .55, x, y, parts: 3, tint: j % 3 ? '#cfe3ff' : '#ffffff', snd: null }); if (j % 3 === 0) sfx('w_sword', { delay: t + 217, vol: .55, max: .5 }); fxSparks(t + 217, WHITE, 3); } },  // 剣が刺さる瞬間（落ちる動きの35%）に音
+              wait: 1150, at: 40, len: 700, hit: (i, dl, tg) => { const first = !tg || tg === alive()[0]; playFx('s_slash', { delay: dl, rot: -.2, size: 1.3, tint: '#ffffff', snd: first ? 'slash' : null }); playFx('s_slash', { delay: dl + 40, rot: .2, flip: true, size: 1.3, tint: '#ffffff', snd: null }); if (first) fxTint(dl + 20, WHITE, .4); fxSparks(dl + 40, WHITE, 14); shakeAt(dl + 40, 11); } },
+  masterstrike:{ pre: () => { playFx('power', { self: true, size: .8, snd: null }); sfx('forge1', { vol: .7 }); fxSparks(120, '#ffb060', 10); }, wait: 420, at: 40, len: 450, hit: (i, dl) => { playFx('s_heavy', { delay: dl, size: 1.5, snd: 'punch' }); playFx('s_sparks', { delay: dl + 40, size: 1.2, snd: 'forge2', vol: .75 }); fxRing(dl + 40, '#ffb060', .45, 6); fxTint(dl + 30, '#ff9030', .32); shakeAt(dl + 40, 12); } },
+  jin1:     { pre: () => { fxDark(0, 850, .68); sfx('swing', { vol: .4 }); }, wait: 460, at: 25, len: 500, hit: (i, dl) => { fxBeam(dl, WHITE); playFx('s_flash', { delay: dl, rot: 0, flip: false, size: 2, tint: '#ffffff', snd: 'slash' }); fxTint(dl + 20, WHITE, .45); fxSparks(dl + 25, WHITE, 20); shakeAt(dl + 25, 11); } },
+  // ---- ダガー・弓 ----
+  stab:     { at: 90, len: 120, hit: (i, dl) => { fxSpeed(dl, 180, '#ffcfcf'); playFx('s_thrust', { delay: dl, size: .95, tint: '#ffd8d8', snd: 'w_dagger' }); playFx('s_hit', { delay: dl + 90, size: .45, tint: '#ff6a5a', parts: 6, snd: 'hit' }); shakeAt(dl + 90, 5); } },
+  assassin: { pre: () => { fxDark(0, 850, .62); playFx('dark_mist', { size: .7, snd: 'dark' }); }, wait: 380, at: 60, len: 500, hit: (i, dl) => { playFx('s_thrust', { delay: dl, size: 1.4, tint: '#ff5060', snd: 'w_dagger' }); playFx('s_flash', { delay: dl + 60, rot: -.5, size: 1.2, tint: '#ff4050', snd: 'hit' }); fxTint(dl + 60, '#ff2030', .4); fxRays(dl + 60, '#ff5060', 12, .5); shakeAt(dl + 60, 9); } },
+  kagenui:  { at: 160, len: 450, hit: (i, dl) => { playFx('dark_mist', { delay: dl, size: .8, snd: 'dark' }); const x0 = FX_AT && FX_AT.cx || VW / 2; for (let j = 0; j < 5; j++) playFx('s_needle', { delay: dl + 120 + j * 45, size: .5, x: x0 + (j - 2) * 22, y: VH * .7, parts: 2, snd: j ? null : 'hit1' }); fxPins(dl + 160, '#8a5cff'); shakeAt(dl + 160, 4); } },
+  aim:      { pre: () => fxReticle(0, 380, '#ffe08a'), wait: 300, at: 260, len: 450, hit: (i, dl) => { playFx('s_arrow', { delay: dl, size: .9, tint: '#fff0c8', snd: 'w_bow' }); playFx('s_hit', { delay: dl + 260, size: .55, tint: '#ffe08a', parts: 6, snd: 'hit' }); fxRing(dl + 260, '#ffe08a', .2, 3); shakeAt(dl + 260, 5); } },
+  snipe:    { pre: () => { fxReticle(0, 520, '#ff7a5c'); fxDark(0, 650, .35); }, wait: 420, at: 260, len: 550, hit: (i, dl) => { playFx('s_arrow', { delay: dl, size: 1.1, tint: '#ff9a7a', snd: 'w_bow' }); playFx('s_hit', { delay: dl + 260, size: .75, tint: '#ff6a5a', snd: 'hit' }); fxTint(dl + 260, '#ff5030', .3); fxRays(dl + 260, '#ff7a5c', 10, .45); shakeAt(dl + 260, 7); } },
+  volley:   { gap: 140, at: 260, len: 500, hit: (i, dl) => { playFx('s_arrow', { delay: dl, size: .8, tint: '#fff0c8', x: (FX_AT && FX_AT.cx || VW / 2) + (i - 1) * 24, snd: 'w_bow' }); playFx('s_hit', { delay: dl + 260, size: .4, parts: 4, snd: 'hit1', vol: .7 }); } },
+  // ---- 格闘・杖・盾・道具 ----
+  punch:    { at: 60, len: 120, hit: (i, dl) => { fxSpeed(dl, 200); playFx('s_fist', { delay: dl + 60, size: 1.15, snd: 'punch' }); fxRays(dl + 60, WHITE, 8, .35); fxTint(dl + 60, WHITE, .12); shakeAt(dl + 60, 7); } },
+  flurry:   { gap: 130, at: 0, len: 400, hit: (i, dl) => { playFx('s_hit', { delay: dl, size: .5, x: (FX_AT && FX_AT.cx || VW / 2) + (R() - .5) * 50, y: VH * (.42 + R() * .18), parts: 4, snd: 'hit1' }); shakeAt(dl, 3); } },
+  shieldbash:{ at: 60, len: 160, hit: (i, dl) => { fxSpeed(dl, 160); playFx('s_shield', { delay: dl + 60, size: 1.05, snd: 'punch' }); fxRing(dl + 60, '#cfe3ff', .3, 5); shakeAt(dl + 60, 7); } },
+  monkstrike:{ at: 40, len: 320, hit: (i, dl) => { playFx('s_holyhit', { delay: dl, size: 1.1, snd: 'hit1' }); fxTint(dl + 40, '#ffe08a', .2); playFx('heal', { delay: dl + 240, self: true, size: .8, snd: 'heal1' }); shakeAt(dl + 40, 5); } },
+  bomb:     { pre: () => fxTint(140, '#ff9030', .25), wait: 140, at: 40, len: 320, hit: (i, dl) => { playFx('s_boom', { delay: dl, size: 1.35, snd: 'explosion' }); playFx('rocks', { delay: dl + 70, size: .6, parts: 12, snd: null }); fxTint(dl + 30, '#ff9030', .38); shakeAt(dl + 40, 13); } },
   arcanearrow:{ pre: () => playFx('magic_circle', { y: VH * .78, size: .6, parts: 8 }), wait: 200, gap: 220, at: 260, len: 450, hit: (i, dl) => { playFx('magic_arrow', { delay: dl, size: .9 }); fxRing(dl + 260, '#c08cff', .2, 3); } },
+  // ---- 守り・補助（自分に） ----
+  guard:    { pre: () => playFx('s_shield', { self: true, size: .9, snd: 'buff' }) },
+  wall:     { pre: () => { playFx('s_barrier', { self: true, size: 1.2, snd: 'buff' }); fxTint(80, '#6ab8ff', .15); } },
+  holyguard:{ pre: () => { playFx('s_barrier', { self: true, size: 1.2, tint: '#fff0c0', snd: 'buff' }); playFx('pray', { self: true, delay: 160, size: .8, snd: 'magic' }); fxTint(160, '#ffe08a', .15); } },
+  counter:  { pre: () => { playFx('s_water', { self: true, size: .9, snd: 'swing' }); fxRing(80, '#9fd8ff', .26, 3); } },
+  jin2:     { pre: () => { playFx('s_water', { self: true, size: 1.05, snd: 'swing' }); fxRing(80, '#9fd8ff', .26, 3); fxRing(260, '#9fd8ff', .34, 2); } },
+  mikiri:   { pre: () => { playFx('s_ghost', { self: true, size: .9, x: VW / 2 - 30, snd: 'miss' }); playFx('afterimage', { self: true, size: .8, snd: null }); } },
+  bunshin:  { pre: () => { for (let j = 0; j < 3; j++) playFx('s_ghost', { self: true, delay: j * 90, size: .8, x: VW / 2 + (j - 1) * 70, snd: j ? null : 'dash' }); } },
+  hone:     { pre: () => { playFx('s_blade', { self: true, size: .9, snd: 'buff' }); fxSparks(150, '#cfe3ff', 10); } },
+  temper:   { pre: () => { playFx('s_blade', { self: true, size: .9, snd: null }); sfx('forge1', { vol: .7 }); playFx('s_sparks', { self: true, delay: 150, size: .7, snd: null }); fxTint(150, '#ff9030', .18); } },
+  steal:    { pre: () => { playFx('afterimage', { size: .8, snd: 'dash' }); playFx('s_sparkle', { delay: 260, size: .6, snd: 'hit1', vol: .5 }); fxSparks(260, '#ffd24a', 10); } },
 };
+// 魔法は派手に（2026-11-25）: 当たる瞬間に、属性の色で画面を光らせる。中は光の筋、大は輪と白い閃光も
+function magicFlash(id, dl) {
+  const m = /^(fire|ice|bolt|holy|dark)(\d?)$/.exec(id); if (!m) return;
+  const el = m[1], t = Number(m[2]) || 1, c = MAGIC_C[el];
+  fxTint(dl, c, [.14, .24, .36][t - 1]);
+  if (t >= 2) fxRays(dl + 20, c, 10 + t * 2, .45 + t * .08);
+  if (t >= 3) { fxRing(dl + 40, c, .5, 6); fxSparks(dl + 40, c, 24); setTimeout(() => { fx.flash = Math.max(fx.flash || 0, .45); }, dl + 30); }
+}
 // ---------- 武器の強さで足すエフェクト（コードで描く） ----------
 // 段階: 銅・骨・魔石=1、鉄=2、銀=3、ミスリル=4、オリハルコン・竜=5。金床の+2ごとに1段上がる
 const W_COLOR = { darksteel: '#b45cff', dragon: '#ff5a2a', royal: '#ffd24a', treasure: '#ffe98a', copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
