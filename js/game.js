@@ -604,7 +604,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 111'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 112'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -677,6 +677,7 @@ function outside(id) {
 function inside(id, msg) {
   place = id; SND_INDOOR = true; SND.lost = false; sfx('door'); showTown(true, 4 / 3); const p = PLACES[id], t = $('town');
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
+  if (id === 'home' && !msg && typeof jennyHomeEv === 'function' && jennyHomeEv()) return;  // ジェニー専用イベント
   if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
   if (id === 'weapon' && !msg && typeof jennyStoryKey === 'function' && jennyStoryKey()) { const k = jennyStoryKey(); jennySeq(k, () => inside('weapon', k === 's1' ? 'ジェニー「……さ、仕事仕事。何か用？」' : 'ジェニー[shy]「……で、今日は何を買うの？」')); return; }
   const lastSaid = msg || greet(id); log(lastSaid, true);
@@ -736,6 +737,8 @@ function npcFig(id) {
 
 function homeMenu() {
   buttons([{ title: `工房の素材: ${matText(G.store)}` },
+    ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', hot: true, f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
+    typeof banterBtn === 'function' ? banterBtn() : null,
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true); } },
     { t: 'ステータス', s: `Lv${G.lv} ${job()}`, f: () => statusMenu(homeMenu) },
@@ -744,9 +747,8 @@ function homeMenu() {
     { t: 'ツール', s: toolName(), f: () => toolMenu(homeMenu) },
     { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(homeMenu) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(homeMenu) },
-    ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
     { t: G.als ? 'アルスと行く' : 'アルスを誘う', s: G.als ? '準備できてる' : `1〜${ALS_TOP}階`, off: G.als, f: () => { G.als = true; save(); npcFig('als'); homeMenu(); log(pick(['アルス[laugh]「本当ですか！ 師匠と一緒に塔へ……！ すぐ準備します！」', 'アルス[smile]「はい！ 足手まといにはなりません。特訓の成果、見ててください！」']), true); } },
-    leave]);
+    leave].filter(Boolean));
 }
 // 塔の入口: 塔の大きさを見せる。コマンドは 入る／準備する／戻る
 function towerScreen(msg) {
@@ -1152,7 +1154,8 @@ function jobList(back) {
 // 武具屋: まず「買う／売る／話す／外に出る」。押してから、それぞれの一覧を出す
 function shop(msg) {
   buttons([{ t: '買う', s: '自分で打つより高い', hot: true, f: () => shopBuy() }, { t: '売る', s: G.gear.length ? `持ち物${G.gear.length}個` : '売る物がない', f: () => shopSell() },
-    talkBtn('jenny', () => inside('weapon', byeLine('jenny'))), leave]);
+    typeof jennyDressReady === 'function' && jennyDressReady() ? { t: 'お城に誘う', s: 'ジェニーを', hot: true, f: jennyDressEv } : null,
+    talkBtn('jenny', () => inside('weapon', byeLine('jenny'))), leave].filter(Boolean));
   if (msg) log(msg, true);
 }
 // 売る: 同じ物はまとめて1行に。押すと「1つ／全部」を選べる。装備していない物をまとめて全部売ることもできる

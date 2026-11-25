@@ -751,3 +751,148 @@ function jennySeq(key, done) {
   };
   step();
 }
+
+// ---------- ジェニー専用イベント（Daichiさんの「ジェニー専用イベント設定」2026-11-25） ----------
+// ① 30階〜「思いがけない来客」: 工房に帰るとチッチ「武具屋さんが来てるっす」→ 風呂場で鉢合わせ → 怒りながら照れる → 本当の用事
+// ② 60階〜（お城に呼ばれていて、親密度7〜）「いつもと違うジェニー」: 武具屋で城に誘う → 着替え中に「おーい」→ ドレス → お城でみんなが驚く → 工房でくつろぐ
+// ③ 好意と60階の家のイベントのあと「今夜は帰らない」: 泊まっていっていい？ → 受け入れると、ときどき泊まりに来る
+const JEV = () => (G.jev = G.jev || {});
+const JENNY_BATH = [
+  { bg: 'home_in', p: 'npc/chicchi', t: 'チッチ[smile]「親方、おかえりなさいっす！\nあの、武具屋さんが来てるっすよ！」' },
+  { p: 'npc/chicchi', t: '「ジェニーが？ 珍しいな。……どこにいる？」\nチッチ「さあ？ さっきまで、その辺にいたっすけど」' },
+  { p: 'npc/chicchi', t: '工房にも、台所にもいない。\n……奥から、水の音がする。' },
+  { p: 'jenny_bath', sfx: 'door', t: '扉を開けると、湯気の向こうにジェニーがいた。\nジェニー「ふふ〜ん♪ ……ん？」' },
+  { p: 'jenny_bath', t: 'ジェニー[shock]「…………」\n「…………」' },
+  { p: 'jenny_bath', sfx: 'wallhit', t: 'ジェニー[angry]「き……きゃあああっ！ 出てけーっ！！」\n桶が飛んできた。……いい肩をしている。' },
+  { p: 'npc/chicchi', t: '扉の外で、しばらく待った。\nチッチ「……親方、顔に桶の跡がついてるっす」' },
+  { p: 'jenny_angry', t: 'ジェニー[angry]「ちょっと！ 普通、お風呂に入ってるかどうか、確認するでしょ！」', ch: [
+    ['「悪かった。本当にすまん」', 'ジェニー[shy]「……まあ、わざとじゃないなら、いいけどさ」', 2, 'jenny_wave'],
+    ['「……何も見てない」', 'ジェニー[shy]「……その顔、絶対見たでしょ。……ばか」', 1, 'jenny_wave'],
+    ['「ここ、俺の家なんだが」', 'ジェニー[angry]「それはそうだけど！ ……もう。わざとじゃないなら、いいけどさ」', 0, 'jenny_wave'],
+  ] },
+  { p: 'jenny_wave', t: 'ジェニー[shy]「……うちの店の湯沸かし、壊れちゃってさ。修理を頼みに来たのよ。\nそしたらチッチが『お風呂、沸いてるっすよ』って……」' },
+  { p: 'jenny_wave', t: '「……それで入ったのか」\nジェニー「だって、塔帰りの誰かさんのために沸かしてあったのよ？ もったいないじゃない」' },
+  { p: 'jenny_smile', t: 'ジェニー[happy]「で、湯沸かし。直してくれるんでしょ？\n……お礼に、晩ごはん作ってってあげる」' },
+  { p: 'jenny_smile', t: 'その夜の工房の食卓は、いつもよりにぎやかだった。\nチッチ「……おれ、何も悪くないっすよね？」\nアルス「チッチさんは、少しだけ悪いと思います」' },
+];
+const JENNY_DRESS_ASK = [
+  { bg: 'weapon_in', p: 'npc/weapon', t: '「ジェニー。今度、お城に呼ばれてるんだ。\n……一緒に来ないか」' },
+  { p: 'npc/weapon_worried', t: 'ジェニー[shock]「えっ！？ 私を？ お城に？」' },
+  { p: 'npc/weapon_shy', t: 'ジェニー[shy]「……な、なんで私なのよ。王様に会うのよ？ 武具屋の娘が」', ch: [
+    ['「お前と行きたいんだ」', 'ジェニー[inlove]「…………。……し、仕方ないわね。あんた一人じゃ、礼儀作法も心配だし」', 3, 'npc/weapon_inlove'],
+    ['「俺の剣を一番知ってるのはお前だ」', 'ジェニー[shy]「……ずるい言い方。……いいわよ。行ってあげる」', 2, 'npc/weapon_shy'],
+    ['「ひとりだと緊張するんだ」', 'ジェニー[laugh]「あはは、なにそれ。……しょうがないなあ。ついてってあげる」', 1, 'npc/weapon_happy'],
+  ] },
+  { p: 'npc/weapon_happy', t: 'ジェニー[happy]「当日は、迎えに来てよね。\n……準備があるから、ちょっと早めに」' },
+];
+const JENNY_DRESS = [
+  { bg: 'weapon_in', p: 'npc/weapon_shy', t: 'その日。武具屋の奥から、ジェニーの声がした。\nジェニー「……早いわよ。まだ準備中！ そこで待ってて」' },
+  { p: 'npc/weapon_shy', t: '…………\n……しばらくして。' },
+  { p: 'npc/weapon_shy', t: 'ジェニー「……おーい。ちょっと来てー」' },
+  { p: 'jenny_change', t: '奥をのぞくと、着替えの途中のジェニーがいた。\nジェニー[shy]「……ふふっ。引っかかった」' },
+  { p: 'jenny_change', t: 'ジェニー[laugh]「なに固まってんのよ。……お風呂の仕返し。\nはい、もう向こう向いてて。すぐ終わるから」' },
+  { p: 'jenny_change', t: '急いで背中を向けた。\n……後ろで、くすくす笑う声がする。' },
+  { bg: 'castle_out', p: 'jenny_dress_shy', music: 'romantic', t: '店の前に出てきたジェニーは、紫のドレスを着ていた。\n髪をきれいに結い上げて、耳には金の飾り。' },
+  { p: 'jenny_dress_shy', t: 'ジェニー[shy]「……どう？ 変じゃない？」', ch: [
+    ['「きれいだ」', 'ジェニー[inlove]「……っ。……ばか。急にそういうこと言わないでよ」', 3, 'jenny_dress_shy'],
+    ['「見違えた」', 'ジェニー[shy]「……それ、褒めてるのよね？ ……ありがと」', 2, 'jenny_dress_shy'],
+    ['「いつもの格好も好きだぞ」', 'ジェニー[shy]「……もう。せっかく頑張ったのに。……でも、そういうとこ、嫌いじゃない」', 2, 'jenny_dress_shy'],
+  ] },
+  { bg: 'castle_in', p: 'jenny_dress_shy', music: '', t: 'お城の謁見の間。\n門兵も、大臣も、ジェニーを見て目を丸くした。' },
+  { p: 'jenny_dress_shy', t: '侍女「まあ！ ジェニーさんなの？」\n侍女「今日は、ずいぶん素敵ですね！」' },
+  { p: 'jenny_dress_shy', t: 'ギャバン「ジェニー殿……！ 見違えましたぞ！\n……鍛冶屋殿、自分は今、猛烈に感動しております！」' },
+  { p: 'jenny_dress_laugh', t: '王様[laugh]「わっはっは！ 鍛冶屋、隅に置けんのう！」\nジェニー[happy]「も、もう……やめてよ、みんな。……ふふっ」' },
+  { p: 'jenny_dress_joy', t: '帰り道。ジェニーは、大きく伸びをした。\nジェニー[laugh]「あーっ、緊張した！ ……でも、楽しかった」' },
+  { bg: 'home_in', p: 'jenny_dress_sit', t: '工房に寄ったジェニーは、ドレスのまま作業台に腰かけた。\nジェニー[smile]「……靴、脱いでいい？ 足、痛くて」' },
+  { p: 'jenny_dress_sit', t: 'ジェニー[shy]「ねえ。今日のこと、ずっと覚えてる。\n……あんたの隣で、お城の階段をのぼったこと」' },
+  { p: 'jenny_dress_sit', t: 'ルゥ[shock]「えっ、武具屋のお姉さん！？ お姫さまかと思った！」\nチッチ「親方、今日は晩ごはん、ごちそうにするっす」' },
+];
+const JENNY_STAY_FIRST = [
+  { bg: 'home_in', p: 'jenny_smile', t: '夜。ジェニーが、差し入れの鍋を持ってきた。\nジェニー[happy]「ほら、あったかいうちに食べて。……べつに、作りすぎただけだから」' },
+  { p: 'jenny_smile', t: '食べながら、塔の話をした。\nジェニーは、ときどき笑って、ときどき心配そうな顔をして、最後まで聞いてくれた。' },
+  { p: 'jenny_wave', t: '食べ終わると、ジェニーは勝手に剣の手入れを始めた。\nジェニー「……刃こぼれ。また無茶したでしょ。……ほんと、しょうがないんだから」' },
+  { p: 'jenny_wave', t: '気がつくと、窓の外はすっかり暗くなっていた。' },
+  { p: 'npc/weapon_shy', music: 'romantic', t: 'ジェニー[shy]「……ねえ。今日、泊まっていってもいい？」', ch: [
+    ['「ああ。好きにしろ」', 'ジェニー[happy]「ふふっ。じゃあ、お邪魔します」', 3, 'jenny_smile'],
+    ['「客間、片づけておく」', 'ジェニー[laugh]「なにそれ、急にかしこまって。……うん。お邪魔します」', 2, 'jenny_smile'],
+    ['「送っていくよ」', 'ジェニー[smile]「……そっか。うん、今日はそうする。……また今度ね」', 1, 'jenny_wave'],
+  ] },
+];
+const JENNY_STAY_MORNING = [
+  { p: 'jenny_sleep', music: '', t: '朝。客間をのぞくと、ジェニーはまだ眠っていた。\n……炉に火を入れるのは、もう少しあとにしよう。' },
+  { p: 'npc/chicchi', t: 'チッチ「親方、朝ごはん、3人分っすね。\n……あ、ルゥも入れて4人分っす。いや、ブッパもいるから5人分っす」' },
+  { p: 'jenny_smile', t: 'ジェニー[happy]「……おはよ。いい匂い。\nチッチ、目玉焼き、私のは半熟でね」' },
+];
+// 泊まりに来たとき（2回目から。そのたびに一つ）
+const JENNY_STAY = [
+  [{ bg: 'home_in', p: 'jenny_smile', t: 'その夜、ジェニーが泊まりに来た。\nジェニー[happy]「今日は私が作るから、あんたは座ってて。……座ってなさいってば」' },
+   { p: 'jenny_smile', t: '台所から、楽しそうな鼻歌が聞こえる。\nアルス「師匠。……今の顔、日記に書いておきます」' }],
+  [{ bg: 'home_in', p: 'jenny_wave', t: 'ジェニーが、作業台で鎧の留め金を直してくれている。\nジェニー「あんたが打って、私が直す。……悪くない組み合わせでしょ」' },
+   { p: 'jenny_wave', t: '「店でもそうやって直してるのか」\nジェニー[shy]「……あんたのだけよ。こんなに丁寧にやるのは」' }],
+  [{ bg: 'home_in', p: 'jenny_smile', t: '夜更けまで、ふたりで塔の地図を広げていた。\nジェニー「次は何階？ ……ちゃんと、帰ってくる階まで決めときなさいよ」' },
+   { p: 'jenny_sleep', t: '気がつくと、ジェニーは客間で眠っていた。\n……毛布を、肩までかけておいた。' }],
+  [{ bg: 'home_in', p: 'jenny_sleep', t: '朝。ジェニーはまだ寝ている。\nブッパ「……おれのベッドが、なくなった……」' },
+   { p: 'npc/chicchi', t: 'チッチ「ブッパは、もともとベッドないっすよ」\nブッパ「…………そうだった」' }],
+];
+// 工房に帰ってきたとき: ①と③（初回・2回目から）を順に。1回の塔のぼりにつき一度だけ
+function jennyHomeEv() {
+  if (JEV().run === G.runs) return false;
+  const go = (steps, done) => { JEV().run = G.runs; save(); runEv('jenny', steps, () => { SND.scene = ''; done(); }); return true; };
+  const stayVisit = msg => { G.visit = { run: G.runs, who: ['jenny'], line: true }; save(); inside('home', msg); };
+  if ((G.maxFloor || 0) >= 30 && (G.aff.jenny || 0) >= 4 && !JEV().bath)
+    return go(JENNY_BATH, () => { JEV().bath = true; affAdd('jenny', 1); stayVisit('ジェニーは、湯沸かしの部品を待つあいだ、工房でくつろいでいくらしい。'); });
+  if (perk('jenny') && (G.homeEv || {}).jenny && !JEV().stayAsked && R() < .5)
+    return go(JENNY_STAY_FIRST, () => { JEV().stayAsked = true; const yes = (G.aff.jenny || 0) > 0 && JEV().stayNo !== true;
+      const said = (logLines[logLines.length - 1] || ''); if (said.includes('また今度')) { JEV().stayNo = true; save(); inside('home', 'ジェニーを、家まで送っていった。……星のきれいな夜だった。'); return; }
+      JEV().stay = true; save(); runEv('jenny', JENNY_STAY_MORNING, () => { SND.scene = ''; stayVisit('ジェニーは、朝ごはんのあとも、しばらく工房にいるらしい。'); }); });
+  if (JEV().stay && R() < .25) { const used = JEV().stayUsed = JEV().stayUsed || []; let j = JENNY_STAY.findIndex((_, n) => !used.includes(n)); if (j < 0) { JEV().stayUsed = []; j = Math.floor(R() * JENNY_STAY.length); } JEV().stayUsed.push(j);
+    return go(JENNY_STAY[j], () => stayVisit('ジェニーは、今日も工房でのんびりしている。')); }
+  // 「送っていく」を選んだときは、しばらくしてからもう一度聞かれる
+  if (JEV().stayNo && perk('jenny') && R() < .2) { JEV().stayNo = false; JEV().stayAsked = false; save(); }
+  return false;
+}
+// 武具屋: 60階に着いていて、お城に呼ばれていて、親密度7以上なら「お城に誘う」
+const jennyDressReady = () => (G.maxFloor || 0) >= 60 && G.castle && (G.aff.jenny || 0) >= 7 && !JEV().dress;
+function jennyDressEv() {
+  runEv('jenny', JENNY_DRESS_ASK, () => runEv('jenny', JENNY_DRESS, () => { JEV().dress = true; affAdd('jenny', 1); save(); SND.scene = ''; G.visit = { run: G.runs, who: ['jenny'], line: true }; inside('home', 'ジェニーは、ドレスのまま、しばらく工房でくつろいでいくらしい。'); }));
+}
+
+// ---------- 工房のにぎわい: 工房の人たちとヒロインの掛け合い（2026-11-25） ----------
+// ヒロインが工房に来ているとき「みんなの様子」で見られる。まだ見ていないものから。1回の訪問につき1つ
+const BANTER = {
+  jenny: [
+    [{ fig: 'chicchi', t: 'チッチ「武具屋さん、いらっしゃいっす。お茶、どうぞっす」' }, { fig: 'weapon', t: 'ジェニー[doubt]「……チッチ。あんた、また店の前で値札いじってたでしょ」' }, { fig: 'chicchi', t: 'チッチ[shock]「いじってないっす！ ちょっと高くしてあげただけっす！」' }, { fig: 'weapon', t: 'ジェニー[angry]「余計なことしないの！ ……でも、売れたからいいわ。半分あげる」' }],
+    [{ fig: 'apprentice', t: 'ルゥ[laugh]「ジェニーさん！ 見て見て、ルゥが打った釘！」' }, { fig: 'weapon', t: 'ジェニー[smile]「どれどれ。……ふーん、まっすぐじゃない。あんたの親方の最初の剣より、よっぽどね」' }, { hero: 'doubt', t: '「……聞こえてるぞ」' }, { fig: 'weapon', t: 'ジェニー[laugh]「聞こえるように言ったのよ」' }],
+    [{ fig: 'als', t: 'アルス「ジェニーさん。師匠の昔の話を、日記に書きたいんです。何か知りませんか」' }, { fig: 'weapon', t: 'ジェニー[laugh]「あるわよ、山ほど。初めて剣を打った日に、自分の指まで叩いて泣いた話とか」' }, { fig: 'als', t: 'アルス[shock]「師匠が……泣いた……！ いただきます！」' }, { hero: 'shout', t: '「書くな！」' }],
+    [{ fig: 'buppa_sleep', t: 'ブッパが、作業台の下で寝ている。' }, { fig: 'weapon', t: 'ジェニー[doubt]「……ねえ、この人、いつからいるの？」' }, { fig: 'chicchi', t: 'チッチ「おれが来たときには、もういたっす」\nアルス「僕が来たときにも、いました」' }, { fig: 'weapon', t: 'ジェニー「……工房の守り神か何かなの？」\nブッパ「……むにゃ。半熟で……」' }],
+    [{ fig: 'apprentice', t: 'ルゥ「ジェニーさんって、親方のこと好きなんですか？」' }, { fig: 'weapon_shy', t: 'ジェニー[shock]「は、はあ！？ な、なに言ってんのよ、この子は！」' }, { fig: 'chicchi', t: 'チッチ「ルゥ、それは聞いちゃいけないやつっす。みんな知ってるっすけど」' }, { fig: 'weapon_shy', t: 'ジェニー[shy]「……チッチ。あとで裏に来なさい」' }],
+  ],
+  elly: [
+    [{ fig: 'clinic', t: 'エリー[smile]「チッチさん、この前の切り傷、もう大丈夫ですか？」' }, { fig: 'chicchi', t: 'チッチ「ばっちりっす！ ……あの、包帯、かわいい結び方してくれたの、まだ取ってないっす」' }, { fig: 'clinic', t: 'エリー[worried]「……それは、取ってください。三日たってますよね？」' }],
+    [{ fig: 'apprentice', t: 'ルゥ「エリーさん、ルゥ、やけどしちゃった！ 炉で！」' }, { fig: 'clinic', t: 'エリー[worried]「見せてください。……うん、軽いですね。冷やして、この軟膏を」' }, { fig: 'clinic', t: 'エリー[smile]「……鍛冶屋さんの工房の人って、みんな、ちょっとずつ無茶をするんですね。親方に似て」' }, { hero: 'sigh', t: '「……耳が痛いな」' }],
+    [{ fig: 'als', t: 'アルス「エリーさん。師匠が塔で倒れたとき、最初に何て言ってましたか？」' }, { fig: 'clinic', t: 'エリー[smile]「『まぁ〜、どうにかなるんじゃないか』……です。目を開けて、一番に」' }, { fig: 'als', t: 'アルス[laugh]「やっぱり！ 日記の十七ページ目と同じです！」' }, { fig: 'clinic', t: 'エリー[worried]「……そこは、少しは反省してほしいところなんですけど」' }],
+    [{ fig: 'buppa_tired', t: 'ブッパ「……せんせい。なんか、だるい……」' }, { fig: 'clinic', t: 'エリー「どれどれ……。熱はないですね。最後に起きたのは、いつですか？」' }, { fig: 'buppa_tired', t: 'ブッパ「……さっき」' }, { fig: 'clinic', t: 'エリー[smile]「寝すぎです。お散歩に行きましょうね、ブッパさん」' }],
+  ],
+  ria: [
+    [{ fig: 'guild', t: 'リア「チッチさん。ギルドの記録だと、あなた、昔この工房に盗みに……」' }, { fig: 'chicchi', t: 'チッチ[shock]「わーっ！ わーっ！ それは昔の話っす！ 0.5秒でやられたっす！」' }, { fig: 'guild', t: 'リア[smile]「ふふ。記録、ちゃんと『更生済み』にしておきますね」' }],
+    [{ fig: 'als', t: 'アルス「リアさん、僕もいつか、到達記録を書いてもらえますか」' }, { fig: 'guild', t: 'リア[smile]「もちろんです。……そのときは、師匠さんの隣の行に書きますね」' }, { fig: 'als', t: 'アルス[laugh]「……！ 日記に、書きます！」' }],
+    [{ fig: 'apprentice', t: 'ルゥ「リアさん、字、きれい！ ルゥにも教えて！」' }, { fig: 'guild', t: 'リア[happy]「いいですよ。まずは、お名前から。……あら、ルゥちゃんの『ゥ』、とても元気ですね」' }, { fig: 'apprentice', t: 'ルゥ[laugh]「元気なのが、ルゥのいいところ！」' }],
+    [{ fig: 'guild', t: 'リア[think]「……この工房、帳簿はどなたがつけているんですか？」' }, { fig: 'chicchi', t: 'チッチ「おれっす。……たまにっす」\nアルス「僕です。……日記のついでに」' }, { fig: 'guild', t: 'リア[worried]「……今度、私がまとめて整理します。休みの日に。……ここに来る理由ができますから」' }],
+  ],
+  fuuka: [
+    [{ fig: 'chicchi', t: 'チッチ「うわっ！ い、いつからそこにいたっすか！？」' }, { fig: 'fuuka', t: 'フウカ「……最初から、天井の梁に」' }, { fig: 'chicchi', t: 'チッチ「元盗賊のおれが気づかないなんて……。弟子にしてほしいっす」' }, { fig: 'fuuka', t: 'フウカ[smile]「……修行は、厳しいですよ。まずは、三日間、気配を消して家事を」' }, { fig: 'chicchi', t: 'チッチ「それ、いつもとあんまり変わらないっす」' }],
+    [{ fig: 'als', t: 'アルス「フウカさん、手合わせをお願いできませんか」' }, { fig: 'fuuka', t: 'フウカ「……いいでしょう。一本だけ」' }, { fig: 'als', t: '……一瞬で、アルスの木刀が宙を舞った。\nアルス[shock]「み、見えませんでした……！」' }, { fig: 'fuuka', t: 'フウカ[smile]「……でも、踏み込みは、あなたの師匠に似ています。よい太刀筋です」' }],
+    [{ fig: 'apprentice', t: 'ルゥ「フウカさん、忍者なの？ 消えられる？ 壁、歩ける？」' }, { fig: 'fuuka', t: 'フウカ[shy]「……忍びは、そういうことを人に話しません」' }, { fig: 'apprentice', t: 'ルゥ「えー」' }, { fig: 'fuuka', t: 'フウカ[smile]「……少しだけですよ」\n……次の瞬間、フウカは屋根の上にいた。ルゥの歓声が、工房じゅうに響いた' }],
+    [{ fig: 'buppa_eat', t: 'ブッパが、干し肉をかじっている。' }, { fig: 'fuuka', t: 'フウカ「……それは、私の干し肉です」' }, { fig: 'buppa_eat', t: 'ブッパ「…………うまい」' }, { fig: 'fuuka', t: 'フウカ[smile]「……そうですか。では、半分は、差し上げます」' }],
+  ],
+};
+function banterBtn() {
+  const v = G.visit && G.visit.run === G.runs ? G.visit.who : []; if (!v.length || G.visit.banter) return null;
+  const w = v.find(x => BANTER[x]); if (!w) return null;
+  return { t: 'みんなの様子', s: `${VNAME[w]}と工房のみんな`, f: () => {
+    const used = (G.banterUsed = G.banterUsed || {})[w] = G.banterUsed[w] || []; const L = BANTER[w];
+    let j = L.findIndex((_, n) => !used.includes(n)); if (j < 0) { G.banterUsed[w] = []; j = Math.floor(R() * L.length); }
+    G.banterUsed[w].push(j); G.visit.banter = true; save();
+    runSeq(L[j], 0, () => inside('home', `${VNAME[w]}は、すっかり工房になじんでいる。`));
+  } };
+}
