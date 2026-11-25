@@ -170,4 +170,4 @@ const stepSfx = n => {
 // 魔物の鳴き声（戦闘の始まり）
 const CRY_SFX = { rat: 'cry_beast', centipede: 'cry_beast', skeleton: 'cry_skeleton', goblin: 'goblin', golem: 'cry_golem' };
 // 文の中身で鳴らす効果音（店・宿・ギルドなど）
-const LOG_SFX = [[/を(買|売)った|Gで(買|売)った/, 'register'], [/お待ち！/, 'cooking', 3], [/最高到達/, 'page', 1.2], [/扉を開けた|扉を押し開けた/, 'door'], [/宝箱を開けた|宝箱を開け/, 'chest'], [/を見つけた|を手に入れた|をもらった|を拾った/, 'item'], [/カン、カン、カン/, 'hit'], [/祈りでHP|もう大丈夫/, 'heal'], [/壁が崩れた/, 'rockbreak', 2]];
+const LOG_SFX = [[/を(買|売)った|Gで(買|売)った/, 'register'], [/お待ち！/, 'cooking', 3], [/最高到達/, 'page', 1.2], [/扉を開けた|扉を押し開けた/, 'door'], [/宝箱を開けた|宝箱を開け/, 'chest'], [/を見つけた|を手に入れた|をもらった|を拾った/, 'item'], [/カン、カン、カン/, 'forge1'], [/祈りでHP|もう大丈夫/, 'heal'], [/壁が崩れた/, 'rockbreak', 2]];
