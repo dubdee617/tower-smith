@@ -571,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 78'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 79'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -632,7 +632,7 @@ function townMap() {
 }
 function outside(id) {
   const p = PLACES[id], t = $('town');
-  if (id === 'south') { if (G.castle) { castleScreen(); return; } log(pick(p.hello), true); return; }
+  if (id === 'south') { gateScreen(); return; }
   place = id; SND_INDOOR = false;
   if (id === 'tower') { towerScreen(); return; }
   if (id === 'statue') { statueScreen(); return; }
@@ -761,7 +761,7 @@ function castleScreen() {
   place = 'castle'; G.castleSeen = true; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}castle_out.jpg" alt="お城"><div class="name">お城</div>`;
   buttons([{ t: '入る', hot: true, f: () => castleHall() }, { t: '戻る', f: townMap }]);
-  log('門番「鍛冶屋殿ですね。王がお待ちです」', true); hud();
+  log('門兵[smile]「鍛冶屋殿、どうぞ。王がお待ちです」', true); hud();
 }
 const CASTLE_TALK = {
   king: [[50, ['王様[laugh]「おお、来たか鍛冶屋！ 50階だと？ わっはっは、たいしたもんだ！」', '王様「わしの若い頃より強いんじゃないか？ ……いや、わしは登ったことないがな！」']],
@@ -1111,7 +1111,8 @@ function bank() {
 }
 // 宿屋＝酒場と食堂: 料理（次の挑戦だけ効く）と、今日の塔の噂
 function inn(msg) {
-  const L = [{ t: '噂を聞く', s: '今日の塔', f: () => { if (!G.rumor) rollRumor(); npcFig('bar'); log('客「' + RUMORS[G.rumor].say + '」', true); } }];
+  const L = [{ t: '噂を聞く', s: '今日の塔', f: innRumor }];
+  if (drunksHere()) L.push({ t: 'のんだくれと話す', s: 'ドルフたち', f: () => { npcFig('drunks'); log(stLine(DRUNK_TALK), true); } });
   for (const [id, m] of Object.entries(MEALS)) {
     const ok = !G.meal && Object.entries(m.cost).every(([k, n]) => (G.store[k] || 0) >= n);
     L.push({ t: m.name, s: `${m.desc}／${matText(m.cost)}`, off: !ok, f: () => {
@@ -1173,7 +1174,7 @@ function guild(msg, face) {
     { t: '素材を売る', s: have ? `工房の素材${have}個` : '素材がない', f: () => guildSell() },
     { t: '素材を買う', s: '値上がり中', f: () => guildBuy() },
     { t: '到達記録', s: `あなた ${G.maxFloor}階`, f: () => log(`最高到達: 近衛兵長ギャバン 86階／あなた ${G.maxFloor}階${G.bossDown ? '（10階の主を倒した）' : ''}`, true) },
-    talkBtn('ria', () => inside('guild', byeLine('ria'))), leave]);
+    guestBtn(), talkBtn('ria', () => inside('guild', byeLine('ria'))), leave].filter(Boolean));
   if (msg) { if (face) say(face, msg, true); else log(msg, true); }
 }
 function guildSell(msg) {
@@ -1616,19 +1617,19 @@ function useItem(k) {
   if (k === 'herb' || k === 'herb_m' || k === 'herb_l') {
     if (G.hp >= G.mhp) return false;
     const base = k === 'herb' ? 25 + G.lv * 3 : k === 'herb_m' ? 60 + G.lv * 5 : G.mhp;
-    G.items[k]--; const h = healMe(Math.round(base * (has('p_herb') && k !== 'herb_l' ? 1.5 : 1))); log(`${ITEMS[k].name}を使った。HPが${h}回復した。`); save(); return true;
+    G.items[k]--; sfx(k === 'herb_l' ? 'heal3' : k === 'herb_m' ? 'heal' : 'heal1', { vol: .8 }); const h = healMe(Math.round(base * (has('p_herb') && k !== 'herb_l' ? 1.5 : 1))); log(`${ITEMS[k].name}を使った。HPが${h}回復した。`); save(); return true;
   }
   if (k === 'bandage') {
     const x = G.injuries.find(i => !G.bandaged.includes(i)); if (!x) { log('包帯を巻くようなケガはない。'); return false; }
-    G.items[k]--; G.bandaged.push(x); log(`包帯を巻いた。${INJURIES[x].name}が、ひとまず楽になった。\n（町に戻ったら治療院へ）`); save(); return true;
+    G.items[k]--; sfx('equip', { vol: .7 }); sfx('heal1', { delay: 350, vol: .5 }); G.bandaged.push(x); log(`包帯を巻いた。${INJURIES[x].name}が、ひとまず楽になった。\n（町に戻ったら治療院へ）`); save(); return true;
   }
   if (k === 'bird') {
     if (!Object.values(G.carry).some(n => n > 0)) { log('運んでもらう戦利品がない。'); return false; }
-    G.items[k]--; const t = matText(G.carry);
+    G.items[k]--; sfx('dash', { vol: .8 }); sfx('item', { delay: 500, vol: .6 }); const t = matText(G.carry);
     for (const [m, n] of Object.entries(G.carry)) add(RAW[m] ? G.raw : G.store, m, n); G.carry = {}; save();
     log(`鳥が戦利品を足につかんで、窓の外へ飛んでいった。\n工房へ: ${t}`, true); return true;
   }
-  if (k === 'ward' || k === 'lure') { G.items[k]--; G.enc = { k, floors: 3 }; save(); log(k === 'ward' ? '魔除けを焚いた。魔物の気配が遠のく。（3フロア）' : '魔寄せを焚いた。魔物の気配が近づいてくる……。（3フロア）', true); return true; }
+  if (k === 'ward' || k === 'lure') { G.items[k]--; sfx(k === 'ward' ? 'holy' : 'dark', { vol: .75 }); sfx('ignite', { vol: .4 }); G.enc = { k, floors: 3 }; save(); log(k === 'ward' ? '魔除けを焚いた。魔物の気配が遠のく。（3フロア）' : '魔寄せを焚いた。魔物の気配が近づいてくる……。（3フロア）', true); return true; }
   if (k === 'wing') { G.items[k]--; warpOut(); return true; }
   return false;
 }
@@ -1805,7 +1806,7 @@ function runPlan() {
   setTimeout(step, 450);
 }
 function doItem(k) {
-  if (useItem(k)) playFx(k === 'bandage' ? 'heal_leaf' : 'heal', { self: true, size: .9 });
+  if (useItem(k)) playFx(k === 'bandage' ? 'heal_leaf' : 'heal', { self: true, size: .9, snd: null });  // 音は useItem で鳴らす
   else log(`${ITEMS[k].name}は使わなかった。`);
   return 'ok';
 }
