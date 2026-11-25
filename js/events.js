@@ -177,15 +177,61 @@ const VISIT_TWO = [
 const VNAME = { jenny: 'ジェニー', elly: 'エリー', ria: 'リア', fuuka: 'フウカ' };
 const maxedFriends = () => Object.keys(VISIT).filter(w => (G.aff[w] || 0) >= AFF_NEED && (G.seen || {})[w] && (G.homeEv || {})[w]);
 // 工房に入ったときに呼ぶ。来ている人がいれば、そのあいさつを返す（いなければ null）
+// 2026-11-25: イベントの前でも、親しくなった（親密度4〜）ヒロインがときどき工房に来る。
+// 親しい段階は「用事」をつけて来る（VISIT_MID）。60階の家のイベントのあとは、くつろぎに来る（VISIT）
+// 来たときは、ちょっとした差し入れもある。同じ人が続けて来にくいようにする
+const VISIT_MID = {
+  jenny: ['ジェニー「……べ、別に用はないわよ。注文の剣、できてるか見に来ただけ」\nチッチ「ジェニーさん、注文してないっすよね？」 ジェニー[angry]「う、うるさいわね！」',
+          'ジェニー「店の帰りに通りかかっただけ。……ほら、パン。余ったから」\nアルス「師匠、ジェニーさんのパン、焼きたてです！」',
+          'ジェニー[worried]「……顔色、悪くない？ ちゃんと寝てる？ ……塔帰りの客が、みんなひどい顔してるから」',
+          'ジェニー「新しい砥石、仕入れたの。試しに使ってみて。……感想、ちゃんと聞かせなさいよ」',
+          'ジェニー「ルゥ、また釘曲げてるの？ ……ほら、こう持つの。手首はまっすぐ」\nルゥ[laugh]「わあ、まっすぐ入りました！」',
+          'ジェニー[shy]「……お茶、もらっていい？ ……座るところ、ないわね。片付けなさいよ」'],
+  elly:  ['エリー「往診に来ました。……塔から帰った方は、念のため、ですよ」',
+          'エリー[smile]「お休みの日なので、薬草茶をお届けに。……チッチさんの分もありますよ」\nチッチ「エリーさん、天使っす……」',
+          'エリー「アルスさん、手のまめ、つぶれてませんか？ ……ほら、やっぱり。包帯、巻きますね」\nアルス[shock]「い、いつの間に……」',
+          'エリー[worried]「この前の傷、ちゃんと治っているか、見せてください。……はい、きれいに治っていますね」',
+          'エリー「工房って、こんなに暑いんですね。……お水、こまめに飲んでくださいね」',
+          'エリー[shy]「……近くまで来たので、少しだけ。……お邪魔では、ありませんか？」'],
+  ria:   ['リア「お休みなので、遊びに来ちゃいました！ ……あ、ギルドからの書類も、ついでに」',
+          'リア[happy]「ルゥさん、この前の続き、教えてもらえますか？ 釘、まっすぐ打てるようになりたいんです！」\nルゥ「リアさん、筋がいいんですよ！」',
+          'リア「鍛冶屋さんの到達記録、写しを作ってきました。工房に飾ってください！」',
+          'リア[smile]「市場で焼き菓子を買ってきたんです。……みんなで食べましょう！」\nチッチ「リアさん、女神っす……」',
+          'リア「工房の音、外まで聞こえてました。……なんだか、聞きに来たくなっちゃって」',
+          'リア[shy]「……えへへ。用事は、ないんです。ちょっと、顔が見たくて」'],
+  fuuka: ['フウカ「……任務の帰りです。少しだけ、屋根を借りました」\nチッチ「屋根の上に誰かいるっす！」',
+          'フウカ「……報告です。北の街道に、魔物が出ていました。……町の者には、伝えてあります」',
+          'フウカ[shy]「……刀の手入れを、お願いしに来ました。……ついでです。ついで、です」',
+          'フウカ「アルス殿。剣の握りが、少し浅いです。……こうです」\nアルス[shock]「わっ、いつの間に後ろに！？」',
+          'フウカ「……干し肉を、持ってきました。皆さんの分です」\nブッパ「……ぐう……肉の匂い……」',
+          'フウカ[smile]「……こんばんは。今夜は、静かですね」'],
+};
+// 差し入れ（来たときに一度だけ）
+const VISIT_GIFT = {
+  jenny: () => { G.items.herb = (G.items.herb || 0) + 1; return '（ジェニーから薬草を1つもらった）'; },
+  elly:  () => { G.hp = G.mhp; return '（エリーに診てもらって、HPが全回復した）'; },
+  ria:   () => { G.items.wing = (G.items.wing || 0) + 1; return '（リアから帰還の羽を1つもらった）'; },
+  fuuka: () => { G.items.ward = (G.items.ward || 0) + 1; return '（フウカから魔除けを1つもらった）'; },
+};
+const visitFriends = () => Object.keys(VISIT).filter(w => (G.aff[w] || 0) >= 4);
 function homeVisit() {
   if (!G.visit || G.visit.run !== G.runs) {
-    const f = maxedFriends(); G.visit = { run: G.runs, who: [] };
-    if (f.length && R() < .35) { const a = pick(f); G.visit.who = [a]; if (f.length > 1 && R() < .3) G.visit.who.push(pick(f.filter(x => x !== a))); }
+    const f = visitFriends(), close = maxedFriends(); G.visit = { run: G.runs, who: [] };
+    // 親しい人がいれば4割で誰か来る。前回来た人は来にくい
+    const pool = f.flatMap(w => w === G.visitLast ? [w] : [w, w, w]);
+    if (pool.length && R() < .4) { const a = pick(pool); G.visit.who = [a]; G.visitLast = a;
+      if (close.includes(a) && close.length > 1 && R() < .3) G.visit.who.push(pick(close.filter(x => x !== a))); }
     save();
   }
   const w = G.visit.who; if (!w.length) return null;
   setTimeout(() => npcFig(VISIT_FIG[w[0]]), 0);
-  return w.length > 1 ? pick(VISIT_TWO)(VNAME[w[0]], VNAME[w[1]]) : pick(VISIT[w[0]]);
+  if (G.visit.line) return w.length > 1 ? `${VNAME[w[0]]}と${VNAME[w[1]]}が、まだ工房でくつろいでいる。` : `${VNAME[w[0]]}が、まだ工房にいる。`;
+  const a = w[0], used = (G.visitUsed = G.visitUsed || {})[a] = G.visitUsed[a] || [];
+  const L = (G.homeEv || {})[a] ? VISIT[a] : VISIT_MID[a];
+  let j = L.findIndex((_, n) => !used.includes(n)); if (j < 0) { G.visitUsed[a] = []; j = Math.floor(R() * L.length); }
+  G.visitUsed[a].push(j);
+  G.visit.line = true; const gift = VISIT_GIFT[a](); save();
+  return (w.length > 1 ? pick(VISIT_TWO)(VNAME[w[0]], VNAME[w[1]]) : L[j]) + '\n' + gift;
 }
 
 // ---------- 会話の種類を増やす（同じことばかり言わないように。1人4〜5種類） ----------

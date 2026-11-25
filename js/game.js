@@ -494,7 +494,7 @@ const buppaHere = () => ((G.runs * 7 + 3) % 10) < 3;
 const BUPPA = ['ブッパ「……ぐう……ぐう……」', 'ブッパ[eat]「お、親方。台所にあった肉……もう食べちまった」', 'ブッパ[laugh]「がっはっは！ 今日も平和だなぁ」', 'ブッパ[shock]「うおっ！ ……なんだ、親方か。寝てた寝てた」', 'ブッパ[tired]「……ここ、寝心地いいんだよなぁ」', 'ブッパ[grumpy]「……起こすなよぉ」'];
 const HELPER = ['ルゥ[smile]「親方、炉の温度、上げておきました！」', 'ルゥ[laugh]「見てください、初めて釘がまっすぐ打てました！」', 'ルゥ「チッチさんに、鍵の開け方を教わってます。……鍛冶に関係ないですけど」', 'ルゥ[laugh]「アルスさん、また素振りしてますね。すごいなぁ」'];
 function greet(id) {
-  if (id === 'home') { const v = homeVisit(); if (v && R() < .8) return v; if (buppaHere() && R() < .6) return pick(BUPPA); if (R() < .3) return pick(HELPER); }
+  if (id === 'home') { const v = homeVisit(); if (v) return v; if (buppaHere() && R() < .6) return pick(BUPPA); if (R() < .3) return pick(HELPER); }
   { const w = SHOP_WHO[id]; if (w && (G.seen || {})[w] && R() < .35) return pick(CLOSE_GREET[w]); }
   const st = STAGE[id], base = PLACES[id].hello;
   if (!st) return pick(base);
@@ -571,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 87'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 88'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
