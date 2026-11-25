@@ -114,3 +114,44 @@ h2 .have .mi{width:18px;height:18px;margin-right:1px}
 button small .sellp{float:right;color:#ffd76a;margin-left:6px}
 #lvup .gearimg{display:block;width:120px;height:120px;margin:0 auto 4px;filter:drop-shadow(0 0 12px rgba(255,200,120,.55))}
 button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;line-height:1.25}
+/* 図鑑 */
+#menu .panel.dex{height:88vh}
+#menu .tabs2 button{font-size:14px;padding:2px 2px}
+#menu .dexcat{margin-bottom:6px}#menu .dexcat button{font-size:14px}
+#menu .dexcard{display:flex;gap:8px;min-height:112px;background:#120c08;border:2px solid #4a3522;border-radius:3px;padding:6px;margin-bottom:6px}
+#menu .dexcard.empty{align-items:center;justify-content:center;text-align:center;font-size:12px;color:#a8946e}
+#menu .dexcard .pic{flex:0 0 96px;height:96px;display:flex;align-items:center;justify-content:center;background:radial-gradient(#3a2a1c,#120c08 70%);border-radius:3px}
+#menu .dexcard .pic img{max-width:96px;max-height:96px;object-fit:contain;image-rendering:auto}
+#menu .unk img{filter:brightness(0) opacity(.45)}
+#menu .dexcard .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#menu .dexcard b{font-weight:400;color:#ffe7a3;font-size:16px}
+#menu .dexcard small{font-size:11.5px;color:#d8c8a6;line-height:1.35}
+#menu .dexcard small.mkd{color:#9fe0c0}
+#menu .dexcard .tag{font-style:normal;font-size:11px;background:#8a2a14;color:#fff;padding:0 4px;margin-left:6px;border-radius:2px}
+#menu .wk{font-style:normal;color:#ffb46a}
+#menu .drops{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:11px;color:#cdb894}
+#menu .drops .need{display:inline-flex;align-items:center;gap:2px}
+#menu img.mi{width:18px;height:18px;vertical-align:middle;image-rendering:pixelated}
+#menu .dexgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+#menu .dexcell{position:relative;aspect-ratio:1;min-height:0;padding:2px;background:#1c130c;box-shadow:none;border:2px solid #3a2a1a}
+#menu .dexcell img{width:100%;height:100%;object-fit:contain}
+#menu .dexcell i{position:absolute;left:2px;top:0;font-style:normal;font-size:9px;color:#8a7658}
+#menu .dexcell.on{border-color:#ffd76a;background:#3a2410}
+#menu .dexcell.boss{border-color:#8a3a20}
+#menu .dexpage{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:13px;color:#cdb894}
+#menu .dexpage b{color:#ffe7a3;font-weight:400}#menu .dexpage button{width:56px}
+#menu .dexch{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:6px}
+#menu .dexch button{display:flex;flex-direction:column;align-items:center;font-size:10.5px;line-height:1.15;padding:3px 1px;min-height:48px}
+#menu .dexch button img.mi{width:22px;height:22px}
+#menu .dexread{font-size:12px}
+#menu .dexw{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+#menu .dexw.one{grid-template-columns:1fr}
+#menu .dexw>div{background:#120c08;border:1px solid #3a2a1a;padding:4px 5px;border-radius:2px}
+#menu .dexw b{display:flex;align-items:center;gap:3px;font-weight:400;color:#ffe7a3;font-size:13px}
+#menu .dexw b em{margin-left:auto;font-style:normal;font-size:10px;color:#ffb46a}
+#menu .dexw small{display:block;font-size:10.5px;color:#d8c8a6;line-height:1.35}
+#menu .dext{width:100%;border-collapse:collapse;font-size:11px}
+#menu .dext th{color:#ffb46a;font-weight:400;text-align:left;border-bottom:1px solid #4a3522;padding:2px}
+#menu .dext td{border-bottom:1px solid #2a1c12;padding:3px 2px;color:#e6d8b8;vertical-align:middle}
+#menu .el{font-style:normal;padding:0 5px;border-radius:2px;color:#fff}
+#menu .el.fire{background:#b8401a}#menu .el.ice{background:#2a7ab0}#menu .el.bolt{background:#a08a10}#menu .el.holy{background:#a89050}#menu .el.dark{background:#5a2a7a}

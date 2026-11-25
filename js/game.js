@@ -563,7 +563,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 73'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 74'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -681,6 +681,7 @@ function homeMenu() {
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true); } },
     { t: 'ステータス', s: `Lv${G.lv} ${job()}`, f: () => statusMenu(homeMenu) },
+    { t: '書棚', s: `図鑑・武器の手引き`, f: () => { sfx('page', { vol: .6 }); openMenu('dex'); } },
     { t: '装備を変える', s: job(), f: () => equipMenu(homeMenu) },
     { t: 'ツール', s: toolName(), f: () => toolMenu(homeMenu) },
     { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(homeMenu) },
@@ -835,6 +836,7 @@ function prepMenu() {
 }
 function newGear(r, forged) {
   const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.crit) x.crit = r.crit; if (r.fire) x.fire = true; if (r.mk) x.mk = r.mk; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
+  if (G) dexGear(r.id);
   const a = forged && r.type !== 'tool' ? upLv('anvil') : 0;  // 金床の強化ぶん、自分で打った武具は強くなる
   if (a) { if (x.atk) x.atk += a; if (x.def) x.def += a; x.name += `+${a}`; }
   return x;
@@ -1174,6 +1176,101 @@ function guildBuy(msg, face) {
 // タイトルの設定: 音とデータ消去（町の地図から移した）
 function settings() { openMenu(); }
 // 設定・セーブ・ロードの画面（どこからでも開ける。下のボタンは変えない）
+// ---------- 図鑑（2026-11-25）: 装備・名品・魔物、それと武器の手引き。メニューの「図鑑」と工房の「書棚」から ----------
+// 手に入れた装備・会った魔物を G.dex に記録していく。知らない物は影だけ出る
+function dexInit() {
+  if (G.dex) return G.dex; G.dex = { g: {}, m: {} };
+  for (const g of G.gear || []) G.dex.g[g.id] = 1;                                   // 前からのセーブ: 持っている装備
+  for (const m of MONSTERS) if (m.from <= (G.maxFloor || 0)) G.dex.m[m.id] = 0;       // 行った階の魔物は「見た」ことにする
+  return G.dex;
+}
+const dexGear = id => { dexInit().g[id] = 1; };
+const dexMon = (m, kill) => { if (!m || m.mirror || !m.id) return; const id = m.id.replace(/_gold$/, ''); const d = dexInit().m; d[id] = (d[id] || 0) + (kill ? 1 : 0); };
+const DEX_BOSS = () => Object.entries(BOSSES).sort((a, b) => a[0] - b[0]).map(([f, b]) => ({ ...b, from: +f, to: +f }));
+const DEX_MONS = () => MONSTERS.slice().sort((a, b) => a.from - b.from).concat(DEX_BOSS());
+const DEX_GEARS = () => RECIPES.filter(r => !r.meika).sort((a, b) => (a.type === 'tool') - (b.type === 'tool') || (a.royal ? 7 : TIER_OF(a)) - (b.royal ? 7 : TIER_OF(b)) || ['sword', 'katana', 'greatsword', 'axe', 'hammer', 'dagger', 'bow', 'book', 'staff', 'shield', 'armor', 'tool'].indexOf(a.type) - ['sword', 'katana', 'greatsword', 'axe', 'hammer', 'dagger', 'bow', 'book', 'staff', 'shield', 'armor', 'tool'].indexOf(b.type));
+const DEX_MEIKA = () => RECIPES.filter(r => r.meika);
+const monSrc = m => m.file ? `assets/monsters/${m.id}_idle.webp` : (MON_IMG[m.id + '_idle'] || {}).src || '';
+// 魔物の攻め方 → 効く属性
+const ELEM_JP = { fire: '炎', ice: '氷', bolt: '雷', holy: '聖', dark: '闇' };
+const KIND_JP = { breath: '竜の息', heavy: '怪力', bolt: '雷', fire: '炎', ice: '氷', dark: '呪い', magic: '魔法', poison: '毒', weapon: '武器', bite: '牙', claw: '爪' };
+function weakOf(m) { const k = monAtkKind(m), w = Object.entries(ELEM_WEAK).filter(([, v]) => v.includes(k)).map(([e]) => ELEM_JP[e]); if (isDarkMon(m) && !w.includes('聖')) w.push('聖'); return w; }
+// 武器の種類ごとの特徴
+const W_GUIDE = {
+  sword:      ['斬る', '片手で扱いやすい。盾と一緒に持てる、いちばん素直な武器。'],
+  katana:     ['斬る', '両手で持つ重い武器。会心と居合の一撃が持ち味。'],
+  greatsword: ['斬る', '両手で持つ重い武器。攻めも守りも厚い騎士の剣。'],
+  axe:        ['叩き割る', '両手で持つ重い武器。とにかく一撃が重く、群れをまとめて薙ぎ払う。'],
+  hammer:     ['叩く', '鍛冶屋の相棒。片手。守りを崩す「叩き割り」が得意。'],
+  dagger:     ['突く', '片手で軽い。身のこなしが良くなり、敵の攻撃を避けやすい（回避+5%）。'],
+  bow:        ['射る', '両手で持つが、重くはない。離れて狙い撃つ。'],
+  book:       ['魔法', '攻撃の数字は低いが、魔法は敵の守りを無視して当たる。'],
+  staff:      ['叩く', '癒しの祈りを覚える。長く戦うほど頼りになる。'],
+  shield:     ['守る', '左手に持つ。両手武器とは一緒に持てない（熟練で片手持ちにすれば持てる）。'],
+};
+function gearTrait(r) {
+  const t = [];
+  if (r.desc) t.push(r.desc);
+  if (r.crit) t.push(`会心が出やすい（+${Math.round(r.crit * 100)}%）`);
+  if (r.def < 0) t.push(`持つと守り${r.def}`);
+  if (r.fire) t.push('攻撃に炎が乗る');
+  if (r.type === 'tool') t.push({ pick: '岩・鉱脈を掘る', axe: '木を切る', shovel: '砂や土を掘る' }[r.tool] + `。使うたびに減る（耐久${r.dur}）`);
+  else if (WEAPON_TYPES[r.type] && WEAPON_TYPES[r.type].heavy && !r.desc) t.push('重い：ふつうの攻撃にAP2');
+  return t.join('。');
+}
+function gearHow(r) {
+  if (r.meika) return `名品・設計図から打つ（${MK_TIER[r.tier].floor}階〜で見つかる）`;
+  if (r.royal) return r.id.startsWith('treasure') ? 'お城の褒美（王家の宝）' : 'お城の褒美';
+  if (r.type === 'tool') return '工房で打つ・道具屋';
+  const f = needFurnace(r); return `工房で打つ${f ? `（炉Lv${f}）` : ''}`;
+}
+let DEX = { cat: 'guide', page: 0, sel: -1, ch: 0 };
+const DEX_PER = 25;
+function dexBody() {
+  dexInit();
+  const sub = `<div class="seg dexcat">${[['guide', '手引き'], ['gear', '装備'], ['meika', '名品'], ['mon', '魔物']].map(([k, l]) => `<button data-dex="${k}" class="${DEX.cat === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+  if (DEX.cat === 'guide') return sub + dexGuide();
+  const list = DEX.cat === 'gear' ? DEX_GEARS() : DEX.cat === 'meika' ? DEX_MEIKA() : DEX_MONS();
+  const known = x => DEX.cat === 'mon' ? G.dex.m[x.id] !== undefined : DEX.cat === 'meika' ? !!(G.dex.g[x.id] || (G.bp || []).includes(x.id)) : !!G.dex.g[x.id];
+  const got = list.filter(known).length, pages = Math.ceil(list.length / DEX_PER);
+  DEX.page = Math.max(0, Math.min(DEX.page, pages - 1));
+  const sel = list[DEX.sel], card = sel ? dexCard(sel, known(sel)) : `<div class="dexcard empty"><span>${DEX.cat === 'mon' ? '会った魔物' : DEX.cat === 'meika' ? '設計図を見つけた名品' : '手に入れた装備'}が、ここに載っていく。<br>絵を押すと、くわしく読める。</span></div>`;
+  const cells = list.slice(DEX.page * DEX_PER, DEX.page * DEX_PER + DEX_PER).map((x, j) => { const i = DEX.page * DEX_PER + j, k = known(x), src = DEX.cat === 'mon' ? monSrc(x) : iconOfType(x);
+    return `<button class="dexcell${k ? '' : ' unk'}${i === DEX.sel ? ' on' : ''}${x.boss ? ' boss' : ''}" data-sel="${i}">${src ? `<img src="${src}" alt="" loading="lazy">` : ''}<i>${i + 1}</i></button>`; }).join('');
+  return sub + card + `<div class="dexgrid">${cells}</div><div class="dexpage"><button data-pg="-1" ${DEX.page ? '' : 'disabled'}>◀</button><span>${DEX.page + 1}/${pages}　<b>${got}</b>/${list.length}</span><button data-pg="1" ${DEX.page < pages - 1 ? '' : 'disabled'}>▶</button></div>`;
+}
+function dexCard(x, k) {
+  if (DEX.cat === 'mon') {
+    const src = monSrc(x); if (!k) return `<div class="dexcard"><div class="pic unk">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>？？？</b><small>${x.from}階${x.boss ? 'の主' : 'あたりにいる'}。まだ会っていない。</small></div></div>`;
+    const w = weakOf(x), drop = Object.keys(x.drop || {}).map(d => `<span class="need">${icoImg(d)}${NAMES[d] || d}</span>`).join('');
+    return `<div class="dexcard"><div class="pic">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>${x.name}${x.boss ? '<em class="tag">主</em>' : ''}</b><small>${x.boss ? `${x.from}階の主` : `${x.from}〜${x.to || 10}階`}　HP${x.hp} 攻${x.atk} 守${x.def}</small><small>攻め方：${KIND_JP[monAtkKind(x)]}　${w.length ? `弱点：<em class="wk">${w.join('・')}</em>` : '弱点：なし'}</small><small>倒した数：${G.dex.m[x.id] || 0}</small><div class="drops">${drop}</div></div></div>`;
+  }
+  const src = iconOfType(x), made = !!G.dex.g[x.id];
+  if (!k) return `<div class="dexcard"><div class="pic unk">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>？？？</b><small>${gearKind(x.type)}。${DEX.cat === 'meika' ? '設計図がまだない。宝箱・ミミック・主から、まれに見つかる。' : `まだ手に入れていない。${gearHow(x)}。`}</small></div></div>`;
+  const tr = gearTrait(x), stat = x.type === 'tool' ? `耐久${x.dur}` : `${x.atk ? '攻' + x.atk : ''}${x.def ? ' 守' + x.def : ''}`;
+  return `<div class="dexcard"><div class="pic">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>${x.name}</b><small>${gearKind(x.type)}　${stat}${WEAPON_TYPES[x.type] && WEAPON_TYPES[x.type].twoHand ? '　両手' : ''}</small>${tr ? `<small class="mkd">${tr}</small>` : ''}<small>入手：${gearHow(x)}${DEX.cat === 'meika' && !made ? '　（まだ打っていない）' : ''}</small></div></div>`;
+}
+// 手引き: 章を選んで読む
+const DEX_CH = [['武器の種類', 'w_sword'], ['素材の段階', 'iron'], ['属性と弱点', 'ember_stone'], ['名品と設計図', 'w_book'], ['ジョブと進化', 'w_staff']];
+function dexGuide() {
+  const tabs = `<div class="dexch">${DEX_CH.map(([n, ic], i) => `<button data-ch="${i}" class="${DEX.ch === i ? 'on' : ''}">${icoImg(ic)}<span>${n}</span></button>`).join('')}</div>`;
+  let h = '';
+  if (DEX.ch === 0) h = `<div class="dexw">${Object.entries(W_GUIDE).map(([t, [how, d]]) => { const W = WEAPON_TYPES[t]; return `<div><b>${icoImg('w_' + t)}${W.name}<em>${how}${W.twoHand ? '・両手' : ''}${W.heavy ? '・重い' : ''}</em></b><small>${d}</small></div>`; }).join('')}</div><p class="note">重い武器はふつうの攻撃にAP2。両手武器も熟練${ONE_HAND_NEED}で片手で持てる。</p>`;
+  if (DEX.ch === 1) h = `<table class="dext"><tr><th>素材</th><th>炉</th><th>見つかる所</th><th>持ち味</th></tr>${[
+    ['copper', '銅・骨・革', 0, '1〜10階', 'はじめの武具'], ['iron', '鉄', 1, '5階〜・ゴーレム', '一人前の武具'], ['silver', '銀', 2, '銀の鉱石 21階〜', '鉄の1.6倍'], ['mithril', 'ミスリル', 3, 'ミスリル鉱石 41階〜', '鉄の2.3倍'],
+    ['darksteel', '黒鋼', 3, '黒い鋼の欠片 61階〜', '会心+10%・守り-3'], ['orichalcum', 'オリハルコン', 4, '原石 71階〜', '鉄の3.7倍'], ['dragonbone', '竜骨', 4, '竜の魔物・85階〜', 'いちばん強い・炎']].map(([k, n, f, w, s]) => `<tr><td>${icoImg(k)}${n}</td><td>${f || '-'}</td><td>${w}</td><td>${s}</td></tr>`).join('')}</table><p class="note">鉱石や欠片は、ギルドで加工してから打つ。金床を強くすると、打った武具の数字が上がる。</p>`;
+  if (DEX.ch === 2) h = `<table class="dext"><tr><th>属性</th><th>よく効く相手</th><th>おもな使い手</th></tr>${[
+    ['fire', '炎', '氷・毒の魔物（虫・草木）', '炎の魔法・竜の武器・炎の剣'], ['ice', '氷', '炎・竜の魔物', '氷の魔法・氷の刀・霜の弓'], ['bolt', '雷', '獣・竜の魔物', '雷の魔法・雷の槍斧・嵐の剣'], ['holy', '聖', '亡霊・不死の魔物', '聖光・聖なる杖・太陽の大剣'], ['dark', '闇', '魔法を使う魔物（精霊など）', '闇の魔法・闇の大剣']].map(([k, n, a, b]) => `<tr><td><em class="el ${k}">${n}</em></td><td>${a}</td><td>${b}</td></tr>`).join('')}</table><p class="note">弱点を突くと1.5倍。魔物の弱点は「魔物」の頁に載る（会った魔物だけ）。魔法は守りを無視する。</p>`;
+  if (DEX.ch === 3) { const n = DEX_MEIKA().length, b = (G.bp || []).length; h = `<div class="dexw one"><div><b>${icoImg('w_book')}名品とは<em>${b}/${n}</em></b><small>ふつうの武具にない特徴を持つ、名のある武具。2回攻撃、属性、HPを吸う、会心が出やすい、お金が増える……など。</small></div><div><b>設計図<em>見つけると工房へ</em></b><small>宝箱 6%・豪華な宝箱 18%・ミミック 50%・各階の主 60%で見つかる。高い階ほど強い名品の設計図が出る（1・11・31・51・71階から）。</small></div><div><b>打ち方<em>工房 →「名品」</em></b><small>段階に合った金属と魔石で打つ。名もなき剣だけは、ジンに一閃を教わるとき一緒に渡される。</small></div></div>`; }
+  if (DEX.ch === 4) h = `<div class="dexw">${Object.entries(WEAPON_TYPES).filter(([, W]) => W.job).map(([t, W]) => { const J = JOBS[W.job], ups = UPPERS.filter(u => u.hold === t).map(u => `${u.job}(+${WEAPON_TYPES[u.exp].name})`); return `<div><b>${icoImg('w_' + t)}${W.job}<em>${W.name}</em></b><small>${J.learn.map(([n, s]) => (SKILLS[s] || PASSIVES[s] || {}).name).filter(Boolean).join('・')}${ups.length ? `<br>進化：${ups.join('・')}` : ''}</small></div>`; }).join('')}</div><p class="note">右手の武器でジョブが決まる。別の武器を使い込んでおくと、上級職に進化する。</p>`;
+  return tabs + `<div class="dexread">${h}</div>`;
+}
+function dexBind(m) {
+  m.querySelectorAll('[data-dex]').forEach(b => b.onclick = () => { DEX = { cat: b.dataset.dex, page: 0, sel: -1, ch: DEX.ch }; sfx('page', { vol: .5 }); openMenu('dex'); });
+  m.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { DEX.ch = +b.dataset.ch; sfx('page', { vol: .5 }); openMenu('dex'); });
+  m.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { DEX.sel = +b.dataset.sel; sfx('select', { vol: .4 }); openMenu('dex'); });
+  m.querySelectorAll('[data-pg]').forEach(b => b.onclick = () => { DEX.page += +b.dataset.pg; DEX.sel = -1; sfx('page', { vol: .5 }); openMenu('dex'); });
+}
 function openMenu(tab) {
   let m = $('menu'); if (!m) { m = document.createElement('div'); m.id = 'menu'; document.body.appendChild(m); m.onclick = e => { if (e.target === m) closeMenu(); }; }
   tab = tab || 'opt'; const inTown = mode === 'town' && !document.body.classList.contains('story') && !document.body.classList.contains('intro');
@@ -1188,9 +1285,10 @@ function openMenu(tab) {
     <p class="note">オートセーブは、町に戻ったときや階を移ったときに自動で記録します。</p>`;
   if (tab === 'save') body = (inTown ? '' : '<p class="note warn">セーブは町にいるときだけできます。</p>') + [1, 2, 3].map(n => `<button class="slot" data-save="${n}" ${inTown && G ? '' : 'disabled'}><b>スロット${n}</b><small>${slotText(n)}</small></button>`).join('');
   if (tab === 'load') body = [0, 1, 2, 3].map(n => `<button class="slot" data-load="${n}" ${slotInfo(n) ? '' : 'disabled'}><b>${n ? 'スロット' + n : 'オートセーブ'}</b><small>${slotText(n)}</small></button>`).join('') + '<p class="note">ロードすると、町から始まります。</p>';
-  m.innerHTML = `<div class="panel"><div class="tabs2">${[['opt', '設定'], ['save', 'セーブ'], ['load', 'ロード']].map(([k, l]) => `<button data-tab="${k}" class="${k === tab ? 'on' : ''}">${l}</button>`).join('')}</div><div class="body">${body}</div>
+  if (tab === 'dex') body = dexBody();
+  m.innerHTML = `<div class="panel${tab === 'dex' ? ' dex' : ''}"><div class="tabs2">${[['opt', '設定'], ['save', 'セーブ'], ['load', 'ロード'], ['dex', '図鑑']].filter(x => x[0] !== 'dex' || G).map(([k, l]) => `<button data-tab="${k}" class="${k === tab ? 'on' : ''}">${l}</button>`).join('')}</div><div class="body">${body}</div>
     <div class="foot">${document.body.classList.contains('title') ? '' : '<button data-act="title">タイトルへ</button>'}<button data-act="close" class="hot">閉じる</button></div></div>`;
-  m.classList.add('on');
+  m.classList.add('on'); if (tab === 'dex') dexBind(m);
   m.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { sfx('select', { vol: .5 }); openMenu(b.dataset.tab); });
   m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
     const k = b.dataset.k; OPTS[k] = k === 'auto' ? b.dataset.v === '1' : +b.dataset.v; saveOpts(); applyOpts(); sfx('select', { vol: .5 });
@@ -1562,6 +1660,7 @@ function startBattle(boss) {
   const seen = {}; for (const m of ms) if (cnt[m.id] > 1) { seen[m.id] = (seen[m.id] || 0) + 1; m.name += 'ABCD'[seen[m.id] - 1]; }
   B = { ms, ti: 0, ap: apBase() + (G.meal === 'spark' ? 1 : 0), cut: 1, counter: null, dodge: 0, boost: 1, broken: 0, turn: 1, over: false };
   Object.defineProperty(B, 'm', { get: target });
+  for (const x of ms) dexMon(x);
   const m = ms[0];
   mode = 'battle'; encounterFx(m, ms);
   setTimeout(() => { if (B && B.m) { if (B.m.boss) sfx('bossstep'); sfx(CRY_SFX[B.m.id] || 'swing', { delay: B.m.boss ? 500 : 0 }); } }, 150);
@@ -1809,7 +1908,7 @@ function win() {
   const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1), gold = ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1), drop = {};
   for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') || K.loot ? .12 : 0))) add(drop, k, n);
   sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
-  B.over = true; for (const x of ms) if (!x.dying) x.dying = performance.now();
+  B.over = true; for (const x of ms) { if (!x.dying) x.dying = performance.now(); dexMon(x, true); }
   G.exp += exp; G.gold += gold; allyTick();
   let mkMsg = '';
   if (K.killHeal) mkMsg += `魂を吸って、HPが${healMe(Math.ceil(G.mhp * K.killHeal * ms.length))}回復。`;
