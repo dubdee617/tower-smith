@@ -11,7 +11,7 @@ function evBg(bg) {
   t.innerHTML = `<img src="${TOWN_IMG}${bg}.jpg" alt="" style="filter:brightness(.5) saturate(.8)"><div class="portrait npc ev"><img alt=""></div>`;
 }
 function evPose(p) {
-  const src = `assets/event/${p}.webp`;
+  const src = p.includes('/') ? `assets/${p}.webp` : `assets/event/${p}.webp`;  // 'npc/weapon_shy' のように書くと立ち絵も使える
   if (mode === 'dungeon') { const m = $('meet'); m.innerHTML = `<img src="${src}" alt="">`; m.style.display = 'flex'; m.classList.add('ev'); return; }
   const i = document.querySelector('#town .portrait.ev img'); if (i) { i.src = src; }
 }
@@ -391,11 +391,12 @@ const HOME_CALL = {
     { p: 'jenny_love_1', t: 'ジェニー「これ。……見覚え、ある？」\n布をほどくと、少し歪んだ銅の剣が出てきた。' },
     { p: 'jenny_love_1', t: '「……俺が最初に打った剣だ。売れなくて、お前の店に置いてもらった」\nジェニー「そう。あの日、あたしが買い取ったの。自分のお金で」' },
     { p: 'jenny_love_2', music: 'romantic', t: 'ジェニー[shy]「60階なんて、誰も行ったことないのよ。……あんた、どんどん遠くへ行っちゃう」' },
-    { p: 'jenny_love_2', t: 'ジェニー「だからこれ、持ってきたの。あんたがどこまで行っても、始まりはここだって……忘れないように」' },
+    { p: 'npc/weapon_worried', t: 'ジェニー[worried]「だからこれ、持ってきたの。あんたがどこまで行っても、始まりはここだって……忘れないように」' },
+    { p: 'npc/weapon_shy', t: 'ジェニーが、作業台に手をついて、こちらをのぞきこんでくる。\nジェニー[shy]「……な、なによ。じっと見て」' },
     { p: 'jenny_love_3', t: 'ジェニー[inlove]「……ねえ。この剣、ここに飾ってもいい？ あたしの場所、ってことで」', ch: [
       ['「ああ。一番いい場所に飾ろう」', 'ジェニー[inlove]「……うん。毎日、見に来てやるんだから」', 3, 'jenny_love_3'],
-      ['「恥ずかしいな、その出来は」', 'ジェニー[laugh]「いいのよ。下手くそなところが好きなの。……剣の話よ！」', 2, 'jenny_love_2'],
-      ['「お前が持っててくれ」', 'ジェニー[shy]「……ずるい。そういうの、一番困るのよ」', 2, 'jenny_love_1'],
+      ['「恥ずかしいな、その出来は」', 'ジェニー[happy]「いいのよ。下手くそなところが好きなの。……剣の話よ！」', 2, 'npc/weapon_happy'],
+      ['「お前が持っててくれ」', 'ジェニー[shy]「……ずるい。そういうの、一番困るのよ」', 2, 'npc/weapon_shy'],
     ] },
     { p: 'jenny_love_0', music: '', t: '（ジェニーが、ときどき工房に遊びに来るようになった）' },
   ],

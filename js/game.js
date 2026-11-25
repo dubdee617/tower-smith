@@ -231,7 +231,7 @@ function log(t, clear) {
   if (m && NPCS[m[1]] && NPCS[m[1]].noFace) { /* 顔なし */ }
   else if (m && NPCS[m[1]]) { const n = NPCS[m[1]]; let e = m[2] || 'normal';
     // ヒロインの照れ顔（頬が赤い絵）は、親密度が上がってから。それまではふつうの表情にする
-    { const who = HEROINE[m[1]]; if (who && BLUSH[e] && !perk(who) && !(G.seen || {})[who]) e = BLUSH[e]; } t = t.replace(/^([^\[「]+)\[\w+\]/, '$1'); if (clear || !spkFace) { const v = n[e] !== undefined ? n[e] : NPC_FACE[e] || 0; spkFace = `npc/${n.id}_${typeof v === 'string' ? v : String(v).padStart(2, '0')}`; logFace = null; } figTalk(n.id); }
+    { const who = HEROINE[m[1]]; if (who && BLUSH[e] && !perk(who) && !(G.seen || {})[who]) e = BLUSH[e]; } t = t.replace(/^([^\[「]+)\[\w+\]/, '$1'); if (clear || !spkFace) { const v = n[e] !== undefined ? n[e] : NPC_FACE[e] || 0; spkFace = `npc/${n.id}_${typeof v === 'string' ? v : String(v).padStart(2, '0')}`; logFace = null; } figTalk(n.id); leanFig(m[1], e); }
   else if (clear) spkFace = null;
   t = t.replace(/(^|\n)([^\s「\[\n]+)\[\w+\]「/g, '$1$2「');  // 2行目以降の表情タグも消す
   for (const [re, k, mx] of LOG_SFX) if (re.test(t)) { sfx(k, { max: mx }); break; }
@@ -302,6 +302,14 @@ function showFig(src, opt) {
   host.appendChild(d); showFig.side = side; drawSpk();
 }
 function clearFig() { for (const f of document.querySelectorAll('.fig')) f.remove(); }
+// ジェニーは60階を越えると、照れ・笑顔・心配の顔のとき、立ち絵も前屈みの絵になる（それ以外の顔で元に戻る）
+const LEAN = { 'ジェニー': { id: 'weapon', floor: 60, faces: ['happy', 'inlove', 'shy', 'worried'] } };
+function leanFig(name, e) {
+  const L = LEAN[name]; if (!L || (G.maxFloor || 0) < L.floor) return;
+  const f = document.querySelector(`.fig[data-who="${L.id}"] img`); if (!f) return;
+  const want = `assets/npc/${L.faces.includes(e) ? L.id + '_' + e : L.id}.webp`;
+  if (!f.src.endsWith(want)) { f.src = want; f.parentNode.dataset.src = want; }
+}
 function figTalk(id) {
   const f = document.querySelector(`.fig[data-who="${id}"]`); if (!f) return;
   f.classList.remove('talk'); void f.offsetWidth; f.classList.add('talk'); clearTimeout(figTalk.t); figTalk.t = setTimeout(() => f.classList.remove('talk'), 450);
@@ -563,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 77'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 78'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
