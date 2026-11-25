@@ -531,7 +531,7 @@ function greet(id) {
   return R() < (G.maxFloor >= 20 ? .75 : .6) ? pick(tier) : pick(base);
 }
 const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7, silver: 45, mithril: 110, orichalcum: 240, darksteel: 160, dragonbone: 380 };
-const MAT_SELL = Object.fromEntries(Object.entries(MAT_PRICE).map(([k, p]) => [k, Math.max(1, Math.round(p * .5))]));  // 素材の売値も半分（2026-11-25）。買うときは MAT_PRICE の3倍
+const MAT_SELL = Object.fromEntries(Object.entries(MAT_PRICE).map(([k, p]) => [k, Math.max(1, Math.round(p * ({ silver: .3, mithril: .25, darksteel: .2, orichalcum: .2, dragonbone: .2 }[k] || .5)))]));  // 素材の売値も半分（2026-11-25）。買うときは MAT_PRICE の3倍
 const pick = a => a[Math.floor(R() * a.length)];
 let place = null;
 
@@ -604,7 +604,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 116'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 117'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1159,7 +1159,7 @@ function shop(msg) {
   if (msg) log(msg, true);
 }
 // 売る: 同じ物はまとめて1行に。押すと「1つ／全部」を選べる。装備していない物をまとめて全部売ることもできる
-const sellPrice = g => { const rec = RECIPES.find(r => r.id === g.id); return Math.max(1, Math.floor((rec ? rec.price : 10) * ECON.sell * (perk('jenny') ? 1.25 : 1))); };  // 売値は定価の半分（2026-11-25）
+const sellPrice = g => { const rec = RECIPES.find(r => r.id === g.id); const k = rec ? [.3, .5, .5, .4, .3, .3, .3][TIER_OF(rec)] : .5; return Math.max(1, Math.floor((rec ? rec.price : 10) * k * (perk('jenny') ? 1.25 : 1))); };  /* 上の段階ほど売値の割合を下げる（名品も3割） */  // 売値は定価の半分（2026-11-25）
 const isEquipped = g => [G.equip.r, G.equip.l, G.equip.armor, G.equip.tool].includes(g.uid);
 // 帰還の羽: 青い光の柱に包まれて、白く飛んで、暗転して町へ
 function warpOut() {
@@ -1258,7 +1258,7 @@ function convHtml(rows) {
 function turnIn() {
   const got = {}; let gold = 0, n = 0;
   const rows = [];
-  for (const [k, c] of Object.entries(G.raw)) { if (!c || !RAW[k]) continue; n += c; gold += RAW[k].reward * c * ECON.guild; rows.push([k, c]); for (const [m, v] of Object.entries(RAW[k].to)) add(got, m, v * c); }
+  for (const [k, c] of Object.entries(G.raw)) { if (!c || !RAW[k]) continue; n += c; gold += RAW[k].reward * c * ECON.guild * goldArea(G.maxFloor); rows.push([k, c]); for (const [m, v] of Object.entries(RAW[k].to)) add(got, m, v * c); }
   if (!n) return;
   // 持ち込みが多いと、ギルドからおまけの素材も出る
   const bonus = {}; for (let i = 0; i < Math.floor(n / 6); i++) add(bonus, pick(['copper', 'leather', 'bone', 'iron']), 1);
@@ -1685,7 +1685,7 @@ function rollLoot(table) { const sum = table.reduce((s, r) => s + r[2], 0); let 
 function giveLoot([kind, v]) {
   if (kind === 'raw') { add(G.carry, v, 1); return `${NAMES[v]}を見つけた。`; }
   if (kind === 'item') { G.items[v] = (G.items[v] || 0) + 1; gotToast(v, 1); return `${ITEMS[v].name}を見つけた。`; }
-  if (kind === 'gold') { const n = Math.ceil(v * (.6 + R() * .8) * (1 + floorNo * .1) * ECON.prop); G.gold += n; gotToast('gold', n); return `${n}Gを見つけた。`; }
+  if (kind === 'gold') { const n = Math.ceil(v * (.6 + R() * .8) * (1 + floorNo * .1) * ECON.prop * goldArea(floorNo)); G.gold += n; gotToast('gold', n); return `${n}Gを見つけた。`; }
   return '';
 }
 // 調べる: 正面の宝箱を開ける／床の物を調べる／階段なら行き方を教える
@@ -1703,7 +1703,7 @@ function searchProp() {
   if (grp === 'feather') { G.items.wing++; gotToast('wing', 1); F.props = F.props.filter(q => q !== p); F.M[p.cy][p.cx] = 0; msg = `${name}を拾った。……帰還の羽だ！`; }
   else if (grp === 'mimic') {
     const d = Math.max(1, Math.ceil(G.mhp * .2)); G.hp = Math.max(1, G.hp - d); fx.flash = .8; fx.shake = 6;
-    const gold = Math.round((30 + floorNo * 8) * ECON.prop), raw = pick(['ore_iron', 'raw_gem', 'dim_stone']); G.gold += gold; add(G.carry, raw, 1);
+    const gold = Math.round((30 + floorNo * 8) * ECON.prop * goldArea(floorNo)), raw = pick(['ore_iron', 'raw_gem', 'dim_stone']); G.gold += gold; add(G.carry, raw, 1);
     p.key = p.key === 'f_mimic' ? 'chest_open' : 'chest_gold_open'; p.size = .42;
     msg = `ガブッ！ ${name}にかみつかれた！ ${d}のダメージ。\nミミックは中身を吐き出して逃げていった。${gold}Gと${NAMES[raw]}を手に入れた。`;
   }
@@ -1780,7 +1780,7 @@ function chestLoot(ch, beat) {
   const got = {}; const n = ch.gold ? 5 : 2 + Math.floor(R() * 2);
   for (let i = 0; i < n; i++) add(got, pool[Math.floor(R() * pool.length)], 1);
   if (ch.gold) add(got, R() < .5 ? 'ore_iron' : 'dim_stone', 2);
-  const gold = Math.max(1, Math.floor((ch.gold ? 40 : 8) * (1 + floorNo * .12) * (.7 + R() * .6) * ECON.chestG));
+  const gold = Math.max(1, Math.floor((ch.gold ? 40 : 8) * (1 + floorNo * .12) * (.7 + R() * .6) * ECON.chestG * goldArea(floorNo)));
   if (beat) for (const k of Object.keys(got)) got[k]++;
   for (const [k, v] of Object.entries(got)) add(G.carry, k, v); G.gold += gold; gotToast('gold', gold);
   const bp = bpDrop(beat ? .5 : ch.gold ? .18 : .06, '宝箱の底に、');
@@ -2169,7 +2169,7 @@ function chargeStart(m) {
 }
 function win() {
   // 倒した敵（群れ）の分をまとめてもらう
-  const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1), gold = Math.round(ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1) * ECON.mon), drop = {};
+  const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1), gold = Math.round(ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1) * ECON.mon * goldArea(floorNo)), drop = {};
   for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') || K.loot ? .12 : 0))) add(drop, k, n * (x.mine ? 2 : 1));
   sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
   B.over = true; for (const x of ms) { if (!x.dying) x.dying = performance.now(); dexMon(x, true); }
