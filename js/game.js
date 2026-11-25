@@ -596,7 +596,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 94'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 95'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -670,6 +670,7 @@ function inside(id, msg) {
   place = id; SND_INDOOR = true; SND.lost = false; sfx('door'); showTown(true, 4 / 3); const p = PLACES[id], t = $('town');
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
   if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
+  if (id === 'weapon' && !msg && typeof jennyStoryKey === 'function' && jennyStoryKey()) { const k = jennyStoryKey(); jennySeq(k, () => inside('weapon', k === 's1' ? 'ジェニー「……さ、仕事仕事。何か用？」' : 'ジェニー[shy]「……で、今日は何を買うの？」')); return; }
   const lastSaid = msg || greet(id); log(lastSaid, true);
   { const sp = /^([^\s「\[]+)(?:\[(\w+)\])?/.exec(lastSaid || ''); if (sp && sp[1] === 'ブッパ') npcFig('buppa_' + (NPCS['ブッパ'][sp[2] || 'normal'] || 'sleep')); else if (sp && NPCS[sp[1]] && ['ボルツ', 'アルス', '客', 'チッチ', 'ルゥ'].includes(sp[1])) npcFig(NPCS[sp[1]].id); }
   if (id === 'inn') inn.first = lastSaid;
@@ -744,7 +745,7 @@ function towerScreen(msg) {
   place = 'tower'; showTown(true, 941 / 1672);
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}tower.jpg" alt="塔の入口"><div class="name">塔</div>`;
-  buttons([{ t: '入る', hot: true, stay: true, f: () => G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', f: prepMenu }, { t: '戻る', f: townMap }]);
+  buttons([{ t: '入る', hot: true, stay: true, f: () => (G.maxFloor >= 90 && !(G.jstory || {}).s3 && !G.cleared) ? jennySeq('s3', () => towerScreen('「……行ってくる」')) : G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', f: prepMenu }, { t: '戻る', f: townMap }]);
   if (msg) say('resolve', msg, true); else log(pick(PLACES.tower.hello), true);
   if (!msg && G.gold > 0) log(`手持ちの${G.gold}Gは、倒れるとなくなる。`);
   if (!msg && G.injuries.length) say('tired', `${G.injuries.map(k => INJURIES[k].name).join('・')}が痛む。\n「……まぁ〜、どうにかなるんじゃないか」`);
