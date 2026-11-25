@@ -107,7 +107,7 @@ const JOBS = {
   '僧兵':       { img:'monk', grow:{hp:8, atk:2, def:2}, learn:[[0,'monkstrike'],[5,'p_def']] },
   '狩人':       { img:'hunter', grow:{hp:6, atk:2, def:1}, learn:[[0,'snipe'],[5,'p_loot']] },
   '魔弓士':     { img:'magearcher', grow:{hp:5, atk:3, def:0}, learn:[[0,'arcanearrow'],[3,'ice2'],[5,'p_focus'],[15,'ice3']] },
-  '略奪者':     { img:'marauder', grow:{hp:9, atk:3, def:0}, learn:[[0,'plunder'],[5,'p_steal']] },
+  '略奪者':     { img:'marauder', grow:{hp:9, atk:3, def:0}, learn:[[0,'plunder'],[3,'bomb'],[5,'p_steal']] },
   '狂戦士':     { img:'berserker', grow:{hp:10,atk:4, def:0}, learn:[[0,'frenzy'],[5,'p_carry']] },
   '聖騎士':     { img:'paladin', grow:{hp:9, atk:2, def:3}, learn:[[0,'holyguard'],[3,'holy2'],[5,'p_guard'],[16,'holy3']] },
   '黒騎士':     { img:'blackknight', grow:{hp:8, atk:4, def:1}, learn:[[0,'darkblade'],[3,'dark2'],[5,'p_atk'],[15,'dark3']] },
@@ -117,7 +117,7 @@ const JOBS = {
   '剣聖':       { img:'kensei',      grow:{hp:9, atk:5, def:2}, learn:[[0,'kensei'],[5,'p_crit'],[12,'senken']] },
   '大魔導':     { img:'archmage',    grow:{hp:7, atk:5, def:1}, learn:[[0,'fire3'],[0,'ice3'],[0,'bolt3'],[0,'dark3']] },
   '鍛冶師範':   { img:'mastersmith', grow:{hp:10,atk:5, def:3}, learn:[[0,'temper'],[5,'masterstrike'],[10,'p_keep']] },
-  '素手':       { grow:{hp:6, atk:1, def:1}, learn:[] },
+  '素手':       { grow:{hp:6, atk:1, def:1}, learn:[[0,'punch'],[5,'flurry']] },  // 何も持たないと覚える（2026-11-25）
 };
 
 // ---------- 技 ----------

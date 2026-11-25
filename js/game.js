@@ -604,7 +604,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 112'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 113'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1926,7 +1926,7 @@ function encounterFx(m, ms) {
 // 戦闘: 技を押して「行動の予定」に並べる（APはその場で減る）→「行動」で順番に実行 → 敵の番
 // 予定は押すと取り消せる。予定が空のまま押すと、そのままターン終了（APを持ち越す）
 const FIXED_CMD = ['attack', 'guard', 'herb', 'flee'];
-const battleSkills = () => [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall'] : [])])].filter(id => !FIXED_CMD.includes(id));
+const battleSkills = () => [...new Set([...G.loadout.skills.filter(id => G.learned.includes(id) && SKILLS[id]).slice(0, SKILL_MAX), ...(hasShield() ? ['counter', 'wall', 'shieldbash'] : [])])].filter(id => !FIXED_CMD.includes(id));
 const canPlan = id => !B.over && !B.running && B.ap >= apCost(id) && !(id === 'flee' && B.ms.some(x => x.boss)) && (id !== 'herb' || battleItemList().length > 0) && !B.plan.some(p => p.id === 'flee');
 const whyNot = id => B.ap < apCost(id) ? 'APが足りない' : id === 'flee' && B.ms.some(x => x.boss) ? 'ボスからは逃げられない' : B.plan.some(p => p.id === 'flee') ? '逃げる予定' : '';
 // 戦闘: 下に「攻撃・守る・道具・逃げる」と持ち込んだ技を全部並べる（1回押せば予定に入る）。
