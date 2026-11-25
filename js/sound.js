@@ -35,15 +35,27 @@ const SND = (() => {
     return loading[key];
   }
   const pool = Array.from({ length: 6 }, () => { const a = new Audio(); a.playsInline = true; return a; }); let pi = 0;
+  // 2026-11-25: 長い効果音が鳴りっぱなしにならないように、長さに上限をつける（秒）
+  // 戦闘中: ふつうは1.4秒、大きな魔法などは2.2秒。勝利・レベルアップ・遭遇などはそのまま。戦闘の外: 3秒（勝利・レベルアップはそのまま）
+  const KEEP = new Set(['win', 'levelup', 'encounter', 'bossstep', 'fall', 'chest', 'item', 'cry_beast', 'cry_skeleton', 'cry_golem', 'goblin']);
+  const BIG = new Set(['fire3', 'thunder3', 'blizzard', 'explosion', 'holy', 'dark', 'heal3', 'heal', 'magic', 'rockbreak']);
+  function sfxCap(key, max) {
+    if (KEEP.has(key)) return max || 0;
+    const inBattle = typeof mode !== 'undefined' && mode === 'battle';
+    const c = inBattle ? (BIG.has(key) ? 2.2 : 1.4) : 3;
+    return max ? Math.min(max, c) : c;
+  }
   function sfx(key, opt = {}) {
     if (!on || !unlocked || !key) return;
     const fire = () => {
       if (ac && master) {
-        const run = b => { if (!b) return; const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; g.gain.value = VOL.sfx * (opt.vol || 1); s.connect(g).connect(master); s.start(); if (opt.max) s.stop(ac.currentTime + opt.max); };
+        const cap = sfxCap(key, opt.max);
+        const run = b => { if (!b) return; const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = b; const v = VOL.sfx * (opt.vol || 1); g.gain.value = v; s.connect(g).connect(master); const t0 = ac.currentTime; s.start();
+          if (cap && b.duration > cap) { const fd = Math.min(.35, cap * .3); g.gain.setValueAtTime(v, t0 + cap - fd); g.gain.linearRampToValueAtTime(0, t0 + cap); s.stop(t0 + cap + .02); } };  // 長い音は、途中でそっと消す
         if (bufs[key]) run(bufs[key]); else load(key).then(run);
         return;
       }
-      const a = pool[pi++ % pool.length]; a.src = SFX_DIR + key + '.mp3'; a.volume = Math.min(1, VOL.sfx * (opt.vol || 1)); const p = a.play(); if (p && p.catch) p.catch(() => {}); if (opt.max) setTimeout(() => a.pause(), opt.max * 1000);
+      const a = pool[pi++ % pool.length]; a.src = SFX_DIR + key + '.mp3'; a.volume = Math.min(1, VOL.sfx * (opt.vol || 1)); const p = a.play(); if (p && p.catch) p.catch(() => {}); { const cap = sfxCap(key, opt.max); if (cap) setTimeout(() => a.pause(), cap * 1000); }
     };
     if (opt.delay) setTimeout(fire, opt.delay); else fire();
   }
