@@ -339,6 +339,7 @@ function runSeq(L, i, end, setup) {
   if (P.music !== undefined) SND.scene = P.music;
   if (P.clear) clearFig();
   if (P.fig) npcFig(P.fig);
+  if (P.ev === '') { const pe = $('town').querySelector('.portrait.ev'); if (pe) pe.remove(); }
   if (P.ev) { const t = $('town'); let pe = t.querySelector('.portrait.ev'); if (!pe) { pe = document.createElement('div'); pe.className = 'portrait npc ev'; pe.innerHTML = '<img alt="">'; t.appendChild(pe); } pe.querySelector('img').src = `assets/event/${P.ev}.webp`; pe.classList.toggle('wide', /^end_/.test(P.ev)); }
   if (P.night) { const im = $('town').querySelector('img'); if (im) { im.style.transition = 'filter 1.2s'; im.style.filter = 'brightness(.38) saturate(.6) hue-rotate(195deg)'; } }
   if (P.sfx) sfx(P.sfx, { vol: .6, max: 2 });
@@ -411,28 +412,29 @@ function mirrorBoss() {
   return { id: 'mirror', name: '鏡の中の自分', mirror: true, boss: true, size: .95, drop: {}, gold: 0, exp: 5000,
     hp: Math.round(G.mhp * 2.5 + atkPower() * 10), atk: Math.round(G.mhp * .09 + defPower()), def: Math.round(atkPower() * .45) };
 }
+function mirrorShow(on) { const m = $('meet'); if (!m) return; if (on) { m.innerHTML = '<img src="assets/monsters/the_mirror.webp" alt="鏡">'; m.style.display = 'flex'; } else { m.style.display = 'none'; m.innerHTML = ''; } }
 function mirrorScene() {
-  if (G.cleared) { log('鏡が、また自分を写した。', true); setTimeout(() => startBattle(mirrorBoss()), 600); return; }
-  runSeq(MIRROR_PRE, 0, () => startBattle(mirrorBoss()));
+  if (G.cleared) { mirrorShow(true); log('鏡が、また静かに光った。……鏡の中の自分が、武器を構える。', true); setTimeout(() => { mirrorShow(false); startBattle(mirrorBoss()); }, 1400); return; }
+  mirrorShow(true); runSeq(MIRROR_PRE, 0, () => { mirrorShow(false); startBattle(mirrorBoss()); });
 }
 // ---------- エンディング（静かに帰る） ----------
 // 2026-11-25（Daichiさんの決定）: 鏡は塔の心。人間そのものを知りたくて、人が自分を写すための鏡になって最上階で待っている
 // 勝つと塔が「なんでも叶える」と言うが、主人公は断る。町に帰って鍛冶屋を続ける。親密度がいちばん高いヒロインと一緒になる（親密度が最大のとき）
 // 鏡と塔は、これからもエルディアを見守り、ときに試練を与え続ける（鏡は砕けない。クリア後も何度でも挑める）
 const ENDING_TOP = [
-  { bg: 'intro_tower.jpg', music: 'ending', t: '鏡の中の自分が、ゆっくりと武器を下ろした。\n……鏡は割れず、ただ、静かに光っていた。' },
-  { t: '鏡の奥から、声が聞こえた。\n低く、あたたかい声だった。' },
-  { t: '「……ありがとう、{name}。\nわたしは、この塔。ずっと、人間というものを知りたかった」' },
-  { t: '「だから、鏡になった。人が、自分の姿と心を写せるように。\n……お前は、自分と向き合って、そして笑った」' },
-  { t: '「てっぺんまで来た者に、ひとつだけ願いを叶えよう。\n富でも、力でも、なんでもいい」' },
-  { hero: 'doubt', t: '「……なんでも、か」' },
-  { hero: 'calm', t: '「……いらないよ」' },
-  { t: '「……いらない？」' },
-  { hero: 'smile', t: '「町に帰れば、口うるさい武具屋がいて、心配性の治療院の子がいて、\n俺の記録を一番きれいな字で書いてくれる子がいる」' },
-  { hero: 'smile', t: '「弟子も、居候も、腹を空かせて待ってる。\n……これ以上、望むものなんてない。俺は、もう十分もらってる」' },
-  { t: '鏡は、しばらく黙っていた。\nそれから、ほんの少し、笑ったような気がした。' },
-  { t: '「……そうか。それが、人間か。\n……また来るといい。わたしは、ここで待っている」' },
-  { t: '百階。誰も見たことのない、塔のてっぺん。\n東の空が、白んでいく。' },
+  { ev: 'mirror', bg: 'intro_tower.jpg', music: 'ending', t: '鏡の中の自分が、ゆっくりと武器を下ろした。\n……鏡は割れず、ただ、静かに光っていた。' },
+  { ev: 'mirror', t: '鏡の奥から、声が聞こえた。\n低く、あたたかい声だった。' },
+  { ev: 'mirror', t: '「……ありがとう、{name}。\nわたしは、この塔。ずっと、人間というものを知りたかった」' },
+  { ev: 'mirror', t: '「だから、鏡になった。人が、自分の姿と心を写せるように。\n……お前は、自分と向き合って、そして笑った」' },
+  { ev: 'mirror', t: '「てっぺんまで来た者に、ひとつだけ願いを叶えよう。\n富でも、力でも、なんでもいい」' },
+  { ev: 'mirror', hero: 'doubt', t: '「……なんでも、か」' },
+  { ev: 'mirror', hero: 'calm', t: '「……いらないよ」' },
+  { ev: 'mirror', t: '「……いらない？」' },
+  { ev: 'mirror', hero: 'smile', t: '「町に帰れば、口うるさい武具屋がいて、心配性の治療院の子がいて、\n俺の記録を一番きれいな字で書いてくれる子がいる」' },
+  { ev: 'mirror', hero: 'smile', t: '「弟子も、居候も、腹を空かせて待ってる。\n……これ以上、望むものなんてない。俺は、もう十分もらってる」' },
+  { ev: 'mirror', t: '鏡は、しばらく黙っていた。\nそれから、ほんの少し、笑ったような気がした。' },
+  { ev: 'mirror', t: '「……そうか。それが、人間か。\n……また来るといい。わたしは、ここで待っている」' },
+  { ev: '', t: '百階。誰も見たことのない、塔のてっぺん。\n東の空が、白んでいく。' },
   { t: '朝日が、エルディアの町を照らしていた。\n工房の煙突から、細い煙がのぼっているのが見えた。' },
   { hero: 'calm', t: '「……てっぺんに、宝はなかったな」' },
   { hero: 'smile', t: '「……いや。登ってきた道が、全部宝だったか」' },
@@ -543,9 +545,13 @@ const ENDING_LAST = [
   { bg: 'title.jpg', aspect: 2 / 3, t: '― Tower of Hope ―\n\nおしまい。……でも、塔はまだ、そこにある。' },
 ];
 // いちばん親密度の高いヒロイン（最大まで届いているときだけ）
+// 2026-11-25: 大筋のヒロインはジェニー（幼なじみ）。ほかの誰かがジェニーより親密度が高く、しかも最大のときだけ、その人になる。
+// それ以外は、ジェニーの親密度が5以上ならジェニー。同じ親密度ならジェニーを優先
 function loveOf() {
-  const L = HEROINES.map(w => [w, G.aff[w] || 0]).sort((a, b) => b[1] - a[1]);
-  return L[0] && L[0][1] >= AFF_NEED ? L[0][0] : null;
+  const j = G.aff.jenny || 0;
+  const other = HEROINES.filter(w => w !== 'jenny').map(w => [w, G.aff[w] || 0]).sort((a, b) => b[1] - a[1])[0];
+  if (other && other[1] >= AFF_NEED && other[1] > j) return other[0];
+  return j >= EV_NEED ? 'jenny' : null;
 }
 function ending() {
   B = null; F = null; G.cleared = true; const love = loveOf(); save(); clearFig();

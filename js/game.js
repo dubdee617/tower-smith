@@ -596,7 +596,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 92'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 94'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2342,17 +2342,33 @@ function drawMonsterImg(m, t, i) {
   ctx.save(); ctx.globalAlpha = alpha;
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(cx, by - 2, W * .38, 8, 0, 0, 7); ctx.fill();
   ctx.imageSmoothingEnabled = true;
-  if (m.mirror) {  // 鏡: 自分の姿を左右反転して、青白く写す。ゆらゆら揺らぐ
+  if (m.mirror) {  // 鏡: 鏡の枠（assets/monsters/the_mirror）の中に、自分の姿を左右反転して青白く写す。ゆらゆら揺らぐ。鏡は割れない
+    const fr = MIRROR_FRAME.complete && MIRROR_FRAME.naturalWidth ? MIRROR_FRAME : null;
+    let ovx = cx, ovy = by - H * .5, orx = W * .4, ory = H * .5;
+    if (fr) {
+      const FH = VH * .96, FW = FH * fr.width / fr.height, fx = VW * px - FW / 2, fy = VH * .97 - FH;
+      ovx = fx + FW * .5; ovy = fy + FH * .473; orx = FW * .241; ory = FH * .29;
+      ctx.save(); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.beginPath(); ctx.ellipse(VW * px, VH * .96, FW * .42, 9, 0, 0, 7); ctx.fill();
+      ctx.drawImage(fr, fx, fy, FW, FH); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.ellipse(ovx, ovy, orx, ory, 0, 0, 7); ctx.clip();
+      ctx.fillStyle = 'rgba(20,30,60,.55)'; ctx.fillRect(ovx - orx, ovy - ory, orx * 2, ory * 2);
+    }
+    // 写る姿は、鏡の楕円の中に収める
+    const rH = ory * 1.9, rW = rH * img.width / img.height, rby = ovy + ory * .98; m.top = ovy - ory;
     if (!drawMonsterImg.mc) drawMonsterImg.mc = document.createElement('canvas');
     const o = drawMonsterImg.mc; o.width = img.width; o.height = img.height; const g = o.getContext('2d');
     g.clearRect(0, 0, o.width, o.height); g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(120,170,255,.38)'; g.fillRect(0, 0, o.width, o.height); g.globalCompositeOperation = 'source-over';
     const wob = Math.sin(t / 260) * 2;
     ctx.save(); ctx.translate(cx + wob, 0); ctx.scale(-1, 1); ctx.translate(-cx, 0);
-    ctx.drawImage(o, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
-    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha * (.15 + .1 * Math.sin(t / 180)); ctx.drawImage(o, cx - W * sx / 2 + 3, by - H * sy, W * sx, H * sy);
+    ctx.drawImage(o, cx - rW * sx / 2, rby - rH * sy, rW * sx, rH * sy);
+    ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = alpha * (.15 + .1 * Math.sin(t / 180)); ctx.drawImage(o, cx - rW * sx / 2 + 3, rby - rH * sy, rW * sx, rH * sy);
     ctx.restore();
+    if (fr) {  // ガラスのつや（鏡の絵を薄く重ねる）
+      const FH = VH * .96, FW = FH * fr.width / fr.height, fx = VW * px - FW / 2, fy = VH * .97 - FH;
+      ctx.globalAlpha = .28 + .06 * Math.sin(t / 700); ctx.globalCompositeOperation = 'screen'; ctx.drawImage(fr, fx, fy, FW, FH); ctx.globalCompositeOperation = 'source-over'; ctx.restore();
+    }
   } else ctx.drawImage(img, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
-  if (white > 0) { // 当たった瞬間に白く光らせる
+  if (white > 0 && !m.mirror) { // 当たった瞬間に白く光らせる（鏡は枠ごと光らせない）
     if (!drawMonsterImg.c) drawMonsterImg.c = document.createElement('canvas');
     const o = drawMonsterImg.c; o.width = img.width; o.height = img.height; const g = o.getContext('2d');
     g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = '#fff'; g.fillRect(0, 0, o.width, o.height);
@@ -2361,6 +2377,7 @@ function drawMonsterImg(m, t, i) {
   ctx.restore();
 }
 // 敵の名前とHP。1体なら上の真ん中、群れならそれぞれの上。狙っている敵には ▼
+const MIRROR_FRAME = new Image(); MIRROR_FRAME.src = 'assets/monsters/the_mirror.webp';
 function drawMonsterBars(t) {
   const n = B.ms.length, tg = target();
   B.ms.forEach((m, i) => {
