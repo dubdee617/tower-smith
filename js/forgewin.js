@@ -46,7 +46,7 @@ function fwDraw() {
     const ok = canMake(r), lock = upLv('furnace') < needFurnace(r), c = cmpNow(r), src = iconOfType(r);
     const stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + (r.atk + upLv('anvil')) : ''}${r.def ? ' 守' + (r.def + upLv('anvil')) : ''}`;
     const d = c ? `${dTag(c.da, '攻')}${dTag(c.dd, '守')}` : '';
-    return `<button class="fwi${ok ? '' : ' dim'}${sel === r ? ' sel' : ''}" data-id="${r.id}">${src ? `<img src="${src}" alt="">` : ''}<span class="nm">${r.name}</span><small>${stat}</small><span class="dl">${lock ? `<em class="lk">炉Lv${needFurnace(r)}</em>` : d}</span></button>`;
+    return `<button class="fwi${r.type === 'tool' ? ' tl' : ''}${ok ? '' : ' dim'}${sel === r ? ' sel' : ''}" data-id="${r.id}">${src ? `<img src="${src}" alt="">` : ''}<span class="nm">${r.name}</span><small>${stat}</small><span class="dl">${lock ? `<em class="lk">炉Lv${needFurnace(r)}</em>` : d}</span></button>`;
   };
   // 下のくわしい情報
   let det = '', acts = '';
@@ -60,7 +60,8 @@ function fwDraw() {
     if (c) { const ca = c.cur ? c.cur.atk || 0 : 0, cd = c.cur ? c.cur.def || 0 : 0;
       tbl = `<div class="fwcur">今の装備: ${c.cur ? c.cur.name : 'なし'}</div><table>${c.atk || ca ? row('攻撃', ca, c.atk, c.da) : ''}${c.def || cd ? row('守り', cd, c.def, c.dd) : ''}</table>`;
       if (!['armor', 'shield'].includes(sel.type) && WEAPON_TYPES[sel.type]) { const mw = mainWeapon(); if (!mw || mw.type !== sel.type) tbl += `<div class="fwjob">持つと、ジョブは「${WEAPON_TYPES[sel.type].job}」の系統になる</div>`; } }
-    else tbl = `<div class="fwcur">${TOOL_NAMES[sel.tool] || ''}・耐久${sel.dur || ''}</div>`;
+    else { const tt = sel.tt || 0, hits = tt >= 3 ? 'どこでも1回' : tt === 2 ? '◎1回 ◯2回 △4回' : '◎2回 ◯3回 △5回';
+      tbl = `<div class="fwcur">${TOOL_NAMES[sel.tool] || ''}・耐久${sel.dur || ''}</div><div class="fwjob">壁を崩す回数: ${hits}</div>`; }
     det = `<div class="fwdh"><b>${sel.name}${upLv('anvil') && sel.type !== 'tool' ? '+' + upLv('anvil') : ''}</b><span class="sellp">売値${sellPrice(sel)}G</span></div>${tbl}${sel.desc ? `<div class="fwds">${sel.desc}</div>` : ''}<div class="fwneed">1本に: ${needHtml(sel)}</div>`;
     if (lock) acts = `<div class="fwwhy">${['', '鉄', '銀', 'ミスリル', 'オリハルコン'][needFurnace(sel)]}を打つには、炉をLv${needFurnace(sel)}に（工房の強化）</div>`;
     else if (!max) acts = `<div class="fwwhy">足りない: ${lackText(sel)}</div>`;

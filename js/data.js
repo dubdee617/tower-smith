@@ -267,6 +267,16 @@ const RECIPES = [
   { id:'copper_pick',   name:'銅のツルハシ',   type:'tool', tool:'pick',   dur:40, cost:{copper:3, leather:1}, price:40 },
   { id:'lumber_axe',    name:'木こりの斧',     type:'tool', tool:'axe',    dur:40, cost:{copper:2, bone:1, leather:1}, price:40 },
   { id:'shovel',        name:'シャベル',       type:'tool', tool:'shovel', dur:40, cost:{copper:2, bone:2}, price:35 },
+  // 2026-11-25: ツールの段階（銅→鉄→ミスリル→オリハルコン）。tt: 段階。耐久が増え、ミスリルは1回少なく、オリハルコンは一撃で崩せる
+  { id:'iron_pick',   name:'鉄のツルハシ',         type:'tool', tool:'pick',   tt:1, dur:50, cost:{iron:3, leather:1}, price:110 },
+  { id:'mithril_pick',name:'ミスリルのツルハシ',   type:'tool', tool:'pick',   tt:2, dur:55, cost:{mithril:3, silver:2, leather:1}, price:600 },
+  { id:'ori_pick',    name:'オリハルコンのツルハシ', type:'tool', tool:'pick', tt:3, dur:60, cost:{orichalcum:3, mithril:2, leather:1}, price:1400 },
+  { id:'iron_lumber', name:'鉄の木こりの斧',       type:'tool', tool:'axe',    tt:1, dur:50, cost:{iron:2, wood:1, leather:1}, price:100 },
+  { id:'mithril_lumber',name:'ミスリルの木こりの斧', type:'tool', tool:'axe',  tt:2, dur:55, cost:{mithril:2, silver:1, wood:1, leather:1}, price:560 },
+  { id:'ori_lumber',  name:'オリハルコンの木こりの斧', type:'tool', tool:'axe', tt:3, dur:60, cost:{orichalcum:2, mithril:1, wood:1, leather:1}, price:1300 },
+  { id:'iron_shovel', name:'鉄のシャベル',         type:'tool', tool:'shovel', tt:1, dur:50, cost:{iron:2, bone:2}, price:95 },
+  { id:'mithril_shovel',name:'ミスリルのシャベル', type:'tool', tool:'shovel', tt:2, dur:55, cost:{mithril:2, silver:1, bone:2}, price:540 },
+  { id:'ori_shovel',  name:'オリハルコンのシャベル', type:'tool', tool:'shovel', tt:3, dur:60, cost:{orichalcum:2, mithril:1, bone:2}, price:1250 },
   { id:'leather_armor', name:'革の鎧',       type:'armor',      def:2,  cost:{leather:3},                   price:40 },
   { id:'iron_armor',    name:'鉄の鎧',       type:'armor',      def:5,  cost:{iron:3, leather:2},           price:120 },
 ];

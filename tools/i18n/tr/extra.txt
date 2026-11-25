@@ -89,3 +89,20 @@ HP MAX|HP MAX
 炉Lv{0}|Forge Lv{0}
 {0}・耐久{1}|{0}, Durability {1}
 {0}あと{1}|{0} {1} short
+鉄のツルハシ|Iron Pickaxe
+ミスリルのツルハシ|Mithril Pickaxe
+オリハルコンのツルハシ|Orichalcum Pickaxe
+鉄の木こりの斧|Iron Woodcutter's Axe
+ミスリルの木こりの斧|Mithril Woodcutter's Axe
+オリハルコンの木こりの斧|Orichalcum Woodcutter's Axe
+鉄のシャベル|Iron Shovel
+ミスリルのシャベル|Mithril Shovel
+オリハルコンのシャベル|Orichalcum Shovel
+銅|Copper
+手入れ（金属1つで新品同様に）|Maintenance (one metal makes it good as new)
+ツール{0}本（金属1つ）|{0} tools (one metal each)
+耐久{0}/{1}／{2}1({3})|Durability {0}/{1} / 1 {2} ({3})
+壁を崩す回数: {0}|Hits to break a wall: {0}
+どこでも1回|1 hit, anywhere
+◎1回 ◯2回 △4回|◎1 ◯2 △4
+◎2回 ◯3回 △5回|◎2 ◯3 △5

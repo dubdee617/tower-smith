@@ -148,7 +148,7 @@ function iconOf(k) {
   return '';
 }
 // 装備ひとつずつの絵（assets/gear）があれば、それを使う
-const GEAR_IMG = new Set(["bone_bow", "bone_dagger", "bone_staff", "copper_axe", "copper_hammer", "copper_pick", "copper_shield", "copper_sword", "darksteel_armor", "darksteel_axe", "darksteel_book", "darksteel_bow", "darksteel_dagger", "darksteel_greatsword", "darksteel_hammer", "darksteel_katana", "darksteel_shield", "darksteel_staff", "darksteel_sword", "dragon_armor", "dragon_axe", "dragon_book", "dragon_bow", "dragon_dagger", "dragon_greatsword", "dragon_hammer", "dragon_katana", "dragon_shield", "dragon_staff", "dragon_sword", "iron_armor", "iron_axe", "iron_great", "iron_hammer", "iron_katana", "iron_shield", "iron_sword", "leather_armor", "lumber_axe", "mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "mk_blood_dagger", "mk_bolt_dagger", "mk_charge_great", "mk_cleaver", "mk_crescent", "mk_cursed_katana", "mk_dark_great", "mk_dragon_spear", "mk_earth_hammer", "mk_exec_axe", "mk_fists", "mk_flame_sword", "mk_frost_bow", "mk_g_desert", "mk_g_druid", "mk_g_forest", "mk_g_ice", "mk_g_mountain", "mk_gale_katana", "mk_giant_axe", "mk_gold_axe", "mk_guard_great", "mk_heal_hammer", "mk_holy_staff", "mk_ice_katana", "mk_judge_great", "mk_lava_axe", "mk_life_book", "mk_light_dagger", "mk_luck_staff", "mk_mirror_shield", "mk_moon_katana", "mk_nameless", "mk_oni_club", "mk_rock_armor", "mk_rusty_sword", "mk_shadow_knife", "mk_smith_hammer", "mk_snake_sword", "mk_snipe_bow", "mk_soul_staff", "mk_star_sword", "mk_storm_sword", "mk_sun_great", "mk_swallow_bow", "mk_thief_knife", "mk_thunder_halberd", "mk_time_book", "mk_treasure_pick", "mk_tree_shield", "mk_twin_sword", "mk_venom_fang", "mk_wind_bow", "mk_wood_katana", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "royal_armor", "royal_axe", "royal_book", "royal_bow", "royal_dagger", "royal_greatsword", "royal_hammer", "royal_katana", "royal_shield", "royal_staff", "royal_sword", "shovel", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword", "stone_book", "treasure_axe", "treasure_book", "treasure_bow", "treasure_dagger", "treasure_greatsword", "treasure_hammer", "treasure_katana", "treasure_staff", "treasure_sword"]);
+const GEAR_IMG = new Set(["iron_pick", "mithril_pick", "ori_pick", "iron_lumber", "mithril_lumber", "ori_lumber", "iron_shovel", "mithril_shovel", "ori_shovel", "bone_bow", "bone_dagger", "bone_staff", "copper_axe", "copper_hammer", "copper_pick", "copper_shield", "copper_sword", "darksteel_armor", "darksteel_axe", "darksteel_book", "darksteel_bow", "darksteel_dagger", "darksteel_greatsword", "darksteel_hammer", "darksteel_katana", "darksteel_shield", "darksteel_staff", "darksteel_sword", "dragon_armor", "dragon_axe", "dragon_book", "dragon_bow", "dragon_dagger", "dragon_greatsword", "dragon_hammer", "dragon_katana", "dragon_shield", "dragon_staff", "dragon_sword", "iron_armor", "iron_axe", "iron_great", "iron_hammer", "iron_katana", "iron_shield", "iron_sword", "leather_armor", "lumber_axe", "mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "mk_blood_dagger", "mk_bolt_dagger", "mk_charge_great", "mk_cleaver", "mk_crescent", "mk_cursed_katana", "mk_dark_great", "mk_dragon_spear", "mk_earth_hammer", "mk_exec_axe", "mk_fists", "mk_flame_sword", "mk_frost_bow", "mk_g_desert", "mk_g_druid", "mk_g_forest", "mk_g_ice", "mk_g_mountain", "mk_gale_katana", "mk_giant_axe", "mk_gold_axe", "mk_guard_great", "mk_heal_hammer", "mk_holy_staff", "mk_ice_katana", "mk_judge_great", "mk_lava_axe", "mk_life_book", "mk_light_dagger", "mk_luck_staff", "mk_mirror_shield", "mk_moon_katana", "mk_nameless", "mk_oni_club", "mk_rock_armor", "mk_rusty_sword", "mk_shadow_knife", "mk_smith_hammer", "mk_snake_sword", "mk_snipe_bow", "mk_soul_staff", "mk_star_sword", "mk_storm_sword", "mk_sun_great", "mk_swallow_bow", "mk_thief_knife", "mk_thunder_halberd", "mk_time_book", "mk_treasure_pick", "mk_tree_shield", "mk_twin_sword", "mk_venom_fang", "mk_wind_bow", "mk_wood_katana", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "royal_armor", "royal_axe", "royal_book", "royal_bow", "royal_dagger", "royal_greatsword", "royal_hammer", "royal_katana", "royal_shield", "royal_staff", "royal_sword", "shovel", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword", "stone_book", "treasure_axe", "treasure_book", "treasure_bow", "treasure_dagger", "treasure_greatsword", "treasure_hammer", "treasure_katana", "treasure_staff", "treasure_sword"]);
 function iconOfType(r) {
   if (GEAR_IMG.has(r.id)) return `assets/gear/${r.id}.webp`; const k = r.type === 'tool' ? TOOL_ICON[r.tool] : 'w_' + r.type; return ICON_KEYS.has(k) ? `assets/icon/${k}.webp` : ''; }
 // 手に入れたとき、絵の上にアイコン付きの札をぽんと出す
@@ -636,7 +636,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 123'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 124'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -974,7 +974,7 @@ function prepMenu() {
   log('出発の前に、装備と持ち物を確かめる。', true);
 }
 function newGear(r, forged) {
-  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.crit) x.crit = r.crit; if (r.fire) x.fire = true; if (r.mk) x.mk = r.mk; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
+  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.crit) x.crit = r.crit; if (r.fire) x.fire = true; if (r.mk) x.mk = r.mk; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; if (r.tt) x.tt = r.tt; }
   if (G) dexGear(r.id);
   const a = forged && r.type !== 'tool' ? upLv('anvil') : 0;  // 金床の強化ぶん、自分で打った武具は強くなる
   if (a) { if (x.atk) x.atk += a; if (x.def) x.def += a; x.name += `+${a}`; }
@@ -1022,6 +1022,7 @@ const TIER_OF = r => r.meika ? 0 : /^(dragon)/.test(r.id) ? 6 : /^orichalcum/.te
 const SHELF = {
   weapon: [['銅・鉄', r => TIER_OF(r) === 1], ['銀', r => TIER_OF(r) === 2], ['ミスリル', r => TIER_OF(r) === 3], ['黒鋼', r => TIER_OF(r) === 4], ['オリハルコン', r => TIER_OF(r) === 5], ['竜', r => TIER_OF(r) === 6]],
   armor: [['銅・鉄', r => TIER_OF(r) <= 1], ['銀', r => TIER_OF(r) === 2], ['ミスリル・黒鋼', r => TIER_OF(r) === 3 || TIER_OF(r) === 4], ['オリハルコン・竜', r => TIER_OF(r) >= 5]],
+  tool: [['銅', r => !r.tt], ['鉄', r => r.tt === 1], ['ミスリル', r => r.tt === 2], ['オリハルコン', r => r.tt === 3]],
   meika: [['剣・刀', r => ['sword', 'katana'].includes(r.type)], ['大剣・斧・槌', r => ['greatsword', 'axe', 'hammer'].includes(r.type)], ['短剣・弓', r => ['dagger', 'bow'].includes(r.type)], ['魔導書・杖', r => ['book', 'staff'].includes(r.type)], ['盾・鎧', r => ['shield', 'armor'].includes(r.type)]],
 };
 // ---------- 名品の設計図（2026-11-25） ----------
@@ -1081,7 +1082,7 @@ function forge(msg, face) {
     L.push({ t: name, s: k === 'meika' ? `設計図 ${rs.length}/${MEIKA.length}${n ? `・作れる${n}` : ''}` : n ? `作れる ${n}/${rs.length}` : `作れる物なし（${rs.length}種）`, hot: n > 0, f: () => forgeList(k) }); }
   const worn = G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur);
   L.push({ t: '工房の強化', s: `炉${upLv('furnace')} 金床${upLv('anvil')} 作業台${upLv('bench')}`, f: () => upgradeMenu() });
-  L.push({ t: '手入れ', s: worn.length ? `ツール${worn.length}本（銅1）` : '直す物なし', off: !worn.length, f: forgeFix });
+  L.push({ t: '手入れ', s: worn.length ? `ツール${worn.length}本（金属1つ）` : '直す物なし', off: !worn.length, f: forgeFix });
   L.push({ t: '戻る', f: homeMenu });
   buttons(L);
   if (face) say(face, msg, true); else say('serious', msg || (Object.keys(G.raw).some(k => G.raw[k]) ? '「戦利品は、まずギルドで加工してもらわないとな」' : '「何を打とうか」'), true);
@@ -1130,14 +1131,16 @@ function forgeMake(cat, r, q) {
   fadeGo(() => { buttons.keepTab = true; forgeList(cat, q > 1 ? `「${r.name}を${q}本。……腕が鳴ったな」` : `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}${q > 1 ? ` ×${q}` : ''}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}${q > 1 ? ` ×${q}` : ''}\n制作中`, hold: q > 1 ? 2400 : 1500, sfx: hits });
 }
 function forgeFix() {
-  const L = [{ title: '手入れ（銅1で新品同様に）' }];
+  /* 手入れは、そのツールの金属を1つ（銅・鉄・ミスリル・オリハルコン） */
+  const L = [{ title: '手入れ（金属1つで新品同様に）' }];
   for (const t of G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur)) {
-    const ok = (G.store.copper || 0) >= 1;
-    L.push({ t: `${t.name}を直す`, s: `耐久${t.dur}/${t.maxDur}／銅1(${G.store.copper || 0})`, off: !ok, f: () => { G.store.copper--; t.dur = t.maxDur; save(); fadeGo(() => forge(`${t.name}を研ぎ直した。新品同様だ。`, 'grin'), { text: `${t.name}\n手入れ中`, hold: 900, sfx: [['forge1', 250], ['forge1', 700]] }); } });
+    const m = TOOL_METAL[t.tt || 0], ok = (G.store[m] || 0) >= 1;
+    L.push({ t: `${t.name}を直す`, s: `耐久${t.dur}/${t.maxDur}／${MATS[m]}1(${G.store[m] || 0})`, off: !ok, f: () => { G.store[m]--; t.dur = t.maxDur; save(); fadeGo(() => forge(`${t.name}を研ぎ直した。新品同様だ。`, 'grin'), { text: `${t.name}\n手入れ中`, hold: 900, sfx: [['forge1', 250], ['forge1', 700]] }); } });
   }
   L.push({ t: '戻る', f: () => forge() });
   buttons(L);
 }
+const TOOL_METAL = ['copper', 'iron', 'mithril', 'orichalcum'];
 // 装備: 武器を押すたびに 右手 → 左手 → 外す と切り替わる（盾は左手だけ、両手武器は右手だけ）
 function equipMenu(back) {
   back = back || homeMenu; if (equipMenu.back !== back) { equipMenu.last = null; statusView.prev = null; } equipMenu.back = back;
@@ -1828,7 +1831,7 @@ function digInfo() {
   const [fdx, fdy] = DIRS[dir], x = Math.floor(T.x) + fdx, y = Math.floor(T.y) + fdy;
   if (cellAt(x, y) !== 1) return null;
   const edge = x <= 0 || y <= 0 || x >= F.N - 1 || y >= F.N - 1, bone = NO_DIG_FLOORS.includes(floorNo);
-  const area = areaOf(floorNo)[1], eff = TOOL_EFF[t.tool][area] || 1, need = DIG_HITS[eff], done = (F.dmg && F.dmg[x + ',' + y]) || 0;
+  const area = areaOf(floorNo)[1], eff = TOOL_EFF[t.tool][area] || 1, tt = t.tt || 0, need = tt >= 3 ? 1 : tt === 2 ? Math.max(1, DIG_HITS[eff] - 1) : DIG_HITS[eff], done = (F.dmg && F.dmg[x + ',' + y]) || 0;
   return { t, x, y, eff, need, done, ok: !edge && !bone && t.dur > 0, label: bone || edge ? '塔の骨' : t.dur <= 0 ? '壊れている' : `${TOOL_NAMES[t.tool]}${MARK[eff]} ${done}/${need}` };
 }
 function dig() {

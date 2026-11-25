@@ -265,3 +265,4 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .bt .log{flex:1 1 84px!important}
 .bt .ctl .btns{gap:4px}.bt .ctl>.btns.sk{grid-auto-rows:38px!important}.bt .ctl .btns.four button,.bt .ctl .btns.sk button{min-height:38px;height:38px}
 .bt .ctl>.btns.four{margin-bottom:4px}.bt .ctl .btns.tail button{min-height:44px}
+#fw .fwi.tl .nm{white-space:normal;font-size:13px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
