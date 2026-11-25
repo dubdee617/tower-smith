@@ -144,6 +144,12 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
 @keyframes lvPop{from{transform:scale(.3);opacity:0}}
 #lvup b.gold{font-size:52px;color:#ffd75a}
 #lvup.reward span{font-size:15px;max-width:300px}
+/* 技を覚えた（2026-11-25）: 青い光 */
+#lvup.skill{background:radial-gradient(ellipse at 50% 45%,rgba(20,70,140,.9),rgba(4,8,18,.94) 70%)}
+#lvup.skill b{color:#9fe0ff;text-shadow:0 0 16px rgba(90,180,255,.95),0 3px 0 #0a2a5a}
+#lvup.skill em{font-size:28px;color:#ffffff;text-shadow:0 0 10px rgba(120,200,255,.8);margin-top:6px}
+#lvup.skill span{font-size:15px;max-width:320px;color:#cfe9ff}
+#lvup.skill.on em{animation:lvPop .7s .15s cubic-bezier(.2,1.6,.4,1) both}
 /* 戦闘: 行動の予定 */
 .plan{display:flex;align-items:center;gap:5px;height:34px;margin-bottom:6px;overflow:hidden;white-space:nowrap}
 .plan .ap{flex:none;font-weight:700;color:#7cc4ff;font-size:15px;padding:0 4px}

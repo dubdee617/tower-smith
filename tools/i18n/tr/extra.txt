@@ -106,3 +106,5 @@ HP MAX|HP MAX
 どこでも1回|1 hit, anywhere
 ◎1回 ◯2回 △4回|◎1 ◯2 △4
 ◎2回 ◯3回 △5回|◎2 ◯3 △5
+{0}で覚えた（どのジョブでも使える）|Learned as a {0} (usable by any job)
+AP{0}・{1}|AP{0} - {1}

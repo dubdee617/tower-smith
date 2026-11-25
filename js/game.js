@@ -131,7 +131,7 @@ function checkLearn(j, quiet) {
     if (SKILLS[id] && G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(id);
     if (PASSIVES[id] && G.loadout.passives.length < PASSIVE_SLOTS) G.loadout.passives.push(id);
   }
-  if (got.length && !quiet) log(`${j}の${got.map(id => (SKILLS[id] || PASSIVES[id]).name).join('・')}を覚えた！`);
+  if (got.length && !quiet) { log(`${j}の${got.map(id => (SKILLS[id] || PASSIVES[id]).name).join('・')}を覚えた！`); learnFx(got, j); }
   return got;
 }
 checkLearn(job(), true);
@@ -636,7 +636,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 125'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 126'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2009,12 +2009,23 @@ function startBattle(boss) {
   if (has('p_first') || MK().first) { const d = dmgTo(target(), atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (allDead()) { win(); return; } }
   battleUI(); hud();
 }
+// 2026-11-25: 技・パッシブを覚えたとき、レベルアップと同じくらい大きく出す（青い光）。レベルアップと重なるときは、そのあとに
+function learnFx(ids, j) {
+  const wait = Math.max(500, (bigFx.until || 0) - performance.now() + 250);
+  setTimeout(() => {
+    const pas = ids.every(id => PASSIVES[id]) ;
+    const rows = ids.map(id => { const s = SKILLS[id], p = PASSIVES[id]; return s ? `<em>${s.name}</em><span>AP${s.ap}・${s.desc}</span>` : `<em>${p.name}</em><span>${p.desc}</span>`; }).join('');
+    sfx('item', { vol: .9 }); setTimeout(() => sfx('buff', { vol: .8, max: 1.8 }), 120);
+    bigFx(`<b>${pas ? 'NEW PASSIVE!' : 'NEW SKILL!'}</b>${rows}<small>${j}で覚えた（どのジョブでも使える）</small>`, null, 'skill', 3200);
+  }, wait);
+}
 // レベルアップ: 画面全体に大きく出す（押すか2.4秒で消える）
 function levelUpFx(lv, up) {
   bigFx(`<b>LEVEL UP!</b><em>Lv ${lv}</em><span>最大HP +${up.hp}　攻 +${up.atk}　守 +${up.def}</span><small>${job()}の伸び方</small>`, 'levelup');
 }
 // 画面全体に大きく出す（レベルアップ・ギルドの報酬）。押すか2.4秒で消える
 function bigFx(html, snd, cls, ms) {
+  bigFx.until = performance.now() + (ms || 2600);
   let d = $('lvup'); if (!d) { d = document.createElement('div'); d.id = 'lvup'; document.body.appendChild(d); d.onclick = () => d.classList.remove('on'); }
   d.innerHTML = `<div>${html}</div>`; d.className = cls || '';
   void d.offsetWidth; d.classList.add('on'); if (snd) sfx(snd, { vol: 1 });
@@ -2289,7 +2300,7 @@ function win() {
   if (G.exp >= expNeed()) setTimeout(() => playFx('levelup', { self: true, size: 1.2 }), 500);
   { const up = { hp: 0, atk: 0, def: 0 }, lv0 = G.lv;
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
-    if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
+    if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; bigFx.until = performance.now() + 900 + 2600; setTimeout(() => levelUpFx(G.lv, up), 900); } }
   { const mc = ms.find(x => x.chest); if (mc) { mc.chest.mimic = false; msg += '\n' + chestLoot(mc.chest, true); } }
   if (G.cur) { G.cur.kills += ms.length; if (m.boss && !m.trial && !m.mirror) G.cur.boss = floorNo; }
   if (m.trial) msg += '\n' + trialWon(m.trial);
