@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 102'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 103'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1874,6 +1874,7 @@ function autoTurn() {
     if (it && B.ap >= apCost('herb')) { B.ap -= apCost('herb'); B.plan.push({ id: 'item', k: it[0] }); }
     else { B.auto = false; log('HPが危ない！ オートを止めた。', true); battleUI(); return; }
   }
+  if (B.ms.some(x => x.charge && x.hp > 0) && G.hp <= G.mhp * .7 && B.ap >= apCost('guard')) { B.ap -= apCost('guard'); B.plan.push({ id: 'guard' }); }
   while (B.ap >= apCost('attack')) { B.ap -= apCost('attack'); B.plan.push({ id: 'attack' }); }
   battleUI(); runPlan();
 }
@@ -1995,12 +1996,17 @@ function endTurn() {
   // 敵の番: 生きている敵が順に攻撃する（ボスは2回動くことがある）
   let order = 0;
   for (const m of alive()) {
-    if (m.stun) { log(`${m.name}は動けない。`); m.stun = false; continue; }
-    const times = m.boss && R() < .4 ? 2 : 1;
+    if (m.stun) { log(`${m.name}は動けない。${m.charge ? '構えがくずれた！' : ''}`); m.stun = false; m.charge = false; continue; }
+    // 2026-11-25: 大技の予告。力をためた次のターンに、強い一撃が来る（守るか、先に倒すか）
+    let big = false;
+    if (m.charge) { big = true; m.charge = false; m.lastCharge = B.turn; }
+    else if (chargeStart(m)) continue;
+    const times = big ? 1 : m.boss && R() < .4 ? 2 : 1;
     for (let i = 0; i < times; i++) {
       m.anim = { kind: 'attack', t0: performance.now() + order * 220 }; order++;
-      if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); { const w = (order - 1) * 220; setTimeout(() => popNum(0, 'me', 'miss'), w); } continue; }
+      if ((B.dodge && R() < B.dodge) || (!big && R() < evade())) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); { const w = (order - 1) * 220; setTimeout(() => popNum(0, 'me', 'miss'), w); } continue; }
       let d = Math.max(1, Math.round((m.atk - defPower()) * (.85 + R() * .3)));
+      if (big) { d = Math.round(Math.max(d, m.atk * .4) * (m.boss ? 1.6 : floorNo <= 5 ? 1.6 : 2)); /* 5階までは控えめ */ log(`${m.name}の${pick(['渾身の一撃', '強烈な一撃', '大技'])}！`); shakeAt((order - 1) * 220 + 60, 12); fxTint((order - 1) * 220, '#ff2010', .3); }
       if (m.mirror) {  // 鏡は、自分の技を使ってくる
         if (!m.said && m.hp < m.mhp * .5) { m.said = true; log('鏡の中の自分が、口をひらいた。\n「……{name}。どうして、登る？」'); }
         const sk = battleSkills().filter(id => SKILLS[id].kind === 'atk'); if (sk.length && R() < .35) { const id = pick(sk); d = Math.round(d * 1.5); log(`鏡の中の自分は、${SKILLS[id].name}を使った！`); }
@@ -2012,7 +2018,7 @@ function endTurn() {
       { const rf = MK().reflect; if (rf && m.hp > 0) { const back = dmgTo(m, d * rf, true); log(`鏡の盾が、${back}のダメージを返した。`); } }
       G.hp -= d; { const dd = d, w = (order - 1) * 220; setTimeout(() => { popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
       // 大きな一撃（最大HPの35%以上）はケガが残ることがある
-      if (G.hp > 0 && d >= G.mhp * .35 && R() < .25 && !MK().noInjury) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
+      if (G.hp > 0 && d >= G.mhp * .35 && R() < .25 && !MK().noInjury && !(big && floorNo <= 5)) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
       if (allDead()) { win(); return; }
       if (m.hp <= 0) break;
       if (G.hp <= 0 && G.bless === 'stand' && !B.stood) { G.hp = 1; B.stood = true; G.bless = null; playFx('blessing', { self: true, size: 1.2 }); say('resolve', '「……まだだ！」\nエリーの祈りで、踏みとどまった！'); continue; }
@@ -2023,8 +2029,18 @@ function endTurn() {
   { const K = MK(); if (K.regen) healMe(Math.ceil(G.mhp * K.regen)); if (K.curse) { G.hp = Math.max(1, G.hp - Math.ceil(G.mhp * K.curse)); log('呪いの刀が、HPを吸った。'); }
     for (const m of alive()) if (m.poison) { const d = dmgTo(m, m.poison, true); log(`${m.name}は毒で${d}のダメージ。`); }
     if (allDead()) { win(); return; } }
+  { const c = B.ms.find(x => x.charge && x.hp > 0); if (c && (G.chargeTip || 0) < 3) { G.chargeTip = (G.chargeTip || 0) + 1; log('（次のターン、強い一撃が来る。「守る」で受けるか、先に倒してしまおう）'); } }
   B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud();
   if (B.auto) setTimeout(autoTurn, 550);
+}
+// 力をためるか決める。2階から。同時にためるのは1体だけ、続けてはためない。鏡はためない
+function chargeStart(m) {
+  if (floorNo < 2 || m.mirror || m.lastCharge >= B.turn - 1 || B.ms.some(x => x !== m && x.charge && x.hp > 0)) return false;
+  if (R() >= (m.boss ? .22 : .16)) return false;
+  m.charge = true; m.lastCharge = B.turn; m.anim = { kind: 'charge', t0: performance.now() };
+  sfx('swing', { vol: .55, max: .8 });
+  log(pick([`${m.name}が大きく振りかぶった！`, `${m.name}は力をためている……！`, `${m.name}が身構えた。何か来る！`]));
+  return true;
 }
 function win() {
   // 倒した敵（群れ）の分をまとめてもらう
@@ -2399,6 +2415,7 @@ function drawMonsterImg(m, t, i) {
   sy = 1 + Math.sin(t / 420) * .015; sx = 1 - Math.sin(t / 420) * .008;
   if (A.kind === 'attack' && dt < 480) { pose = 'attack'; const k = Math.sin(Math.min(1, dt / 480) * Math.PI); sx *= 1 + k * .14; sy *= 1 + k * .14; oy = k * 10; }
   if (A.kind === 'hit' && dt < 360) { pose = 'hit'; const k = 1 - dt / 360; ox = Math.sin(dt / 25) * 5 * k; oy = -4 * k; white = dt < 90 ? .75 : 0; }
+  if (m.charge && !m.dying) { sy *= 1.04; oy -= 3 + Math.sin(t / 90) * 1.5; }
   if (m.dying && t >= m.dying) { const d = Math.min(1, (t - m.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
   const img = (monImg(m, pose) && monImg(m, pose).complete && monImg(m, pose).naturalWidth ? monImg(m, pose) : null) || monImg(m, 'idle');
   const H = VH * (m.size || .7) * sc, W = H * img.width / img.height, cx = VW * px + ox, by = VH * (.93 + dy) + oy; m.cx = VW * px; m.top = by - H;
@@ -2436,6 +2453,14 @@ function drawMonsterImg(m, t, i) {
     const o = drawMonsterImg.c; o.width = img.width; o.height = img.height; const g = o.getContext('2d');
     g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = '#fff'; g.fillRect(0, 0, o.width, o.height);
     ctx.globalAlpha = white * alpha; ctx.drawImage(o, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
+  }
+  if (m.charge && !m.dying && !m.mirror) {  // 力をためている: 赤く脈打って、頭の上に「！」
+    if (!drawMonsterImg.rc) drawMonsterImg.rc = document.createElement('canvas');
+    const o = drawMonsterImg.rc; o.width = img.width; o.height = img.height; const g = o.getContext('2d');
+    g.clearRect(0, 0, o.width, o.height); g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = '#ff2a10'; g.fillRect(0, 0, o.width, o.height); g.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = (.18 + .16 * (1 + Math.sin(t / 140)) / 2) * alpha; ctx.drawImage(o, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
+    ctx.globalAlpha = alpha; const fs = Math.round(Math.max(28, H * .17)), ey = Math.max(36 + fs, by - H * sy + fs * 1.1) + Math.sin(t / 160) * 3, ex = cx + W * sx * .3;
+    ctx.font = `900 ${fs}px sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 5; ctx.strokeStyle = '#2a0500'; ctx.strokeText('！', ex, ey); ctx.fillStyle = '#ff5a2a'; ctx.fillText('！', ex, ey);
   }
   ctx.restore();
 }
