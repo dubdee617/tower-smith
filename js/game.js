@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 101'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 102'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -919,7 +919,7 @@ function bpDrop(chance, why) {
   const w = can.map(x => 1 + x[3]), sum = w.reduce((a, b) => a + b, 0); let q = R() * sum, x = can[0];
   for (let i = 0; i < can.length; i++) if ((q -= w[i]) < 0) { x = can[i]; break; }
   G.bp.push(x[0]); const r = RECIPES.find(y => y.id === x[0]);
-  sfx('item', { delay: 300 }); setTimeout(() => bigFx(`<img class="gearimg" src="${iconOfType(r)}" alt=""><b>設計図を手に入れた</b><em>${r.name}</em><small>${r.desc}（工房の「名品」で打てる）</small>`, 'levelup', 'reward', 3200), 400);
+  sfx('item', { delay: 300 }); setTimeout(() => bigFx(`<img class="gearimg" src="${iconOfType(r)}" alt=""><b>設計図を手に入れた</b><em>${r.name}</em><small>${r.desc}（工房の「名品」で打てる${upLv('furnace') < needFurnace(r) ? `。炉Lv${needFurnace(r)}が必要` : ''}）</small>`, 'levelup', 'reward', 3200), 400);
   return `\n${why || ''}名品「${r.name}」の設計図を見つけた！`;
 }
 // ---------- 工房の強化（お金の使い道） ----------
@@ -974,7 +974,7 @@ function forge(msg, face) {
   if (face) say(face, msg, true); else say('serious', msg || (Object.keys(G.raw).some(k => G.raw[k]) ? '「戦利品は、まずギルドで加工してもらわないとな」' : '「何を打とうか」'), true);
 }
 function forgeList(cat, msg, face) {
-  const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(r => f(r) && needFurnace(r) <= upLv('furnace') + 1).sort((a, b) => canMake(b) - canMake(a) || needFurnace(b) - needFurnace(a));  // 炉の次の段階までを出す
+  const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(r => f(r) && (cat === 'meika' || needFurnace(r) <= upLv('furnace') + 1))  // 名品は、見つけた設計図を全部出す（炉が足りなくても）.sort((a, b) => canMake(b) - canMake(a) || needFurnace(b) - needFurnace(a));  // 炉の次の段階までを出す
   const have = `<span class="have">${Object.keys(MATS).filter(k => G.store[k] || ['copper', 'iron', 'bone', 'leather', 'stone', 'wood'].includes(k)).map(k => `<span>${icoImg(k)}${G.store[k] || 0}</span>`).join('')}</span>`;
   const shelves = (SHELF[cat] || [[name, () => true]]).map(([n, g]) => [n, rs.filter(g)]).filter(x => x[1].length);
   const L = [];
