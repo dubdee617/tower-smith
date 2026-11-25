@@ -73,7 +73,7 @@ function fuukaEvent(go) {
     ] },
     { p: 'fuuka_b_4', music: '', t: 'フウカ[laugh]「……ありがとうございます。今日は、私があなたをお守りします」\nフウカが一緒に戦ってくれる。' },
   ], () => {
-    evDone('fuuka', 2); G.ally = { id: 'fuuka', left: perk('fuuka') ? 20 : TOWER_NPCS.fuuka.battles }; save();
+    evDone('fuuka', 2); G.ally = { id: 'fuuka', left: perk('fuuka') ? 12 : TOWER_NPCS.fuuka.battles }; save();
     $('meet').classList.remove('ev'); go();
   });
 }

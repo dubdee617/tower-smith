@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 100'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 101'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -744,7 +744,7 @@ function homeMenu() {
     { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(homeMenu) },
     { t: 'パッシブ', s: `${G.loadout.passives.length}/${PASSIVE_SLOTS}`, f: () => passiveMenu(homeMenu) },
     ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
-    { t: G.als ? 'アルスと行く' : 'アルスを誘う', s: G.als ? '準備できてる' : '1〜10階', off: G.als, f: () => { G.als = true; save(); npcFig('als'); homeMenu(); log(pick(['アルス[laugh]「本当ですか！ 師匠と一緒に塔へ……！ すぐ準備します！」', 'アルス[smile]「はい！ 足手まといにはなりません。特訓の成果、見ててください！」']), true); } },
+    { t: G.als ? 'アルスと行く' : 'アルスを誘う', s: G.als ? '準備できてる' : `1〜${ALS_TOP}階`, off: G.als, f: () => { G.als = true; save(); npcFig('als'); homeMenu(); log(pick(['アルス[laugh]「本当ですか！ 師匠と一緒に塔へ……！ すぐ準備します！」', 'アルス[smile]「はい！ 足手まといにはなりません。特訓の成果、見ててください！」']), true); } },
     leave]);
 }
 // 塔の入口: 塔の大きさを見せる。コマンドは 入る／準備する／戻る
@@ -988,15 +988,31 @@ function forgeList(cat, msg, face) {
     L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? `炉Lv${needFurnace(r)}が必要` : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
       if (lock) { log(`${['', '鉄', '銀', 'ミスリル', 'オリハルコン'][needFurnace(r)]}を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv${needFurnace(r)}に）`, true); return; }
       if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
-      for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n;
-      G.gear.push(newGear(r, true)); save();
-      fadeGo(() => { buttons.keepTab = true; forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}\n制作中`, hold: 1500, sfx: [['forge1', 250], ['forge1', 700], ['forge1', 1150], ['forge2', 1600]] });
+      forgeConfirm(cat, r);
     } });
   }
   }
   L.push({ t: '戻る', f: () => forge() });
   buttons(L, 'list');
   if (face) say(face, msg, true); else log(msg || '上に並んでいるのが、工房にある素材。足りない素材は赤く出る。', true);
+}
+// 2026-11-25: 打つ前に確認する。素材があれば、一度に何本も打てる
+function forgeConfirm(cat, r) {
+  const c = costOf(r), max = Math.min(10, ...Object.entries(c).map(([k, n]) => Math.floor((G.store[k] || 0) / n)));
+  const back = () => { buttons.keepTab = true; forgeList(cat); };
+  const qs = [...new Set([1, 2, 3, 5, max].filter(q => q >= 1 && q <= max))];
+  const mul = q => Object.fromEntries(Object.entries(c).map(([k, n]) => [k, n * q]));
+  const stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + (r.atk + upLv('anvil')) : ''}${r.def ? ' 守' + (r.def + upLv('anvil')) : ''}`;
+  buttons([{ title: `${r.name}を打つ？（${stat}）` },
+    ...qs.map((q, i) => ({ t: q === max && q > 1 && !([1, 2, 3, 5].includes(q)) ? `作れるだけ打つ（${q}本）` : `${q}本打つ`, s: matText(mul(q)), hot: i === 0, f: () => forgeMake(cat, r, q) })),
+    { t: 'やめる', f: back }], 'one');
+  say('serious', `「${r.name}か……」\n1本につき: ${matText(c)}${max > 1 ? `\n素材は${max}本ぶんある。何本打とうか。` : ''}`, true);
+}
+function forgeMake(cat, r, q) {
+  for (let i = 0; i < q; i++) { if (!canMake(r)) { q = i; break; } for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n; G.gear.push(newGear(r, true)); }
+  save();
+  const hits = [['forge1', 250], ['forge1', 700], ['forge1', 1150]]; if (q > 1) hits.push(['forge1', 1600], ['forge1', 2050]); hits.push(['forge2', q > 1 ? 2500 : 1600]);
+  fadeGo(() => { buttons.keepTab = true; forgeList(cat, q > 1 ? `「${r.name}を${q}本。……腕が鳴ったな」` : `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}${q > 1 ? ` ×${q}` : ''}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}${q > 1 ? ` ×${q}` : ''}\n制作中`, hold: q > 1 ? 2400 : 1500, sfx: hits });
 }
 function forgeFix() {
   const L = [{ title: '手入れ（銅1で新品同様に）' }];
@@ -1395,7 +1411,7 @@ function enterFloor(n, fromAbove) {
   if (encEnd) log('焚いていた香の効き目が切れた。');
   if (n === 99 && !G.lastGoddess) setTimeout(() => { if (mode === 'dungeon' && floorNo === 99) lastGoddess(); }, 700);
   if (n === 100) log(G.cleared ? '100階。塔のいちばん上。……鏡は、まだそこにある。' : '100階。空気が、しんと静まりかえっている。\nこの階の上り階段の先に、何かがいる。', true);
-  if (G.als && n > 10) { G.als = false; save(); log('アルス「ここから先は、まだ僕には……。師匠、先に町へ戻ってます！ ご無事で！」', true); }
+  if (G.als && n > ALS_TOP) { G.als = false; save(); log('アルス「ここから先は、まだ僕には……。師匠、先に町へ戻ってます！ ご無事で！」', true); }
 }
 function dungeonUI() {
   if ($('meet')) $('meet').style.display = 'none';
@@ -1450,7 +1466,7 @@ function facingNote() {
 function afterStep() {
   if (mode !== 'dungeon') return;
   if (steps > 4 && R() < (TODAY.enc || .075) * (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
-  else if (steps > 6 && !F.met && R() < .025) { const who = meetCandidates(); if (who.length) { F.met = true; meetNpc(pick(who)); return; } }
+  else if (steps > 6 && !F.met && R() < .025) { const who = meetCandidates(); if (who.length) { F.met = true; meetApproach(pick(who)); return; } }
   facingNote(); dungeonUI();
 }
 // ---------- 塔でたまに会う人 ----------
@@ -1458,8 +1474,20 @@ function meetCandidates() {
   return Object.entries(TOWER_NPCS).filter(([id, n]) => {
     const inRange = n.ranges ? n.ranges.some(([a, b]) => floorNo >= a && floorNo <= b) : floorNo >= n.from && (floorNo <= n.to || (id === 'fuuka' && perk('fuuka')));
     if (id === 'dan' && G.danRun === G.runs) return false;  // ダンは1回の塔で一度だけ
+    if (n.battles && (G.allyGone || {})[id] === G.runs) return false;  // 一度別れた仲間は、その回の塔ではもう来ない
     return inRange && !(n.battles && G.ally);
   }).map(([id]) => id);
+}
+// 2026-11-25: いきなり出てこない。通路の先に黒い影が見えて、近づくと話しかけてくる
+function meetApproach(id) {
+  const god = !!TOWER_NPCS[id].god;
+  showFig(`assets/npc/${id}.webp`, { who: id, mode: 'full' });
+  const f = document.querySelector('#view .fig'); if (f) f.classList.add('shadow', god ? 'glow' : 'dark');
+  log(god ? '通路の先が、ほのかに光っている。\n……光の中に、誰かが立っている。' : pick(['通路の先に、人影が見える……。', '暗がりの奥に、誰かが立っている。', '……足音。通路の先に、黒い影がある。']), true);
+  buttons([{ t: '近づく', hot: true, f: () => {
+    stepSfx(floorNo); setTimeout(() => stepSfx(floorNo), 330); const g = document.querySelector('#view .fig'); if (g) g.classList.add('near');
+    buttons([]); setTimeout(() => { const h = document.querySelector('#view .fig'); if (h) h.classList.remove('shadow', 'dark', 'glow', 'near'); meetNpc(id); }, 750);
+  } }, { t: '離れる', f: () => { clearFig(); log(god ? '光から目をそらして、先へ進んだ。' : '人影を避けて、別の道を行くことにした。', true); dungeonUI(); hud(); } }]);
 }
 function meetShow(id) { showFig(`assets/npc/${id}.webp`, { who: id }); }
 function meetNpc(id) {
@@ -1488,7 +1516,7 @@ function meetNpc(id) {
   if (id === 'fuuka' && !meetNpc.fr) { const rl = typeof runLine === 'function' ? runLine('fuuka') : null; if (rl) { log(rl, true); buttons([{ t: '次へ', hot: true, f: () => { meetNpc.fr = true; meetNpc(id); meetNpc.fr = false; } }]); return; } }
   if (id === 'fuuka') {
     talkTo('fuuka', () => {
-      G.ally = { id, left: perk('fuuka') ? 20 : TOWER_NPCS.fuuka.battles }; save();
+      G.ally = { id, left: perk('fuuka') ? 12 : TOWER_NPCS.fuuka.battles }; save();
       log(`フウカ「……しばらく、ご一緒します」\nフウカが一緒に戦ってくれる（${G.ally.left}回）。`, true);
       buttons([{ t: '先へ進む', hot: true, f: go }]);
     });
@@ -1517,14 +1545,30 @@ function meetGod(id, go0, after) {
     ]);
   });
 }
+const ALS_TOP = 4;  // アルスは4階まで（2026-11-25）
 // 一緒に戦ってくれる人の番（主人公のターンの後、敵の前）
+// 2026-11-25: 仲間の攻撃の数字はオレンジ色。攻撃のたびに、顔つきで一言しゃべる（同じ言葉が続かないように）
+const ALLY_LINES = {
+  fuuka: ['フウカ[angry]「……参ります」', 'フウカ「背中は、お任せを」', 'フウカ[smile]「傷は、浅いです。……すぐに塞ぎます」', 'フウカ「影より、一閃」', 'フウカ[think]「動きは、見切りました」', 'フウカ[shy]「……あなたの隣は、戦いやすいです」', 'フウカ[angry]「その方には、触れさせません」', 'フウカ[smile]「少し、休んでください。私が出ます」'],
+  gurugamo: ['グルガモ[laugh]「どっせぇい！」', 'グルガモ[angry]「斧の錆にしてくれるわ！」', 'グルガモ[laugh]「がっはっは！ 腕がなまってなくて安心したぜ！」', 'グルガモ「鍛冶屋、右は任せな！」', 'グルガモ[smile]「いい斧だろ？ ……お前に研いでもらったやつだ」', 'グルガモ[angry]「おらぁっ！ まとめてかかってこい！」'],
+  gaban: ['ギャバン[angry]「近衛兵長の剣、受けてみよ！」', 'ギャバン「鍛冶屋殿、お下がりを！」', 'ギャバン[laugh]「はっはっは！ これが王国の剣です！」', 'ギャバン[smile]「鍛冶屋殿の打った剣、実によく斬れる！」', 'ギャバン[angry]「でやぁっ！」', 'ギャバン「86階で学んだこと、ここで活かします！」'],
+  als: ['アルス[angry]「やあっ！」', 'アルス[laugh]「師匠、見ててください！」', 'アルス「特訓の成果です！」', 'アルス[smile]「師匠の背中は、僕が守ります！」', 'アルス[shock]「う、うわっ……でも、負けません！」', 'アルス[angry]「師匠の剣で……斬る！」'],
+};
+function allyLine(id) {
+  const L = ALLY_LINES[id]; if (!L) return;
+  const last = (allyLine.last = allyLine.last || {}); let t; do t = pick(L); while (L.length > 1 && t === last[id]); last[id] = t;
+  spkFace = null; logFace = null; log(t);
+}
+function allyHit(m, power, delay) { B.ally = true; const keep = B.hitDelay; B.hitDelay = delay; const d = dmgTo(m, power); B.hitDelay = keep; B.ally = false; return d; }
 function allyTurn() {
   if (B.over) return false; const m = target();
-  if (G.als && floorNo <= 10 && R() < .5) { const d = dmgTo(m, atkPower() * .6); log(`アルスの斬撃！ ${d}のダメージ。`); if (allDead()) { win(); return true; } }
+  if (G.als && floorNo <= ALS_TOP && R() < .5) { allyLine('als'); playFx('slash', { delay: 200, size: .8 }); const d = allyHit(m, atkPower() * .6, 320); log(`アルスの斬撃！ ${d}のダメージ。`); if (allDead()) { win(); return true; } }
   const a = G.ally; if (!a) return false;
-  if (a.id === 'fuuka') { playFx('thrust', { delay: 200 }); playFx('heal_leaf', { self: true, delay: 420, size: .8 }); const d = dmgTo(m, atkPower() * .7), h = Math.ceil(G.mhp * .15); healMe(h); log(`フウカの攻撃！ ${d}のダメージ。HPを${h}回復してくれた。`); }
-  if (a.id === 'gurugamo') { playFx('impact_heavy', { delay: 200 }); const d = dmgTo(m, atkPower()); log(`グルガモの斧！ ${d}のダメージ。`); }
-  if (a.id === 'gaban') { FX_AT = m; playFx('slash_x', { delay: 200, size: 1.1 }); FX_AT = null; const d = dmgTo(m, atkPower() * 1.1); log(`ギャバンの剣！ ${d}のダメージ。`); }
+  const m2 = target(); if (!m2) { if (allDead()) { win(); return true; } return false; }
+  allyLine(a.id);
+  if (a.id === 'fuuka') { playFx('thrust', { delay: 200 }); playFx('heal_leaf', { self: true, delay: 420, size: .8 }); const d = allyHit(m2, atkPower() * .7, 320), h = Math.ceil(G.mhp * .15); healMe(h); log(`フウカの攻撃！ ${d}のダメージ。HPを${h}回復してくれた。`); }
+  if (a.id === 'gurugamo') { playFx('impact_heavy', { delay: 200 }); const d = allyHit(m2, atkPower(), 340); log(`グルガモの斧！ ${d}のダメージ。`); }
+  if (a.id === 'gaban') { FX_AT = m2; playFx('slash_x', { delay: 200, size: 1.1 }); FX_AT = null; const d = allyHit(m2, atkPower() * 1.1, 340); log(`ギャバンの剣！ ${d}のダメージ。`); }
   if (allDead()) { win(); return true; }
   return false;
 }
@@ -1532,7 +1576,7 @@ function allyTurn() {
 function allyTick() {
   const a = G.ally; if (!a) return; a.left--;
   if (a.left > 0) return;
-  G.ally = null;
+  G.ally = null; (G.allyGone = G.allyGone || {})[a.id] = G.runs; save();
   log(a.id === 'gaban' ? 'ギャバン[laugh]「自分はここまでです！ 鍛冶屋殿、その先を……どうか！」' : a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……そろそろ、任務に戻ります。……また、お会いできますね」');
 }
 // ---------- 調べる（床の小物） ----------
@@ -1679,10 +1723,18 @@ function useItem(k) {
 }
 // 塔の中の道具メニュー
 function itemMenu() {
-  const L = Object.entries(ITEMS).filter(([k]) => G.items[k] > 0).map(([k, it]) => ({ t: it.name, s: `${G.items[k]}個・${it.short}`, f: () => { const ok = useItem(k); if (mode === 'dungeon' && k !== 'wing') { if (ok) dungeonUI(); } } }));
+  const L = Object.entries(ITEMS).filter(([k]) => G.items[k] > 0).map(([k, it]) => ({ t: it.name, s: `${G.items[k]}個・${it.short}`, f: () => itemConfirm(k) }));
   if (!L.length) L.push({ title: '道具を持っていない' });
   L.push({ t: '戻る', hot: true, f: () => { facingNote(); dungeonUI(); } });
   buttons(L); log(G.enc ? `${ITEMS[G.enc.k].name}: あと${G.enc.floors}フロア` : 'どれを使う？', true);
+}
+// 2026-11-25: 使う前に確認する
+function itemConfirm(k) {
+  const it = ITEMS[k];
+  buttons([{ title: `${it.name}を使う？（残り${G.items[k]}個）` },
+    { t: '使う', s: it.short, hot: true, f: () => { const ok = useItem(k); if (mode === 'dungeon' && k !== 'wing') { if (ok) dungeonUI(); else { const msg = k.startsWith('herb') && G.hp >= G.mhp ? 'HPは減っていない。今は使わなくていい。' : logLines[logLines.length - 1]; itemMenu(); log(msg, true); } } } },
+    { t: 'やめる', f: itemMenu }], 'one');
+  log(`${it.name}: ${it.desc || it.short}`, true);
 }
 // 戦闘中の道具（AP1）
 function battleItems() {
@@ -1736,7 +1788,7 @@ function startBattle(boss) {
   checkLearn(job());
   log(ms.length > 1 ? `${ms.map(x => x.name).join('・')}が現れた！\n（魔物を押すと、狙う相手を選べる）` : `${m.name}が現れた！`, true);
   if (G.ally) log(`${TOWER_NPCS[G.ally.id].name}が一緒に戦ってくれる（あと${G.ally.left}回）。`);
-  if (G.als && floorNo <= 10) log('アルスも剣を構えた。');
+  if (G.als && floorNo <= ALS_TOP) log('アルスも剣を構えた。');
   // 70〜95階: ジンの影が現れて、一閃して去っていく
   if (!boss && floorNo >= 70 && floorNo <= 95 && R() < .04) { playFx('jin', { x: VW / 2, y: VH / 2 }); for (const x of ms) x.hp = 0; win(); log('……どこからか、杖をついた老人の影が現れた。\n一閃。魔物は倒れ、影はもういない。'); return; }
   if (has('p_first') || MK().first) { const d = dmgTo(target(), atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (allDead()) { win(); return; } }
@@ -1869,7 +1921,7 @@ function dmgTo(m, power, pierce, critBonus) {
   const dl = B.hitDelay || 0;  // 技の当たる瞬間に合わせて、数字や揺れを遅らせる
   if (crit) { d = Math.round(d * (K.critMul || 1.8)); B.lastCrit = true; playFx('crit', { delay: dl + 120, size: .7 }); } else B.lastCrit = false;
   m.hp -= d; if (m.hp <= 0 && !m.dying) m.dying = performance.now() + dl;
-  const show = () => { popNum(d, 'mon', crit ? 'crit' : '', m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
+  const ally = B.ally, show = () => { popNum(d, 'mon', (crit ? 'crit' : '') + (ally ? ' ally' : ''), m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
   if (dl) setTimeout(show, dl); else show();
   return d;
 }
