@@ -347,6 +347,20 @@ function runSeq(L, i, end, setup) {
   buttons([{ t: '次へ', hot: true, stay: true, f: () => last ? end() : runSeq(L, i + 1, end) }, { t: 'とばす', stay: true, f: end }]);
   hud();
 }
+// 名前を決める画面（イントロのあと、工房に行く前。あとから設定でも変えられる）
+function nameScreen(then, again) {
+  mode = 'town'; place = null; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
+  t.innerHTML = `<img src="${TOWN_IMG}home_in.jpg" alt="" style="filter:brightness(.45)"><div class="caption">鍛冶屋の名前</div>`;
+  const box = $('ctl'); box.innerHTML = '';
+  const w = document.createElement('div'); w.className = 'namebox';
+  w.innerHTML = `<input id="nm" maxlength="8" autocomplete="off" placeholder="鍛冶屋"><small>8文字まで。空のままなら「鍛冶屋」</small>`;
+  box.appendChild(w); if (again && G.name) $('nm').value = G.name;
+  const row = document.createElement('div'); row.className = 'btns'; box.appendChild(row);
+  const go = () => { const v = ($('nm').value || '').replace(/[<>{}\[\]「」\n]/g, '').trim().slice(0, 8); G.name = v || '鍛冶屋'; save(); sfx('select', { vol: .6 }); then(); };
+  const b1 = document.createElement('button'); b1.className = 'hot'; b1.textContent = 'これでいい'; b1.onclick = go; row.appendChild(b1);
+  if (again) { const b2 = document.createElement('button'); b2.textContent = 'やめる'; b2.onclick = then; row.appendChild(b2); }
+  log(again ? '名前を変える。\n（ふだんは「鍛冶屋さん」と呼ばれる。名前は、ここぞという時に呼ばれる）' : '町いちばんの鍛冶屋。……名前は？\n（ふだんは「鍛冶屋さん」と呼ばれる。名前は、ここぞという時に呼ばれる）', true); hud(); fitStage();
+}
 function prologue() {
   runSeq(PROLOGUE, 0, () => fadeGo(() => inside('home', '塔は町の北のはずれにある。\n準備ができたら、地図から塔へ行こう。')), () => {
     mode = 'town'; place = 'home'; SND_INDOOR = true; showTown(true, 4 / 3);
@@ -388,6 +402,7 @@ const MIRROR_PRE = [
   { t: '鏡には、見慣れた姿が写っている。\n煤けた手。自分で打った武器。……自分だ。' },
   { hero: 'serious', t: '「……ずっと、誰かのために打ってきた。\n振るのは、いつも誰かだった」' },
   { sfx: 'swing', t: '鏡の中の自分が、ゆっくりと武器を構えた。' },
+  { t: '鏡の中の自分が、こちらを見つめた。\n「……{name}」\n自分の名前を、自分の声で呼ばれた。' },
   { hero: 'resolve', t: '「……一度くらい、自分で振ってみたかったんだ。\n来い」' },
 ];
 function mirrorBoss() {
@@ -407,7 +422,7 @@ function mirrorScene() {
 const ENDING_TOP = [
   { bg: 'intro_tower.jpg', music: 'ending', t: '鏡の中の自分が、ゆっくりと武器を下ろした。\n……鏡は割れず、ただ、静かに光っていた。' },
   { t: '鏡の奥から、声が聞こえた。\n低く、あたたかい声だった。' },
-  { t: '「……ありがとう、人の子。\nわたしは、この塔。ずっと、人間というものを知りたかった」' },
+  { t: '「……ありがとう、{name}。\nわたしは、この塔。ずっと、人間というものを知りたかった」' },
   { t: '「だから、鏡になった。人が、自分の姿と心を写せるように。\n……お前は、自分と向き合って、そして笑った」' },
   { t: '「てっぺんまで来た者に、ひとつだけ願いを叶えよう。\n富でも、力でも、なんでもいい」' },
   { hero: 'doubt', t: '「……なんでも、か」' },
@@ -450,7 +465,8 @@ const ENDING_LOVE = {
     yes: [
       { hero: 'smile', t: '「店と工房の間の壁、ぶち抜かないか。\n……これからも、ずっと隣にいてくれ。ジェニー」' },
       { ev: 'jenny_love_2', t: 'ジェニー[shock]「……は？」' },
-      { ev: 'end_jenny', t: 'ジェニー[inlove]「……ばか。……遅いのよ。\nずっと、ずっと待ってたんだから。……うん。隣にいる」' },
+      { ev: 'end_jenny', t: 'ジェニー[inlove]「……ばか。……遅いのよ、{name}。\nずっと、ずっと待ってたんだから。……うん。隣にいる」' },
+      { ev: 'end_jenny', t: '初めて、名前で呼ばれた。\nジェニー[shy]「……な、何よ。一回くらい、いいでしょ」' },
       { ev: 'end_jenny', t: 'こうして、町の武具屋と鍛冶屋は、ひとつの店になった。\n看板には『鍛冶と武具の店』と、ふたりの名前が並んでいる。' },
     ],
     no: [
@@ -468,7 +484,8 @@ const ENDING_LOVE = {
     yes: [
       { hero: 'calm', t: '小さな銀の指輪を、手のひらにのせて差し出した。\n「花の日を、これから毎日にしよう。……ここに、帰ってくる」' },
       { ev: 'ellie_b_2', t: 'エリー[shock]「……え。……これ、って……」' },
-      { ev: 'end_elly', t: 'エリー[happy]「……はい。……はいっ。\n……もう、泣くのは帰ってきてからって、決めてたのに」' },
+      { ev: 'end_elly', t: 'エリー[happy]「……はい。……はいっ、{name}さん。\n……もう、泣くのは帰ってきてからって、決めてたのに」' },
+      { ev: 'end_elly', t: '初めて、名前で呼ばれた。\nエリー[shy]「……ずっと、呼んでみたかったんです」' },
       { ev: 'end_elly', t: 'カレンダーは、その日から、花の絵でいっぱいになった。' },
     ],
     no: [
@@ -486,7 +503,8 @@ const ENDING_LOVE = {
     ask: ['その下に「俺もだ」と書き足す', '「……いい記録だな」'],
     yes: [
       { hero: 'calm', t: '「……ペン、借りていいか」\nその下に、太い字で書き足した。『俺もだ』' },
-      { ev: 'ria_b_3', t: 'リア[happy]「……っ。……字、汚いです。\n……でも、いちばん好きな記録です」' },
+      { ev: 'ria_b_3', t: 'リア[happy]「……っ。……字、汚いです、{name}さん。\n……でも、いちばん好きな記録です」' },
+      { ev: 'ria_b_3', t: '初めて、名前で呼ばれた。\nリア[shy]「……えへへ。記録じゃなくて、声に出して呼びたかったんです」' },
       { ev: 'end_ria', hero: 'smile', t: '「続きは、新しい帳面に書こう。……ふたりで」' },
       { ev: 'end_ria', t: 'ギルドの記録棚には、それから一冊ずつ、ふたりの帳面が増えていった。' },
     ],
@@ -506,7 +524,8 @@ const ENDING_LOVE = {
       { hero: 'calm', t: '手のひらにのせたのは、真新しい鍵だった。\n「窓じゃなくて、玄関から入ってこい。……ここを、お前の帰る場所にしてくれ」' },
       { ev: 'fuuka_b_2', t: 'フウカ[shy]「……工房の、鍵ですか。……忍びの務めは、続けます。それでも、よろしいのですか」' },
       { hero: 'smile', t: '「ああ。お前はお前のままでいい」' },
-      { ev: 'end_fuuka', t: 'フウカ[love]「……はい。……ただいま、と言ってもよろしいですか」\n「ああ。おかえり」' },
+      { ev: 'end_fuuka', t: 'フウカ[love]「……はい。……{name}。\n……ただいま、と言ってもよろしいですか」\n「ああ。おかえり」' },
+      { ev: 'end_fuuka', t: '初めて、名前で呼ばれた。\nフウカ[shy]「……忍びは、人の名を軽々しく呼びません。……ですから、です」' },
       { ev: 'end_fuuka', t: 'その夜から、工房の炉の前に、椅子がひとつ増えた。\n任務のない夜、フウカはそこで、静かに火を見ている。' },
     ],
     no: [

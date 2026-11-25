@@ -160,3 +160,8 @@ button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;l
 #log .more{display:inline-block;margin-left:6px;color:#ffd76a;animation:moreB 1s ease-in-out infinite}
 @keyframes moreB{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(3px);opacity:.6}}
 #log{cursor:pointer}
+
+/* 名前の入力（2026-11-25） */
+.namebox{display:flex;flex-direction:column;gap:4px;margin:4px 0 8px}
+.namebox input{font-family:Dot,sans-serif;font-size:20px;padding:8px 10px;background:#120c08;color:#ffe7a3;border:3px solid var(--frame);border-radius:3px;outline:none;text-align:center}
+.namebox small{font-size:12px;color:#cdb894;text-align:center}

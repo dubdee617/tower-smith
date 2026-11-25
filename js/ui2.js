@@ -52,4 +52,6 @@
   icons(); who();
 })();
 // セリフ欄を押すと、1文字ずつの表示を飛ばして全部出す
+// 台詞の欄の大きさが変わったら、ページを分け直す
+try { let lastH = 0; new ResizeObserver(() => { const h = $('log').clientHeight; if (Math.abs(h - lastH) > 4) { lastH = h; if (typeof refitLog === 'function') refitLog(); } }).observe($('log')); } catch (e) {}
 $('log').addEventListener('click', () => { if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (typeof nextLogPage === 'function') nextLogPage(); });

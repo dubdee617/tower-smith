@@ -68,7 +68,7 @@ function save() {
 }
 const SLOT_KEY = n => 'tower_smith_slot' + n;
 function slotInfo(n) { try { const s = JSON.parse(localStorage.getItem(n === 0 ? 'tower_smith_v2' : SLOT_KEY(n)) || 'null'); if (!s) return null; const g = s.G || s; return { g, at: s.at || 0 }; } catch (e) { return null; } }
-function slotText(n) { const i = slotInfo(n); if (!i) return 'からっぽ'; const g = i.g, d = i.at ? new Date(i.at) : null; return `Lv${g.lv}・最高${g.maxFloor || 0}階・${g.gold}G${d ? `　${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` : ''}`; }
+function slotText(n) { const i = slotInfo(n); if (!i) return 'からっぽ'; const g = i.g, d = i.at ? new Date(i.at) : null; return `${g.name && g.name !== '鍛冶屋' ? g.name + '・' : ''}Lv${g.lv}・最高${g.maxFloor || 0}階・${g.gold}G${d ? `　${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` : ''}`; }
 function load() { try { const s = localStorage.getItem('tower_smith_v2'); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
 
 // ---------- 計算 ----------
@@ -201,7 +201,7 @@ function drawLog(cont) {
   drawSpk();
 }
 // ボタンが並んで台詞の欄が狭くなったら、ページを分け直す
-function refitLog() { const el = $('log'); if (!el || el.clientHeight < 20 || drawLog.rest || el.scrollHeight <= el.clientHeight + 2) return; const typing = drawLog.tm; drawLog(drawLog.cur); if (!typing && drawLog.skip) drawLog.skip(); }
+function refitLog() { const el = $('log'); if (!el || el.clientHeight < 20 || (!drawLog.rest && el.scrollHeight <= el.clientHeight + 2)) return; const typing = drawLog.tm; drawLog(drawLog.cur); if (!typing && drawLog.skip) drawLog.skip(); }
 // 続きのページを出す（台詞の欄を押したとき）
 function nextLogPage() { if (!drawLog.rest) return false; const r = drawLog.rest; drawLog.rest = ''; drawLog(r); return true; }
 // ダメージ・回復の数字を、絵の上に飛び出させる
@@ -242,7 +242,10 @@ const NPCS = {
 const NPC_FACE = { normal: 0, smile: 1, laugh: 3, shock: 5, angry: 6, think: 11 };
 const HEROINE = { 'ジェニー': 'jenny', 'エリー': 'elly', 'リア': 'ria', 'フウカ': 'fuuka' };
 const BLUSH = { happy: 'smile', shy: 'think', inlove: 'smile', worried: 'think', love: 'smile', pout: 'angry' };
+// 主人公の名前（2026-11-25）。ふだんは誰も名前で呼ばない。鏡との対峙と、ヒロインが初めて名前を呼ぶ場面でだけ使う。{name} と書くと入る
+const heroName = () => (G && G.name) || '鍛冶屋';
 function log(t, clear) {
+  if (typeof t === 'string' && t.includes('{name}')) t = t.replace(/\{name\}/g, heroName());
   if (clear) { logLines = []; logFace = null; spkFace = null; }
   const m = /^([^\s「\[]+)(?:\[(\w+)\])?「/.exec(t);
   if (m && NPCS[m[1]] && NPCS[m[1]].noFace) { /* 顔なし */ }
@@ -593,7 +596,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 91'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 92'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -619,7 +622,7 @@ function introNext() {
 function introEnd() {
   clearTimeout(intro.tm); if (!document.body.classList.contains('intro')) return;
   $('town').onclick = null;
-  fadeGo(() => { document.body.classList.remove('intro'); prologue(); }, { hold: 500 });
+  fadeGo(() => { document.body.classList.remove('intro'); nameScreen(prologue); }, { hold: 500 });
 }
 // 町の地図の印
 function townMark(id) {
@@ -1199,7 +1202,7 @@ function guild(msg, face) {
   buttons([{ t: '持ち込む', s: rawN ? `戦利品${rawN}個→素材＋報酬` : '戦利品なし', hot: rawN > 0, off: !rawN, f: turnIn },
     { t: '素材を売る', s: have ? `工房の素材${have}個` : '素材がない', f: () => guildSell() },
     { t: '素材を買う', s: '値上がり中', f: () => guildBuy() },
-    { t: '到達記録', s: `あなた ${G.maxFloor}階`, f: () => log(`最高到達: 近衛兵長ギャバン 86階／あなた ${G.maxFloor}階${G.bossDown ? '（10階の主を倒した）' : ''}`, true) },
+    { t: '到達記録', s: `${heroName()} ${G.maxFloor}階`, f: () => log(`最高到達: 近衛兵長ギャバン 86階／${heroName()} ${G.maxFloor}階${G.bossDown ? '（10階の主を倒した）' : ''}`, true) },
     guestBtn(), talkBtn('ria', () => inside('guild', byeLine('ria'))), leave].filter(Boolean));
   if (msg) { if (face) say(face, msg, true); else log(msg, true); }
 }
@@ -1330,6 +1333,7 @@ function openMenu(tab) {
     <dt>音楽</dt><dd>${vol('bgm')}</dd><dt>効果音</dt><dd>${vol('sfx')}</dd>
     <dt>文字の速さ</dt><dd>${seg('text', ['ゆっくり', 'ふつう', 'はやい', '一瞬'])}</dd>
     <dt>画面の揺れ</dt><dd>${seg('shake', ['なし', '弱い', 'ふつう', '強い'])}</dd>
+    <dt>名前</dt><dd><div class="seg"><button data-act="name">${heroName()}（変える）</button></div></dd>
     <dt>オートセーブ</dt><dd><div class="seg"><button data-k="auto" data-v="1" class="${OPTS.auto ? 'on' : ''}">オン</button><button data-k="auto" data-v="0" class="${!OPTS.auto ? 'on' : ''}">オフ</button></div></dd></dl>
     <p class="note">オートセーブは、町に戻ったときや階を移ったときに自動で記録します。</p>`;
   if (tab === 'save') body = (inTown ? '' : '<p class="note warn">セーブは町にいるときだけできます。</p>') + [1, 2, 3].map(n => `<button class="slot" data-save="${n}" ${inTown && G ? '' : 'disabled'}><b>スロット${n}</b><small>${slotText(n)}</small></button>`).join('');
@@ -1353,6 +1357,7 @@ function openMenu(tab) {
     m.querySelector('[data-no]').onclick = () => openMenu('load');
     m.querySelector('[data-yes]').onclick = () => { G = Object.assign(NEW_GAME(), i.g); FLOORS = {}; B = null; closeMenu(); document.body.classList.remove('story', 'title', 'intro'); fadeGo(() => { townMap(); say('normal', '「さて、続きといくか」', true); save(); }, { hold: 400 }); };
   });
+  { const nb = m.querySelector('[data-act="name"]'); if (nb) nb.onclick = () => { closeMenu(); const back = ['home', 'weapon', 'clinic', 'guild', 'item', 'bank', 'inn'].includes(place) ? (() => { const p = place; return () => inside(p); })() : townMap; if (mode === 'dungeon' || mode === 'battle') { log('名前は、町にいるときに変えられる。', true); return; } nameScreen(back, true); }; }
   m.querySelector('[data-act="close"]').onclick = closeMenu;
   { const t = m.querySelector('[data-act="title"]'); if (t) t.onclick = () => { t.outerHTML = `<button data-act="title2" class="hot">${OPTS.auto ? 'タイトルへ戻る' : 'セーブせずに戻る'}</button>`; m.querySelector('[data-act="title2"]').onclick = () => { save(); closeMenu(); FLOORS = {}; B = null; titleScreen(); }; }; }
 }
@@ -1935,7 +1940,7 @@ function endTurn() {
       if ((B.dodge && R() < B.dodge) || R() < evade()) { playFx('afterimage', { self: true, size: .8 }); log(`${m.name}の攻撃。かわした！`); { const w = (order - 1) * 220; setTimeout(() => popNum(0, 'me', 'miss'), w); } continue; }
       let d = Math.max(1, Math.round((m.atk - defPower()) * (.85 + R() * .3)));
       if (m.mirror) {  // 鏡は、自分の技を使ってくる
-        if (!m.said && m.hp < m.mhp * .5) { m.said = true; log('鏡の中の自分が、口をひらいた。\n「……どうして、登る？」'); }
+        if (!m.said && m.hp < m.mhp * .5) { m.said = true; log('鏡の中の自分が、口をひらいた。\n「……{name}。どうして、登る？」'); }
         const sk = battleSkills().filter(id => SKILLS[id].kind === 'atk'); if (sk.length && R() < .35) { const id = pick(sk); d = Math.round(d * 1.5); log(`鏡の中の自分は、${SKILLS[id].name}を使った！`); }
       }
       monAttackFx(m, B.counter || B.cut < 1, (order - 1) * 220);
