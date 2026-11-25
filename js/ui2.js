@@ -52,4 +52,4 @@
   icons(); who();
 })();
 // セリフ欄を押すと、1文字ずつの表示を飛ばして全部出す
-$('log').addEventListener('click', () => { if (drawLog.tm && drawLog.skip) drawLog.skip(); });
+$('log').addEventListener('click', () => { if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (typeof nextLogPage === 'function') nextLogPage(); });

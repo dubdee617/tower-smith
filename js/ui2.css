@@ -155,3 +155,8 @@ button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;l
 #menu .dext td{border-bottom:1px solid #2a1c12;padding:3px 2px;color:#e6d8b8;vertical-align:middle}
 #menu .el{font-style:normal;padding:0 5px;border-radius:2px;color:#fff}
 #menu .el.fire{background:#b8401a}#menu .el.ice{background:#2a7ab0}#menu .el.bolt{background:#a08a10}#menu .el.holy{background:#a89050}#menu .el.dark{background:#5a2a7a}
+
+/* 台詞のページ送り（2026-11-25） */
+#log .more{display:inline-block;margin-left:6px;color:#ffd76a;animation:moreB 1s ease-in-out infinite}
+@keyframes moreB{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(3px);opacity:.6}}
+#log{cursor:pointer}

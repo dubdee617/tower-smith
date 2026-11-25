@@ -168,25 +168,42 @@ let logLines = [];
 let logFace = null;
 // セリフ欄の顔は主人公だけ。町の人が話すときは、セリフ欄の外に枠なしで顔を出す（#spk）
 let spkFace = null;
-function drawLog() {
-  const el = $('log'); el.innerHTML = ''; el.classList.toggle('hasface', !!logFace);
+function drawLog(cont) {
+  drawLog.cur = cont; const el = $('log'); el.innerHTML = ''; el.classList.toggle('hasface', !!logFace);
   if (logFace) { const i = document.createElement('img'); i.className = 'face'; i.src = `assets/jobs/face_${logFace}.png`; i.alt = ''; el.appendChild(i); }
   const s = document.createElement('div'); el.appendChild(s);
   // 話している人の名前は、名札にして上にのせる
   const L = logLines.slice(), pm = /^([^\s「」\n（）]{1,8})「/.exec(L[0] || '');
   if (pm) { const p = document.createElement('span'); p.className = 'plate'; p.textContent = pm[1]; s.appendChild(p); s.appendChild(document.createElement('br')); L[0] = L[0].slice(pm[1].length); }
-  // 最後の行だけ、1文字ずつ出す（押すと全部出る）
-  const last = L.pop() || '';
-  if (L.length) s.appendChild(document.createTextNode(L.join('\n') + '\n'));
-  const tx = document.createTextNode(''); s.appendChild(tx);
+  // 最後の行だけ、1文字ずつ出す（押すと全部出る）。続きのページ（cont）は、そのページ全体を出す
+  let last = cont !== undefined ? cont : (L.pop() || ''), pre = cont !== undefined ? '' : (L.length ? L.join('\n') + '\n' : '');
+  const pn = document.createTextNode(pre); s.appendChild(pn);
+  const tx = document.createTextNode(last); s.appendChild(tx);
+  // 2026-11-25: 欄に入りきらないときは、ページに分ける（押すと続きが出る）
+  drawLog.rest = '';
+  const over = () => el.scrollHeight > el.clientHeight + 2;
+  if (el.clientHeight > 20 && over()) {
+    const whole = pre + last; pn.textContent = '';
+    let lo = 1, hi = whole.length;
+    while (lo < hi) { const mid = (lo + hi + 1) >> 1; tx.textContent = whole.slice(0, mid) + ' ▼'; if (over()) hi = mid - 1; else lo = mid; }
+    let cut = lo; const seg = whole.slice(0, cut), m = Math.max(seg.lastIndexOf('\n'), seg.lastIndexOf('。'), seg.lastIndexOf('」'), seg.lastIndexOf('、'), seg.lastIndexOf('！'), seg.lastIndexOf('？'));
+    if (m > cut * .5) cut = m + 1;
+    pre = ''; last = whole.slice(0, cut); drawLog.rest = whole.slice(cut).replace(/^\n+/, '');
+  }
+  tx.textContent = '';
   clearInterval(drawLog.tm); const chars = [...last]; let k = 0;
-  const speed = (mode === 'battle' ? 2 : 1) * [1, 1, 2, 999][OPTS.text], done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; };
+  const more = () => { if (drawLog.rest) { const mk = document.createElement('span'); mk.className = 'more'; mk.textContent = '▼'; s.appendChild(mk); } };
+  const speed = (mode === 'battle' ? 2 : 1) * [1, 1, 2, 999][OPTS.text], done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; if (!s.querySelector('.more')) more(); };
   drawLog.skip = done;
   if (!chars.length || document.body.classList.contains('story') && document.body.classList.contains('intro')) done();
   else if (OPTS.text === 3) done();
   else drawLog.tm = setInterval(() => { k += speed; tx.textContent = chars.slice(0, k).join(''); if (k >= chars.length) done(); }, OPTS.text === 0 ? 48 : 26);
   drawSpk();
 }
+// ボタンが並んで台詞の欄が狭くなったら、ページを分け直す
+function refitLog() { const el = $('log'); if (!el || el.clientHeight < 20 || drawLog.rest || el.scrollHeight <= el.clientHeight + 2) return; const typing = drawLog.tm; drawLog(drawLog.cur); if (!typing && drawLog.skip) drawLog.skip(); }
+// 続きのページを出す（台詞の欄を押したとき）
+function nextLogPage() { if (!drawLog.rest) return false; const r = drawLog.rest; drawLog.rest = ''; drawLog(r); return true; }
 // ダメージ・回復の数字を、絵の上に飛び出させる
 function popNum(n, who, kind, m) {
   const v = $('view'); if (!v || v.style.display === 'none') return;
@@ -381,6 +398,7 @@ function buttons(list, cls) {
     box.appendChild(tr);
   }
   fitStage();
+  setTimeout(refitLog, 0);  // ボタンで台詞の欄が狭くなったら、ページを分け直す
 }
 // 暗転: 画面を一度黒くしてから切り替える。場所が変わるとき・工房で何かを作るとき
 // o.text: 黒い画面に出す文字（「制作中」など） o.hold: 黒いままにする時間 o.walk: 町を歩く足音 o.sfx: [[音, 遅らせるms]]
@@ -575,7 +593,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 90'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 91'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
