@@ -356,6 +356,7 @@ function hud() {
 const TAIL_T = ['戻る', 'やめる', '外に出る'];
 buttons.tab = {}; buttons.pg = {}; buttons.lp = {};  // lp: 一覧（list）の1ページの数を、画面の高さごとに覚えておく
 function buttons(list, cls) {
+  buttons.cur = list;
   { const o = document.querySelector('.fcmp'); if (o) o.remove(); }
   const box = $('ctl'); box.innerHTML = '';
   // 主人公の立ち絵は、その画面で jobScene がもう一度呼ばれなければ消す
@@ -412,6 +413,10 @@ function buttons(list, cls) {
   fitStage();
   // 2026-11-25: 一覧が画面からはみ出したら（小さい画面・作れる物が多いとき）、1ページの数を減らして並べ直す。戻るボタンが見切れないように
   if (cls === 'list' && per > 2) { const r = box.getBoundingClientRect(); if (r.bottom > innerHeight + 2) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); return; } }
+  /* 絵の大きさが決まったあと（fitStage・タブの切り替え）に、はみ出すこともある。少し待ってもう一度確かめる */
+  if (cls === 'list' && per > 2) { buttons.cur = list; clearTimeout(buttons.chk); buttons.chk = setTimeout(() => { if (buttons.cur !== list) return; fitStage(); const r = box.getBoundingClientRect(); if (!box.isConnected || r.bottom <= innerHeight + 2) return; const d = Math.ceil(r.bottom - innerHeight) + 4, st = $('stage'), el = mode === 'town' ? $('town') : $('view'), h = st.offsetHeight;
+    /* はみ出しが小さければ、絵を少し小さくして収める。大きいときは1ページの数を減らす */
+    if (per > 2) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); } }, 90); }
   setTimeout(refitLog, 0);  // ボタンで台詞の欄が狭くなったら、ページを分け直す
 }
 // 暗転: 画面を一度黒くしてから切り替える。場所が変わるとき・工房で何かを作るとき
@@ -477,8 +482,11 @@ function fitStage() {
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
   ctl.style.flex = '';
+  /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
+  if (!dg && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
 new ResizeObserver(() => fitStage()).observe(document.querySelector('main'));
+new ResizeObserver(() => { if (fitStage.ch !== $('ctl').offsetHeight) { fitStage.ch = $('ctl').offsetHeight; fitStage(); } }).observe($('ctl'));  /* ボタンの高さがあとから変わったとき（アイコンの読み込みなど）も、絵の大きさを合わせ直す */
 
 // ---------- 町 ----------
 // 地図を押す → 施設の外観（入る／戻る） → 中に入ると内装とメニュー
@@ -625,7 +633,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 120'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 121'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {

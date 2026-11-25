@@ -226,3 +226,4 @@ button small .gcmp .up{color:#7dff9a}button small .gcmp .dn{color:#ff8a7a}
 .status{grid-template-rows:minmax(0,1fr)}
 .shero{height:100%;min-height:0;overflow:visible}
 .shero img{height:96%;max-height:96%;min-height:0;width:auto;max-width:150%;object-fit:contain;object-position:50% 100%}
+button small .gcmp{white-space:nowrap}
