@@ -28,3 +28,49 @@
 {0}の外観|The {0}
 {0}の像|{0} Statue
 音のオンオフ|Sound on/off
+ダリオ|Dario
+セシル|Cecil
+ピピ|Pipi
+リーネ|Liene
+ヴォルフ|Wolf
+ゴルド|Gold
+ノア|Noah
+ティム|Tim
+ドルフ|Dolf
+バルボ|Barbo
+ミック|Mick
+のんだくれたち|The Drunks
+ギャバン|Gaban
+フウカ|Fuuka
+ダン|Dan
+グルガモ|Gurugamo
+こつん、と窓が鳴った。|Tap. Something tapped on the window.
+コンコン、と工房の戸を叩く音がした。|Knock knock. Someone is knocking on the workshop door.
+――ヒュッ。\n頭のすぐ上を、何かがかすめていった。|—Whoosh.\nSomething grazed right past the top of your head.
+「……！？」|「...?!」
+ドサッ。\n振り返ると、背後に迫っていた魔物が、手裏剣を受けて倒れていた。|Thud.\nYou turned around. The monster that had crept up behind you lay fallen, struck by a shuriken.
+影の中から、黒装束の少女が音もなく降り立った。|From the shadows, a girl in black dropped down without a sound.
+フウカ「……お怪我は、ありませんか」|Fuuka「...Are you hurt?」
+「助かった。……あんたは？」|「You saved me. ...And you are?」
+フウカ「フウカと申します。……この塔で、ある任務についている者です」|Fuuka「My name is Fuuka. ...I am on a certain mission in this tower.」
+フウカ[think]「あなたは……冒険者には見えませんね。その手……職人の手です」|Fuuka[think]「You... do not look like an adventurer. Those hands... are a craftsman's hands.」
+「鍛冶屋だ。材料を採りに来た」|「I'm a blacksmith. Came to gather materials.」
+フウカ[laugh]「……鍛冶屋が、自分で。……ふふ。変わった方ですね」|Fuuka[laugh]「...A blacksmith, gathering them himself. ...Heh. What a curious man.」
+フウカ「この先は、魔物が多い。……しばらく、ご一緒します」\nフウカが一緒に戦ってくれる（{0}回）。|Fuuka「There are many monsters ahead. ...I shall accompany you for a while.」\nFuuka fights alongside you ({0} battles).
+今の装備と比べる|Compared to current gear
+攻撃|Attack
+守り|Defense
+持つと、ジョブは「{0}」の系統になる|Holding it makes your job the {0} line
+「{0}か……」\n1本につき: {1}\n素材は{2}本ぶんある。何本打とうか。|「{0}, huh...」\nPer piece: {1}\nThere's enough material for {2}. How many to forge?
+「{0}か……」\n1本につき: {1}|「{0}, huh...」\nPer piece: {1}
+「{0}か……」|「{0}, huh...」
+{0}は、しばらく工房でくつろいでいくらしい。|{0} is going to relax in the workshop for a while.
+{0}（{1}{2}{3}{4}）|{0} ({1}{2}{3}{4})
+（女神の話「{0}」を聞いた。工房の書棚の図鑑で読み返せる）|(You heard the goddess's tale "{0}." You can reread it in the bestiary on the workshop bookshelf)
+HP MAX|HP MAX
+塔の国の町|Town in the Land of the Tower
+工房の中|Inside the Workshop
+謁見の間|Throne Room
+鏡|Mirror
+侍女|Maid
+12文字まで。空のままなら「鍛冶屋」|Up to 12 characters. Leave empty for "Blacksmith"

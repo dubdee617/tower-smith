@@ -1,0 +1,202 @@
+0|Elly[shock]「...Oh. ...Thank goodness... you're awake.」{0}
+1|Elly[shock]「...Oh. ...Thank goodness... you're awake.」
+2|Next
+3|That night, the rain was pouring.\nSomeone was pounding on the workshop door.
+4|Jenny[shy]「...Hey! Open up!」\nWhen you opened the door, a soaking-wet Jenny stood there.
+5|Jenny[shy]「...Sorry. I closed the shop and left, and forgot my key inside...」
+6|Jenny[angry]「Don't stare. I KNOW I'm drenched.」\nYou handed her a towel.
+7|Jenny[shy]「...Thanks.」
+8|You gave a warm cup of tea to Jenny, wrapped in a blanket.\nJenny[smile]「Hehe, warm. You even made me something to drink.」
+9|For a while, the two of you listened to the rain.
+10|Jenny「Hey... why are you always like this?」
+11|Jenny「Whenever I'm in trouble, you help me like it's nothing...\n...Seriously, you're SO dense.」
+12|Jenny wrapped both hands around the cup and looked down a little.
+13|Jenny[shy]「...I love you.\nI've loved you for a long, long time.」
+14|Jenny[inlove]「...Did you hear me properly?」
+15|「...Yeah. I heard you.」
+16|Jenny[inlove]「...Okay. Then that's enough.\n...You don't have to answer right away.」
+17|「...Are you sure about someone like me?」
+18|Jenny[angry]「Idiot. ...It's YOU I want.」
+19|「...Sorry. Let me think about it a little.」
+20|Jenny[smile]「...Yeah. That's so you.\nIf you'll really think about it, that's enough.」
+21|Jenny[smile]「The rain's stopped.\n...From tomorrow, everything's like usual. And you'd better keep coming to the shop.」
+22|(Your affection with Jenny went up)
+23|Someone is crouched down the passage.\n...It's Fuuka. She's badly hurt.
+24|Fuuka[pout]「...So it is you. Forgive me. For you to see me like this... I let my guard down during my mission.」\n「Don't talk. Hold still.」
+25|You crushed some herbs and wrapped a bandage.
+26|Fuuka[shy]「...You are skilled at treating wounds. For a blacksmith.」\n「I'm used to burns and cuts.」
+27|Fuuka[shy]「...I am grateful. I will not forget this debt.」
+28|Fuuka braced a hand against the wall and slowly rose.\nFuuka「...I have one request. May I... accompany you for a while from here?」
+29|Fuuka[shy]「...And also. Normally, for a shinobi to ask anything of another...」
+30|Fuuka[love]「...Would you hold my hand?」
+31|「Sure, okay.」
+32|Fuuka[love]「...It is warm. Perhaps I have failed as a shinobi. But... just for now, I want to stay like this.」
+33|「The footing's bad, after all.」
+34|Fuuka[pout]「...I shall let you call it that.」
+35|「...Sorry. Not the hand, please.」
+36|Fuuka[smile]「...No. I asked too much. Then at least, let me walk beside you.」
+37|Fuuka[laugh]「...Thank you. Today, I shall protect you.」\nFuuka fights alongside you.
+38|...When you opened your eyes, you saw the clinic ceiling.\nElly was sitting in a chair by the bed.
+39|\n({0} remains)
+41| remains)
+42|Elly[worried]「You slept for an entire day.」
+43|Elly[smile]「...I was really... so worried.」
+44|Elly「...Um, may I talk with you a little?」
+45|Elly[shy]「Lately... I've come to like someone.」
+46|Elly[shy]「He's very kind... A little laid-back, careless about himself...」
+47|Elly「But when it's for someone else, he gives it his all.」\nElly gazed at you.
+48|Elly[shy]「...Do you know who I mean?」
+49|「...Beats me. No idea.」
+50|Elly[laugh]「Hehe... Just like you, Mr. Smith.」
+51|「...Could it be... me?」
+52|Elly[shy]「...Hehe. Who knows?\n...There's no rush for an answer.」
+53|Silently gaze back at Elly
+54|Elly[shy]「...If you look at me like that, I'll be in trouble.\n...But I'm happy.」
+55|Elly[smile]「...For now, please rest well.」
+56|Elly[smile]「Here, take these. The clinic's special medicine. ...Next time, use them BEFORE you collapse.」\nYou got 2 Mid Herbs.
+57|(Your affection with Elly went up)
+58|After handing over the loot, Ria spoke in a small voice.\nRia「Um, Mr. Smith. ...On my next day off, could I visit your workshop?」
+59|On her next day off.\nThere was a light knock on the workshop door.\nYou opened it to find Ria, not in her uniform but in her own clothes.
+60|Ria[happy]「Hello, Mr. Smith! Hehe... I'm off today.\nMay I come in for a bit?」
+61|Ria looked around the workshop and smiled fondly.\nRia[smile]「...It's somehow calming here.」
+62|Ria「My father loved making things like this, too.\nWhen I was little, I'd sit beside him and watch.」
+63|A short silence.\nRia[shy]「...Um, Mr. Smith. May I ask something strange?」
+64|Ria[shy]「...Could you hold me, just for a little bit?\nMy dad used to do that a lot. ...For some reason, today I keep remembering those days.」
+65|Silently, gently hold her
+66|For a while, Ria quietly closed her eyes.\nRia[happy]「...So warm. Thank you.\n...Can we stay like this just a little longer?」
+67|「...Just a little.」
+68|Ria[happy]「...Yes. Just a little.\n...Talking with you just makes me feel safe, Mr. Smith.」
+69|「...Sorry. I can't do that.」
+70|Ria[smile]「...No, I'm the one who should apologize for asking something strange.\nJust being able to talk like this is plenty.」
+71|Ria[smile]「...Can I come visit again? Next time I'll bring some sweets.」\n「Sure. Anytime.」
+72|(Your affection with Ria went up)
+73|Jenny[happy]「Oh, there you are. ...I-it's not like I was waiting, but I'll at least make you tea.」
+74|Jenny[shy]「Sometimes I remember that rainy night. ...I want to drink your tea again.」
+75|Jenny[smile]「I put today's sword right up front. Nobody understands your work better than me.」
+76|Jenny[worried]「...You came back okay. I can't focus on work till I see your face.」
+77|Elly[happy]「Welcome back! ...Hehe, no injuries today. Good job.」
+78|Elly[shy]「I made tea for two. ...Purely by chance, okay?」
+79|Elly[smile]「I've decided to start my nightly prayers with your name, Mr. Smith.」
+80|Elly[worried]「Tell me about the tower. ...Hearing your voice puts me at ease.」
+81|Ria[happy]「Good work today. ...I'll write your record in my neatest handwriting again.」
+82|Ria[shy]「Thank you for the other day. ...I dreamed of my father. He had your face.」
+83|Ria[smile]「Boltz said, "Your voice goes up a notch when the chief comes in." ...He's imagining things.」
+84|Ria[worried]「I heard the upper floors are dangerous. ...If you don't come back, I won't forgive you.」
+85|Jenny「Hey, what are you doing on your next day off?」
+86|「Hammering iron in the workshop.」
+87|Jenny[laugh]「Figured. ...Then I'm coming to watch. No complaints, right?」
+88|「What about you?」
+89|Jenny[shy]「...I'm planning to go to your workshop. I-I just decided!」
+90|「Want to go to the market together?」
+91|Jenny[inlove]「...! Y-yes! Absolutely!」
+92|Jenny[shy]「Your hand's burned again. ...Here, give it. I'll put some salve on.」
+93|「Sorry about this.」
+94|Jenny[happy]「...I like your hands. They can make anything.」
+95|「I'll do it myself.」
+96|Jenny[angry]「Just give it here! ...I WANT to do it.」
+97|「Your hands are cold.」
+98|Jenny[shy]「You're just too hot, dummy.」
+99|Elly[shy]「Do you remember... what I said about the person I like?」
+100|「Yeah. How's it going?」
+101|Elly[worried]「...He hasn't noticed at all. That person.」
+102|「I'm rooting for you.」
+103|Elly[laugh]「...Hehe. You really are awful.」
+104|「Tell me more about him.」
+105|Elly[shy]「...He's a blacksmith, he's forty, and he's right in front of me. ...Just kidding.」
+106|Elly「Do you still have the charm I gave you?」
+107|「I always keep it in my breast pocket.」
+108|Elly[happy]「...! Th-then that's fine.」
+109|「It's on display in the workshop.」
+110|Elly[smile]「Hehe, please take it to the tower too.」
+111|「Where did I put it...」
+112|Elly[angry]「Honestly! I'm making you a new one!」
+113|Ria「Work ends early today. ...Can I stop by the workshop again?」
+114|「Sure, come anytime.」
+115|Ria[happy]「...Okay! I'll bring something for dinner.」
+116|「Business with the records?」
+117|Ria[shy]「...Am I not allowed to come without business?」
+118|「It's a mess.」
+119|Ria[laugh]「I know. I'll help tidy up.」
+120|Ria[shy]「Um... I said you remind me of my father, Mr. Smith, but...」
+121|「Yeah.」
+122|Ria「...Lately it's a little different. My heart never raced like this with my dad.」
+123|「Was I bothering you?」
+124|Ria[worried]「No! ...The opposite.」
+125|「Tell me about your father again sometime.」
+126|Ria[happy]「...Okay. But today I want to hear about you.」
+127|Fuuka[love]「...You. We meet again. ...Today, I am fine without holding hands.」
+128|「I see. Good for you.」
+129|Fuuka[pout]「...This is where you say, "Shall we hold hands?"」
+130|「Want to hold hands?」
+131|Fuuka[love]「...Yes.」
+132|「Used to the dark now?」
+133|Fuuka[shy]「Knowing you are here, it no longer bothers me.」
+134|Fuuka「I have broken one of the shinobi laws. ...Whose fault do you suppose that is?」
+135|「Mine?」
+136|Fuuka[love]「...Correct. You must take responsibility.」
+137|「What laws?」
+138|Fuuka[pout]「...Never mind.」
+139|「Breaking rules is bad.」
+140|Fuuka[laugh]「...Heh. How like you.」
+141|Jenny[smile]「Just stopped by on my way home. ...Here, a little something. There's some for Chicchi too.」\nChicchi「Jenny, you're a goddess, yo...!」
+142|Jenny「Als, your swing's falling apart. Relax your shoulders.」\nAls「Y-yes! ...She's stricter than Master.」
+143|Jenny[angry]「Hey, Buppa! Don't sleep in other people's houses!」\nBuppa「Whoa! ...This is the boss's house, though.」
+144|Jenny[shy]「It's more relaxing here than my own shop.」\nLou「Isn't that because the boss is here?」 Jenny「Wha...!」
+145|Elly[smile]「A house call. ...That's my excuse; I came to see your face.」\nAls「Welcome, Elly!」
+146|Elly「Chicchi, you've cut your hand. Here, let me bandage it.」\nChicchi「S-so kind, yo...」
+147|Elly[laugh]「Buppa's sleeping here again. I'll put a blanket on him.」\nBuppa「...Zzz...」
+148|Elly[shy]「I brought flowers. May I put them up?」\nLou「Ah, they'll wilt by the forge!」
+149|Ria[smile]「I came to make dinner. ...For everyone.」\nChicchi「Ria's stew is the best, yo!」
+150|Ria「Als, I brought your adventurer registration forms.」\nAls「Really?! Master, look!」
+151|Ria[shy]「Coming here feels like coming home.」\nLou「Ria, you're practically family already.」
+152|Ria[laugh]「Buppa, your guild bills are piling up.」\nBuppa「...I-I'm asleep. Asleep, I tell ya.」
+153|Fuuka[shy]「...Good evening. Pardon my entry through the window.」\nChicchi「I locked that, yo!」
+154|Fuuka[laugh]「Sir Als. If you like, shall I teach you to throw shuriken?」\nAls「Please! ...Master, that's okay, right?」
+155|Fuuka[love]「Today, I wished to meet you here rather than in the tower.」\nLou「...Boss, you're popular, huh.」
+156|Fuuka[pout]「Sir Buppa. That is where I intended to sit.」\nBuppa「...First come, first served...」
+157|{0} and {1} ran into each other at the workshop.\nBoth looked a little surprised, then laughed.\nChicchi「The workshop's lively tonight, yo!」
+161|{0} and {1} are drinking tea side by side.\nAls「Master, I'll make another pot!」
+163|{0} and {1} are whispering about something in front of the forge.\nLou「...Boss, you really haven't noticed?」\n「Noticed what?」
+165|Jenny
+166|Elly
+167|Ria
+168|Jenny「...I-it's not like I have business here. I just came to see if my sword order's done.」\nChicchi「Jenny, you didn't order anything, yo?」 Jenny[angry]「Sh-shut up!」
+169|Jenny「I was just passing by on my way home. ...Here, bread. I had extra.」\nAls「Master, Jenny's bread is fresh out of the oven!」
+170|Jenny[worried]「...You look pale. Are you sleeping properly? ...All my customers coming back from the tower look terrible.」
+171|Jenny「I got in a new whetstone. Try it out. ...And give me proper feedback.」
+172|Jenny「Lou, bending nails again? ...Here, hold it like this. Keep your wrist straight.」\nLou[laugh]「Wow, it went in straight!」
+173|Jenny[shy]「...Can I have some tea? ...There's nowhere to sit. Clean up, would you.」
+174|Elly「I'm here for a house call. ...Anyone back from the tower gets checked, just in case.」
+175|Elly[smile]「It's my day off, so I brought herbal tea. ...There's some for Chicchi too.」\nChicchi「Elly, you're an angel, yo...」
+176|Elly「Als, are the blisters on your hands broken? ...See, I knew it. Let me bandage them.」\nAls[shock]「Wh-when did you...」
+177|Elly[worried]「Please let me check that the last wound healed properly. ...Yes, it's healed nicely.」
+178|Elly「It's so hot in a workshop. ...Please drink water often.」
+179|Elly[shy]「...I was nearby, so just for a little. ...I'm not intruding, am I?」
+180|Ria「It's my day off, so I came to hang out! ...Oh, and some guild papers while I'm at it.」
+181|Ria[happy]「Lou, can you teach me more like last time? I want to hammer nails in straight!」\nLou「Ria, you're a natural!」
+182|Ria「I made a copy of your climb records. Hang it in the workshop!」
+183|Ria[smile]「I bought baked sweets at the market. ...Let's all have some!」\nChicchi「Ria, you're a goddess, yo...」
+184|Ria「I could hear the workshop from outside. ...Somehow I just wanted to come listen.」
+185|Ria[shy]「...Hehe. I don't have any business. I just wanted to see your face.」
+186|Fuuka「...On my way back from a mission. I borrowed your roof for a moment.」\nChicchi「Someone's on the roof, yo!」
+187|Fuuka「...A report. Monsters appeared on the northern road. ...I have informed the townsfolk.」
+188|Fuuka[shy]「...I came to ask you to tend my katana. ...It is incidental. Merely incidental.」
+189|Fuuka「Sir Als. Your grip on the sword is a little shallow. ...Like this.」\nAls[shock]「Whoa, when did you get behind me?!」
+190|Fuuka「...I brought dried meat. Enough for everyone.」\nBuppa「...Zzz... smells like meat...」
+191|Fuuka[smile]「...Good evening. It is quiet tonight.」
+192|(You got 1 Herb from Jenny)
+193|(Elly checked on you. HP fully restored)
+194|(You got 1 Homing Feather from Ria)
+195|(You got 1 Ward Charm from Fuuka)
+196|{0} and {1} are still relaxing in the workshop.
+198|{0} is still in the workshop.
+200|Jenny「A customer the other day saw your sword and said it was "a master's work."」
+201|「That's an exaggeration.」
+202|Jenny[laugh]「I thought so too. ...Halfway.」
+203|「It's because you sold it well.」
+204|Jenny[shy]「...O-of course. It's my eye for quality, after all.」
+205|「Should I raise the price?」
+206|Jenny[angry]「Don't steal my job!」
+207|Elly「I can see the tower clearly from the clinic window. ...I wonder where you are right now, Mr. Smith.」
+208|「You can't actually see me.」
+209|Elly[laugh]「I know! It's about how it feels!」

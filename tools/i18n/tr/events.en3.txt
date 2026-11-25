@@ -1,0 +1,205 @@
+430|This is fine
+431|Cancel
+432|Change your name.\n(People usually call you "the blacksmith." Your name is used only when it truly matters)
+433|The finest blacksmith in town. ...Your name?\n(People usually call you "the blacksmith." Your name is used only when it truly matters)
+434|The tower stands at the northern edge of town.\nWhen you're ready, head to the tower from the map.
+435|<img src="{0}home_in.jpg" alt="Inside the Workshop"><div class="name">Workshop (Home)</div>
+437|Familiar faces were lined up in front of the tower gate.
+438|Jenny[angry]「...It's not like I came to see you off.\nI'd just be in trouble without a supplier.」\n「Yeah, I know.」
+439|Elly[worried]「These are herbs.\nIf it gets to be too much, come straight back.\n...Promise.」
+440|Ria[smile]「I'll be writing your climb records.\n...So please give me lots to write.」
+441|Jenny[shy]「...Go on, get going already.\n...Take care.」
+442|「Thanks. I'm off.\n...Eh, it'll probably work out somehow.」
+443|Mountain Goddess「...You've come, blacksmith.\nIt's been a long time since a child of man climbed this far.」
+444|Mountain Goddess「We goddesses have watched over this tower.\nThe forest, the sand, the ice, the mountain.」
+445|Mountain Goddess「...But above here, no one can watch over you.\nWhat waits there is yourself.」
+446|「Myself...?」
+447|Mountain Goddess「At the top is a mirror.\nIt reflects the weapons you forged and the skills you chose, just as they are.」
+448|Mountain Goddess「Whether you can win, even I don't know.\n...So let me lend you a hand.」
+449|As the goddess prayed, your wounds faded away.
+450|Mountain Goddess「I am the last goddess.\n...Go on. I'll wait for your return on this mountain.」
+451|「...Thank you. I'm off.」
+452|HP fully restored. Injuries healed too.
+453|Floor one hundred. The very top of the tower.\nIn the middle of the hall stood a tall mirror.
+454|The mirror showed a familiar figure.\nSooty hands. A weapon he forged himself. ...It was you.
+455|「...All this time, I forged for others.\nIt was always someone else who swung them.」
+456|The you in the mirror slowly raised its weapon.
+457|The you in the mirror gazed back.\n「...{name}」\nYour own name, called in your own voice.
+458|「...Just once, I wanted to swing one myself.\nCome on.」
+459|The You in the Mirror
+460|<img src="assets/monsters/the_mirror.webp" alt="Mirror">
+461|The mirror glowed quietly again. ...The you in the mirror raises its weapon.
+462|The you in the mirror slowly lowered its weapon.\n...The mirror did not break. It only glowed, quietly.
+463|A voice came from deep within the mirror.\nA low, warm voice.
+464|「...Thank you, {name}.\nI am this tower. I have always wanted to know what a human is.」
+465|「So I became a mirror. So that people could reflect their form and their heart.\n...You faced yourself, and then you smiled.」
+466|「To one who reaches the top, I will grant a single wish.\nWealth, power, anything at all.」
+467|「...Anything, huh.」
+468|「...I don't need anything.」
+469|「...You don't need anything?」
+470|「Back in town there's a nagging armorer, a worrywart at the clinic,\nand a girl who writes my records in her neatest hand.\n...In the tower, there's a shinobi watching over me from the shadows.」
+471|「My apprentice and my freeloaders are waiting, hungry.\n...There's nothing more I could want. I've already been given plenty.」
+472|The mirror was silent for a while.\nThen it seemed, just slightly, to smile.
+473|「...I see. So that is a human.\n...Come again. I will be waiting here.」
+474|Floor one hundred. The top of the tower, which no one had ever seen.\nThe eastern sky was growing pale.
+475|A soft voice mingled with the wind.\nForest Goddess[smile]「...I was watching, blacksmith. All along.」
+476|Sand Goddess[laugh]「Hehe. To think that child could smile like that.」
+477|Mountain Goddess「The tower we built chose, on its own, to become a mirror.\n...We decided only to watch over it.」
+478|Ice Goddess[smile]「A child of man faced himself, and still smiled.\n...That child has learned one more thing about humans.」
+479|Flower Goddess[laugh]「Good work.\n...I'll make flowers bloom along your way home.」
+480|Before you knew it, the voices were gone.\nOnly the morning light quietly filled the air.
+481|The morning sun shone on the town of Eldia.\nA thin wisp of smoke rose from the workshop chimney.
+482|「...No treasure at the top, huh.」
+483|「...No. The whole road up here was the treasure.」
+484|Homecoming
+485|A crowd had gathered in front of the town gate.
+486|Jenny[angry]「...You're late. How long were you going to make me wait?」
+487|Jenny[shy]「...Welcome back.\nI'll sell every sword you forge for top price at my shop.」
+488|Elly[worried]「Let me see your injuries.\n...Honestly. ...I'm so, so glad.」
+489|Ria[smile]「Highest floor reached: one hundred.\n...I wrote it. In my neatest handwriting.」
+490|Gaban[laugh]「Master Smith...! I... I...!\n...Welcome home, sir!」
+491|King[laugh]「Wahaha! You did it!\nTonight, the whole kingdom celebrates!」
+492|You slipped out of the commotion and went to the square.\nAt the statue's feet, the usual old man was sunbathing.
+493|Jin[smile]「Ho ho ho. You're back.\n...What did you see at the top?」
+494|「...Myself.」
+495|Jin[think]「...I see.」
+496|Jin[laugh]「Ho ho ho. That's good. That's just right.\n...You didn't lose yourself.」
+497|Jin[smile]「Well, it's time for my nap.\n...Ah well. Life has a way of working out.」
+498|That night.\nThe usual forge fire burned in the workshop.
+499|Chicchi[smile]「Welcome back, boss.\nEat before it gets cold, yo.」
+500|Lou[laugh]「Boss! What was the top of the tower like?!」
+501|「...There was a huge mirror. And the sunrise was beautiful.」
+502|Als[smile]「Master... welcome home.」
+503|「Als. ...You take this.」\nYou gently handed over the weapon you'd swung all the way to the top.
+504|Als[shock]「...Master's weapon, to me?」
+505|「Climb your own tower.\n...I'll keep forging.」
+506|Als[laugh]「...Yes!\nI'm writing that in my diary!」
+507|A few days later.\nJenny had come to the workshop. On the wall hung that very first copper sword.
+508|Jenny「...So? What did you want to talk about? I closed the shop for this.」
+509|「Stay by my side, from now on.」
+510|「Keep putting good swords in your shop.」
+511|「How about we knock down the wall between the shop and the workshop?\n...Stay by my side from now on. Jenny.」
+512|Jenny[shock]「...Huh?」
+513|Jenny[inlove]「...Idiot. ...You're so slow, {name}.\nI waited so, so long. ...Yeah. I'll be by your side.」
+514|For the first time, she called you by name.\nJenny[shy]「...Wh-what? Once is fine, isn't it?」
+515|And so the town's armory and smithy became one shop.\nThe sign reads "Smithy & Armory," with both their names side by side.
+516|「From now on, keep putting the swords I forge in your shop.」
+517|Jenny[smile]「...Obviously. Nobody sells your swords for more than me.」
+518|The armorer and the blacksmith will keep trading jabs across the street.
+519|A few days later.\nBy the clinic window, Elly was drawing flowers on her calendar.
+520|Elly「Oh, Mr. Smith. ...You're not hurt today, right? I'll check anyway.」
+521|Offer the silver ring you forged
+522|「I came for my usual medicine.」
+523|You held out a small silver ring on your palm.\n「Let's make every day a flower day from now on. ...I'll come home here.」
+524|Elly[shock]「...Eh. ...Is this...?」
+525|Elly[happy]「...Yes. ...Yes, {name}.\n...And I'd decided I wouldn't cry until you were back.」
+526|For the first time, she called you by name.\nElly[shy]「...I've always wanted to say it.」
+527|From that day on, the calendar filled up with flowers.
+528|「I came for my usual medicine. ...And to see your face.」
+529|Elly[smile]「Hehe. Welcome back. I'm relieved you look well today.」
+530|Today, too, another flower drawing was added by the clinic window.
+531|A few days later.\nIn the back of the guild, Ria had a thick ledger open.
+532|Ria「It was a promise, right? ...To show you the last page.」
+533|On the last page, in small writing, was this:\n"I want to be with this person forever."
+534|Write "Me too" below it
+535|「...That's a good record.」
+536|「...Can I borrow your pen?」\nBelow it, you wrote in thick letters: "Me too."
+537|Ria[happy]「...! ...Your handwriting's messy, {name}.\n...But it's my favorite record.」
+538|For the first time, she called you by name.\nRia[shy]「...Hehe. I wanted to say it out loud, not just in a record.」
+539|「Let's write the rest in a new ledger. ...Together.」
+540|From then on, one by one, their ledgers filled the guild's record shelf.
+541|「...That's a good record. Take care of it.」
+542|Ria[smile]「...Yes. I'll treasure it always.\nOh, Mr. Smith! Tell me more adventure stories sometime!」
+543|Today too, Ria's bright voice rings out from the guild counter.
+544|One night a few days later.\nThe window went tap.
+545|Fuuka「...Good evening. I have come to keep watch on the roof again tonight.」
+546|Give her the workshop key you forged
+547|「Count on you tonight, too.」
+548|On your palm lay a brand-new key.\n「Come in through the front door, not the window. ...Make this the place you come home to.」
+549|Fuuka[shy]「...The key to the workshop? ...I will continue my duties as a shinobi. Is that still all right?」
+550|「Yeah. You can stay just as you are.」
+551|Fuuka[love]「...Yes. ...{name}.\n...May I say, "I'm home"?」\n「Yeah. Welcome home.」
+552|For the first time, she called you by name.\nFuuka[shy]「...A shinobi does not speak a person's name lightly. ...That is why.」
+553|From that night on, there was one more chair in front of the forge.\nOn nights without a mission, Fuuka sits there, quietly watching the fire.
+554|Fuuka[smile]「...Yes. Leave it to me. I will guard your sleep.」
+555|Above the workshop roof, a small star shone beside the shinobi's star.
+556|The blacksmith had always forged weapons for others.\n...And just once, he swung one for himself.
+557|The tower still stands at the heart of Eldia.\nGiving people its bounty, and sometimes its trials.
+558|The mirror at the top quietly waits for the next one to come.\n...To learn what a human is.
+559|Times climbed
+560|{0}
+562|Monsters defeated
+563|{0} ({1} kinds)
+564| (
+565| kinds)
+566|Masterwork blueprints
+567|Skills learned
+568|Gear in workshop
+569|{0}
+571|Gear forged
+572|By your side
+573|<img src="{0}home_in.jpg" alt="" style="filter:brightness(.35)"><div class="endrec"><b>{1}'s Adventure Log</b>{2}<p class="top"><span>Highest Floor</span><em>Floor 100</em></p></div>
+576|You reached the top of the tower.
+577|Als
+578|Lou
+579|Chicchi
+580|Buppa
+581|Boltz
+582|Gunter
+583|Dario & co.
+584|Gold & co.
+585|Dora
+586|Bernardo
+587|Gaston
+588|The Drunks
+589|Tavern Patrons
+590|Gate Guard
+591|King
+592|Minister
+593|Jin
+594|Eldia
+595|Morning at the workshop. Light the forge.\n...Now then, what shall I forge today?
+596|When you returned to the workshop, Jenny was standing at the door.\nShe held something long, wrapped in cloth.
+597|Jenny[shy]「Y-you're late. ...I closed the shop early to come.」\n「Did something happen?」
+598|Jenny「This. ...Look familiar?」\nShe unwrapped the cloth to reveal a slightly warped copper sword.
+599|「...The first sword I ever forged. It didn't sell, so you kept it in your shop.」\nJenny「Right. That day, I bought it. With my own money.」
+600|Jenny[shy]「Nobody's ever been to floor 60. ...You keep going farther and farther away.」
+601|Jenny[worried]「So I brought this. So that however far you go... you won't forget this is where it started.」
+602|Jenny leaned on the workbench and peered at you.\nJenny[shy]「...Wh-what? Why are you staring?」
+603|Jenny[inlove]「...Hey. Can I hang this sword here? Like... it's my spot.」
+604|「Sure. Let's hang it in the best spot.」
+605|Jenny[inlove]「...Mm. I'll come look at it every day.」
+606|「It's embarrassing how bad it is.」
+607|Jenny[happy]「That's fine. I like the clumsy parts. ...The SWORD, I mean!」
+608|「You keep it.」
+609|Jenny[shy]「...That's not fair. That's the kind of thing that gets to me most.」
+610|(Jenny now sometimes drops by the workshop)
+611|When you returned to the workshop, Elly was waiting with a medicine box.
+612|Elly[angry]「Sit down, please. House call. ...Running won't help.」\n「I'm not hurt.」
+613|Elly「Even so. A book said the air above floor 60 is bad for the body.」\nShe carefully examines your arms, shoulders, and back.
+614|Elly[shy]「...I count the days you're in the tower, Mr. Smith. With marks on my calendar.」
+615|Elly「Every new mark makes my chest tighten... and only on the days you come back, I draw a flower.」
+616|Elly[shy]「So please promise me. ...That you'll give me more flower days.」
+617|「I promise. I'll always come back.」
+618|Elly[happy]「...Okay. Those words work better than medicine.」
+619|Hold out your pinky
+620|Elly[laugh]「A pinky promise. ...Hehe, like kids. But I'm happy.」
+621|「Show me the calendar.」
+622|Elly[angry]「N-no! Absolutely not!」
+623|(Elly now sometimes drops by the workshop)
+624|When you returned to the workshop, Ria was waiting with a thick ledger.
+625|Ria[shock]「Floor 60! In the guild records, you're the first to pass floor 60, Mr. Smith!」
+626|Ria「Look. Your pages alone are already on the third sheet.」\nDates for each floor and short notes are written in tiny letters.
+627|「..."Returned safely. Thank goodness"? Is that a record?」\nRia[shy]「Th-that's... me talking to myself.」
+628|Ria[shy]「Every time I write a record, I think: I hope this page goes on forever.」
+629|Ria「Let me make dinner tonight. ...I hope this stays the place you come home to.」
+630|「Let's cook together.」
+631|Ria[happy]「...Okay! Then cut the vegetables. ...Don't cut your hand, okay?」
+632|「I want your stew.」
+633|Ria[happy]「...You remembered. I'll make the best one ever.」
+634|「I'll write the rest of the record.」
+635|Ria[shy]「...That's not fair. That's my job.」
+636|(Ria now sometimes drops by the workshop)
+637|Night. The window went tap.\n...Fuuka was hanging outside it.
+638|Fuuka「Good evening. ...If I come by the front door, Sir Chicchi makes a fuss.」\n「Coming through the window makes more of a fuss, I'd say.」
+639|Fuuka「You have passed floor 60. ...In my village, the floors above are called "the floors of no return."」

@@ -1,0 +1,320 @@
+300|Ria[smile]「Hehe. I'll register them too.」
+301|「It's because you took my registration.」
+302|Ria[shy]「...Hearing that makes me glad I do this job.」
+303|Ria「Killing the Great Sandworm is only the third time since the guild was founded. ...Boltz didn't know what to do with the shell.」
+304|Boltz[laugh]「Chieeef! Next time cut it smaller before you bring it in!」
+305|「The third time, huh.」
+306|Ria[smile]「Yes. The previous two were both legendary adventurers. ...And the third is you.」
+307|「Did you record it?」
+308|Ria[happy]「Of course. In my biggest letters.」
+309|Ria[shy]「Um... my father's workshop is still standing on the edge of town. No one uses it.」
+310|「Show it to me someday.」
+311|Ria[happy]「...Okay. You're the one I'd want to show.」
+312|「Tools rust if you don't maintain them.」
+313|Ria[smile]「...That's true. Could you teach me how to care for them sometime?」
+314|「That's lonely.」
+315|Ria[worried]「...Yes. But going to your workshop fills the gap a little.」
+316|Ria「Floor 40... According to guild statistics, the return rate drops sharply from here.」
+317|「Statistics are just statistics.」
+318|Ria[smile]「...Right. You're not a number.」
+319|「Don't worry.」
+320|Ria[worried]「I will. ...And not as part of my job.」
+321|「I'll raise the numbers for you.」
+322|Ria[happy]「...Hehe. Then I'll get ready to rewrite the chart.」
+323|Ria「Lately, young adventurers have started learning smithing to copy you.」
+324|「I could teach them.」
+325|Ria[smile]「Really? ...Als might get jealous.」
+326|「Smithing isn't easy.」
+327|Ria[laugh]「I'll tell them that too.」
+328|「Won't you learn?」
+329|Ria[shy]「...I prefer watching. Your hands.」
+330|Ria「On the jungle floors, they say even if you make a map, the paths change the next day. ...A mapmaker's nightmare.」
+331|「Even you have trouble?」
+332|Ria[laugh]「I do. ...But listening to your stories is never trouble.」
+333|「I'll leave markers.」
+334|Ria[happy]「Good idea! They'll guide you on the way back too.」
+335|「Don't need a map. I'll go by instinct.」
+336|Ria[worried]「...No. Please take it with you.」
+337|Ria「I tried cleaning my father's workshop. ...I thought if I lit the forge, maybe you'd come.」
+338|「Let's go. I'll light it next time.」
+339|Ria[happy]「...! Okay. I'll have tea ready.」
+340|「Be careful with the forge.」
+341|Ria[smile]「...Okay. You're worried about me.」
+342|「Your father would be happy.」
+343|Ria[shy]「...Yes. I'm sure he would have liked you.」
+344|Ria「Every record above floor 60 is yours now. ...My ledger's nothing but your name.」
+345|「Is that a bother?」
+346|Ria[laugh]「Not at all. ...I've never had such a fun job.」
+347|「I can climb because you write it down.」
+348|Ria[shy]「...If you say that, I'll have no choice but to write even more neatly.」
+349|「Don't misspell my name.」
+350|Ria[angry]「I won't! It's the first name I memorized.」
+351|Ria[worried]「...I heard an old adventurer's notebook was found on the ruins floors. I read the last page.」
+352|「What did it say?」
+353|Ria「"I want to go home." ...So please, make sure you come back.」
+354|「Better if you hadn't read it.」
+355|Ria[worried]「...No. I'm glad I read it. That's why I can wait for you.」
+356|「You write my ledger.」
+357|Ria[shy]「...Okay. I'll write it to the very last page.」
+358|Ria「Tell me about the canyon floors. ...Oh, not for work. I just want to hear.」
+359|「Couldn't see the bottom of the gorge.」
+360|Ria[shock]「Eek... H-how do I even put that in a record...」
+361|「Hawks were nesting.」
+362|Ria[smile]「Hehe, cute. ...I love stories like that.」
+363|「Talking to you takes the tiredness away.」
+364|Ria[happy]「...! Then tell me every time. Always.」
+365|Ria「The guild master asked me, "Are you the blacksmith's personal clerk?"」
+366|Ria[laugh]「No. ...I was just a little happy, that's all.」
+367|「I'd like that, honestly.」
+368|Ria[shy]「...I-I'll take that seriously, you know?」
+369|「What did you say?」
+370|Ria[shy]「..."Yes." It slipped out.」
+371|Ria「How do I even record "above the clouds"...? There's no "sky" column in my ledger.」
+372|「Make one.」
+373|Ria[happy]「...You're right! I'll make a new column just for you.」
+374|「Just write "nice view."」
+375|Ria[laugh]「Hehe, a record like that would be unheard of.」
+376|「If you came to see, you'd understand.」
+377|Ria[shy]「...Will you take me someday?」
+378|Ria「My father used to say, "A good craftsman treasures the place he comes home to."」
+379|「Good words.」
+380|Ria[smile]「...Yes. Watching you reminded me of them.」
+381|「My place to come home to is the workshop.」
+382|Ria[worried]「...Right. Of course.」
+383|「I've gained one more place to come home to.」
+384|Ria[happy]「...I'd be happy... if that were the guild.」
+385|Ria「What words should I end the final record with? ..."Conquered"? "Returned"?」
+386|「"Returned."」
+387|Ria[happy]「...Yes. That's my favorite word too.」
+388|「I'll leave it to you.」
+389|Ria[smile]「...Then let's decide after you're back. Together.」
+390|「It's too early.」
+391|Ria[laugh]「Hehe, you're right. I got ahead of myself.」
+392|Ria[shy]「...I've left the last page of my ledger blank. There's something I want to write when you come back.」
+393|「What will you write?」
+394|Ria[shy]「...I-it's a secret. When you come back, I'll let you read it.」
+395|「I'll definitely come read it.」
+396|Ria[happy]「...Okay. It's a promise.」
+397|「Let me write in it too.」
+398|Ria[shy]「...Then, half each. ...Hehe, my heart's racing.」
+399|Ria[happy]「Welcome back. ...I've recorded it. "Returned." ...Yes, in my neatest handwriting.」
+400|Ria[shy]「...No, thank YOU. I'm truly happy I got to write this record.」
+401|「And the last page?」
+402|Ria[shy]「...I-I'll show you later, when it's just us.」
+403|「Less work for you now.」
+404|Ria[laugh]「Hehe, that's true. ...But it's a little lonely.」
+405|Ria「They're keeping the record of the one who climbed the whole tower as a guild treasure. ...But my ledger is MY treasure.」
+406|「Take good care of it.」
+407|Ria[smile]「Yes. Forever and ever.」
+408|「Let's keep writing. Stories from outside the tower.」
+409|Ria[happy]「...Yes! I'll buy a new ledger.」
+410|「One for me too?」
+411|Ria[shy]「...All of it is for you.」
+412|Fuuka「...The floor 10 lord, splendidly done. I watched from the ceiling.」
+413|「If you were watching, you could've helped.」
+414|Fuuka[pout]「Watching over is also a shinobi's duty.」
+415|「How was it?」
+416|Fuuka[smile]「...Splendid. ...That was me talking to myself.」
+417|「The ceiling?」
+418|Fuuka[laugh]「...I am a shinobi, after all.」
+419|Fuuka「On the forest floors, the treetops are a shortcut. ...Though you may be a little heavy for that.」
+420|「Sorry for being heavy.」
+421|Fuuka[laugh]「...Heh. The weight is the hammer's fault.」
+422|「Carry me.」
+423|Fuuka[shy]「...I-impossible. ...Probably.」
+424|「I'll go below. You watch from above.」
+425|Fuuka[smile]「...Yes. Leave it to me.」
+426|Fuuka「The desert is hot. ...My mask is a little... If I take it off, will you not laugh?」
+427|「I won't say a word.」
+428|Fuuka[shy]「...Then, just a little. ...Y-you are staring too much.」
+429|「Just take it off.」
+430|Fuuka[pout]「...Do not say it so easily. One shows one's true face only to someone precious.」
+431|「Want me to weave you heat-resistant cloth?」
+432|Fuuka[smile]「...You can weave cloth too? What a curious person.」
+433|Fuuka「A letter came from my village. "Do not travel with the blacksmith in the tower."」
+434|「Sorry for being a strange blacksmith.」
+435|Fuuka[laugh]「...Heh. But that blacksmith is the one I want.」
+436|「If I'm a bother, I'll keep away.」
+437|Fuuka[pout]「...Please do not say such things.」
+438|「What did you reply?」
+439|Fuuka[shy]「..."Too late," I replied.」
+440|Fuuka「During the Great Sandworm... to be honest, I was afraid. That it would swallow you.」
+441|「You helped. Thanks.」
+442|Fuuka[love]「...Yes. Protecting you is also my duty.」
+443|「We were both scared.」
+444|Fuuka[smile]「...So you were afraid too. That relieves me a little.」
+445|「That was nothing.」
+446|Fuuka[pout]「...A lie. Your hands were shaking.」
+447|Fuuka「The stars are clear on the mountain. ...Would you join me later?」
+448|「Sure, let's look.」
+449|Fuuka[love]「...Yes. I know the rock with the best view.」
+450|「I'm tired. Going to sleep.」
+451|Fuuka[pout]「...I see.」
+452|「You know the names of the stars?」
+453|Fuuka[smile]「I do. ...That one is the shinobi's star. A star that shines alone.」
+454|Fuuka[shy]「...These garments are a little cold for the snowfield.」
+455|Put your cloak over her
+456|Fuuka[love]「...Warm. ...It smells of you.」
+457|「Let's make a fire.」
+458|Fuuka[smile]「...Yes. Your fire is calming.」
+459|「Dress warmer.」
+460|Fuuka[pout]「...That is not the point.」
+461|Fuuka「Not even those from my village have been above floor 40. ...I have chosen, by my own will, to go with you.」
+462|「Is that okay?」
+463|Fuuka[smile]「It is. It is my own decision.」
+464|「That's reassuring.」
+465|Fuuka[love]「...Yes. Rely on me more.」
+466|「Don't push yourself.」
+467|Fuuka[shy]「...That is my line.」
+468|Fuuka「The jungle floors are my specialty. ...I shall hide my presence. Watch. ...There, you cannot see me anymore, can you?」
+469|「Where are you?」
+470|Fuuka[laugh]「Here. ...Right behind you.」
+471|「I can hear your footsteps.」
+472|Fuuka[pout]「...No. ...How frustrating.」
+473|「It'd be a problem if you disappeared.」
+474|Fuuka[love]「...Such words are unfair. ...I will not disappear.」
+475|Fuuka「In shinobi training, I was always alone. ...You are the first person I have walked beside.」
+476|「From now on, it's two of us.」
+477|Fuuka[love]「...Yes. ...Forever?」
+478|「Well, not bad, is it?」
+479|Fuuka[smile]「...Not bad. It is a very good thing.」
+480|「Als is here too.」
+481|Fuuka[pout]「...That is not what I mean.」
+482|Fuuka「There was an old shinobi mark on the ruin wall. ...So someone did make it this far.」
+483|「Wonder what happened to them.」
+484|Fuuka[pout]「...I do not know. But I will surely return. With you.」
+485|「Might be your ancestor.」
+486|Fuuka[smile]「...Perhaps. That makes me a little happy.」
+487|「Let's leave a mark too.」
+488|Fuuka[love]「...Yes. A mark for the two of us. ...Let us make it the shape of your hammer.」
+489|Fuuka「...May I climb onto your workshop roof? I wish to keep watch at night.」
+490|「Do as you like.」
+491|Fuuka[smile]「...Thank you. At night, I shall protect you.」
+492|「Sleep inside instead of on the roof.」
+493|Fuuka[shy]「...I-inside is... not yet. ...It is embarrassing.」
+494|「Don't fall.」
+495|Fuuka[laugh]「Shinobi do not fall.」
+496|Fuuka「The canyon wind is strong. ...My hair has come undone. ...Do not look.」
+497|「It's beautiful.」
+498|Fuuka[love]「...! ...Please say that once more.」
+499|Help her tie it back up
+500|Fuuka[shy]「...Your hands are gentle. ...For a blacksmith.」
+501|Try not to look
+502|Fuuka[pout]「...You really are not looking. ...Look a little.」
+503|Fuuka「The village elder ordered me to return. ...I refused.」
+504|「Will you be okay?」
+505|Fuuka[smile]「I will. ...I decide where I belong. And I will not stop being a shinobi.」
+506|「Is that my fault?」
+507|Fuuka[love]「...Yes. It is your fault. You must take responsibility.」
+508|「Stay here.」
+509|Fuuka[love]「...Yes. Those are the words I wished to hear.」
+510|Fuuka「Above the clouds... Look. You can see the town below. ...Your workshop is around there.」
+511|「Good eye.」
+512|Fuuka[smile]「I am always watching. ...That chimney.」
+513|「Makes me want to go home.」
+514|Fuuka[love]「...Yes. But right now, I want to be here. With you.」
+515|「I'm not good with heights.」
+516|Fuuka[laugh]「...Heh. Shall I hold your hand?」
+517|Fuuka「Do you remember the shinobi's star? ...Lately I noticed a small star beside it.」
+518|「Since when?」
+519|Fuuka[smile]「...Since the day I watched the stars with you.」
+520|「Like us.」
+521|Fuuka[love]「...Yes. ...I wished for you to say that.」
+522|「I can't see it.」
+523|Fuuka[pout]「...Look properly. There, right there.」
+524|Fuuka[pout]「The castle floors... an ill presence. ...I shall walk ahead.」
+525|「Walk beside me.」
+526|Fuuka[love]「...Yes. I will walk beside you.」
+527|Fuuka[smile]「Leave it to me. ...Whatever happens, I will protect you.」
+528|「I'll go first.」
+529|Fuuka[pout]「...A stubborn man. ...Then leave your back to me.」
+530|Fuuka「...When all is over, I think I will walk through town without my mask. ...Not only in front of you.」
+531|「You've got a nice face.」
+532|Fuuka[love]「...Is that so. ...I am glad.」
+533|「What about being a shinobi?」
+534|Fuuka[smile]「No. I will stay a shinobi, and stay by your side.」
+535|「Everyone in town will be shocked.」
+536|Fuuka[laugh]「...Heh. Sir Chicchi may fall right over.」
+537|Fuuka[love]「...It is over. I saw the top with my own eyes. ...Beside you.」
+538|「Because you were there.」
+539|Fuuka[love]「...Yes. ...May I stay beside you from now on as well?」
+540|「That was a long road.」
+541|Fuuka[smile]「Yes. ...But it also felt short. Being with you.」
+542|「What will you do next?」
+543|Fuuka[shy]「...Watch the stars from the roof. Every night.」
+544|Fuuka「The star beside the shinobi's star... I gave it a name. ..."{name}."」
+545|「That's embarrassing.」
+546|Fuuka[laugh]「...Heh. It is rare to see you embarrassed.」
+547|「What's the name of your star?」
+548|Fuuka[love]「...You name it.」
+549|「Hope they stay side by side.」
+550|Fuuka[love]「...They are side by side. And always will be.」
+551|Als[laugh]「Floor 20! Master, the town kids were playing "blacksmith." It's a game where you swing a hammer and climb the tower.」
+552|Chicchi「Boss, there's sand all over the workshop... Please take off your boots before coming in, yo.」
+553|Lou[smile]「I tried turning the desert sand you brought back into glass! ...It broke.」
+554|Als[shock]「The Great Sandworm...! Master, you're a legend now. ...I'm so glad I'm your apprentice.」
+555|Chicchi[laugh]「There's talk in town about building a statue of you, boss. I'll ask them to make the face a bit more rugged, yo.」
+556|Lou「Boss, mountain ore is so heavy... My back, my back...」
+557|Als「Master. I can make it to floor 10 on my own now. ...Someday I'll catch up to you.」
+558|Chicchi[think]「The snowfield floors... Boss, watch out for frostbite. Can't smith without fingers, yo.」
+559|Lou[laugh]「The neighborhood ladies came to see your silver sword, boss! They said "it reflects better than a mirror"!」
+560|Als[think]「Master, I made a scabbard from jungle snakeskin. ...Does it stink? It stinks, doesn't it.」
+561|Chicchi「While you're in the tower, I'm keeping good watch over the workshop, yo. ...Buppa keeps sleeping here on his own, though.」
+562|Lou[smile]「Boss, mithril is so light. ...Just holding it makes my hands shake.」
+563|Als「Master. ...I shouldn't think about what if you don't come back from the tower, right? Sorry.」
+564|Chicchi[shy]「Boss... every night we put our hands together facing the tower, yo. ...Kinda embarrassing, yo.」
+565|Lou「I polished the old hammer from the ruins. ...I was surprised how much it looks like yours.」
+566|Als[smile]「Master. I had Jin watch my sword practice too. He said "stubborn, just like your master."」
+567|Chicchi[laugh]「Boss, the canyon wind blew off your eyebrows! ...Oh, were they always like that, yo?」
+568|Lou[laugh]「Boss, the sound of you forging orichalcum... I could hear it all the way outside town!」
+569|Als「Above the clouds... Master, I can't even imagine it anymore. ...But I've gotten good at waiting for you.」
+570|Chicchi[think]「Boss, lately the forge burns cleaner than before, yo. ...Must be your fighting spirit, yo.」
+571|Lou「Boss, dragon bone is warm to the touch. ...Like it's alive.」
+572|Als[think]「Master... when you've gone all the way, please teach me smithing again, from the very beginning.」
+573|Chicchi[shy]「Boss... there's something I want to tell you when you come back, yo. ...Next time's fine, yo.」
+574|Lou[smile]「Boss, a souvenir from the castle floors... no, you coming back safe is the best souvenir.」
+575|Als[laugh]「Master! I painted the tower you climbed! ...It's bad, but please hang it in the workshop!」
+576|Chicchi[laugh]「Welcome back, boss! ...Tonight's a feast, I've already started cooking, yo!」
+577|Lou[smile]「Boss, from tomorrow it's the usual workshop again. ...That makes me happiest.」
+578|Jenny「More customers coming back from the desert, so sun cloaks are selling well. ...I set one aside for you.」
+579|Jenny[laugh]「"A sword by the Sandworm-slaying blacksmith," they say. Gotta rewrite the price tag.」
+580|Jenny「Show me the sword you forged from mountain ore. ...Hmm. Not bad at all.」
+581|Jenny[worried]「Lots of people back from the snowfield have frozen fingers. ...Where are your gloves? Here, take these.」
+582|Jenny「My shop's the only one in the kingdom that carries mithril swords. ...Thanks to you.」
+583|Jenny[smile]「Floor 60... Now customers come from the neighboring country looking for your swords.」
+584|Jenny[happy]「I put the orichalcum sword on display and a crowd formed. ...I'm not selling that one.」
+585|Jenny[shy]「You went above the clouds... Hey, when you come back, stop by my shop first.」
+586|Jenny[worried]「...I don't care about the shop anymore. Just make sure you come back.」
+587|Jenny[happy]「Oh, there you are! Welcome, honored Tower Smith~. ...Just kidding. Welcome back.」
+588|Elly「People back from the desert floors often have sore throats. ...Are you drinking enough water?」
+589|Elly[happy]「For the man who beat the Great Sandworm to be this healthy... even the head doctor was surprised.」
+590|Elly[worried]「Floor 40... Every morning, I pray facing the tower. ...You didn't know that, did you?」
+591|Elly「I finally made medicine that works on jungle poisons. ...For you, you know.」
+592|Elly[smile]「I've never examined anyone who passed floor 60. ...Hehe, I'll note it as a keepsake.」
+593|Elly「Falling rocks in the canyon... Please, please be careful about head injuries.」
+594|Elly[shy]「They say the air above the clouds is bad for you. ...So let me take my time examining you today.」
+595|Elly[worried]「...You're going to the last floor. Take all the medicine. All of it.」
+596|Elly[happy]「Welcome back! ...Today let's talk about tea instead of injuries.」
+597|Ria「Floor 20 reached, recorded. ...The adventurers all want weapons you forged.」
+598|Boltz[laugh]「Chief, desert scorpion shells make good shields! Keep 'em coming.」
+599|Ria[happy]「The Great Sandworm kill is going to be carved on the guild wall. ...In stone!」
+600|Boltz[shock]「Chief, how'd you even haul a shell this huge...」
+601|Ria「Records above floor 40 are mostly blank. ...Please fill them in.」
+602|Boltz「Chief, these snowfield ice shards don't melt. Strange stuff.」
+603|Ria「Your reports on the jungle floors are the most detailed. ...And you're a blacksmith.」
+604|Ria[smile]「Floor 60... The guild master said he's making a new title in your name.」
+605|Boltz[laugh]「Chief, a blacksteel shard. Now this'll be worth processing.」
+606|Ria「Raw orichalcum... Boltz was trembling just touching it.」
+607|Boltz「Chief, never thought I'd see the day I'd crush orichalcum. ...Long life pays off.」
+608|Ria[shy]「Records above the clouds... I made a new column. Just for you.」
+609|Boltz[shock]「Dragon bone... Chief, you finally took on dragons?」
+610|Ria[worried]「The castle floors... I'm keeping the last page of the record open for you.」
+611|Ria[happy]「Welcome back. ...The record is complete. I wrote it in my neatest hand.」
+612|Boltz[laugh]「Chieeef! Today it's on the guild! Bring the whole barrel!」
+613|Dora「Back from the desert? ...Here, candy for your throat. Payment? If you came back alive, no need.」
+614|Dora[laugh]「The Great Sandworm? Hah, even in my day I never heard of such a thing.」
+615|Dora「Take a warming stone to the snowfield. ...Don't make me worry about you like a grandkid.」
+616|Dora「For jungle antidotes, my shop's are the best. ...The clinic girl's aren't bad either, I suppose.」
+617|Dora[think]「Floor 60... I wish your old man could've seen this.」
+618|Dora「Got your feathers? ...You can never have too many ways home.」
+619|Dora[think]「Above the clouds, eh... Don't you go actually ascending to heaven on me.」

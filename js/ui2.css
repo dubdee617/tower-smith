@@ -222,3 +222,7 @@ button small .gcmp .up{color:#7dff9a}button small .gcmp .dn{color:#ff8a7a}
 .fcmp td{text-align:center;padding:3px 2px}.fcmp td b{color:#fff3d6;font-size:19px}
 .fcmp td.up{color:#7dff9a;font-weight:700}.fcmp td.dn{color:#ff8a7a;font-weight:700}
 .fcmp .ds{margin:8px 0 0;color:#9fe0c0;font-size:12.5px;text-align:center}.fcmp .jb{margin:8px 0 0;color:#ffd76a;font-size:13px;text-align:center}
+/* 2026-11-25: ジョブの絵が、たまに大きく寄って足元が切れる件。行の高さを枠に固定して、絵は枠の高さに合わせる */
+.status{grid-template-rows:minmax(0,1fr)}
+.shero{height:100%;min-height:0;overflow:visible}
+.shero img{height:96%;max-height:96%;min-height:0;width:auto;max-width:150%;object-fit:contain;object-position:50% 100%}

@@ -4,21 +4,24 @@
 import json, re, os, sys, glob
 here = os.path.dirname(os.path.abspath(__file__))
 out = {}
-TAG = re.compile(r'^([^\[「\n]+)\[\w+\]「')
+TAG = re.compile(r'(^|\n)([^\[「\n]+)\[\w+\]「')
 def put(k, v):
     if v is None: return
     v = v.replace('\\n', '\n')
-    k2 = k.replace('{name}', '{9}'); v2 = v.replace('{name}', '{9}')
+    k2 = k.replace('{name}', '{9}').replace('{f}', '{6}').replace('{b}', '{7}').replace('{k}', '{8}'); v2 = v.replace('{name}', '{9}').replace('{f}', '{6}').replace('{b}', '{7}').replace('{k}', '{8}')
     out[k2] = v2
     # 表情タグ（ジェニー[laugh]「…」）は、画面に出るときは消えている
     if TAG.search(k2):
-        out[TAG.sub(r'\1「', k2)] = TAG.sub(r'\1「', v2)
+        out[TAG.sub(r'\1\2「', k2)] = TAG.sub(r'\1\2「', v2)
     # HTML の文は、タグで分けて、文字の部分ごとにも引けるように
     if '<' in k2 and '<' in v2:
         a = [x.strip() for x in re.split(r'<[^>]*>', k2)]; b = [x.strip() for x in re.split(r'<[^>]*>', v2)]
         if len(a) == len(b):
             for x, y in zip(a, b):
                 if x and x != y and x not in out: put(x, y)
+    # 「…」だけの文は、中身だけでも引けるように（名前「…」の形で出るとき用）
+    m1 = re.match(r'^(?:\{\d\})?(?:\[\w+\])?「([^「」]*)」$', k2); m2 = re.match(r'^(?:\{\d\})?(?:\[\w+\])?「([^「」]*)」$', v2)
+    if m1 and m2 and m1.group(1) and m1.group(1) not in out: out[m1.group(1)] = m2.group(1)
     # 複数行の文は、1行ずつでも引けるように
     if '\n' in k2 and k2.count('\n') == v2.count('\n'):
         for a, b in zip(k2.split('\n'), v2.split('\n')):

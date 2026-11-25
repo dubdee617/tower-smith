@@ -1,0 +1,65 @@
+0|A Poor Kingdom
+1|Forest Goddess[smile]「Welcome, blacksmith. ...Lovely forest, isn't it?」
+2|Forest Goddess「But long, long ago, Eldia was a poor land.\nOre vanished from the mountains, the earth grew thin, and even my forest's gifts ran scarce.」
+3|Forest Goddess「People shared what little they had, and lived hard lives.」
+4|「...Hard to imagine, looking at the town now.」
+5|Forest Goddess[laugh]「I'm sure. ...I'll tell you the rest further up.」
+6|Birth of the Tower
+7|Sand Goddess「Unable to bear watching people struggle, the Mountain Goddess asked us for help.」
+8|Sand Goddess「We talked it over and decided.\nWe'd build a tower that never stops giving, so people could live in plenty forever.」
+9|Sand Goddess「But a mere building would run dry someday.\n...So the tower needed life. A life that grows on its own, and keeps giving.」
+10|「This tower... is alive?」
+11|Sand Goddess[laugh]「Even the sand under your feet is breathing. ...Listen closely.」
+12|The Goddess Statues
+13|Mountain Goddess「...It was I who first proposed building the tower.」
+14|Mountain Goddess「Each of us placed statues holding our power throughout the tower.\nWith the power they pour out, the tower keeps living, grows ore veins, sprouts plants, and births monsters.」
+15|「Then the ore I'm digging...」
+16|Mountain Goddess「Yes. Grown by our power and the tower's life.\n...Use it well. Forge good things.」
+17|Those Who Climb
+18|Ice Goddess「Since the tower was made, I've watched so many people.\nThose seeking wealth, those seeking strength, those working for family, those longing for worlds unseen.」
+19|Ice Goddess「And you? Why do you climb?」
+20|「...Because materials are expensive.」
+21|Ice Goddess[smile]「Hehe. ...The most honest reason I've ever heard.」
+22|Ice Goddess「But everyone starts that way. The reasons grow as you climb.」
+23|The Tower's Heart
+24|Flower Goddess「...Oh my. A child of man. ...You've come from very far.」
+25|Flower Goddess「I'm the Flower Goddess. I make the plants in the tower bloom.」
+26|Flower Goddess「...Lately, flowers sometimes open before I even pour my power into them.\nThe tower is making them bloom on its own.」
+27|「The tower, on its own...?」
+28|Flower Goddess「Yes. Over long years of watching people, the tower grew a heart.\n...We know, too.」
+29|Flower Goddess[laugh]「A heart born naturally from the tower we made.\nWe watch over it quietly, so as not to get in its way.」
+30|The Summit
+31|Sand Goddess「We meet again. ...Not many children of man make it this far.」
+32|Sand Goddess「People don't know where the top of the tower is.\nThe highest anyone's gone is Guard Captain Gaban's floor 86... or so they say.」
+33|「...And beyond that?」
+34|Sand Goddess「The top is where the tower's heart lives.\nWe goddesses decided never to lay a hand on it.」
+35|Sand Goddess[laugh]「So go there on your own two feet. ...The tower's surely waiting too.」
+36|The Mirror at the Top
+37|Mountain Goddess「...You've passed floor seventy. Let me tell you about the top.」
+38|Mountain Goddess「On the tower's highest floor is a great mirror.\nWe did not make it. ...The tower created it itself.」
+39|「The tower made a mirror...? What for?」
+40|Mountain Goddess「To understand humans.\nThe tower longs, from the bottom of its heart, to understand what humans are.」
+41|Mountain Goddess「So it became a mirror. So that people could reflect their form and their heart.\n...Stand before it, and you'll face another you.」
+42|Mountain Goddess「Don't be afraid. It isn't a punishment. ...It's a window through which the tower learns about people.」
+43|What Is a Human?
+44|Ice Goddess「Floor eighty... From here, you can't even see the lights of town, can you.」
+45|Ice Goddess「Tell me, blacksmith. People seek plenty, yet give it away to others.\nThey seek strength, yet try to protect the weak. They fear failure, yet try anyway.」
+46|Ice Goddess「The tower has always found that a mystery.\n"What, after all, is a human?"」
+47|「...Who knows. Same as iron. You don't know till you strike it.」
+48|Ice Goddess[smile]「Hehe. ...Show that answer to the mirror at the top.」
+49|(You heard the goddess's tale "{0}." You can reread it in the bestiary on the workshop bookshelf)
+52|{0}「...But I can't strengthen my blessing for free.\nFight my guardian beast. Win, and I'll give you the blueprint for my masterwork.」
+53|「...But I can't strengthen my blessing for free.\nFight my guardian beast. Win, and I'll give you the blueprint for my masterwork.」
+54|Take the trial
+55|{0}'s Guardian: {1}
+56|'s Guardian:
+57|{0}「...Here it comes.」
+58|「...Here it comes.」
+59|Not now
+60|You can take it next time you meet
+61|You hear the {0}'s voice. "...Splendid. You'll surely make it home."
+62|'s voice. "...Splendid. You'll surely make it home."
+63|<img class="gearimg" src="{0}" alt=""><b>Goddess Masterwork Blueprint</b><em>{1}</em><small>{2} (forge it under "Masterworks" in the workshop)</small>
+66|Round 1
+67|Round 2
+68|<div><b>{0}. ???<em>{1}, {2}</em></b></div>

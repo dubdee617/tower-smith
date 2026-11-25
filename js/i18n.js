@@ -33,16 +33,17 @@ const I18N = (() => {
     const ws = /^(\s*)([\s\S]*?)(\s*)$/.exec(s);
     if ((ws[1] || ws[3]) && ws[2]) return ws[1] + tr(ws[2], 1) + ws[3];
     if (s.includes('\n')) return s.split('\n').map(x => tr(x, 1)).join('\n');
-    let q = /^([^「」\n]{1,16}?)(\[\w+\])?「([\s\S]*)」([^「」]*)$/.exec(s);
-    if (q && !JP.test(q[4] || '')) return tr(q[1], 1) + (q[2] || '') + '「' + tr(q[3], 1) + '」' + (q[4] || '');
-    q = /^「([\s\S]*)」$/.exec(s); if (q) return '「' + tr(q[1], 1) + '」';
-    q = /^（([\s\S]*)）$/.exec(s); if (q) return '(' + tr(q[1], 1) + ')';
+    { const pm = /^([\s\S]*?)(\+\d+)$/.exec(s); if (pm && JP.test(pm[1])) return tr(pm[1], 1) + pm[2]; }  /* 金床の+1 */
     for (const p of PATS) {
       if (!p.parts.every(x => s.includes(x))) continue;
       const m = p.re.exec(s);
       if (m && p.strict && m.slice(1).some(x => JP.test(x) && !Object.prototype.hasOwnProperty.call(D, x))) continue;
       if (m) return p.en.replace(/\{(\d)\}/g, (_, i) => { const j = p.order.indexOf(+i); return j < 0 ? '' : tr(m[j + 1], 1); });
     }
+    let q = /^([^「」\n]{1,16}?)(\[\w+\])?「([\s\S]*)」([^「」]*)$/.exec(s);
+    if (q && !JP.test(q[4] || '')) return tr(q[1], 1) + (q[2] || '') + '「' + tr(q[3], 1) + '」' + (q[4] || '');
+    q = /^「([\s\S]*)」$/.exec(s); if (q) return '「' + tr(q[1], 1) + '」';
+    q = /^（([\s\S]*)）$/.exec(s); if (q) return '(' + tr(q[1], 1) + ')';
     // 文に分けて、ひとつずつ
     const sent = s.match(/[^。！？!?]+[。！？!?」]*|[。！？!?」]+/g);
     if (sent && sent.length > 1) return sent.map(x => tr(x, 1)).join(' ').replace(/\s+([,.!?])/g, '$1');

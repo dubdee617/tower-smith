@@ -359,10 +359,10 @@ function nameScreen(then, again) {
   t.innerHTML = `<img src="${TOWN_IMG}home_in.jpg" alt="" style="filter:brightness(.45)"><div class="caption">鍛冶屋の名前</div>`;
   const box = $('ctl'); box.innerHTML = '';
   const w = document.createElement('div'); w.className = 'namebox';
-  w.innerHTML = `<input id="nm" maxlength="8" autocomplete="off" placeholder="鍛冶屋"><small>8文字まで。空のままなら「鍛冶屋」</small>`;
+  w.innerHTML = `<input id="nm" maxlength="${I18N.on ? 12 : 8}" autocomplete="off" placeholder="鍛冶屋"><small>${I18N.on ? '12文字まで。空のままなら「鍛冶屋」' : '8文字まで。空のままなら「鍛冶屋」'}</small>`;
   box.appendChild(w); if (again && G.name) $('nm').value = G.name;
   const row = document.createElement('div'); row.className = 'btns'; box.appendChild(row);
-  const go = () => { const v = ($('nm').value || '').replace(/[<>{}\[\]「」\n]/g, '').trim().slice(0, 8); G.name = v || '鍛冶屋'; save(); sfx('select', { vol: .6 }); then(); };
+  const go = () => { const v = ($('nm').value || '').replace(/[<>{}\[\]「」\n]/g, '').trim().slice(0, I18N.on ? 12 : 8); G.name = v || '鍛冶屋'; save(); sfx('select', { vol: .6 }); then(); };
   const b1 = document.createElement('button'); b1.className = 'hot'; b1.textContent = 'これでいい'; b1.onclick = go; row.appendChild(b1);
   if (again) { const b2 = document.createElement('button'); b2.textContent = 'やめる'; b2.onclick = then; row.appendChild(b2); }
   log(again ? '名前を変える。\n（ふだんは「鍛冶屋さん」と呼ばれる。名前は、ここぞという時に呼ばれる）' : '町いちばんの鍛冶屋。……名前は？\n（ふだんは「鍛冶屋さん」と呼ばれる。名前は、ここぞという時に呼ばれる）', true); hud(); fitStage();

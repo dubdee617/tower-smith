@@ -1,0 +1,157 @@
+0|Patron「{0}」
+2|Gunter「...A blacksmith, in the tower? Don't be absurd. Swords are for forging, not for swinging.」
+3|Gunter[serious]「Gunter, Royal Knights. I'm here to collect the tower reports. ...Stay out of my way.」
+4|Gunter[shock]「The floor 10 lord, by a blacksmith? ...Surely the report is mistaken.」
+5|Gunter[think]「With that hammer, against that golem... No. I won't accept it. Not yet.」
+6|Gunter「Floor 20. ...Not many knight recruits make it that far.」
+7|Gunter[side]「One of my men bought a sword you forged. ...He said it wasn't bad.」
+8|Gunter[shock]「You slew the Great Sandworm...! The Knights failed to kill that beast three times!」
+9|Gunter[serious]「...Allow me to apologize for my rudeness. You are no mere blacksmith.」
+10|Gunter[smile]「Floor 40. These days the Knights cite your name in training.」
+11|Gunter「Would you reforge my sword? ...I'll pay, of course.」
+12|Gunter[proud]「I hear the King summoned you. ...Naturally. You are this kingdom's pride.」
+13|Gunter[smirk]「Captain Gaban was happy as a child to have met you. ...As was I.」
+14|Gunter[serious]「Above floor 60 is ground even the Knights have never trod. ...Be our eyes up there.」
+15|Gunter「My men want to train in front of your workshop. Would that be a bother?」
+16|Gunter[laugh]「Wahaha! Floor 70! The Knight Commander fell right out of his chair!」
+17|Gunter[calm]「...I challenged the tower too, in my youth. I fell to my knees at floor 45. Watching you, it feels like I'm seeing the rest of that day.」
+18|Gunter[proud]「Above the clouds... Would you plant the Knights' banner up there? ...No, your hammer suits it better.」
+19|Gunter[smile]「The swords you forge are now the Knights' official blades. ...Be proud.」
+20|Gunter[serious]「The castle floors... No telling what waits there. But you'll come back. A knight's intuition.」
+21|Gunter「On the day of your final climb, the whole order will line up at the town gate. ...Not to see you off. To welcome you back.」
+22|Gunter[laugh]「You're back! Knights, salute! ...Hah, I always wanted to say that.」
+23|Gunter[smile]「Laugh at me, the one who first said "don't be absurd." ...No. Forgive me.」
+24|Dario[smirk]「A blacksmith registering as an adventurer? Ha, the guild sure has changed.」\nCecil「Dario, that's rude.」
+25|Pipi[laugh]「Hey hey, you're a blacksmith, right? Can you fix these goggles?」\nLiene[calm]「Pipi, you've only just met him.」
+26|Wolf「...Youngster. Skill alone won't get you up that tower.」
+27|Dario[shock]「The floor 10 lord... seriously? Even our party had trouble with it.」
+28|Cecil[smile]「That's amazing. ...Could you look at my armor sometime?」
+29|Pipi[wink]「Thanks for fixing my goggles! I can see better than before!」
+30|Dario「The desert floors, huh. ...Hey, would you sell me one of your swords?」
+31|Liene[smile]「Ancient spirits sleep in the desert. ...I'm sure you won't wake them.」
+32|Wolf[think]「Floor 20... My best record, back in my day. ...Hmph. Not bad.」
+33|Cecil[shock]「The Great Sandworm...! Our party ran the moment we saw its tail.」
+34|Dario[laugh]「A toast, blacksmith! ...No wait, it's "Mister Blacksmith" now!」
+35|Pipi[laugh]「Amazing amazing! Hey, gimme a piece of its shell! For research!」
+36|Liene[worried]「The air changes above floor 40. ...The spirits are gossiping about you.」
+37|Wolf[grim]「Floor 42 took one of my eyes. ...Be careful, youngster.」
+38|Dario[serious]「We decided we're gonna catch up to you. ...Just you wait.」
+39|Cecil[smile]「The King summoned you? ...Someday I want to stand beside you as a knight.」
+40|Pipi[wink]「If you're going to the jungle, take this! Bug-repellent smoke bombs! My masterpiece!」
+41|Dario[smirk]「Floor 50, huh. ...Can't say "catch up" anymore. But I'm watching your back.」
+42|Wolf[smile]「Floor 60... Far beyond my dreams. ...Thank you, youngster. No... Master Smith.」
+43|Liene[calm]「Songs from an ancient age remain in the ruins. ...They say they sound like your hammer.」
+44|Cecil「Our party is challenging floor 40 next. ...With the shield you forged.」
+45|Dario[laugh]「Hear that? We made it past floor 40! ...Thanks to your sword.」
+46|Pipi[laugh]「Is that REAL orichalcum?! Let me touch it! Just a little! Only a little!」
+47|Wolf[think]「The canyon, eh... The wind there throws the hesitant into the gorge. ...You don't hesitate, do you.」
+48|Liene[shock]「Above the clouds...! Elven legend says a city in the sky once stood there...」
+49|Cecil[smile]「The whole town waits for you to come back every night. ...So do we.」
+50|Dario「Hey. When you reach the top, tell me first what you saw.」
+51|Wolf[serious]「...The final floor. Look hard enough for my missing eye too.」
+52|Pipi[pout]「...You'd better come back. Promise. If my goggles break again, you have to fix them.」
+53|Liene[calm]「The spirits are quiet. ...They believe in you, and they're waiting.」
+54|Dario[laugh]「The legendary blacksmith returns! Hey, everyone, crack open the barrels!」\nCecil[laugh]「Dario, it's still noon!」
+55|Wolf[laugh]「Wahahaha! Long life pays off! You let these old eyes see this day!」
+56|Pipi[laugh]「Welcome baaack! What was the top like?! Tell me everything!」
+57|Gold[laugh]「Gahahaha! A blacksmith in the tower! Not even a dwarf smith would do that!」
+58|Noah[calm]「...According to the tower literature, the number of blacksmiths who've climbed it is zero. ...How interesting.」
+59|Tim[laugh]「You're a blacksmith, mister?! So cool! I'm Tim, the porter!」
+60|Gold[grin]「The floor 10 lord, eh. Hmph, you can't fool a dwarf's eye. ...That's a fine hammer.」
+61|Noah[shock]「The golem...! I have to rewrite the records. Oh, I'm out of ink.」
+62|Tim[shock]「You really beat it?! I wanna carry YOUR bags from now on!」
+63|Gold[drink]「Pwaah! Nothing beats this after the desert! Here, have a drink!」
+64|Noah[think]「There's a theory the desert floors change shape on full-moon nights. ...Could you confirm it?」
+65|Tim[wink]「Bring me back some desert sand in a jar! It'll be my treasure!」
+66|Gold[shout]「The Great Sandworm?! ...I hereby call you my brother of the forge!」
+67|Noah[smile]「May I write a paper on the Great Sandworm's ecology? You'd be my co-author.」
+68|Tim[laugh]「All the kids in town are copying you, swinging wooden hammers!」
+69|Gold[smile]「When you forge mithril, drop the fire a notch. ...Dwarven secret. Keep it quiet.」
+70|Noah[worried]「The return rate past floor 40 is... no, I won't say the number. It doesn't apply to you.」
+71|Tim「I can make it to floor 10 now! ...Only a quarter of you, though.」
+72|Gold[grin]「Heard the King summoned you. ...Hmph, he's got a far better eye than the king of my homeland.」
+73|Noah[calm]「Could you bring back plant samples from the jungle? ...Gloves for the poisonous ones.」
+74|Tim[scared]「The jungle has flowers that eat people, right...? Be careful, mister.」
+75|Gold「Floor 60... Dwarven lore says nothing of what lies beyond. ...You're the new lore.」
+76|Noah[shock]「The ruin script...! I could read it, just a little. "To the god of the forge, we offer our hammers"...」
+77|Tim[smile]「I pass your workshop every morning. I can tell you're there from the hammer.」
+78|Gold[laugh]「You forged ORICHALCUM?! ...Let me take one swing at it, just one!」
+79|Noah[think]「I calculated the canyon wind directions. ...Please take this sheet.」
+80|Tim[grin]「I made it to floor 20! Only 50 more floors till I catch up!」
+81|Gold[smile]「Dragon bone... the stuff my grandfather's grandfather dreamed of. ...Makes me want to cry.」
+82|Noah[smile]「Tell me in words what color the sky is above the clouds. I want it for the last chapter of my book.」
+83|Tim[shock]「Above the clouds, can you walk on the sky?! Lucky...」
+84|Gold[serious]「...Go, brother. When you come back, I'll open my best bottle.」
+85|Noah[worried]「No text says anything about the final floor. ...So come back properly and tell me.」
+86|Tim「I'll wait at the tower gate every day till you come back, mister!」
+87|Gold[laugh]「Gahahaha! You're back, brother! The promised drink — have the whole barrel!」
+88|Noah[laugh]「I've written down everything you told me. ...Is "The Tower Smith" okay for the title?」
+89|Tim[laugh]「Welcome back, mister! When I grow up, I'm gonna be a blacksmith!」
+90|Talk to Gunter
+91|Talk to adventurers
+92|Royal Knight
+93|Gate Guard[sleepy]「Fwaaah... Oh, no, I wasn't asleep. I'm watching the gate, honest.」
+94|Gate Guard「Heading abroad? ...Oh, it's the blacksmith. The tower's closer, you know.」
+95|Gate Guard[doubt]「The blacksmith, in the tower? ...Oh, you're kidding.」
+96|Gate Guard[shock]「Eh, the floor 10 lord?! ...R-really, the blacksmith?」
+97|Gate Guard[sweat]「Merchants from out of town talk about nothing but you. ...I pretend I don't know anything.」
+98|Gate Guard[smile]「Lately there are more travelers coming for the tower, and the gate's busy. ...It's your fault, you know.」
+99|Gate Guard[think]「I wanted to be an adventurer once, too. ...Thirty years later, I'm still at the gate.」
+100|Gate Guard[laugh]「The Great Sandworm! I could see the guild ruckus from atop the gate! That was you!」
+101|Gate Guard[shy]「Um... could I shake your hand? ...I want to brag to my grandkids.」
+102|Gate Guard[smug]「Travelers ask me, "Where's the tower smith?" I give them proper directions, of course.」
+103|Gate Guard[worried]「Above floor 40... Please be careful. Waiting at the gate is my job, after all.」
+104|Gate Guard[grin]「I was the first to let the castle's honored blacksmith through. ...My lifelong boast.」
+105|Gate Guard[happy]「I showed off the King's letter to the other guards. ...Oh, I got scolded.」
+106|Gate Guard「Floor 60, they say. ...Everyone passing the gate looks up at the tower now.」
+107|Gate Guard[sleepy]「On night shifts I see a light somewhere in the tower. ...I like to think it's you.」
+108|Gate Guard[shock]「Floor 70...! I'm so shocked my jaw's about to fall off.」
+109|Gate Guard[silly]「Can I post a portrait of you on the gate? Seems like it'd ward off evil.」
+110|Gate Guard[think]「Can you see above the clouds from the gate? ...Oh, I think I saw it. Or maybe not.」
+111|Gate Guard[happy]「Lately when I look up at the tower, my heart feels lighter. Thanks to you.」
+112|Gate Guard[worried]「...It's the final floor, isn't it. I'll leave the gate unlocked, so you can come home anytime.」
+113|Gate Guard「I'll be waiting right here. I've waited thirty years. A little longer is nothing.」
+114|Gate Guard[laugh]「Welcome hoooome! ...Oops, I opened the gate on my own. Just today, it's okay, right?」
+115|Gate Guard[happy]「Thirty years guarding this gate, and today's the best day yet.」
+118|Gate Guard[doubt]「Yes, yes, state your business... Oh, it's the blacksmith? What's that envelope...?」
+119|Show the King's letter
+120|Gate Guard[shock]「Th-th-th-this seal... the royal crest?! I-it's real...!」
+121|Gate Guard[scared]「M-my apologies! Master Smith! P-please, go right through! ...The castle is straight ahead!」\nThe guard nearly dropped his spear as he cleared the way.
+122|To the Castle
+123|Gate Guard[smile]「The castle, Master Smith? Go right ahead.」
+124|Gate Guard[grin]「His Majesty's in a good mood again today. ...Gate-guard gossip, mind you.」
+125|Dolf[smirk]「Hey, blacksmith. Tower rumors? ...{0}」\nBarbo[laugh]「Gahaha! Half of Dolf's rumors smell of booze!」
+128|Mick[smug]「Wanna hear? It ain't free... eh, fine. {0}」\nDolf「Mick, quit stalling.」
+131|Barbo[drink]「Gulp... pwaah! Ah, the tower. {0}」\nMick[laugh]「Barbo, you've got foam in your beard.」
+134|The Drunks[cheers]「「「Cheers!」」」\nDolf「...So, rumors. {0}」
+136|Dolf「The blacksmith, in the tower? ...Gahaha, that's a fine story to drink to.」
+137|Barbo[doubt]「Hey blacksmith, if you're going up the tower, bring back some booze from the top.」
+138|Mick[smug]「We're betting on which floor you'll come back from. I picked 3. ...Don't let me down.」
+139|Mick[shock]「The floor 10 lord?! ...My money!」\nDolf[laugh]「Gahaha! Told you he'd do it.」
+140|Barbo[smile]「Blacksmith, let me buy you a round. ...Gaston, put his on my tab.」
+141|Dolf[proud]「Back in my day, I raised hell in that tower too. ...Up to floor 3, anyway.」
+142|Mick[grin]「Does booze evaporate on the desert floors? ...That'd be a problem.」
+143|The Drunks[cheers]「「「To the Sandworm Slayer, cheers!」」」
+144|Barbo[laugh]「Gahaha! Your stories make the drinks taste good again tonight!」
+145|Dolf[think]「...Floor 40, eh. Your old man must be happy, wherever he is.」
+146|Mick「I tried swinging a hammer lately. ...Smashed my finger.」
+147|Barbo[shock]「The King summoned you?! ...Hey, mention my name too. "Tavern buddy," got it?」
+148|Dolf[smirk]「Was the castle booze good? ...Oh, you didn't drink? What a waste.」
+149|Mick[smile]「Floor 60... Hey, don't forget about us, okay?」\nDolf「How could he forget a bunch this boozy?」
+150|The Drunks[sleep]「...Zzz... zzz...」\nGaston「...They're out cold today. Drank too much over your stories.」
+151|Dolf[sleepy]「...Blacksmith... you're our... pride... zzz」
+152|Barbo[laugh]「Orichalcum?! Make a barrel out of it! Never spill a drop again!」
+153|Mick[think]「Wonder what booze tastes like above the clouds. ...Sweet, maybe?」
+154|Dolf[proud]「Lately I tell the young folks at the tavern about you. ...With a little extra flavor.」
+155|Barbo「...The final floor, huh. When you're back, I'll open my best barrel.」\nMick「Me too!」 Dolf「Me too.」
+156|Dolf[serious]「...Hey, blacksmith. Come back, alright? Drinking alone tastes awful.」
+157|The Drunks[cheers]「「「Welcome back! To the tower smith, cheers!」」」
+158|Dolf[laugh]「Gahaha! I believed in you from the start!」\nMick「You bet on floor 3!」
+159|Dario[smirk]「Oh, blacksmith. Here for a drink? ...As for rumors, {0}」
+161|Pipi[wink]「Hey hey, did you hear? {0}」\nLiene[calm]「Pipi, you're too loud.」
+164|Cecil[smile]「Something I heard at the guild... {0}」
+166|Wolf「...Hmph. {0} ...Young ones, watch yourselves.」
+169|Liene[calm]「The spirits say... {0}」
+171|Gold[drink]「...Pwaah! The tower? {0}」
+173|Noah[think]「According to today's observations... {0} ...Probably, anyway.」
+176|Tim[laugh]「Mister! I just heard, {0}」\nGold[laugh]「Gahaha, the lad's got quick ears.」

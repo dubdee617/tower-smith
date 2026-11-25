@@ -1,0 +1,219 @@
+210|「Want me to wave?」
+211|Elly[happy]「Really?! ...I definitely won't be able to see it, though.」
+212|「Sorry for making you worry.」
+213|Elly[shy]「...Yes. So please come back safe, okay?」
+214|Elly「I tried making a new herbal tea. ...It's a little bitter.」
+215|「I'll have some.」
+216|Elly[happy]「How is it? ...Hehe, your face is all scrunched up.」
+217|「I'm not good with bitter things.」
+218|Elly[smile]「Then I'll add some honey.」
+219|「Am I your taste tester?」
+220|Elly[angry]「How rude! ...Well, maybe a little.」
+221|Ria「More people are challenging the tower lately. ...But the ones who come back...」
+222|「I'll come back.」
+223|Ria[happy]「...Yes. I'll record those words.」
+224|「I hope everyone makes it.」
+225|Ria[smile]「...You're always worrying about others, Mr. Smith.」
+226|「More paperwork for you, huh.」
+227|Ria[laugh]「Seriously. Will you help?」
+228|Ria「What do you do on your days off? ...J-just for reference.」
+229|「Hammer iron.」
+230|Ria[laugh]「...Do you know what "day off" means?」
+231|「Clean the workshop.」
+232|Ria[smile]「Doesn't Chicchi do that for you...?」
+233|「What do you do, Ria?」
+234|Ria[shy]「...I just sort of happen to walk past your workshop.」
+235|Fuuka「Are you not hungry? I will share half my dried meat.」
+236|「Thanks.」
+237|Fuuka[smile]「...Food tastes better when eaten with someone.」
+238|「You eat it.」
+239|Fuuka[pout]「...I wished to split it with you.」
+240|「Is it tower monster meat?」
+241|Fuuka[laugh]「It is not. ...Probably.」
+242|Fuuka「...Why do you climb the tower?」
+243|「Because materials are expensive.」
+244|Fuuka[laugh]「...Is that all?」
+245|「I wanted to see it with my own two feet, just once.」
+246|Fuuka[love]「...That side of you is...」
+247|「No particular reason.」
+248|Fuuka「It should not be a tower one can climb without reason, though.」
+249|Jin「Would you show me a sword you forged? ...Oho.」
+250|「What do you think?」
+251|Jin[smile]「A straight sword. It resembles the one who forged it.」
+252|Jin[laugh]「That answer's straight too.」
+253|「It's not for sale.」
+254|Jin「Ho ho ho. I won't take it.」
+255|Jin「When I was young, all I thought about was getting stronger.」
+256|「Is it different now?」
+257|Jin[think]「Now... I think about who I get stronger for.」
+258|「I understand.」
+259|Jin「...I see. You're still on that road too.」
+260|「So you were young once, old man.」
+261|Jin[laugh]「Of course. Long, long ago. ...Ho ho ho.」
+262|{0}「Your forge fire... I feel like it reaches all the way here.」
+263|「Your forge fire... I feel like it reaches all the way here.」
+264|「Is it hot?」
+265|{0}[laugh]「No, it's warm.」
+266|[laugh]「No, it's warm.」
+267|「I'll never let it go out.」
+268|{0}[smile]「I'll remember those words.」
+269|[smile]「I'll remember those words.」
+270|「You're imagining it.」
+271|{0}「...Perhaps I am.」
+272|「...Perhaps I am.」
+273|{0}「I wonder why children of man aim for high places.」
+274|「I wonder why children of man aim for high places.」
+275|「I want to see sights I've never seen.」
+276|{0}[smile]「...What a lovely reason.」
+277|[smile]「...What a lovely reason.」
+278|「For materials.」
+279|{0}[laugh]「Hehe, how honest.」
+280|[laugh]「Hehe, how honest.」
+281|「Who knows.」
+282|{0}「Someday, tell me your answer.」
+283|「Someday, tell me your answer.」
+284|Jenny[shy]「...Did you get a little cooler lately?」
+285|Jenny[angry]「...Right, I'm imagining it. Idiot.」
+286|「You've gotten prettier yourself.」
+287|Jenny[inlove]「Wh-wh-what are you saying?!」
+288|「The tower's been training me.」
+289|Jenny[shy]「...Hmph. O-oh, really.」
+290|Jenny「When you reach the top of the tower, what's the first thing you want to do?」
+291|「Light the forge.」
+292|Jenny[laugh]「That's so you it's funny.」
+293|「Go to your shop and report.」
+294|Jenny[happy]「...Come to me first. That's a promise.」
+295|「Sleep.」
+296|Jenny[smile]「...I'll lend you my lap, at least.」
+297|Jenny[worried]「Hey. ...Don't disappear on me, okay? Not from me.」
+298|「Okay. I promise.」
+299|Jenny[inlove]「...Mm.」
+300|「Are you closing the shop?」
+301|Jenny[angry]「NO! You're seriously so dense!」
+302|「Of course not.」
+303|Jenny[happy]「...I won't forget those words.」
+304|Elly「Give me your hand. ...I'm just checking your pulse. Your pulse.」
+305|「Here.」
+306|Elly[shy]「...It's fast. ...Mine is, I mean.」
+307|「Is something wrong?」
+308|Elly[laugh]「Nothing's wrong! I just wanted to check.」
+309|「Your hand is warm, Elly.」
+310|Elly[happy]「...! Th-that's your fault, Mr. Smith!」
+311|Elly[worried]「Sometimes I can't help thinking... what if you don't come back...」
+312|「I'll always come back.」
+313|Elly[happy]「...Yes. I'll believe in you and wait.」
+314|「You're overthinking it.」
+315|Elly[angry]「And who's making me think so much?!」
+316|「Then pray for me.」
+317|Elly[shy]「...I pray every day. Honestly.」
+318|Elly「Someday... instead of the clinic, could I come make tea at your workshop?」
+319|「Come anytime.」
+320|Elly[happy]「Hehe, I'll really come, you know?」
+321|「It's hot by the forge.」
+322|Elly[smile]「I don't mind. ...Not if I'm next to you.」
+323|「Tea delivery?」
+324|Elly[laugh]「No!」
+325|Ria「I keep only your records in a separate ledger. ...I don't show it to anyone.」
+326|「Why?」
+327|Ria[shy]「...It's a secret.」
+328|「You take good care of it.」
+329|Ria[happy]「Yes. ...It's my treasure.」
+330|「Aren't duplicate records against the rules?」
+331|Ria[laugh]「Please keep it a secret from the guild.」
+332|Ria[shy]「...Today, can I stay here a little longer?」
+333|Ria[happy]「...Thank you. I'll sit next to you.」
+334|「What about work?」
+335|Ria[smile]「I finished today's share before coming.」
+336|「Hungry?」
+337|Ria[laugh]「...Just a little.」
+338|Ria「I used to be scared of the tower. It felt like it took my father away.」
+339|「And now?」
+340|Ria[smile]「Now... I think of it as the place you come back from.」
+341|「I'll go to the top and see for myself.」
+342|Ria[happy]「...Okay. I'll wait. Always.」
+343|「You don't have to force yourself to like it.」
+344|Ria[shy]「...You're so kind. That's the part of you I...」
+345|Fuuka[shy]「Ever since you sharpened this katana, it has served me well.」
+346|「You take good care of it.」
+347|Fuuka[love]「Because it is something your hands have touched.」
+348|「I'll sharpen it again.」
+349|Fuuka[laugh]「...Then I shall visit every day.」
+350|「I'll charge you for it.」
+351|Fuuka[pout]「...Stingy.」
+352|Fuuka「When my mission ends, what will I do? ...Perhaps keep watch over the forge in your workshop.」
+353|「Might be nice.」
+354|Fuuka[love]「...! I heard those words clearly.」
+355|「Blacksmithing is hard work.」
+356|Fuuka[pout]「...That is not what I meant.」
+357|「I'm always looking for apprentices.」
+358|Fuuka[laugh]「...Heh. I do not mind starting as a trainee.」
+359|Fuuka「I had a feeling I would meet you here today.」
+360|「Shinobi intuition?」
+361|Fuuka[smile]「No. ...Because I wished to meet you.」
+362|「Same here.」
+363|Fuuka[love]「...Eh? ...I-is that so.」
+364|「Just a coincidence.」
+365|Fuuka[pout]「Even a coincidence makes me happy.」
+366|Jenny「So, buying anything?」
+367|Jenny[shy]「...W-well, I don't mind talking again sometime.」
+368|Jenny「Look, a customer. ...Later.」
+369|Jenny[smile]「Be careful out there.」
+370|Jenny「Quit spacing out and get to work! ...You too.」
+371|Elly「Anywhere else that hurts?」
+372|Elly[smile]「Talking with you cheered me up.」
+373|Elly「Just please don't overdo it.」
+374|Elly[shy]「...Please come again.」
+375|Elly「Oh, a patient. ...See you later!」
+376|Ria「Anything else I can help with?」
+377|Ria[smile]「I'll keep your records properly.」
+378|Ria「Be careful. ...I'll be waiting for you.」
+379|Ria[shy]「...I talked a bit too much.」
+380|Ria「Boltz is calling me. See you later.」
+381|Jin「...Come again. It's nice and quiet here.」
+382|Jin[smile]「Glad we talked. The tower isn't going anywhere.」
+383|Jin「Should've brought some tea.」
+384|Jin[laugh]「Ho ho ho. Talking with young folk keeps me young.」
+385|Jin「Off you go. I'll be right here.」
+386|Jenny[shy]「...Leaving already? ...Hmph, see you.」
+387|Jenny[happy]「Glad we talked. ...Just kidding.」
+388|Elly[happy]「...I'm glad I got to see you today.」
+389|Elly[shy]「Let's have tea again.」
+390|Ria[happy]「...Can I stop by the workshop again tonight?」
+391|Ria[shy]「...Take care. I'll be waiting.」
+392|The next morning. A workshop on the edge of town.\nA nice smell of something cooking drifts from the kitchen.
+393|Chicchi[smile]「Breakfast's ready, boss.\n...Staring at the ledger again, yo?」
+394|「Iron went up again. Copper too.\n...And the quality keeps dropping.」
+395|Chicchi, the freeloader. Former thief.\nBroke into the workshop and got caught in half a second.\nFor some reason, he's lived here ever since, doing chores.
+396|Chicchi[laugh]「I'm good at picking locks and cleaning, yo.\nStealing... wasn't my thing, yo.」
+397|Als[smile]「Good morning, Master!\nI finished 500 practice swings!」
+398|Als, the apprentice. 16 years old.\nHe writes down his master's words in a diary every day.\n...Most of it is "eh, it'll work out."
+399|Lou[laugh]「Boss! I lit the forge!\nAnd I hammered three nails in straight!」
+400|Lou, the trainee assistant. Still green,\nbut always happy in front of the forge.
+401|Buppa「...Zzz... zzz...」
+402|The one sleeping on the floor is Buppa.\nHe doesn't actually live here. ...Probably.
+403|Just then, someone knocked on the workshop door.
+404|Dan「...You the blacksmith here?\nThis is a sword you forged, right?」
+405|What he held out was a broken sword.\nYou recognized it. One you forged three years ago.
+406|Dan「Its owner died on floor ten of the tower.\n...Held on to this till the very end.」
+407|Dan「He asked me to thank you.\n...That's all. See ya.」
+408|「...I see.」
+409|The workshop went quiet.\nNeither Als nor Chicchi said a word.
+410|「...It was a good sword.\nPricey iron, copper getting worse.\nAt this rate, I can't forge anything good.」
+411|「...Alright, I've decided.\nIf materials are so expensive, I'll just go get them myself.」
+412|Als[shock]「...Master? You don't mean...」
+413|「I'm climbing the tower. Ore, monster materials...\nI'll pick them with my own eyes and bring them home.」
+414|Chicchi[shock]「Huh?! Boss, you're a BLACKSMITH, yo!\nNot an adventurer, yo!」
+415|Lou[shock]「Th-the tower? THAT tower?!\nThe one where you can't even see the top?!」
+416|Buppa[shock]「Whoa! ...Oh, it's tower talk.\n...I was sleeping, sleeping.」
+417|Als[think]「...You're going even if we stop you, aren't you.」\n「Yeah. Sorry.」
+418|「Eh... it'll probably work out somehow.」
+419|Als[laugh]「...I'm writing that in my diary!」
+420|Als[smile]「Master, monsters drop loot when you beat them.\nHave the guild turn it into materials,\nand you can smith with them.」
+421|Chicchi[smile]「You can buy herbs at the item shop, yo.\nGear is under "Change Gear" in the workshop, yo.\n...Make sure you come back, yo.」
+422|That night.\nIn the workshop, while everyone slept,\nthe blacksmith sat alone, looking at the broken sword.
+423|「...All this time,\nI've forged for other people.\n...Just once,\nI wanted to swing one myself.」
+424|Beyond the window, the tower hid the moon.
+425|And so began the tower climb\nof the finest blacksmith in town.
+426|Skip
+427|<img src="{0}home_in.jpg" alt="" style="filter:brightness(.45)"><div class="caption">The Blacksmith's Name</div>
+429|<input id="nm" maxlength="8" autocomplete="off" placeholder="Blacksmith"><small>Up to 8 characters. Leave empty for "Blacksmith"</small>

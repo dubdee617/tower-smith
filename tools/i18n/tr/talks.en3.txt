@@ -1,0 +1,310 @@
+620|Dora「It's the last one, isn't it. ...Every herb in the shop. Take them. Pay me later.」
+621|Dora[laugh]「You came back alive. ...Hmph, told you you were a tough old nail.」
+622|Bernardo「Your deposits are growing steadily. ...The tower appears to be a sound investment.」
+623|Bernardo[smile]「The Great Sandworm... Your credit is now the best in town. The ledger says so.」
+624|Bernardo[think]「Above floor 40, the books ought to account for the "possibility of no return"... In your case, I won't enter it.」
+625|Bernardo「The mithril market moved because of you. ...A little restraint would be appreciated.」
+626|Bernardo[smile]「Floor 60... There's talk of founding a new smithing school in town in your name.」
+627|Bernardo「The palace has inquired about orichalcum trading. ...You are a national asset now.」
+628|Bernardo[think]「Above the clouds... Calculating your return is harder than calculating interest.」
+629|Bernardo「For your final challenge, not as a banker but as a fellow townsman... good fortune.」
+630|Bernardo[smile]「Welcome back. ...Investing in you was this town's greatest success since its founding.」
+631|Gaston[laugh]「Whoever bet on floor 20 finally lost big! Wahaha, nobody's betting anymore.」
+632|Gaston[laugh]「A toast to the Sandworm-slaying blacksmith! ...Tonight your story will sell all the drinks I want.」
+633|Gaston「Back from the snowfield? Hot liquor it is. ...On the house today.」
+634|Gaston[think]「Lately the adventurers in my tavern have been well-behaved. ...Seeing your back made 'em ashamed, I hear.」
+635|Gaston[laugh]「Floor 60! A bard wrote a song about you. ...A tone-deaf one, mind you.」
+636|Gaston「Tell me about the canyon. ...I'll keep the customers quiet tonight.」
+637|Gaston[think]「Thought "above the clouds" was just tavern nonsense. ...If you say so, it must be true.」
+638|Gaston「The last floor, eh. ...When you're back, I'll open my best bottle. Promise.」
+639|Gaston[laugh]「He's back! As promised, my best bottle! ...Hey, everyone, raise your glasses!」
+640|Jenny「Welco... oh, it's you. What is it today?」
+641|Jenny「You've got skill, so think about business a little more, would you.」
+642|Jenny[worried]「Hey, are you eating properly? ...I can tell from your face.」
+643|Elly「Oh, Mr. Smith. Hello. What brings you here today?」
+644|Elly「Please don't forget to take your medicine.」
+645|Elly「Do you stay in the workshop even on your days off, Mr. Smith?」
+646|Ria[happy]「Oh, Mr. Smith! Good morning!」
+647|Ria「If anything's troubling you, feel free to come talk to me anytime!」
+648|Ria[smile]「You're always so calm, Mr. Smith. I want to be like that.」
+649|Jenny[shy]「...It's not like I was waiting. But, welcome back.」
+650|Elly[happy]「Welcome back. Hehe, I'm relieved you look well today.」
+651|Ria[happy]「Oh, Mr. Smith! Tell me more adventure stories today!」
+652|Jenny「Your swords have a good edge. But the scabbard finish is sloppy. Customers notice that stuff.」
+653|「I'm not good with scabbards.」
+654|Jenny「I know. ...That's why I'm saying it. They'd sell better if you fixed that.」
+655|「I'll be careful next time.」
+656|Jenny[smile]「Good, obedient. ...I'm watching, you know.」
+657|「As long as the blade's good, right?」
+658|Jenny[angry]「No. A sword is the face of the one who carries it.」
+659|Jenny「Axes are selling well this month. The woodcutters' guild is clearing a new forest.」
+660|「I'll forge extra axes.」
+661|Jenny[smile]「Glad you're quick on the uptake. Three... no, five please.」
+662|「What about the forest monsters?」
+663|Jenny「Who knows. That's why axes sell.」
+664|「I prefer swords, though.」
+665|Jenny[angry]「Don't run a business on preferences.」
+666|Jenny「Your price tags are too cheap again. You've got skill, so think about business a little more.」
+667|「Some people can't afford expensive ones.」
+668|Jenny「...That's so you. ...Well, I don't hate it.」
+669|「You decide.」
+670|Jenny[laugh]「Fine. But no complaints, okay?」
+671|「I'm bad with money.」
+672|Jenny[angry]「Don't just say you're bad at it! Your livelihood depends on it.」
+673|Jenny「The other day an adventurer brought in a chipped sword. "Because it's cheap," he said. ...Not one of ours, but it made me mad.」
+674|「A tool is only as good as how you use it.」
+675|Jenny「Exactly. They don't maintain them and then just complain.」
+676|「Just fix it for him.」
+677|Jenny[smile]「...Knew you'd say that.」
+678|「It probably was cheap.」
+679|Jenny「...That's not the point.」
+680|Jenny「I put weapons forged from tower materials in the shop and they sold right away. ...Annoying, but they were good work.」
+681|「Annoying?」
+682|Jenny[angry]「Annoying! However good my eye is, I can't beat your skill.」
+683|「They sold because it's your shop.」
+684|Jenny[shy]「...I-it's nothing. I'm just good at displaying them.」
+685|「I'll forge better ones next time.」
+686|Jenny[smile]「You said it. I'm counting on you.」
+687|Jenny「Off to the tower again? Honestly, you never learn.」
+688|「I need materials.」
+689|Jenny「...I know. I was just saying.」
+690|「Worried?」
+691|Jenny[angry]「I-I'm not! ...Only a little.」
+692|「I'll be right back.」
+693|Jenny「...Your "right back" always takes forever.」
+694|「Chicchi cooks for me.」
+695|Jenny「Isn't Chicchi's cooking burnt? ...I'll bring something over sometime.」
+696|「I forgot.」
+697|Jenny[angry]「Don't forget! ...Here, bread. I had extra.」
+698|「Are YOU eating?」
+699|Jenny[shy]「O-of course I am. ...Is this the time to worry about others?」
+700|Jenny「When I was little, I used to polish your master's swords at my dad's shop. ...You were quiet even back then.」
+701|「You remember that?」
+702|Jenny[smile]「Of course. You were always in front of the forge, drenched in sweat.」
+703|「And you were a nag even back then.」
+704|Jenny[angry]「Sh-shut up! ...But maybe.」
+705|「Brings back memories.」
+706|Jenny[smile]「...Yeah. I've loved your swords since back then.」
+707|Jenny「What do you do on your days off? ...J-just asking, in case.」
+708|Jenny[laugh]「...Figured. Do you know what a day off is?」
+709|「Sleep.」
+710|Jenny「...That's worrying in its own way.」
+711|「Is there something?」
+712|Jenny[shy]「N-nothing! ...I just heard new tea leaves came into the market.」
+713|Jenny「Does this hair clip look weird? ...A customer complimented it, so I'm just asking.」
+714|「It suits you.」
+715|Jenny[shy]「...O-oh. ...Hmph. ...Thanks.」
+716|「Is it different from usual?」
+717|Jenny[angry]「...Forget it. I was stupid to ask you.」
+718|「Nice metalwork on the clasp.」
+719|Jenny[laugh]「THAT'S what you look at? ...Such a craftsman.」
+720|Jenny「After closing up, doing the books alone, it gets really quiet sometimes. ...I can hear your workshop from here.」
+721|「Was it noisy?」
+722|Jenny[angry]「No. ...I meant it's calming.」
+723|「I'll keep it down at night.」
+724|Jenny[angry]「You don't have to! ...Idiot.」
+725|「I can see your shop's light from the workshop too.」
+726|Jenny[shy]「...I see. ...That makes me kind of happy.」
+727|Jenny「Lately the town kids keep saying "I'm gonna be like the blacksmith mister." ...You're popular.」
+728|「Mister, huh...」
+729|Jenny[laugh]「What, does that bother you? You're forty, so you're a mister.」
+730|「I hope some of them become blacksmiths.」
+731|Jenny[smile]「...That's so craftsman of you.」
+732|「You're popular too, aren't you?」
+733|Jenny[shy]「...Wh-what's that all of a sudden?」
+734|Jenny[shy]「Hey... are you this nice to everyone?」
+735|「Not really.」
+736|Jenny[shy]「...Then, am I special? ...N-never mind!」
+737|「Am I nice?」
+738|Jenny「...Not even realizing it is the most unfair part.」
+739|「With you, I want to be.」
+740|Jenny[inlove]「...! ...Say that one more time.」
+741|Jenny「While you're in the tower, I polish the swords in the shop one by one. ...Come back before I finish all of them.」
+742|「I'll make it in time.」
+743|Jenny[smile]「...Okay. It's a promise.」
+744|「How many is "all"?」
+745|Jenny[laugh]「About a hundred? ...I'll polish them slowly.」
+746|「Polish too much and they'll wear down.」
+747|Jenny[angry]「...Ugh, that's not the point.」
+748|Jenny「...Sometimes acting tough gets exhausting. Especially in front of you.」
+749|「You don't have to act tough.」
+750|Jenny[shy]「...Don't say it so easily. ...But, yeah. I'll stop, just a little.」
+751|Sit beside her in silence
+752|Jenny[shy]「...Thanks. Not saying anything is almost unfairly kind.」
+753|「I like the tough you too, though.」
+754|Jenny[inlove]「...! I-idiot! Don't ambush me like that!」
+755|Jenny「The other day I dreamed your sword came back broken. ...My hands were shaking for a while after I woke up.」
+756|「Even if the sword breaks, I'll come back.」
+757|Jenny[worried]「...That's not fair. ...But I'll believe it.」
+758|Jenny「...I know. I know, but still.」
+759|「Sorry I gave you a bad dream.」
+760|Jenny[smile]「...It's not your fault. ...But it's a little bit your fault.」
+761|Jenny「On my next day off, will you help me sort the shop storeroom? ...I can't get the heavy boxes down alone.」
+762|「Sure.」
+763|Jenny[happy]「...Really? Then I'll make lunch. ...No complaints.」
+764|「I'll bring Chicchi too.」
+765|Jenny[angry]「...Just the two of us would've been fine. ...F-fine, whatever.」
+766|「Leave the heavy boxes to me.」
+767|Jenny[smile]「Reliable, aren't you. ...I've always liked that about you.」
+768|Jenny「...I don't hate your "eh, it'll work out." ...When I hear it, it feels like things really will.」
+769|「It'll work out.」
+770|Jenny[smile]「...Yeah. If you say so, it must be true.」
+771|「It's just a catchphrase.」
+772|Jenny[laugh]「I know. But it works. Strangely.」
+773|「It works out because you're here.」
+774|Jenny[inlove]「...! ...You really are unfair.」
+775|Elly「This might sting a little. Please hold still. ...There, all done.」
+776|Elly[smile]「You're welcome. Please take care.」
+777|「Didn't hurt at all.」
+778|Elly[laugh]「Hehe, you're so tough. But when it hurts, please say so.」
+779|「You're skilled.」
+780|Elly[shy]「I do it every day. ...But I'm happy to be praised.」
+781|Elly「Please don't forget your medicine. One packet morning and night.」
+782|「I won't forget.」
+783|Elly[smile]「Okay. ...But I'll write it down just in case.」
+784|「Is it bitter?」
+785|Elly[laugh]「Just a little. Take it with honey.」
+786|「What if I forget?」
+787|Elly「...It'll heal slower. That's all. So please don't forget.」
+788|Elly「Hehe, I'm relieved it's not a serious injury. ...But don't ignore the burns on your hands.」
+789|Elly[angry]「Medal or not, pain is pain. I'll put some ointment on.」
+790|「Would you?」
+791|Elly[smile]「Yes. ...Please hold still.」
+792|「You noticed?」
+793|Elly[shy]「I'm a healer. ...I look closely at people's hands.」
+794|Elly「Please be careful. Just don't overdo it.」
+795|「Got it.」
+796|Elly[smile]「...Yes. I'll be waiting.」
+797|「Can't climb without overdoing it.」
+798|Elly[angry]「Even so. If you don't come back, it's all for nothing.」
+799|「I'll bring extra herbs.」
+800|Elly[happy]「That's good. ...And one extra bandage.」
+801|Elly「The clinic's herb garden grew well this year. I tried mixing in a little tower soil.」
+802|「Tower soil works?」
+803|Elly[smile]「Strange, isn't it? Maybe it's the goddesses' blessing.」
+804|「I'll bring you some soil next time.」
+805|Elly[happy]「Really? That'd help a lot!」
+806|「You do gardening too?」
+807|Elly[laugh]「Yes. Healers do everything.」
+808|Elly「Everyone in this town is too reckless. ...You too, Mr. Smith.」
+809|「I'm still fine.」
+810|Elly[angry]「People who say that are the ones who get carried in.」
+811|「I'll be careful.」
+812|Elly[smile]「Okay. That's a promise.」
+813|「You work too hard yourself.」
+814|Elly[shy]「...Do I? ...I'll try to rest a little.」
+815|「I don't want the forge fire to go out.」
+816|Elly[smile]「...So like a craftsman. But please let your body rest too.」
+817|「I go fishing sometimes.」
+818|Elly[happy]「Fishing! That's unexpected. ...Tell me where the fish bite sometime.」
+819|「No days off.」
+820|Elly[angry]「...As a healer, I can't overlook that.」
+821|Elly「When I had a fever as a child, my mother held my hand all night. ...That's why I decided to become a healer.」
+822|「A good mother.」
+823|Elly[smile]「Yes. ...She's doing well in the countryside now.」
+824|「Now you're the one holding hands.」
+825|Elly[shy]「...Yes. I'd be happy if I've become that.」
+826|「Did the fever go down?」
+827|Elly[laugh]「Hehe, that was decades ago.」
+828|Elly「I've started embroidery lately. ...I'm not very good.」
+829|Elly[shy]「...Please don't laugh. ...This is supposed to be a flower.」
+830|「Looks like you're good with a needle.」
+831|Elly[laugh]「I'm used to stitching wounds.」
+832|「What are you stitching?」
+833|Elly[shy]「...I-it's a secret. I'll show you when it's done.」
+834|Elly「The kids who come to the clinic only talk about you. "The tower blacksmith," they say.」
+835|Elly[laugh]「Hehe, a bashful Mr. Smith is a rare sight.」
+836|「They're not scared of me?」
+837|Elly[smile]「No. They all admire you. ...Me too, a little.」
+838|「Do you like kids?」
+839|Elly[happy]「Yes, I love them. ...They're noisy, though.」
+840|Elly「The other day I couldn't save a patient. ...A healer, and I couldn't do anything.」
+841|Listen in silence
+842|Elly[worried]「...Thank you for listening. I feel a little lighter.」
+843|「It's not your fault.」
+844|Elly「...I know. But I don't want to forget.」
+845|「You're doing well.」
+846|Elly[smile]「...Hearing that, I can keep going tomorrow.」
+847|Elly「I made a new herbal tea. It helps on sleepless nights. ...Are you sleeping well, Mr. Smith?」
+848|「Like a log.」
+849|Elly[smile]「Good. ...But I'll give you a bag anyway.」
+850|「I dream of the tower.」
+851|Elly[worried]「...I knew it. Drink this tea before bed.」
+852|「Are YOU sleeping?」
+853|Elly[shy]「...On nights you come back, I sleep well.」
+854|Elly「You're not hurt today. ...Good.」
+855|「I came to see your face.」
+856|Elly[happy]「...! ...Th-that makes me happy. I'll make tea.」
+857|「Came for medicine.」
+858|Elly[smile]「Okay, I'll get it ready. ...But I was happy to see your face.」
+859|「Better not to be hurt, right?」
+860|Elly[shy]「Yes. ...But it's a little lonely to lose a reason for you to come.」
+861|Elly「I try to be kind to everyone. ...But with you, it seems a little different.」
+862|Elly[shy]「...When it's your turn, my hands shake a little.」
+863|Elly[smile]「...Hehe. Let's leave it at that.」
+864|「It's different for me too, only with you.」
+865|Elly[happy]「...! ...That's unfair. I won't sleep tonight.」
+866|Elly「When I think what if you don't come back from the tower... I get scared. And I'm a healer.」
+867|Elly[happy]「...Yes. I'll believe those words.」
+868|「Even healers get scared.」
+869|Elly[smile]「...True. You really are a kind person.」
+870|「I'll be fine with your medicine.」
+871|Elly[smile]「...Then I'll make even better medicine.」
+872|Elly「On my next day off, I'm going to the hill to gather herbs. ...Would you come with me?」
+873|「Let's go.」
+874|Elly[happy]「Really! ...I'll make lunch.」
+875|「I can't tell herbs apart.」
+876|Elly[laugh]「It's fine. I'll teach you. ...Right by your side.」
+877|「I'll be your bodyguard.」
+878|Elly[smile]「Hehe, there are no monsters on the hill. ...But it's reassuring.」
+879|Elly「Let me see your hands. ...See, another new cut. ...I love these hands.」
+880|「They're covered in scars.」
+881|Elly[smile]「That's why. They're hands that have protected so many people.」
+882|Silently let her hold your hand
+883|Elly[shy]「...Warm. ...Just a little longer, like this.」
+884|Elly[shy]「...My hands always get cold while I'm waiting for you.」
+885|Elly「Since I fell for someone, every day's a little more colorful. ...That alone makes me happy.」
+886|「That's good.」
+887|Elly[smile]「Yes. ...You're not going to ask who? Hehe.」
+888|「Maybe it's the same for me.」
+889|Elly[happy]「...! ...That makes me very, very happy.」
+890|「He's a lucky guy.」
+891|Elly[shy]「...I hope he thinks so.」
+892|Ria[happy]「Oh, Mr. Smith! Good morning! Here's today's report!」
+893|Ria[smile]「Not at all! This is my job!」
+894|「Energetic this morning.」
+895|Ria[laugh]「Yes! Energy's my only strong point!」
+896|「Nice handwriting.」
+897|Ria[shy]「...Hehe. My handwriting is the one thing my dad praised.」
+898|Ria「Here's this request form. Please check it carefully! ...Oh, the reward here was wrong!」
+899|「Good thing you noticed.」
+900|Ria[smile]「Yes! I'm glad you checked. Thank you!」
+901|「Make mistakes in my favor next time.」
+902|Ria[angry]「No! The guild's credibility is at stake.」
+903|「Happens all the time.」
+904|Ria「...Thank you. I'll be more careful next time!」
+905|Ria「Some adventurers fudge their reports. But you're always honest, Mr. Smith.」
+906|「I'm bad at lying.」
+907|Ria[smile]「Hehe, it'd show on your face.」
+908|「No point fudging it.」
+909|Ria「Right. Records protect someone's life later on.」
+910|「I've tried to see if I'd get caught.」
+911|Ria[angry]「...I'll pretend I didn't hear that.」
+912|Ria「Good work! As expected! ...Boltz's eyes were sparkling at today's loot.」
+913|「Boltz loves materials.」
+914|Ria[laugh]「Yes. After work he looks like a kid.」
+915|「What makes YOUR eyes sparkle?」
+916|Ria[shy]「Eh, me? ...Sweets, I guess.」
+917|「Got lucky.」
+918|Ria「Luck is part of skill! I'll record it properly.」
+919|Ria「If anything's troubling you, feel free to come talk to me! ...Though you rarely do, Mr. Smith.」
+920|「Because nothing's troubling me.」
+921|Ria「Then that's fine. ...But if something does, okay?」
+922|「I'll come to you next time.」
+923|Ria[happy]「Okay! I'll be waiting!」
+924|「I don't want to trouble you.」
+925|Ria[smile]「It's no trouble at all. That's my job.」
+926|Ria「Take care! Tell me more stories when you're back!」
+927|「I'll bring back stories.」
+928|Ria[happy]「Looking forward to it! ...Make sure you come back, okay?」
+929|「Nothing worth telling.」

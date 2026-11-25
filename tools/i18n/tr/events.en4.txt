@@ -1,0 +1,192 @@
+640|Fuuka[shy]「...Shall we go up on the roof? You can see the top of the tower from here.」\nWhen the two of you sat on the roof, the tower's tip melted into the stars.
+641|Fuuka[love]「A shinobi has no place to return to. ...But here, I find I want to.」
+642|Fuuka[love]「So, may I make this my lookout? A place to watch for you coming home.」
+643|「Sure. Come anytime.」
+644|Fuuka[laugh]「Thank you. ...I will not need a spare key.」
+645|Keep sitting beside her in silence
+646|Fuuka[love]「...Yes. I shall take that as your answer.」
+647|「Use the front door, please.」
+648|Fuuka[pout]「...That, I cannot promise.」
+649|(Fuuka now sometimes drops by the workshop)
+650|{0} is going to relax in the workshop for a while.
+652|When you entered the armory, Jenny brought out a sword from the back of the shop.
+653|Jenny「Show me the sword that beat the floor 10 lord. ...Hmm. Nice edge. Very you.」
+654|Jenny「Hey, remember? The first day you brought a sword to our shop.」
+655|Jenny[laugh]「Dad was still running the shop, and I was secretly watching from under the counter.\nYou were so nervous you didn't say a word the whole time.」
+656|「...I remember. It didn't sell.」
+657|Jenny[smile]「Hehe, right. It didn't sell. ...But what happened to that sword is a secret.」
+658|「You were tiny back then.」
+659|Jenny[angry]「Sh-shut up! ...You were a beanpole yourself.」
+660|「You remember all that?」
+661|Jenny[shy]「...Of course I remember. How could I forget?」
+662|Jenny「...Floor 10. Hard to imagine from the you back then.\nLook, the edge is chipped. Sharpen it before you go.」
+663|The armory was quieter than usual.\nJenny was leaning on the counter, looking at the tower out the window.
+664|Jenny「...I heard you were summoned to the castle. By the King. ...That's amazing.」
+665|Jenny[worried]「...Hey. I kind of feel like you're going farther and farther away.」
+666|Jenny[worried]「We used to see each other every day across the street.\nNow you're up in the tower, somewhere I don't know.」
+667|「I'm not going anywhere. My workshop is here.」
+668|Jenny[shy]「...Yeah. I know. ...I know, but I wanted to hear it.」
+669|「I come back because your shop is here.」
+670|Jenny[shy]「...Wh-what's that supposed to mean? ...That's not fair.」
+671|Stand beside her in silence
+672|Jenny[smile]「...Thanks. Not saying anything is so you.」
+673|Jenny[angry]「...N-never mind! Forget what I said!\nLook, you're meeting the King, right? You can't go dressed like that. I'll pick out proper clothes for you.」
+674|A familiar figure stood in front of the tower gate.\n...Jenny.
+675|Jenny「...Knew you'd come. Starting today, you're aiming for the very top, right?」
+676|Jenny「I closed the shop. ...At least let me see you off.」
+677|Jenny[worried]「...Hey. There's something I've never been able to say.\n...But I won't say it now. I'll say it when you come back.」
+678|Jenny[worried]「So you'd better come back. ...Promise me.」
+679|「I promise.」
+680|Jenny[smile]「...Okay. Break it and I'll never forgive you.」
+681|「You can say it now, you know.」
+682|Jenny[shy]「...No. If I say it, I feel like you won't come back.」
+683|「Tell me when I'm back.」
+684|Jenny[shy]「...Okay. Better be ready.」
+685|Jenny[laugh]「...Take care. Your swords are always the best.」
+686|Chicchi[smile]「Welcome back, boss!\nUh, the armory lady's here, yo!」
+687|「Jenny? That's rare. ...Where is she?」\nChicchi「Dunno? She was around here a minute ago, yo.」
+688|She's not in the workshop or the kitchen.\n...There's the sound of water from the back.
+689|You opened the door, and beyond the steam was Jenny.\nJenny「Hmm hmm~♪ ...Hm?」
+690|Jenny[shock]「..........」\n「..........」
+691|Jenny[angry]「Ky... KYAAAAH! GET OUT!!」\nA bucket came flying. ...She's got a good arm.
+692|You waited outside the door for a while.\nChicchi「...Boss, there's a bucket mark on your face, yo.」
+693|Jenny[angry]「Hey! Normally you'd check if someone's in the bath first!」
+694|「My fault. I'm really sorry.」
+695|Jenny[shy]「...Well, if it wasn't on purpose, fine.」
+696|「...I didn't see anything.」
+697|Jenny[shy]「...That face says you definitely did. ...Idiot.」
+698|「This is my house, though.」
+699|Jenny[angry]「Well, yeah, but! ...Ugh. If it wasn't on purpose, fine.」
+700|Jenny[shy]「...The water heater at my shop broke. I came to ask you to fix it.\nThen Chicchi said, "The bath's all heated, yo"...」
+701|「...So you got in.」\nJenny「It was heated for SOMEONE coming back from the tower, you know? Seemed like a waste.」
+702|Jenny[happy]「So, the water heater. You'll fix it, right?\n...I'll make dinner as thanks.」
+703|The workshop dinner table was livelier than usual that night.\nChicchi「...I didn't do anything wrong, did I, yo?」\nAls「I think you did a little wrong, Chicchi.」
+704|「Jenny. I've been summoned to the castle.\n...Want to come with me?」
+705|Jenny[shock]「Huh?! Me? To the castle?」
+706|Jenny[shy]「...Wh-why me? We're meeting the KING. I'm just an armorer's daughter.」
+707|「I want to go with you.」
+708|Jenny[inlove]「.......... ...F-fine, I guess. I'd worry about your manners if you went alone anyway.」
+709|「You know my swords better than anyone.」
+710|Jenny[shy]「...That's not fair. ...Fine. I'll go.」
+711|「I'd get nervous alone.」
+712|Jenny[laugh]「Ahaha, what's that? ...Oh, fine. I'll tag along.」
+713|Jenny[happy]「Come pick me up on the day.\n...I need time to get ready, so a little early.」
+714|That day. Jenny's voice came from the back of the armory.\nJenny「...You're early. I'm still getting ready! Wait there.」
+715|..........\n...A while later.
+716|Jenny「...Hey. Come here a sec.」
+717|You peeked into the back to find Jenny in the middle of changing.\nJenny[shy]「...Hehe. Gotcha.」
+718|Jenny[laugh]「Why are you frozen? ...Payback for the bath.\nOkay, turn around now. I'll be done in a sec.」
+719|You quickly turned your back.\n...Behind you, she was giggling.
+720|Jenny stepped out of the shop in a purple dress.\nHer hair was neatly put up, with gold ornaments in her ears.
+721|Jenny[shy]「...Well? Do I look weird?」
+722|「You're beautiful.」
+723|Jenny[inlove]「...! ...Idiot. Don't just say things like that out of nowhere.」
+724|「I barely recognized you.」
+725|Jenny[shy]「...That's a compliment, right? ...Thanks.」
+726|「I like your usual look too.」
+727|Jenny[shy]「...Ugh. I tried so hard. ...But I don't hate that about you.」
+728|The castle throne room.\nThe guards and the minister went wide-eyed at the sight of Jenny.
+729|Maid「My! Is that Jenny?」\nMaid「You look absolutely lovely today!」
+730|Gaban「Lady Jenny...! I hardly recognized you!\n...Master Smith, I am tremendously moved right now!」
+731|King[laugh]「Wahaha! You sly dog, blacksmith!」\nJenny[happy]「C-come on... stop it, everyone. ...Hehe.」
+732|On the way home, Jenny stretched big.\nJenny[laugh]「Ahh, I was so nervous! ...But it was fun.」
+733|Jenny stopped by the workshop and sat on the workbench, still in her dress.\nJenny[smile]「...Can I take off my shoes? My feet hurt.」
+734|Jenny[shy]「Hey. I'll always remember today.\n...Walking up the castle stairs beside you.」
+735|Lou[shock]「Eh, the armory lady?! I thought she was a princess!」\nChicchi「Boss, I'm making a feast for dinner tonight, yo.」
+736|Night. Jenny brought over a pot of food.\nJenny[happy]「Here, eat while it's warm. ...I just made too much, that's all.」
+737|You talked about the tower while eating.\nJenny sometimes laughed, sometimes looked worried, and listened to the very end.
+738|After eating, Jenny started tending your sword without asking.\nJenny「...Chipped. You were reckless again, weren't you. ...Honestly, you're hopeless.」
+739|Before you knew it, it was completely dark outside.
+740|Jenny[shy]「...Hey. Can I stay over tonight?」
+741|「Sure. Do as you like.」
+742|Jenny[happy]「Hehe. Then, pardon the intrusion.」
+743|「I'll tidy up the guest room.」
+744|Jenny[laugh]「What's with the sudden formality? ...Okay. Pardon the intrusion.」
+745|「I'll walk you home.」
+746|Jenny[smile]「...I see. Okay, let's do that today. ...Next time, then.」
+747|Morning. You peeked into the guest room; Jenny was still asleep.\n...Lighting the forge can wait a little longer.
+748|Chicchi「Boss, breakfast for three, yo.\n...Oh, four with Lou. No, Buppa's here too, so five, yo.」
+749|Jenny[happy]「...Morning. Smells good.\nChicchi, make my egg runny.」
+750|That night, Jenny came to stay over.\nJenny[happy]「I'm cooking today, so you sit. ...I said SIT.」
+751|Cheerful humming drifts from the kitchen.\nAls「Master. ...I'm writing that face in my diary.」
+752|Jenny is fixing the clasps on your armor at the workbench.\nJenny「You forge, I fix. ...Not a bad combo, right?」
+753|「Do you fix things like this at the shop too?」\nJenny[shy]「...Only yours. I'm not this careful with anyone else's.」
+754|The two of you spread out the tower map until late at night.\nJenny「Which floor next? ...Decide which floor you'll come back from, too.」
+755|Before you knew it, Jenny had fallen asleep in the guest room.\n...You pulled the blanket up to her shoulders.
+756|Morning. Jenny's still asleep.\nBuppa「...My bed's gone...」
+757|Chicchi「Buppa, you never had a bed, yo.」\nBuppa「..........Right.」
+758|Jenny is going to relax in the workshop while waiting for the water heater parts.
+759|Next time
+760|You walked Jenny home. ...It was a night full of beautiful stars.
+761|Jenny is going to stay in the workshop for a while after breakfast.
+762|Jenny is lounging around the workshop again today.
+763|Jenny is going to relax in the workshop for a while, still in her dress.
+764|Chicchi「Welcome, armory lady. Here's some tea, yo.」
+765|Jenny[doubt]「...Chicchi. You were messing with the price tags in front of my shop again, weren't you.」
+766|Chicchi[shock]「Wasn't messing, yo! Just raised them a little for you, yo!」
+767|Jenny[angry]「Don't do stuff like that! ...But it sold, so fine. You get half.」
+768|Lou[laugh]「Jenny! Look look, a nail I hammered!」
+769|Jenny[smile]「Let's see. ...Hmm, it's straight. Much straighter than your boss's first sword.」
+770|「...I can hear you.」
+771|Jenny[laugh]「I said it so you'd hear.」
+772|Als「Jenny, I want to write about Master's past in my diary. Do you know anything?」
+773|Jenny[laugh]「Loads. Like the day he forged his first sword, hit his own finger, and cried.」
+774|Als[shock]「Master... cried...! I'll take it!」
+775|「Don't write that!」
+776|Buppa is sleeping under the workbench.
+777|Jenny[doubt]「...Hey, how long has this guy been here?」
+778|Chicchi「He was already here when I came, yo.」\nAls「He was here when I came, too.」
+779|Jenny「...Is he some kind of guardian spirit of the workshop?」\nBuppa「...Mmf. Runny, please...」
+780|Lou「Jenny, do you like the boss?」
+781|Jenny[shock]「Wh-WHAT?! What are you saying, kid?!」
+782|Chicchi「Lou, that's something you don't ask, yo. Even if everyone knows, yo.」
+783|Jenny[shy]「...Chicchi. Out back. Later.」
+784|Elly[smile]「Chicchi, is the cut from the other day okay now?」
+785|Chicchi「All good, yo! ...Uh, I still haven't taken off the bandage you tied all cute, yo.」
+786|Elly[worried]「...Please take it off. It's been three days, right?」
+787|Lou「Elly, I burned myself! On the forge!」
+788|Elly[worried]「Let me see. ...Okay, it's light. Cool it, then this ointment.」
+789|Elly[smile]「...Everyone in your workshop is a little reckless, aren't they. Just like their boss.」
+790|「...That stings.」
+791|Als「Elly, when Master collapsed in the tower, what was the first thing he said?」
+792|Elly[smile]「"Eh... it'll probably work out somehow." ...The very first thing when he opened his eyes.」
+793|Als[laugh]「I knew it! Same as page seventeen of my diary!」
+794|Elly[worried]「...I'd like him to reflect on that a little, though.」
+795|Buppa「...Doc. I feel kinda sluggish...」
+796|Elly「Let's see... No fever. When did you last get up?」
+797|Buppa「...Just now.」
+798|Elly[smile]「You're sleeping too much. Let's go for a walk, Buppa.」
+799|Ria「Chicchi. According to guild records, you once tried to rob this workshop...」
+800|Chicchi[shock]「Waaah! Waaah! That's old news, yo! Got caught in half a second, yo!」
+801|Ria[smile]「Hehe. I'll mark the record "reformed."」
+802|Als「Ria, will you write my climb record someday too?」
+803|Ria[smile]「Of course. ...When that day comes, I'll write it on the line next to your master's.」
+804|Als[laugh]「...! I'm putting that in my diary!」
+805|Lou「Ria, your handwriting's so pretty! Teach me!」
+806|Ria[happy]「Sure. Let's start with your name. ...Oh, the "u" in Lou is very energetic.」
+807|Lou[laugh]「Being energetic is my best thing!」
+808|Ria[think]「...Who keeps the books for this workshop?」
+809|Chicchi「Me, yo. ...Sometimes, yo.」\nAls「Me. ...Along with my diary.」
+810|Ria[worried]「...I'll organize them all sometime. On a day off. ...It gives me a reason to come here.」
+811|Chicchi「Whoa! H-how long have you been there, yo?!」
+812|Fuuka「...Since the beginning, on the ceiling beam.」
+813|Chicchi「Me, a former thief, didn't even notice... Please make me your apprentice, yo.」
+814|Fuuka[smile]「...The training is harsh. First, three days of chores without making a sound.」
+815|Chicchi「That's not much different from usual, yo.」
+816|Als「Fuuka, would you spar with me?」
+817|Fuuka「...Very well. One bout.」
+818|...In an instant, Als's wooden sword was flying through the air.\nAls[shock]「I-I couldn't even see it...!」
+819|Fuuka[smile]「...But your footwork resembles your master's. A good stroke.」
+820|Lou「Fuuka, are you a ninja? Can you vanish? Walk on walls?」
+821|Fuuka[shy]「...A shinobi does not speak of such things.」
+822|Lou「Awww.」
+823|Fuuka[smile]「...Only a little, then.」\n...The next instant, Fuuka was on the roof. Lou's cheers echoed through the workshop.
+824|Buppa is gnawing on dried meat.
+825|Fuuka「...That is my dried meat.」
+826|Buppa「..........Tasty.」
+827|Fuuka[smile]「...I see. Then you may have half.」
+828|Everyone's Doings
+829|{0} and the workshop crew
+830| and the workshop crew
+831|{0} has really settled into the workshop.
+832| has really settled into the workshop.

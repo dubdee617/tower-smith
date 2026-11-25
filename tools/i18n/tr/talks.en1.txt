@@ -1,0 +1,300 @@
+0|Jenny「You beat the floor 10 lord? ...The adventurers who come to my shop only want to look at your swords.」
+1|「Good, as long as they sell.」
+2|Jenny[angry]「That's not the point! ...I'm asking if you got hurt.」
+3|「Good advertising for your shop.」
+4|Jenny[laugh]「True. Maybe I'll write "Shop of the Tower-Climbing Blacksmith" on the sign.」
+5|「Were you worried?」
+6|Jenny[shy]「I-I was not! ...Only a little.」
+7|Jenny「You're going to the forest floors, right? ...An axe won't chip as easily on tree monsters. Just my hunch.」
+8|「Spoken like an armorer.」
+9|Jenny[happy]「Right? ...Hehe, you can praise me more.」
+10|「Axes are heavy.」
+11|Jenny[angry]「That's why I keep telling you to train.」
+12|「You pick one for me.」
+13|Jenny[shy]「...F-fine, I guess. I'll pick the best one.」
+14|Jenny「A desert? A desert inside the tower...? Just how far are you planning to go?」
+15|「To the top.」
+16|Jenny[worried]「...Don't say it so lightly. I look toward the tower every night.」
+17|Jenny「...You've always been like that.」
+18|「Sand keeps getting in my boots.」
+19|Jenny[laugh]「What's that? ...Here, take these leather gaiters.」
+20|Jenny[shy]「Hey... while you're in the tower and I'm minding the shop, my hands just stop sometimes.」
+21|「Are you tired?」
+22|Jenny[angry]「No! ...Ugh, why don't you get it?」
+23|「Why?」
+24|Jenny[shy]「...Every time the door opens, I think it might be you.」
+25|「Same for me at the workshop.」
+26|Jenny[inlove]「...Huh? ...N-no way. ...Really?」
+27|Jenny「The Great Sandworm... I still can't believe you beat a monster like that.」
+28|「The hammer was good.」
+29|Jenny[laugh]「A hammer you forged yourself. So it's your credit after all.」
+30|「Your shop's shield saved me.」
+31|Jenny[happy]「...! O-oh. I picked the best leather for that shield.」
+32|「Thought I was going to die.」
+33|Jenny[worried]「...Don't say things like that with a smile.」
+34|Jenny「Lately skilled adventurers look around my shop and say, "These swords will hold up at the top of the tower."」
+35|「Naturally.」
+36|Jenny[laugh]「Cocky. ...But it's true.」
+37|「Thanks to your eye for quality.」
+38|Jenny[shy]「...I-it's because you forge them.」
+39|「I'll forge something even better from mountain materials.」
+40|Jenny[happy]「Can't wait. Show me first.」
+41|Jenny「The snowfield's cold, right? ...Here. A wool scarf. I-it's not like I knitted it...」
+42|「Did you knit it?」
+43|Jenny[shy]「...Took me three nights. Got a problem?」
+44|「Thanks. I'll treasure it.」
+45|Jenny[inlove]「...Mm. Think of me up there in the tower.」
+46|「Is this shop merchandise?」
+47|Jenny[angry]「No, you idiot!」
+48|Jenny「They say only a handful of people in the guild records have passed floor 40. ...You're not an ordinary blacksmith anymore.」
+49|「I'm an ordinary blacksmith.」
+50|Jenny[laugh]「Hehe, knew you'd say that. ...That's what I mean.」
+51|「At least in front of you.」
+52|Jenny[shy]「...Wh-what's with that all of a sudden? Not fair.」
+53|「Have I gotten far away?」
+54|Jenny[worried]「...A little. So come back properly.」
+55|Jenny「The jungle floors... snakes, bugs... eek, just imagining it is too much.」
+56|「So even you are scared of something.」
+57|Jenny[angry]「Of course! ...You disappearing is one of them.」
+58|「I'll bring back snakeskin as a souvenir.」
+59|Jenny[shock]「Don't want it! I absolutely don't want it!」
+60|「Don't worry, I'm used to bugs.」
+61|Jenny[laugh]「...Look at you, so tough now.」
+62|Jenny[worried]「Hey. If there's nothing at the top of the tower... what will you do?」
+63|「I'll climb anyway.」
+64|Jenny「...I see. That's so you.」
+65|「Come back and hammer iron again.」
+66|Jenny[happy]「...Okay. When you do, I'll be the first to buy.」
+67|「There'll be something. I'm sure.」
+68|Jenny[smile]「...Yeah. I'll believe that too.」
+69|Jenny「I heard you found an old blacksmith's tools on the ruins floors? ...Show me! Show me!」
+70|「Here. It's rusty, though.」
+71|Jenny[happy]「Amazing... how many centuries old is this hammer? It's worn in the same places as your hands.」
+72|「Come to the workshop and you can see it.」
+73|Jenny[shy]「...I-I'll come. Just to see the tools, okay?」
+74|「Don't sell it.」
+75|Jenny[angry]「I won't! What do you take me for?」
+76|Jenny[shy]「...When I took over the shop, I was actually scared. Whether I could manage alone.」
+77|「You're doing great.」
+78|Jenny[inlove]「...Hearing that from you makes me want to cry.」
+79|「Are you still scared?」
+80|Jenny[smile]「Nope. ...There's a skilled blacksmith next door.」
+81|「It was the same for me when I took over the workshop.」
+82|Jenny[happy]「...I see. We're alike, huh.」
+83|Jenny「The canyon wind is crazy, right? ...Your hair's a mess. Here, hold still.」
+84|Hold still
+85|Jenny[shy]「...There. That's better. ...Y-your face is close.」
+86|「I'll do it myself.」
+87|Jenny[angry]「...And here I was going to fix it for you.」
+88|「Your hair's sticking up too.」
+89|Jenny[angry]「N-no way! ...Where?! Tell me sooner!」
+90|Jenny「The other day, a customer with a sword you forged came to report he made it to floor 70. ...He was crying as he thanked me.」
+91|「I see... good.」
+92|Jenny[smile]「Your swords are protecting people. ...I was a little proud.」
+93|「Because your shop sold it.」
+94|Jenny[happy]「...Our sword, you mean.」
+95|「Did you get his name?」
+96|Jenny[laugh]「Sure did. I'll bring him to the workshop sometime.」
+97|Jenny「Above the clouds... Remember when I said "take me there someday"?」
+98|「I remember. It's a promise.」
+99|Jenny[inlove]「...You remembered. ...Idiot. I'm happy.」
+100|「It's still too dangerous to take you.」
+101|Jenny[worried]「I know. ...So tell me everything you saw.」
+102|「Did you say that?」
+103|Jenny[angry]「I DID! ...Ugh, forget it.」
+104|Jenny「What color is the sky above the clouds?」
+105|「It looked like the color of your eyes.」
+106|Jenny[shy]「...Wh-wh-what are you saying?! ...Say it again.」
+107|「So blue it hurt my eyes.」
+108|Jenny[laugh]「What's that? ...But that's nice. I want to see it.」
+109|「The stars were close.」
+110|Jenny[smile]「...Stars, huh. If you reached out, you might touch them.」
+111|Jenny[worried]「The castle floors, they said? ...You're almost there. To the top.」
+112|「Almost.」
+113|Jenny「...I see. Then I'll wait at the shop. Like always.」
+114|「Are you scared?」
+115|Jenny[shy]「...Of course I am. That you might never come back.」
+116|「When it's over, I have something to tell you.」
+117|Jenny[inlove]「...Huh? ...I-idiot! Tell me now! ...No. I'll wait.」
+118|Jenny「Let me sharpen the sword you'll use at the end. ...Please.」
+119|Hand her the sword
+120|Jenny[smile]「...Mm. Good sword. Your handprints are all over it.」
+121|「I'll sharpen it myself.」
+122|Jenny[angry]「...I know. I just thought I'd ask.」
+123|「Let's sharpen it together.」
+124|Jenny[inlove]「...Okay. That's better.」
+125|Jenny[happy]「Welcome back. ...Really, really, welcome back.」
+126|「I'm home.」
+127|Jenny[inlove]「...Mm. I've wanted to hear those words for so long.」
+128|「Anything new at the shop?」
+129|Jenny[laugh]「That's the first thing you ask? ...So like you.」
+130|「Sorry to keep you waiting.」
+131|Jenny[shy]「I wasn't waiting. ...Liar. I was.」
+132|Jenny「Since you're the blacksmith who climbed the whole tower... can I rewrite my shop's sign?」
+133|「Do as you like.」
+134|Jenny[laugh]「Then I'll make it "The Tower Smith and His Partner's Shop."」
+135|「It's your shop.」
+136|Jenny[shy]「...I wanted to say "our shop."」
+137|「Let's write both names side by side.」
+138|Jenny[inlove]「...Okay. Side by side. Forever.」
+139|Elly「The floor 10 lord... The clinic's full of that rumor. ...Um, are you really not hurt?」
+140|「Not at all.」
+141|Elly[angry]「I don't believe you. Show me your arm.」
+142|「I hit it a little.」
+143|Elly[worried]「See, I knew it. ...Still, I'm glad you told me honestly.」
+144|「Your medicine worked.」
+145|Elly[happy]「...! Th-then I'm glad.」
+146|Elly「I heard the forest floors have lots of medicinal herbs. ...If you find some, would you bring them back?」
+147|「I'll look.」
+148|Elly[happy]「Thank you! I'll try making new medicine.」
+149|「I can't tell them from poisonous ones.」
+150|Elly[laugh]「Hehe, then I'll lend you a field guide.」
+151|「Want to come along?」
+152|Elly[shock]「Eh?! ...I-I can't. I'm even scared of rats.」
+153|Elly「Everyone who comes back from the desert floors has sore throats and eyes. ...Here. Eye drops.」
+154|「That helps.」
+155|Elly[smile]「Three times a day. ...If you forget, I'll be cross.」
+156|「You're well prepared.」
+157|Elly[shy]「...I've been making them ever since I heard you were going.」
+158|「The sun's worse than the sand.」
+159|Elly[worried]「Then sunburn medicine too... oh, there's not enough!」
+160|Elly「An adventurer at the clinic the other day said, "The blacksmith saved my life."」
+161|「I didn't do anything.」
+162|Elly[smile]「He said a shield you forged stopped an arrow. ...That's amazing.」
+163|「Glad to hear it.」
+164|Elly[happy]「Yes. ...Somehow I'm as happy as if it were about me.」
+165|「You're the one who healed him.」
+166|Elly[shy]「...Shall we say it was both of us?」
+167|Elly[worried]「The Great Sandworm... I've seen the wounds on people carried in from it. ...I'm so glad you're safe.」
+168|「Got lucky.」
+169|Elly「It wasn't just luck. ...But please treasure your luck too.」
+170|「Sorry to worry you.」
+171|Elly[shy]「...Yes. I was so worried. So please take it easy today.」
+172|「Your prayers reached me.」
+173|Elly[happy]「...! If they reached you... I'm happy.」
+174|Elly「They say the air is thin on the mountain floors. ...If it gets hard to breathe, rest right away. Promise.」
+175|Elly[smile]「Okay. The pinky promise... another time.」
+176|「No time to rest.」
+177|Elly[angry]「There is! And if there isn't, make some!」
+178|「I'm scared of you getting mad.」
+179|Elly[laugh]「Hehe. I only get mad because I'm worried.」
+180|Elly「The hardest thing is warming the frozen hands of people back from the snowfield. ...Are your hands okay?」
+181|Hold out your hand
+182|Elly[shy]「...Warm. Good. ...Can we stay like this just a little longer?」
+183|「Standing by the forge will fix it.」
+184|Elly[laugh]「What a blacksmith-like cure.」
+185|「Your hands are cold.」
+186|Elly[shy]「...They always get cold when I'm waiting for you.」
+187|Elly「I light a lamp in the clinic window every night. ...Can you see it from the tower?」
+188|「I think I saw it.」
+189|Elly[happy]「...! Really? ...Then I'll make it brighter from tomorrow.」
+190|「It's pretty far.」
+191|Elly[smile]「Hehe, I know. ...But I'll keep it lit.」
+192|「What for?」
+193|Elly[shy]「...So you can find your way home.」
+194|Elly「Jungle poisons... I made three kinds of antidotes. They're color-coded.」
+195|「I'll take them all.」
+196|Elly[happy]「Okay! Red for snakes, green for bugs, blue is... oh, blue is my pick-me-up tea.」
+197|「I don't get it.」
+198|Elly[laugh]「I'll attach instructions.」
+199|「I'd feel safe if you were with me.」
+200|Elly[shy]「...I-if you say things like that, I really will come along, you know?」
+201|Elly[worried]「Lately... I have a dream. That you don't come back from the tower.」
+202|「A dream's just a dream.」
+203|Elly「...I know. But when I wake up, my chest hurts.」
+204|Elly[happy]「...Yes. With those words, I'm sure I'll sleep tonight.」
+205|「I dream about you too.」
+206|Elly[shy]「...! Wh-what kind of dream...? N-no, don't tell me!」
+207|Elly「The old medicine bottle found in the ruins... I'm still examining what's inside. Someone's treatment from centuries ago.」
+208|「Learn anything?」
+209|Elly[smile]「That people long ago were trying to heal the ones they loved, too. That much I understood.」
+210|「It's not dangerous, is it?」
+211|Elly[laugh]「It's fine. ...Probably.」
+212|「Glad I brought it to you.」
+213|Elly[happy]「Yes. ...Anything you choose for me is a treasure, just for that.」
+214|Elly[shy]「Um... the head doctor told me, "Your face changes when you talk about that blacksmith."」
+215|「Changes how?」
+216|Elly[shy]「...I-I don't know! I can't see my own face!」
+217|「Is that so.」
+218|Elly[angry]「...It is. ...You dense man.」
+219|「People say that about me when I talk about you.」
+220|Elly[happy]「...! Really...? ...Hehe, we match.」
+221|Elly「They say there's a lot of falling rock in the canyon. ...Protect your head. See, your helmet strap's loose.」
+222|Let her retie it
+223|Elly[shy]「...There, done. ...Um, your face is close.」
+224|Elly[angry]「...Honestly. Let me do it.」
+225|「You worry too much.」
+226|Elly[smile]「Only about you.」
+227|Elly「The reason I became a healer... is that when I was little, there was someone I couldn't save.」
+228|Listen in silence
+229|Elly「...So I never want to lose anyone again. ...Especially not you.」
+230|「That must have been hard.」
+231|Elly[worried]「...Yes. But telling you made it a little lighter.」
+232|「Now you save so many.」
+233|Elly[smile]「...Thank you. Hearing that saves me.」
+234|Elly「Above the clouds... is it close to heaven? ...Sorry, that was a strange thing to say.」
+235|「Heaven's probably more boring.」
+236|Elly[laugh]「Hehe, what's that? ...But I feel a little relieved.」
+237|「I'll come back down to earth.」
+238|Elly[happy]「...Yes. Please come back here.」
+239|「It was a beautiful place.」
+240|Elly[smile]「...Someday, I'd like to see it too.」
+241|Elly「The charm... I made a new one. So it works even above the clouds.」
+242|「I'll take both.」
+243|Elly[happy]「...You still have the old one, too.」
+244|「I'm not good at relying on gods.」
+245|Elly[angry]「Not the gods. Rely on ME!」
+246|「What about one for you?」
+247|Elly[shy]「...If you're safe, that's my charm.」
+248|Elly[worried]「They say there are strong knights on the castle floors... and I can't do anything for you.」
+249|「Just waiting for me is enough.」
+250|Elly[shy]「...Yes. I'll wait. Always.」
+251|「Your medicine is plenty of help.」
+252|Elly[smile]「...Then take every last bit.」
+253|「Pray for me.」
+254|Elly[happy]「I pray every night. ...Tonight, until morning.」
+255|Elly「Before you go to the last floor... let me examine everything once more. Everything.」
+256|「Please.」
+257|Elly[smile]「...Okay. Arms, shoulders, back... all fine. You really are strong.」
+258|「You're exaggerating.」
+259|Elly[angry]「I'm not exaggerating!」
+260|「You look like you're about to cry.」
+261|Elly[shy]「...I'm not crying. ...I'll cry after you come back.」
+262|Elly[happy]「Welcome back...! Really, really...!」
+263|Elly[happy]「...Yes. Welcome back. I'll say it as many times as you like.」
+264|「Don't cry.」
+265|Elly[shy]「...I'm not crying. These are happy tears, so they don't count.」
+266|「I'm not hurt.」
+267|Elly[laugh]「Hehe. ...I'll examine you later anyway.」
+268|Elly「I counted the flowers on my calendar. ...They've all bloomed.」
+269|「Show me.」
+270|Elly[shy]「...Okay. This time I'll show you. Specially.」
+271|「I'll add more from now on.」
+272|Elly[happy]「...Yes! I'll draw flowers even on days you're not in the tower.」
+273|「What are you talking about?」
+274|Elly[angry]「...Honestly! It's an important talk!」
+275|Ria「Your floor 10 lord kill is posted on the guild board. ...Your name's at the very top.」
+276|「How embarrassing.」
+277|Ria[laugh]「Hehe, the whole town's read it already.」
+278|「Your handwriting?」
+279|Ria[shy]「...Yes. I wrote it as neatly as I could.」
+280|「Floor 20 next.」
+281|Ria[smile]「I'll write that record too.」
+282|Ria「I collected maps of the forest floors from adventurers. ...Take them, if you like.」
+283|「Much appreciated.」
+284|Ria[happy]「I'm glad if they help. ...Copying them took two nights.」
+285|「I'll learn by walking it.」
+286|Ria[smile]「Hehe, spoken like a craftsman. ...But take them anyway.」
+287|「You're dedicated to your work.」
+288|Ria[shy]「...I'm especially dedicated where you're concerned.」
+289|Ria「Old adventurers' belongings are often found on the desert floors. ...If you find any, bring them to the guild.」
+290|「I'll make sure to.」
+291|Ria[smile]「Thank you. There may be families waiting for them.」
+292|「Belongings of the dead, huh...」
+293|Ria[worried]「...Yes. I never want to see yours.」
+294|「Can I sell them?」
+295|Ria[angry]「No!」
+296|Ria「When you registered as an adventurer, I said there was no precedent. ...Now YOU are the precedent.」
+297|「Sorry for the trouble.」
+298|Ria[laugh]「Not at all. Thanks to you, I learned how to fill out a new form.」
+299|「Maybe more blacksmiths will follow.」

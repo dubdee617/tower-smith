@@ -1,0 +1,304 @@
+930|Ria「That's not true. Your stories are always interesting.」
+931|「I'm off.」
+932|Ria[smile]「Okay! Take care!」
+933|「Rushing won't stop the iron from cooling.」
+934|Ria[laugh]「Hehe, spoken like a craftsman. I'll write that down!」
+935|「I'm panicking inside.」
+936|Ria[shock]「Eh, really? ...You don't look it at all.」
+937|「You're fine just as you are.」
+938|Ria[shy]「...You think so? ...Hehe.」
+939|Ria「On my days off, I love buying baked sweets at the market. ...Do you like sweet things, Mr. Smith?」
+940|「I do.」
+941|Ria[happy]「Great! I'll tell you my favorite shop sometime!」
+942|「I prefer drinks.」
+943|Ria[laugh]「Hehe, you are a regular at Gaston's.」
+944|「If you like them, I'll try.」
+945|Ria[shy]「...Then let's split one.」
+946|Ria「I thought guild work would be hard... but lately it's fun. Waiting for the adventurers to come back.」
+947|「Good work.」
+948|Ria[smile]「Yes. ...Waiting is part of the job.」
+949|「Some don't come back.」
+950|Ria[worried]「...Yes. That's why I say "welcome back" with all my heart to the ones who do.」
+951|「Am I being waited for too?」
+952|Ria[shy]「...Yes. Very much.」
+953|Ria「Actually, I have a terrible sense of direction. ...And I'm the guild's map clerk.」
+954|「That's unexpected.」
+955|Ria[laugh]「I hear that a lot! I never get lost on paper, though.」
+956|「Want me to show you around town sometime?」
+957|Ria[happy]「Really?! ...So I don't get lost, can I hold your sleeve?」
+958|「You'll be fine with a map.」
+959|Ria「I end up holding the map upside down...」
+960|Ria「When I was little, my dad made me a wooden bird. ...It's still on my desk.」
+961|「You treasure it.」
+962|Ria[smile]「Yes. ...When I see you making something, I remember that bird.」
+963|「Tell me if it needs fixing.」
+964|Ria[happy]「...Thank you. But I'll take good care so it doesn't break.」
+965|「I could make an iron bird.」
+966|Ria[laugh]「Sounds heavy! ...But I'd kind of like to see it.」
+967|Ria「An adventurer confessed to me. ...Of course, I turned him down.」
+968|「I see.」
+969|Ria[angry]「...That's it? You could say a little more.」
+970|「Why'd you turn him down?」
+971|Ria[shy]「...There's someone else I like.」
+972|「You're popular.」
+973|Ria[laugh]「I'm the receptionist. I just smile at everyone.」
+974|Ria[shy]「Talking with you makes me feel at ease. ...Is that strange?」
+975|「It's not strange.」
+976|Ria[smile]「...Good. Then let's keep talking a lot from now on.」
+977|「Talking with you calms me down too.」
+978|Ria[happy]「...! ...W-we match!」
+979|「You mean I make you sleepy?」
+980|Ria[angry]「Th-that's not it! Honestly!」
+981|Ria「I'm not looking for a replacement for my father. ...You're you, Mr. Smith.」
+982|「I know.」
+983|Ria[smile]「...Yes. I'm glad you understand.」
+984|「You can talk about your father.」
+985|Ria[happy]「...Thank you. But right now, I want to talk about you.」
+986|「I'm not as kind as your father.」
+987|Ria[laugh]「Hehe, that's not true. ...You're just a little clumsy.」
+988|Ria「I've been the guild receptionist for five years now. ...My dream is to have a little shop of my own someday.」
+989|「What kind of shop?」
+990|Ria[happy]「Maps and records for adventurers! ...Is that weird?」
+991|「I'll support you.」
+992|Ria[smile]「...Yes! When that day comes, I want you to forge the sign.」
+993|「The guild would be in trouble.」
+994|Ria[laugh]「Hehe, that's still a long way off.」
+995|Ria[worried]「...Today I erased the name of an adventurer who didn't come back. ...I never get used to it, no matter how many years.」
+996|Stay by her side in silence
+997|Ria[worried]「...Thank you. Can we stay like this, just for a bit?」
+998|「You don't have to get used to it.」
+999|Ria[smile]「...Yes. I want to stay that way.」
+1000|Ria「...I know. That's why I make sure to remember.」
+1001|Ria「Can I visit your workshop again? ...Next time I'll bake sweets.」
+1002|「I'll be waiting.」
+1003|Ria[happy]「Okay! I'll do my best not to burn them!」
+1004|「Chicchi will be happy.」
+1005|Ria[laugh]「Hehe, I'll bake some for Chicchi too. ...But yours come first.」
+1006|「Want me to teach you how to bake?」
+1007|Ria[shock]「Eh, you can bake sweets too?! ...You're too much of a mystery, Mr. Smith.」
+1008|Ria「While you're gone, I look up every time the guild door opens. ...Even though I should focus on work.」
+1009|「Sorry for distracting you.」
+1010|Ria[angry]「It's not a distraction! ...If anything, I look forward to it.」
+1011|「When I'm back, I'll show my face first thing.」
+1012|Ria[happy]「...That's a promise. First thing.」
+1013|「When I see the guild door, I think of you too.」
+1014|Ria[shy]「...! ...I won't get any work done today.」
+1015|Fuuka「...I have a mission, so I shall take my leave.」
+1016|「Take care.」
+1017|Fuuka「...Yes. You as well.」
+1018|「Rest a bit.」
+1019|Fuuka[shy]「...Then, just a little. ...Only a little.」
+1020|「What mission?」
+1021|Fuuka「...I cannot answer.」
+1022|Fuuka「It is dangerous ahead. Please be careful.」
+1023|「Thanks for the warning.」
+1024|Fuuka「...Reporting what one has seen is also a shinobi's duty.」
+1025|「Want to come along?」
+1026|Fuuka「...No. I have my own path.」
+1027|「You be careful too.」
+1028|Fuuka[shy]「...Yes. ...Thank you.」
+1029|Fuuka「No problem. This is part of the mission.」
+1030|「You're hurt.」
+1031|Fuuka[shy]「...A scratch. ...But I shall gratefully accept the herbs.」
+1032|「Don't push yourself.」
+1033|Fuuka「...Shinobi push themselves. ...But I shall keep it in mind.」
+1034|Fuuka「...Yes.」
+1035|Fuuka「I recognize your footsteps at once. ...Blacksmiths wear heavy boots.」
+1036|「Can't hide from you, huh.」
+1037|Fuuka[laugh]「...Heh. You have no need to hide.」
+1038|「I'll practice walking quietly.」
+1039|Fuuka「...I think it is impossible. Your hammer clanks.」
+1040|「I can't hear your footsteps.」
+1041|Fuuka[smile]「...I am a shinobi.」
+1042|Fuuka「Maintenance is life for a shinobi's blade. ...Your sharpening is better than my village's sharpener.」
+1043|「Want me to sharpen it?」
+1044|Fuuka[shy]「...May I? ...Then, please.」
+1045|「What's your village's sharpener like?」
+1046|Fuuka「...A strict person. But your sharpening is gentler.」
+1047|「Take care of your blade.」
+1048|Fuuka「...Yes. I will.」
+1049|Fuuka「...The presence grows thick higher in the tower. Do you feel nothing?」
+1050|「My shoulders are stiff.」
+1051|Fuuka[laugh]「...Heh. I believe that is the hammer's fault.」
+1052|「The air feels a little heavy.」
+1053|Fuuka「...I see. So you are not entirely dense.」
+1054|「I'm fine because you're here.」
+1055|Fuuka[shy]「...Please do not say such things so casually.」
+1056|Fuuka「You are... a strange man. How can you help people so naturally?」
+1057|「If someone's in trouble, you help.」
+1058|Fuuka「...You say it as if it were obvious. ...For me, it is hard.」
+1059|「Never thought about it.」
+1060|Fuuka[smile]「...Perhaps you can because you do not think.」
+1061|「You helped me too.」
+1062|Fuuka[shy]「...That was for the mission... no. ...It was not for the mission.」
+1063|Fuuka「In the village, I was called by a number, not a name. ...I chose the name Fuuka myself.」
+1064|「It's a good name.」
+1065|Fuuka[shy]「...Thank you. ...It is the first time anyone has praised it.」
+1066|「What does it mean?」
+1067|Fuuka[smile]「Wind flower. ...So I can go anywhere, and bloom anywhere.」
+1068|「A number's easier to remember.」
+1069|Fuuka[pout]「...You are cruel sometimes.」
+1070|Fuuka「...I have rarely eaten sweet things. Shinobi meals are bland.」
+1071|「I'll bring baked sweets next time.」
+1072|Fuuka[shy]「...May I? ...I shall look forward to it.」
+1073|「Dried meat gives more strength.」
+1074|Fuuka「...That is true, but.」
+1075|「Try going to the town market.」
+1076|Fuuka「...I am not good with crowded places. ...With you, perhaps I could go.」
+1077|Fuuka「A shinobi must not show emotion. ...So I was taught. But in front of you, it does not go well.」
+1078|「You can show it.」
+1079|Fuuka[shy]「...You say it so easily. ...Little by little, perhaps.」
+1080|「It doesn't show on your face.」
+1081|Fuuka[pout]「...That, too, is complicated.」
+1082|「That's fine.」
+1083|Fuuka[smile]「...Yes. If you say so.」
+1084|Fuuka「I hear your hammer from the workshop until late at night. ...I listened from the roof.」
+1085|Fuuka「...No. It is steady, and calming.」
+1086|「The roof?」
+1087|Fuuka[shy]「...Keeping watch. ...Merely keeping watch.」
+1088|「Listen from inside next time.」
+1089|Fuuka[shy]「...Inside? ...I shall consider it.」
+1090|Fuuka「...The hardest part of shinobi training was eating alone.」
+1091|「Let's eat together sometime.」
+1092|Fuuka[shy]「...Yes. ...By all means.」
+1093|「You're not alone now.」
+1094|Fuuka[smile]「...That is true. Now, I have you.」
+1095|「Chicchi's meals are noisy.」
+1096|Fuuka[laugh]「...Heh. That might be nice too.」
+1097|Fuuka「...When I am with you, I sometimes nearly forget that I am a shinobi.」
+1098|「You can forget.」
+1099|Fuuka「...No. I will not forget. ...But nearly forgetting is not so bad.」
+1100|「You're a fine shinobi.」
+1101|Fuuka[smile]「...Yes. ...Hearing that from you makes me happiest.」
+1102|「I forget sometimes too.」
+1103|Fuuka[laugh]「...Heh. Please do not forget that you are a blacksmith.」
+1104|Fuuka「I am by your side of my own will. ...Not because I was ordered.」
+1105|「I know.」
+1106|Fuuka[smile]「...Yes. I am glad you know.」
+1107|Fuuka[shy]「...It is nothing to thank me for.」
+1108|「I chose this too.」
+1109|Fuuka[love]「...! ...Is that so. ...Is that so.」
+1110|Fuuka「...Would you call my name, just once? ...No one calls it on missions.」
+1111|「Fuuka.」
+1112|Fuuka[love]「...Yes. ...Once more is still too embarrassing.」
+1113|「I call it all the time.」
+1114|Fuuka[pout]「...Not that way.」
+1115|Look away, embarrassed
+1116|Fuuka[laugh]「...Heh. So you get embarrassed too.」
+1117|Fuuka「If the village truly orders me to return... I think I will hesitate. ...Hesitating at all is a first for me.」
+1118|「It's okay to hesitate.」
+1119|Fuuka[smile]「...Yes. I will hesitate, and decide for myself.」
+1120|「Don't go.」
+1121|Fuuka[shy]「...When you say that, it eases me a little.」
+1122|「Your path is yours to choose.」
+1123|Fuuka「...Yes. ...You always let me choose.」
+1124|Fuuka「I have watched your back all this time. ...A broad back, and a little lonely.」
+1125|「Lonely?」
+1126|Fuuka「...Yes. But lately, it is a little different.」
+1127|「If you're watching, I'll be fine.」
+1128|Fuuka[love]「...Yes. I will always watch.」
+1129|「I'll leave my back to you.」
+1130|Fuuka[smile]「...Leave it to me. That is my pride.」
+1131|Fuuka「...Looking at the stars, I wonder: may even a shinobi like me have a place to return to?」
+1132|「You may.」
+1133|Fuuka[smile]「...Yes. ...When you say it, I can believe it.」
+1134|「If the workshop roof will do.」
+1135|Fuuka[love]「...Yes. ...That is where I want it to be.」
+1136|「The stars are always in the same place.」
+1137|Fuuka「...True. Perhaps a place to return to is like that too.」
+1138|Jenny[worried]「...I heard you collapsed. ...Idiot. As long as you're alive, that's enough.」
+1139|Jenny[angry]「You got carried to the clinic? ...Don't make me worry. ...Honestly.」
+1140|Jenny「Floor {f}, huh? Hmph. ...Well, not bad.」
+1141|Jenny[smile]「New record, floor {f}. The customers can't stop talking about it. ...I'm a little proud too.」
+1142|Jenny[shock]「Floor {f}...?! How far are you planning to go?」
+1143|Jenny[worried]「Floor {f}... nobody's ever been that high. ...Come back properly. Every time.」
+1144|Jenny[laugh]「You beat the floor {b} lord? It's all anyone talks about outside my shop.」
+1145|Jenny「Show me the sword that beat the lord. ...Hmm. Make sure you fix the chips.」
+1146|Jenny「Back already? ...I-it's not like I'm happy you're early or anything.」
+1147|Jenny[laugh]「Turned back at floor {f}? Being careful is a good thing.」
+1148|Jenny「So you went up to floor {f}. ...Welcome back. Not that I was worried.」
+1149|Jenny「You beat {k} monsters this time? Take care of your sword properly.」
+1150|Elly[worried]「...I'm so glad you woke up. Please never get carried in again.」
+1151|Elly[angry]「You pushed yourself until you collapsed. ...As a healer, I'm going to scold you properly today.」
+1152|Elly[smile]「You made it to floor {f}. ...But show me if you've got any new injuries.」
+1153|Elly「Congratulations on the new record. ...You weren't overdoing it, were you?」
+1154|Elly[worried]「Floor {f}... that high. ...Does anything hurt?」
+1155|Elly「I hear the air is thin on floor {f}. Please rest well tonight.」
+1156|Elly[shock]「The floor {b} lord...! Did the lord do that wound? I'll treat it right away.」
+1157|Elly[smile]「I heard you beat the lord. ...I'm so glad you're safe.」
+1158|Elly[smile]「You came back early. ...Hehe, that puts me more at ease.」
+1159|Elly「You turned back at floor {f}. The courage to turn back matters too.」
+1160|Elly「Welcome back. You made it to floor {f}. I'm relieved you look well today.」
+1161|Elly「You fought {k} monsters? ...Let me look at your arm a bit.」
+1162|Ria[worried]「...I have to write in the record that you collapsed. ...I didn't want to.」
+1163|Ria「Welcome back. ...You being safe matters more than any record.」
+1164|Ria[happy]「Highest floor record updated to floor {f}! I'll write it in my neatest hand!」
+1165|Ria[smile]「Floor {f}, recorded! The adventurers are buzzing again.」
+1166|Ria[shock]「Floor {f}...! It's my first time writing a record this high... my hands are shaking.」
+1167|Ria[happy]「Floor {f} reached! When I told the guild master, he jumped out of his chair!」
+1168|Ria[happy]「Floor {b} lord defeated, recorded! I'll post it on the board!」
+1169|Ria[smile]「I've been asked about your lord kill three times today alone. Everyone wants to hear about you.」
+1170|Ria「Up to floor {f} this time. ...Let's get ready and try again!」
+1171|Ria[smile]「Back early. Good job not overdoing it!」
+1172|Ria[smile]「Welcome back! Up to floor {f}. I'll record it!」
+1173|Ria「You defeated {k} monsters this time. ...The reports keep getting thicker.」
+1174|Fuuka[worried]「...I heard you fell. ...Forgive me for not being by your side.」
+1175|Fuuka「...Next time, I will walk ahead. I will not let you fall.」
+1176|Fuuka「Floor {f}, I was watching. ...A splendid climb.」
+1177|Fuuka[smile]「...You set a new record. Word may have reached my village.」
+1178|Fuuka[shock]「Floor {f}... a height that makes even a shinobi's legs tremble. ...You are amazing.」
+1179|Fuuka「The presence on floor {f} is very thick. ...You did well to return.」
+1180|Fuuka「I watched your battle with the floor {b} lord from the ceiling. ...Splendid.」
+1181|Fuuka[smile]「After you beat the lord, your back looked broader than usual.」
+1182|Fuuka「...You turned back early this time. Wise.」
+1183|Fuuka「You returned at floor {f}. ...It was a day of ill presence. The right decision.」
+1184|Fuuka「You made it to floor {f} unharmed? ...That is what matters most.」
+1185|Fuuka「You defeated {k} monsters. ...Shall I sharpen your blade?」
+1186|Dora[think]「Heard you fell. ...Take extra herbs. While I'm still kicking, I won't let you die.」
+1187|Dora「Back from the clinic? ...Here, have a candy. No charge.」
+1188|Dora[laugh]「Floor {f}, you say? Hah, always knew you were a tough old nail.」
+1189|Dora「Heard you set a new record. No wonder the herbs go so fast.」
+1190|Dora[think]「Floor {f}... You really mean to climb all the way to heaven.」
+1191|Dora「Floor {f}, eh. ...Take one more Homing Feather. Just in case.」
+1192|Dora[laugh]「You beat the floor {b} lord? The kids in front of my shop were acting it out.」
+1193|Dora「You tangled with a lord, didn't you. ...Did you have enough herbs?」
+1194|Dora「Back already? ...Knowing when to pull back makes a good adventurer.」
+1195|Dora[laugh]「Came back from floor {f}? Saved on herb money, didn't you.」
+1196|Dora「Been up to floor {f}? ...Restock your herbs before you go.」
+1197|Dora「Came back alive again. That's plenty.」
+1198|Bernardo[think]「...You fell, I hear. A pity about the money you carried. Next time, deposit before you go.」
+1199|Bernardo「I'm glad you're safe. ...Money can be earned again.」
+1200|Bernardo[smile]「Floor {f} reached, I hear. Your credit has risen yet again.」
+1201|Bernardo「Congratulations on the new record. ...An excellent investment indeed.」
+1202|Bernardo[think]「Floor {f}... The ledger may run out of digits.」
+1203|Bernardo[smile]「Floor {f} reached. Inquiries about you from the palace are increasing.」
+1204|Bernardo[smile]「The floor {b} lord's defeat is the talk of the town. ...Yes, the ledger said you'd do it.」
+1205|Bernardo「Shall I hold your lord-slaying reward for you?」
+1206|Bernardo「An early return. ...Prudence is admirable, from a banker's view.」
+1207|Bernardo「You returned at floor {f}. ...Caution is the first step to protecting assets.」
+1208|Bernardo「Welcome back. Up to floor {f}? Things are going smoothly.」
+1209|Bernardo「What will you deposit today?」
+1210|Gaston[think]「...Heard you fell. Hot soup tonight. No charge.」
+1211|Gaston「The tavern crowd was worried too. ...As long as you're alive, you can climb again.」
+1212|Gaston[laugh]「Floor {f}! Whoever bet against you lost big, wahaha!」
+1213|Gaston[laugh]「A new record! Your story'll keep my tavern busy tonight.」
+1214|Gaston[laugh]「Floor {f}! The bard already made a song of it!」
+1215|Gaston「Floor {f}... Even in tavern tall tales, you don't hear of heights like that.」
+1216|Gaston[laugh]「A toast to the floor {b} lord slayer! Hey, everyone, raise your glasses!」
+1217|Gaston「On nights a lord falls, I always buy a round. Here.」
+1218|Gaston「Back already? ...Well, life comes first.」
+1219|Gaston[laugh]「Came back from floor {f}? The smart ones live long.」
+1220|Gaston「Welcome back. Went up to floor {f}, I hear. Eat something.」
+1221|Gaston「Beat {k} of 'em? No wonder you're hungry.」
+1222|Als[worried]「Master...! When I heard you were carried in, my heart nearly stopped...」\nChicchi「Boss, today you just sleep and do nothing, yo.」
+1223|Lou[shock]「Boss! Are you okay?! ...I'll watch the forge, so please rest!」
+1224|Als[laugh]「Master, floor {f}! I'm writing it in my diary!」
+1225|Chicchi[laugh]「Boss, a new record, yo! Tonight's a feast, yo!」
+1226|Als[shock]「Floor {f}...! Master, you're a legend now...」
+1227|Lou[laugh]「Boss, floor {f}! The neighbors are gathering in front of the workshop!」
+1228|Als[laugh]「You beat the floor {b} lord! Show me your weapon later, Master!」
+1229|Chicchi「Your lord kill's the talk of the town, yo. Boss, you're a little too famous, yo.」
+1230|Chicchi「Boss, you're back already? ...Uh, dinner's not ready yet, yo.」
+1231|Als「Welcome back, Master. ...I'm glad you're back early. Honestly, I'm relieved.」
+1232|Als[smile]「Welcome back, Master. You made it to floor {f}!」
+1233|Lou「Welcome back, boss! I'll help carry the loot!」
