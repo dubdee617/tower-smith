@@ -563,7 +563,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 75'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 76'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -636,6 +636,7 @@ function outside(id) {
 function inside(id, msg) {
   place = id; SND_INDOOR = true; SND.lost = false; sfx('door'); showTown(true, 4 / 3); const p = PLACES[id], t = $('town');
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
+  if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
   const lastSaid = msg || greet(id); log(lastSaid, true);
   { const sp = /^([^\s「\[]+)(?:\[(\w+)\])?/.exec(lastSaid || ''); if (sp && sp[1] === 'ブッパ') npcFig('buppa_' + (NPCS['ブッパ'][sp[2] || 'normal'] || 'sleep')); else if (sp && NPCS[sp[1]] && ['ボルツ', 'アルス', '客', 'チッチ', 'ルゥ'].includes(sp[1])) npcFig(NPCS[sp[1]].id); }
   ({ home: homeMenu, weapon: shop, clinic: clinic, guild: guild, item: itemShop, bank: bank, inn: inn })[id](); hud();
@@ -644,6 +645,12 @@ const leave = { t: '外に出る', tail: true, f: () => townMap() };
 // ---------- 親密度と会話 ----------
 const WHO_NAME = { jenny: 'ジェニー', elly: 'エリー', ria: 'リア', fuuka: 'フウカ', jin: 'ジン' };
 const perk = who => (G.aff[who] || 0) >= AFF_NEED;
+// 親密度は、塔をどこまで登ったかで上限がある（2026-11-25）。〜19階: 4まで／20階〜: 9まで（個別のイベント）／40階〜: 好意と特典／60階〜: 家に来る
+const HEROINES = ['jenny', 'elly', 'ria', 'fuuka'];
+const AFF_STEP = [[20, 4], [40, AFF_NEED - 1]];
+const affCap = who => { if (!HEROINES.includes(who)) return Infinity; for (const [f, c] of AFF_STEP) if ((G.maxFloor || 0) < f) return c; return Infinity; };
+const affNext = () => { for (const [f] of AFF_STEP) if ((G.maxFloor || 0) < f) return f; return 0; };
+function affAdd(who, pt) { const b = G.aff[who] || 0, c = affCap(who); G.aff[who] = pt > 0 && b + pt > c ? Math.max(b, c) : b + pt; return pt > 0 && b + pt > c; }
 const canTalk = who => G.talkRun[who] !== G.runs;
 function talkBtn(who, back) { return { t: '話す', tail: true, s: canTalk(who) ? WHO_NAME[who] : 'また今度', off: !canTalk(who), f: () => talkTo(who, back) }; }
 function talkTo(who, back) {
@@ -651,8 +658,8 @@ function talkTo(who, back) {
   const list = close || TALKS[who], i = (G.talkIdx[key] || 0) % list.length, T = list[i];
   log(T.q, true);
   buttons(T.a.map(([ans, pt, reply]) => ({ t: ans, f: () => {
-    const before = G.aff[who] || 0; G.aff[who] = before + pt; G.talkIdx[key] = i + 1; G.talkRun[who] = G.runs; save();
-    log(reply, true);
+    const before = G.aff[who] || 0, capped = affAdd(who, pt); G.talkIdx[key] = i + 1; G.talkRun[who] = G.runs; save();
+    log(reply + (capped ? `\n（……今はまだ、これ以上は近づけない気がする。${affNext()}階まで登れば、何か変わるだろうか）` : ''), true);
     const done = () => buttons([{ t: '戻る', hot: true, f: back }]);
     if (before < AFF_NEED && G.aff[who] >= AFF_NEED) { buttons([{ t: '……', hot: true, f: () => { affEvent(who); buttons([{ t: '……！', hot: true, f: () => { log(`親密度の特典: ${AFF_PERKS[who]}`, true); done(); } }]); } }]); return; }
     done();

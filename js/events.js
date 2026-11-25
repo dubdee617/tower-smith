@@ -2,7 +2,7 @@
 // 親密度が EV_NEED 以上になると、それぞれの場面でランダムに一度だけ起こる。画像: assets/event/
 const EV_NEED = 5;
 const evReady = (who, chance) => (G.aff[who] || 0) >= EV_NEED && !(G.seen || {})[who] && R() < chance;
-function evDone(who, pts) { G.seen = G.seen || {}; G.seen[who] = true; G.aff[who] = (G.aff[who] || 0) + pts; save(); }
+function evDone(who, pts) { G.seen = G.seen || {}; G.seen[who] = true; affAdd(who, pts); save(); }
 // 場面の絵: bg=町の絵の名前（null なら塔の中）、pose=assets/event/ の名前
 function evBg(bg) {
   if (!bg) return;
@@ -25,7 +25,7 @@ function runEv(who, steps, done) {
     if (s.music !== undefined) SND.scene = s.music;  // その場面の曲（'romantic' など。'' で元に戻す）
     if (s.sfx) sfx(s.sfx);
     log(s.t, true);
-    if (s.ch) { buttons(s.ch.map(([a, r, pt, p]) => ({ t: a, f: () => { G.aff[who] = (G.aff[who] || 0) + pt; if (p) evPose(p); log(r, true); buttons([{ t: '次へ', hot: true, f: next }]); } })), 'three'); return; }
+    if (s.ch) { buttons(s.ch.map(([a, r, pt, p]) => ({ t: a, f: () => { affAdd(who, pt); if (p) evPose(p); log(r, true); buttons([{ t: '次へ', hot: true, f: next }]); } })), 'three'); return; }
     buttons([{ t: '次へ', hot: true, f: next }]);
   };
   next();
@@ -171,7 +171,7 @@ const VISIT_TWO = [
   (a, b) => `${a}と${b}が、炉の前で何やらひそひそ話している。\nルゥ「……親方、気づいてないんですか？」\n「何をだ？」`,
 ];
 const VNAME = { jenny: 'ジェニー', elly: 'エリー', ria: 'リア', fuuka: 'フウカ' };
-const maxedFriends = () => Object.keys(VISIT).filter(w => (G.aff[w] || 0) >= AFF_NEED && (G.seen || {})[w]);
+const maxedFriends = () => Object.keys(VISIT).filter(w => (G.aff[w] || 0) >= AFF_NEED && (G.seen || {})[w] && (G.homeEv || {})[w]);
 // 工房に入ったときに呼ぶ。来ている人がいれば、そのあいさつを返す（いなければ null）
 function homeVisit() {
   if (!G.visit || G.visit.run !== G.runs) {
@@ -377,4 +377,69 @@ const ENDING = [
 function ending() {
   B = null; F = null; G.cleared = true; save(); clearFig();
   fadeGo(() => toTown('', true, () => runSeq(ENDING, 0, () => { SND.scene = ''; clearFig(); fadeGo(() => inside('home', '工房の朝。炉に火を入れる。\n……さて、今日は何を打とうか。'), { hold: 900 }); })), { hold: 1200 });
+}
+
+// ---------- 60階を越えると、それぞれが家に来る（2026-11-25） ----------
+// 好意と特典が済んだ（親密度が最大）相手が、塔から戻ったときに一人ずつ工房を訪ねてくる。済むと、ときどき遊びに来るようになる
+const HOME_CALL_FLOOR = 60;
+const homeCallWho = () => HEROINES.filter(w => perk(w) && (G.seen || {})[w] && !(G.homeEv || {})[w]);
+const homeCallReady = () => (G.maxFloor || 0) >= HOME_CALL_FLOOR && G.homeCallRun !== G.runs && homeCallWho().length > 0;
+const HOME_CALL = {
+  jenny: [
+    { bg: 'home_in', p: 'jenny_love_0', t: '工房に戻ると、扉の前にジェニーが立っていた。\n腕に、布で包んだ細長い物を抱えている。' },
+    { p: 'jenny_love_0', t: 'ジェニー[shy]「お、遅いのよ。……店、早く閉めて来たんだから」\n「何かあったのか？」' },
+    { p: 'jenny_love_1', t: 'ジェニー「これ。……見覚え、ある？」\n布をほどくと、少し歪んだ銅の剣が出てきた。' },
+    { p: 'jenny_love_1', t: '「……俺が最初に打った剣だ。売れなくて、お前の店に置いてもらった」\nジェニー「そう。あの日、あたしが買い取ったの。自分のお金で」' },
+    { p: 'jenny_love_2', music: 'romantic', t: 'ジェニー[shy]「60階なんて、誰も行ったことないのよ。……あんた、どんどん遠くへ行っちゃう」' },
+    { p: 'jenny_love_2', t: 'ジェニー「だからこれ、持ってきたの。あんたがどこまで行っても、始まりはここだって……忘れないように」' },
+    { p: 'jenny_love_3', t: 'ジェニー[inlove]「……ねえ。この剣、ここに飾ってもいい？ あたしの場所、ってことで」', ch: [
+      ['「ああ。一番いい場所に飾ろう」', 'ジェニー[inlove]「……うん。毎日、見に来てやるんだから」', 3, 'jenny_love_3'],
+      ['「恥ずかしいな、その出来は」', 'ジェニー[laugh]「いいのよ。下手くそなところが好きなの。……剣の話よ！」', 2, 'jenny_love_2'],
+      ['「お前が持っててくれ」', 'ジェニー[shy]「……ずるい。そういうの、一番困るのよ」', 2, 'jenny_love_1'],
+    ] },
+    { p: 'jenny_love_0', music: '', t: '（ジェニーが、ときどき工房に遊びに来るようになった）' },
+  ],
+  elly: [
+    { bg: 'home_in', p: 'ellie_b_1', t: '工房に戻ると、薬箱を提げたエリーが待っていた。' },
+    { p: 'ellie_b_1', t: 'エリー[angry]「座ってください。往診です。……逃げても無駄ですよ」\n「ケガはしてないぞ」' },
+    { p: 'ellie_b_0', t: 'エリー「してなくても、です。60階より上の空気は、体にさわるって本に書いてありました」\n腕、肩、背中と、丁寧に診てくれる。', sfx: 'heal1' },
+    { p: 'ellie_b_2', music: 'romantic', t: 'エリー[shy]「……わたし、あなたが塔にいる日を数えてるんです。カレンダーに、印をつけて」' },
+    { p: 'ellie_b_2', t: 'エリー「印が増えるたびに、胸がぎゅってなって……戻ってきた日だけ、花の絵を描くんです」' },
+    { p: 'ellie_b_3', t: 'エリー[shy]「だから、約束してください。……ちゃんと、花の日を増やしてくれるって」', ch: [
+      ['「約束する。必ず帰ってくる」', 'エリー[happy]「……はい。その言葉、お薬より効きます」', 3, 'ellie_b_3'],
+      ['小指を差し出す', 'エリー[laugh]「ゆびきり、ですね。……ふふ、子どもみたい。でも、うれしい」', 3, 'ellie_b_3'],
+      ['「カレンダー、見せてくれ」', 'エリー[angry]「だ、だめです！ 絶対だめ！」', 1, 'ellie_b_2'],
+    ] },
+    { p: 'ellie_b_0', music: '', t: '（エリーが、ときどき工房に遊びに来るようになった）' },
+  ],
+  ria: [
+    { bg: 'home_in', p: 'ria_b_0', t: '工房に戻ると、リアが分厚い帳面を抱えて待っていた。' },
+    { p: 'ria_b_1', t: 'リア[shock]「60階です！ ギルドの記録で、60階を越えたのは……あなたが初めてなんです！」' },
+    { p: 'ria_b_0', t: 'リア「見てください。あなたの頁だけ、もう三枚目なんですよ」\n細かい字で、階ごとの日付と、短い言葉が書き込まれている。' },
+    { p: 'ria_a_2', t: '「……『無事に帰還。よかった』？ これは記録なのか？」\nリア[shy]「そ、それは……わたしの、独り言です」' },
+    { p: 'ria_b_2', music: 'romantic', t: 'リア[shy]「記録をつけるたびに、思うんです。この頁が、ずっと続きますようにって」' },
+    { p: 'ria_b_3', t: 'リア「今夜は、ごはん作らせてください。……ここが、あなたの帰ってくる場所でありますように」', ch: [
+      ['「一緒に作ろう」', 'リア[happy]「……はい！ じゃあ、野菜を切ってください。……手、切らないでくださいね？」', 3, 'ria_b_3'],
+      ['「お前のシチューが食べたい」', 'リア[happy]「……覚えててくれたんですね。とびきりのを作ります」', 3, 'ria_b_3'],
+      ['「記録の続きは、俺が書く」', 'リア[shy]「……ずるいです。それ、わたしの仕事なのに」', 2, 'ria_b_2'],
+    ] },
+    { p: 'ria_b_0', music: '', t: '（リアが、ときどき工房に遊びに来るようになった）' },
+  ],
+  fuuka: [
+    { bg: 'home_in', p: 'fuuka_b_0', t: '夜。窓が、こつんと鳴った。\n……窓の外に、フウカがぶら下がっている。' },
+    { p: 'fuuka_b_0', t: 'フウカ「こんばんは。……玄関から来たら、チッチくんが騒ぐから」\n「窓から来る方が騒ぐと思うぞ」' },
+    { p: 'fuuka_b_1', t: 'フウカ「60階、越えたんだね。……あそこから上は、わたしの里でも『戻れない階』って呼ばれてる」' },
+    { p: 'fuuka_b_1', music: 'romantic', t: 'フウカ[shy]「ねえ、屋根に上がろう。……ここからだと、塔のてっぺんが見えるの」\n二人で屋根に座ると、塔の先が星に溶けていた。' },
+    { p: 'fuuka_b_2', t: 'フウカ[love]「くノ一はね、帰る場所を作っちゃいけないの。……でも、ここは、帰りたくなる」' },
+    { p: 'fuuka_b_2', t: 'フウカ[love]「だから、ここを『わたしの見張り場所』にしてもいい？ あなたが帰ってくるのを、見張る場所」', ch: [
+      ['「ああ。いつでも来い」', 'フウカ[laugh]「やった。……合鍵は、いらないからね」', 3, 'fuuka_b_4'],
+      ['黙って隣に座りつづける', 'フウカ[love]「……うん。それが返事でいいよ」', 3, 'fuuka_b_2'],
+      ['「玄関から来てくれ」', 'フウカ[pout]「……それは、約束できない」', 2, 'fuuka_b_1'],
+    ] },
+    { p: 'fuuka_b_4', music: '', t: '（フウカが、ときどき工房に遊びに来るようになった）' },
+  ],
+};
+function homeCall() {
+  const w = homeCallWho()[0]; G.homeCallRun = G.runs; G.homeEv = G.homeEv || {};
+  runEv(w, HOME_CALL[w], () => { G.homeEv[w] = true; save(); SND.scene = ''; G.visit = { run: G.runs, who: [w] }; inside('home', `${VNAME[w]}は、しばらく工房でくつろいでいくらしい。`); });
 }
