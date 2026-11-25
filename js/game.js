@@ -563,7 +563,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 74'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 75'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1246,9 +1246,9 @@ function dexCard(x, k) {
     return `<div class="dexcard"><div class="pic">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>${x.name}${x.boss ? '<em class="tag">主</em>' : ''}</b><small>${x.boss ? `${x.from}階の主` : `${x.from}〜${x.to || 10}階`}　HP${x.hp} 攻${x.atk} 守${x.def}</small><small>攻め方：${KIND_JP[monAtkKind(x)]}　${w.length ? `弱点：<em class="wk">${w.join('・')}</em>` : '弱点：なし'}</small><small>倒した数：${G.dex.m[x.id] || 0}</small><div class="drops">${drop}</div></div></div>`;
   }
   const src = iconOfType(x), made = !!G.dex.g[x.id];
-  if (!k) return `<div class="dexcard"><div class="pic unk">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>？？？</b><small>${gearKind(x.type)}。${DEX.cat === 'meika' ? '設計図がまだない。宝箱・ミミック・主から、まれに見つかる。' : `まだ手に入れていない。${gearHow(x)}。`}</small></div></div>`;
+  if (!k) return `<div class="dexcard"><div class="pic unk">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>？？？</b><small>${gearKind(x.type)}。売値${sellPrice(x)}G。${DEX.cat === 'meika' ? '設計図がまだない。宝箱・ミミック・主から、まれに見つかる。' : `まだ手に入れていない。${gearHow(x)}。`}</small></div></div>`;
   const tr = gearTrait(x), stat = x.type === 'tool' ? `耐久${x.dur}` : `${x.atk ? '攻' + x.atk : ''}${x.def ? ' 守' + x.def : ''}`;
-  return `<div class="dexcard"><div class="pic">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>${x.name}</b><small>${gearKind(x.type)}　${stat}${WEAPON_TYPES[x.type] && WEAPON_TYPES[x.type].twoHand ? '　両手' : ''}</small>${tr ? `<small class="mkd">${tr}</small>` : ''}<small>入手：${gearHow(x)}${DEX.cat === 'meika' && !made ? '　（まだ打っていない）' : ''}</small></div></div>`;
+  return `<div class="dexcard"><div class="pic">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>${x.name}</b><small>${gearKind(x.type)}　${stat}${WEAPON_TYPES[x.type] && WEAPON_TYPES[x.type].twoHand ? '　両手' : ''}</small>${tr ? `<small class="mkd">${tr}</small>` : ''}<small>売値：<em class="wk">${sellPrice(x)}G</em>　入手：${gearHow(x)}${DEX.cat === 'meika' && !made ? '　（まだ打っていない）' : ''}</small></div></div>`;
 }
 // 手引き: 章を選んで読む
 const DEX_CH = [['武器の種類', 'w_sword'], ['素材の段階', 'iron'], ['属性と弱点', 'ember_stone'], ['名品と設計図', 'w_book'], ['ジョブと進化', 'w_staff']];
