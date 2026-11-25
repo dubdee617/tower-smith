@@ -258,6 +258,70 @@ const RECIPES = [
   RECIPES.push({ id:'dragon_shield', name:'竜の盾', type:'shield', atk:0, def:23, cost:{ dragonbone:3, orichalcum:2, leather:2 }, price:2600 });
   RECIPES.push({ id:'dragon_armor',  name:'竜の鎧', type:'armor', def:27, cost:{ dragonbone:4, orichalcum:2, leather:3 }, price:3300 });
 }
+// ---------- 名品（2026-11-25）: 特徴のある武器。設計図を拾うと工房で打てる ----------
+// [id, 名前, 種類, 段階(1〜5), 攻撃の倍率, 効果, 説明]
+// 段階: 1=鉄 2=銀 3=ミスリル 4=黒鋼・オリハルコン 5=竜。段階で、設計図が出はじめる階・素材・炉が決まる
+const MK_TIER = { 1: { k: 1.3, floor: 1, cost: { iron: 3, leather: 1 } }, 2: { k: 1.9, floor: 11, cost: { silver: 3, iron: 2 } }, 3: { k: 2.6, floor: 31, cost: { mithril: 3, silver: 2 } },
+  4: { k: 3.3, floor: 51, cost: { orichalcum: 2, darksteel: 2, mithril: 2 } }, 5: { k: 4.2, floor: 71, cost: { dragonbone: 3, orichalcum: 2 } } };
+const MEIKA = [
+  ['mk_flame_sword', '炎の剣', 'sword', 2, 1, { elem: 'fire' }, '攻撃に炎。氷や草木の魔物に1.5倍'],
+  ['mk_ice_katana', '氷の刀', 'katana', 2, 1, { elem: 'ice', freeze: .2 }, '攻撃に氷。たまに敵を凍らせる'],
+  ['mk_thunder_halberd', '雷の槍斧', 'axe', 3, 1, { elem: 'bolt', twice: .3 }, '攻撃に雷。たまに2回当たる'],
+  ['mk_holy_staff', '聖なる杖', 'staff', 2, 1, { elem: 'holy', healHit: .04 }, '攻撃するたびに少し回復'],
+  ['mk_blood_dagger', '血吸いのダガー', 'dagger', 2, 1, { drain: .2 }, '与えたダメージの2割、HPを吸う'],
+  ['mk_twin_sword', '双子の剣', 'sword', 2, 1, { hits: 2, per: .65 }, 'ふつうの攻撃が必ず2回当たる'],
+  ['mk_wind_bow', '風の弓', 'bow', 3, 1, { first: true, hits: 2, per: .6 }, '必ず先制。矢が2本飛ぶ'],
+  ['mk_earth_hammer', '大地の槌', 'hammer', 3, 1, { stun: .2, brk: 1 }, 'たまに敵がひるむ。守りを崩す'],
+  ['mk_shadow_knife', '影の短刀', 'dagger', 3, 1, { crit: .15, critMul: 3 }, '会心が出やすく、会心は3倍'],
+  ['mk_time_book', '時の魔導書', 'book', 4, 1, { ap: 1 }, '毎ターンAP+1'],
+  ['mk_smith_hammer', '鍛冶屋の槌', 'hammer', 1, 1.1, { loot: true }, '主人公の原点。戦闘のあと素材が出やすい'],
+  ['mk_star_sword', '星の剣', 'sword', 3, 1, { magic: 1.3 }, '魔法の威力1.3倍'],
+  ['mk_oni_club', '鬼の金棒', 'hammer', 4, 1.8, { heavy: true }, '攻撃はとても高いが、ふつうの攻撃にAP2'],
+  ['mk_thief_knife', '盗賊の短剣', 'dagger', 1, 1, { steal: true }, '攻撃するたびに、少しお金を盗む'],
+  ['mk_venom_fang', '毒の牙', 'dagger', 2, 1, { poison: true }, '当てると毒（毎ターンダメージ）'],
+  ['mk_guard_great', '守りの大剣', 'greatsword', 3, .9, { guard: .75 }, '攻撃したターン、受けるダメージ25%減'],
+  ['mk_sun_great', '太陽の大剣', 'greatsword', 4, 1, { elem: 'holy', slay: 'dark', slayMul: 2 }, '聖なる光。闇の魔物に2倍'],
+  ['mk_moon_katana', '月の刀', 'katana', 3, 1, { moon: true }, 'HPが半分を切ると攻撃1.5倍'],
+  ['mk_snake_sword', '蛇の鞭剣', 'sword', 3, 1, { splash: .3 }, '群れのとき、ほかの敵にも3割当たる'],
+  ['mk_giant_axe', '巨人の斧', 'axe', 4, 1, { allHit: .6 }, 'ふつうの攻撃が敵全体に当たる（1体ずつは6割）'],
+  ['mk_nameless', '名もなき剣', 'sword', 4, 1.1, { issen: true }, '像の剣士の昔の剣。「一閃」が1.5倍'],
+  ['mk_lava_axe', '溶岩の斧', 'axe', 4, 1, { elem: 'fire', melt: true }, '炎。敵の守りを半分にする'],
+  ['mk_frost_bow', '霜の弓', 'bow', 3, 1, { elem: 'ice', freeze: .3 }, '氷。よく凍らせる'],
+  ['mk_storm_sword', '嵐の剣', 'sword', 4, 1, { elem: 'bolt', twice: .3, thrice: .12 }, '雷。2回、3回当たることも'],
+  ['mk_dark_great', '闇の大剣', 'greatsword', 4, 1.4, { elem: 'dark', selfCut: .03 }, '闇。とても強いが、振るたびにHPが少し減る'],
+  ['mk_light_dagger', '光の短剣', 'dagger', 3, 1, { elem: 'holy', slay: 'dark', slayMul: 2 }, '聖。闇や亡霊に2倍'],
+  ['mk_crescent', '三日月の双刀', 'katana', 4, 1, { hits: 2, per: .7 }, '必ず2回当たる'],
+  ['mk_fists', '百連の拳', 'dagger', 3, 1, { hits: 4, per: .35 }, '拳で4回打つ'],
+  ['mk_swallow_bow', '燕の弓', 'bow', 4, 1, { hits: 3, per: .45 }, '矢が3本飛ぶ'],
+  ['mk_soul_staff', '吸魂の杖', 'staff', 3, 1, { killHeal: .15 }, '敵を倒すたびにHPが回復'],
+  ['mk_heal_hammer', '癒しの槌', 'hammer', 2, 1, { cure: .25 }, '攻撃すると、たまにケガが治る'],
+  ['mk_life_book', '生命の魔導書', 'book', 3, 1, { regen: .05 }, '毎ターンHPが回復'],
+  ['mk_bolt_dagger', '迅雷のダガー', 'dagger', 4, 1, { ap: 1, elem: 'bolt' }, '雷。毎ターンAP+1'],
+  ['mk_gale_katana', '疾風の刀', 'katana', 3, 1, { first: true }, '必ず先制する'],
+  ['mk_charge_great', '溜めの大剣', 'greatsword', 3, 1, { carry: 1 }, '持ち越せるAP+1'],
+  ['mk_gold_axe', '黄金の斧', 'axe', 2, 1, { goldx: 2 }, '戦闘で手に入るお金が2倍'],
+  ['mk_luck_staff', '幸運の杖', 'staff', 2, 1, { loot: true }, '素材が出やすい'],
+  ['mk_treasure_pick', '宝探しのツルハシ', 'axe', 2, .9, { dig: true, loot: true }, '持っていると、掘って出る物が2倍'],
+  ['mk_judge_great', '断罪の大剣', 'greatsword', 5, 1, { exec: .5 }, 'HPが2割5分を切った敵を、半分の確率で倒す'],
+  ['mk_exec_axe', '処刑の斧', 'axe', 5, 1, { crit: .05, critMul: 4 }, '会心が4倍'],
+  ['mk_snipe_bow', '狙撃の弓', 'bow', 4, 1.2, { alwaysCrit: true, heavy: true }, '必ず会心。ふつうの攻撃にAP2'],
+  ['mk_mirror_shield', '鏡の盾', 'shield', 3, 0, { reflect: .25 }, '受けたダメージの25%を返す'],
+  ['mk_tree_shield', '大樹の盾', 'shield', 3, 0, { regen: .04 }, '毎ターンHPが回復'],
+  ['mk_rock_armor', '不動の鎧', 'armor', 4, 0, { noInjury: true }, 'ケガをしない'],
+  ['mk_rusty_sword', '錆びた剣', 'sword', 1, .6, { rust: true }, '使うほど強くなる（勝つたびに攻撃+1、最大+40）'],
+  ['mk_cursed_katana', '呪いの刀', 'katana', 5, 1.3, { curse: .03 }, 'とても強いが、毎ターンHPが減る'],
+  ['mk_wood_katana', '子どもの木刀', 'katana', 1, .3, { expx: 2 }, 'とても弱いが、経験値2倍'],
+  ['mk_cleaver', '料理人の包丁', 'dagger', 2, 1, { cook: true }, '倒した魔物を料理して、たまにHP回復'],
+  ['mk_dragon_spear', '竜殺しの槍', 'greatsword', 4, 1, { slay: 'dragon', slayMul: 3 }, '竜に3倍'],
+];
+{ const base = { sword: 11, katana: 17, greatsword: 19, axe: 18, hammer: 10, dagger: 8, bow: 13, book: 7, staff: 7 };
+  for (const [id, name, type, t, mod, mk, desc] of MEIKA) {
+    const T = MK_TIER[t], r = { id, name, type, mk, desc, meika: true, tier: t, cost: Object.assign({ stone: 2 }, T.cost), price: Math.round(120 * Math.pow(2.1, t)) };
+    if (type === 'shield') { r.atk = 0; r.def = Math.round(6 * T.k); } else if (type === 'armor') r.def = Math.round(5 * T.k * 1.05);
+    else r.atk = Math.max(1, Math.round(base[type] * T.k * mod));
+    RECIPES.push(r);
+  }
+}
 // 王様からの褒美（2026-11-24）。工房では打てない。種類ごとに「王家の〇〇」「王家の宝〇〇」
 { const base = { sword:11, katana:17, greatsword:19, axe:18, hammer:10, dagger:8, bow:13, book:7, staff:7 }, jp = { sword:'剣', katana:'刀', greatsword:'大剣', axe:'斧', hammer:'槌', dagger:'短剣', bow:'弓', book:'魔導書', staff:'杖' };
   for (const [t, a] of Object.entries(base)) {

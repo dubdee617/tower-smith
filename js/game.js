@@ -95,6 +95,18 @@ function job() {
 }
 const isHeavy = () => { const w = mainWeapon(); return !!(w && WEAPON_TYPES[w.type].heavy); };
 const canOneHand = t => (G.prof[t] || 0) >= ONE_HAND_NEED;
+// 名品の効果: 持っている装備（右手・左手・鎧）の効果を合わせる
+function MK() { const o = {}; for (const k of ['r', 'l', 'armor']) { const g = gearBy(G.equip[k]); if (g && g.mk) for (const [a, v] of Object.entries(g.mk)) o[a] = typeof v === 'number' && typeof o[a] === 'number' ? o[a] + v : v; } return o; }
+// 属性の相性: 炎→氷・毒（草木） 氷→炎 雷→鳥や水・竜 聖→闇 闇→精霊
+const ELEM_WEAK = { fire: ['ice', 'poison'], ice: ['fire', 'breath'], bolt: ['bite', 'breath'], holy: ['dark'], dark: ['magic'] };
+const isDarkMon = m => monAtkKind(m) === 'dark' || /skeleton|ghost|zombie|mummy|lich|bone|undead|wraith/.test(m.id);
+function weaponMult(m) {
+  const k = MK(); let x = 1;
+  if (k.elem && (ELEM_WEAK[k.elem] || []).includes(monAtkKind(m))) x *= 1.5;
+  if (k.slay === 'dark' && isDarkMon(m)) x *= k.slayMul; if (k.slay === 'dragon' && /dragon|wyvern|drake/.test(m.id)) x *= k.slayMul;
+  if (k.moon && G.hp < G.mhp / 2) x *= 1.5;
+  return x;
+}
 function atkPower() {
   let a = G.atk; const r = gearBy(G.equip.r), l = gearBy(G.equip.l);
   if (r && r.atk) a += r.atk;
@@ -136,7 +148,7 @@ function iconOf(k) {
   return '';
 }
 // 装備ひとつずつの絵（assets/gear）があれば、それを使う
-const GEAR_IMG = new Set(["bone_bow", "bone_dagger", "bone_staff", "copper_axe", "copper_hammer", "copper_pick", "copper_shield", "copper_sword", "darksteel_armor", "darksteel_axe", "darksteel_book", "darksteel_bow", "darksteel_dagger", "darksteel_greatsword", "darksteel_hammer", "darksteel_katana", "darksteel_shield", "darksteel_staff", "darksteel_sword", "dragon_armor", "dragon_axe", "dragon_book", "dragon_bow", "dragon_dagger", "dragon_greatsword", "dragon_hammer", "dragon_katana", "dragon_shield", "dragon_staff", "dragon_sword", "iron_armor", "iron_axe", "iron_great", "iron_hammer", "iron_katana", "iron_shield", "iron_sword", "leather_armor", "lumber_axe", "mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "royal_armor", "royal_axe", "royal_book", "royal_bow", "royal_dagger", "royal_greatsword", "royal_hammer", "royal_katana", "royal_shield", "royal_staff", "royal_sword", "shovel", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword", "stone_book", "treasure_axe", "treasure_book", "treasure_bow", "treasure_dagger", "treasure_greatsword", "treasure_hammer", "treasure_katana", "treasure_staff", "treasure_sword"]);
+const GEAR_IMG = new Set(["bone_bow", "bone_dagger", "bone_staff", "copper_axe", "copper_hammer", "copper_pick", "copper_shield", "copper_sword", "darksteel_armor", "darksteel_axe", "darksteel_book", "darksteel_bow", "darksteel_dagger", "darksteel_greatsword", "darksteel_hammer", "darksteel_katana", "darksteel_shield", "darksteel_staff", "darksteel_sword", "dragon_armor", "dragon_axe", "dragon_book", "dragon_bow", "dragon_dagger", "dragon_greatsword", "dragon_hammer", "dragon_katana", "dragon_shield", "dragon_staff", "dragon_sword", "iron_armor", "iron_axe", "iron_great", "iron_hammer", "iron_katana", "iron_shield", "iron_sword", "leather_armor", "lumber_axe", "mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "mk_blood_dagger", "mk_bolt_dagger", "mk_charge_great", "mk_cleaver", "mk_crescent", "mk_cursed_katana", "mk_dark_great", "mk_dragon_spear", "mk_earth_hammer", "mk_exec_axe", "mk_fists", "mk_flame_sword", "mk_frost_bow", "mk_gale_katana", "mk_giant_axe", "mk_gold_axe", "mk_guard_great", "mk_heal_hammer", "mk_holy_staff", "mk_ice_katana", "mk_judge_great", "mk_lava_axe", "mk_life_book", "mk_light_dagger", "mk_luck_staff", "mk_mirror_shield", "mk_moon_katana", "mk_nameless", "mk_oni_club", "mk_rock_armor", "mk_rusty_sword", "mk_shadow_knife", "mk_smith_hammer", "mk_snake_sword", "mk_snipe_bow", "mk_soul_staff", "mk_star_sword", "mk_storm_sword", "mk_sun_great", "mk_swallow_bow", "mk_thief_knife", "mk_thunder_halberd", "mk_time_book", "mk_treasure_pick", "mk_tree_shield", "mk_twin_sword", "mk_venom_fang", "mk_wind_bow", "mk_wood_katana", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "royal_armor", "royal_axe", "royal_book", "royal_bow", "royal_dagger", "royal_greatsword", "royal_hammer", "royal_katana", "royal_shield", "royal_staff", "royal_sword", "shovel", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword", "stone_book", "treasure_axe", "treasure_book", "treasure_bow", "treasure_dagger", "treasure_greatsword", "treasure_hammer", "treasure_katana", "treasure_staff", "treasure_sword"]);
 function iconOfType(r) {
   if (GEAR_IMG.has(r.id)) return `assets/gear/${r.id}.webp`; const k = r.type === 'tool' ? TOOL_ICON[r.tool] : 'w_' + r.type; return ICON_KEYS.has(k) ? `assets/icon/${k}.webp` : ''; }
 // 手に入れたとき、絵の上にアイコン付きの札をぽんと出す
@@ -551,7 +563,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 72'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 73'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -700,13 +712,14 @@ function jinTeach() {
       { fig: 'jin', t: 'ジン「斬ろうと思うな。……もう斬れている、と思え。\nそれが『一閃』じゃ」' },
       { hero: 'shock', t: '「……今の、杖ですよね」' },
       { fig: 'jin', t: 'ジン[laugh]「ほっほっほ。得物は何でもよい。\nお主の打った刃なら、なおさらじゃ」' },
+      { fig: 'jin', t: 'ジン[smile]「……そうじゃ、これも渡しておこう。昔使っておった剣の、作り方じゃ」\n（名品「名もなき剣」の設計図をもらった）' },
     ] : [
       { fig: 'jin', t: 'ジン[think]「95階まで行ったか。……あの城を見たのじゃな」' },
       { fig: 'jin', t: 'ジン「わしも、昔あそこを歩いた。……ずっと昔にな」' },
       { fig: 'jin', t: 'ジン「最後に教えよう。『流水』。\n受けるのではない。流して、返すのじゃ」' },
       { fig: 'jin', t: 'ジン[smile]「てっぺんで待つものは、お主がいちばんよく知っておる相手じゃ。\n……怖がらんでいい」' },
     ];
-    runSeq(L, 0, () => { G.learned.push(k); if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(k); save(); sfx('levelup', { vol: .8 }); bigFx(`<b>技を覚えた</b><em>${SKILLS[k].name}</em><small>${SKILLS[k].desc}（どのジョブでも使える）</small>`); statueScreen('ジン[smile]「さて、わしは昼寝の時間じゃ」'); });
+    runSeq(L, 0, () => { G.learned.push(k); if (k === 'jin1') { G.bp = G.bp || []; if (!G.bp.includes('mk_nameless')) G.bp.push('mk_nameless'); } if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(k); save(); sfx('levelup', { vol: .8 }); bigFx(`<b>技を覚えた</b><em>${SKILLS[k].name}</em><small>${SKILLS[k].desc}（どのジョブでも使える）</small>`); statueScreen('ジン[smile]「さて、わしは昼寝の時間じゃ」'); });
   } };
 }
 function statueScreen(msg) {
@@ -821,7 +834,7 @@ function prepMenu() {
   log('出発の前に、装備と持ち物を確かめる。', true);
 }
 function newGear(r, forged) {
-  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.crit) x.crit = r.crit; if (r.fire) x.fire = true; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
+  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.crit) x.crit = r.crit; if (r.fire) x.fire = true; if (r.mk) x.mk = r.mk; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
   const a = forged && r.type !== 'tool' ? upLv('anvil') : 0;  // 金床の強化ぶん、自分で打った武具は強くなる
   if (a) { if (x.atk) x.atk += a; if (x.def) x.def += a; x.name += `+${a}`; }
   return x;
@@ -830,7 +843,26 @@ const gearKind = t => t === 'armor' ? '鎧' : t === 'tool' ? 'ツール' : WEAPO
 // 工房の鍛冶: まず「武器・防具・ツール・手入れ」を選んで、その中の一覧へ。
 // 一覧の各行に「必要な素材（今の数）」を出す。足りない物を押すと、何が足りないかを教える
 const FORGE_CAT = { weapon: ['武器', r => !['armor', 'shield', 'tool'].includes(r.type)], armor: ['防具', r => r.type === 'armor' || r.type === 'shield'], tool: ['ツール', r => r.type === 'tool'] };
-for (const k of Object.keys(FORGE_CAT)) { const f = FORGE_CAT[k][1]; FORGE_CAT[k][1] = r => !r.royal && f(r); }  // 王家の褒美は打てない
+for (const k of Object.keys(FORGE_CAT)) { const f = FORGE_CAT[k][1]; FORGE_CAT[k][1] = r => !r.royal && !r.meika && f(r); }  // 王家の褒美は打てない。名品は別の棚
+FORGE_CAT.meika = ['名品', r => r.meika && (G.bp || []).includes(r.id)];
+// 一覧を分ける棚: 武器・防具は素材の段階ごと、名品は種類ごと
+const TIER_OF = r => r.meika ? 0 : /^(dragon)/.test(r.id) ? 6 : /^orichalcum/.test(r.id) ? 5 : /^darksteel/.test(r.id) ? 4 : /^mithril/.test(r.id) ? 3 : /^silver/.test(r.id) ? 2 : 1;
+const SHELF = {
+  weapon: [['銅・鉄', r => TIER_OF(r) === 1], ['銀', r => TIER_OF(r) === 2], ['ミスリル', r => TIER_OF(r) === 3], ['黒鋼', r => TIER_OF(r) === 4], ['オリハルコン', r => TIER_OF(r) === 5], ['竜', r => TIER_OF(r) === 6]],
+  armor: [['銅・鉄', r => TIER_OF(r) <= 2], ['ミスリル・黒鋼', r => TIER_OF(r) === 3 || TIER_OF(r) === 4], ['オリハルコン・竜', r => TIER_OF(r) >= 5]],
+  meika: [['剣・刀', r => ['sword', 'katana'].includes(r.type)], ['大剣・斧・槌', r => ['greatsword', 'axe', 'hammer'].includes(r.type)], ['短剣・弓', r => ['dagger', 'bow'].includes(r.type)], ['魔導書・杖', r => ['book', 'staff'].includes(r.type)], ['盾・鎧', r => ['shield', 'armor'].includes(r.type)]],
+};
+// ---------- 名品の設計図（2026-11-25） ----------
+function bpDrop(chance, why) {
+  G.bp = G.bp || []; if (R() >= chance) return '';
+  const can = MEIKA.filter(x => x[0] !== 'mk_nameless' && !G.bp.includes(x[0]) && MK_TIER[x[3]].floor <= floorNo);
+  if (!can.length) return '';
+  const w = can.map(x => 1 + x[3]), sum = w.reduce((a, b) => a + b, 0); let q = R() * sum, x = can[0];
+  for (let i = 0; i < can.length; i++) if ((q -= w[i]) < 0) { x = can[i]; break; }
+  G.bp.push(x[0]); const r = RECIPES.find(y => y.id === x[0]);
+  sfx('item', { delay: 300 }); setTimeout(() => bigFx(`<img class="gearimg" src="${iconOfType(r)}" alt=""><b>設計図を手に入れた</b><em>${r.name}</em><small>${r.desc}（工房の「名品」で打てる）</small>`, 'levelup', 'reward', 3200), 400);
+  return `\n${why || ''}名品「${r.name}」の設計図を見つけた！`;
+}
 // ---------- 工房の強化（お金の使い道） ----------
 // 炉: 打てる金属が増える（1で鉄）。金床: 打った武具の攻撃・守りが段階ぶん上がる。作業台: 使う素材が減る
 const UPG = {
@@ -874,7 +906,7 @@ function upgradeMenu(msg) {
 function forge(msg, face) {
   const L = [{ title: `工房の素材: ${matText(G.store)}` }];
   for (const [k, [name, f]] of Object.entries(FORGE_CAT)) { const rs = RECIPES.filter(f), n = rs.filter(canMake).length;
-    L.push({ t: name, s: n ? `作れる ${n}/${rs.length}` : `作れる物なし（${rs.length}種）`, hot: n > 0, f: () => forgeList(k) }); }
+    L.push({ t: name, s: k === 'meika' ? `設計図 ${rs.length}/${MEIKA.length}${n ? `・作れる${n}` : ''}` : n ? `作れる ${n}/${rs.length}` : `作れる物なし（${rs.length}種）`, hot: n > 0, f: () => forgeList(k) }); }
   const worn = G.gear.filter(x => x.type === 'tool' && x.dur < x.maxDur);
   L.push({ t: '工房の強化', s: `炉${upLv('furnace')} 金床${upLv('anvil')} 作業台${upLv('bench')}`, f: () => upgradeMenu() });
   L.push({ t: '手入れ', s: worn.length ? `ツール${worn.length}本（銅1）` : '直す物なし', off: !worn.length, f: forgeFix });
@@ -884,17 +916,24 @@ function forge(msg, face) {
 }
 function forgeList(cat, msg, face) {
   const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(r => f(r) && needFurnace(r) <= upLv('furnace') + 1).sort((a, b) => canMake(b) - canMake(a) || needFurnace(b) - needFurnace(a));  // 炉の次の段階までを出す
-  const L = [{ title: name, titleHtml: `${name}<span class="have">${Object.keys(MATS).map(k => `<span>${icoImg(k)}${G.store[k] || 0}</span>`).join('')}</span>` }];
-  for (const r of rs) {
-    const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
+  const have = `<span class="have">${Object.keys(MATS).filter(k => G.store[k] || ['copper', 'iron', 'bone', 'leather', 'stone', 'wood'].includes(k)).map(k => `<span>${icoImg(k)}${G.store[k] || 0}</span>`).join('')}</span>`;
+  const shelves = (SHELF[cat] || [[name, () => true]]).map(([n, g]) => [n, rs.filter(g)]).filter(x => x[1].length);
+  const L = [];
+  if (cat === 'meika' && !rs.length) L.push({ title: name, titleHtml: `${name}${have}` }, { t: '設計図がまだない', s: '宝箱・主・ミミックから、まれに見つかる', off: true, f: () => {} });
+  // いちばん新しい段階の棚を、はじめに開く
+  { const key = shelves.map(x => x[0]).join('|'); if (shelves.length > 1 && !buttons.keepTab) buttons.tab[key] = cat === 'meika' ? (buttons.tab[key] || 0) : shelves.length - 1; buttons.keepTab = false; }
+  for (const [sn, list] of shelves) { L.push({ title: shelves.length > 1 ? sn : name, titleHtml: `${shelves.length > 1 ? sn : name}${have}` });
+  for (const r of list) {
+    const ok = canMake(r), stat = (r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`) + (r.desc ? `<em class="mkd">${r.desc}</em>` : '');
     const lock = upLv('furnace') < needFurnace(r);
     L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? `炉Lv${needFurnace(r)}が必要` : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
       if (lock) { log(`${['', '鉄', '銀', 'ミスリル', 'オリハルコン'][needFurnace(r)]}を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv${needFurnace(r)}に）`, true); return; }
       if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
       for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n;
       G.gear.push(newGear(r, true)); save();
-      fadeGo(() => { forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
+      fadeGo(() => { buttons.keepTab = true; forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
     } });
+  }
   }
   L.push({ t: '戻る', f: () => forge() });
   buttons(L, 'list');
@@ -1400,9 +1439,10 @@ function dig() {
   } else {
     F.M[d.y][d.x] = 0; delete F.dmg[k]; delete F.crack[k]; reveal(F, d.x, d.y);
     const vk = F.vein && F.vein[k]; if (vk) delete F.vein[k];
+    const digX = MK().dig ? 2 : 1;
     const vRaw = vk === 'v_iron' && floorNo >= 31 && R() < .45 ? 'ore_silver' : vk === 'v_orichalcum' ? (floorNo >= 71 && R() < .55 ? 'ore_orichalcum' : 'ore_mithril') : VEIN_RAW[vk];
     const table = vk ? [[vRaw, 1]] : DIG_YIELD[areaOf(floorNo)[1]] || DIG_YIELD.stone, sum = table.reduce((s, [, w]) => s + w, 0), got = {};
-    const n = (d.eff === 3 ? 2 : 1) + (vk ? 1 : 0);
+    const n = ((d.eff === 3 ? 2 : 1) + (vk ? 1 : 0)) * digX;
     for (let i = 0; i < n; i++) { let r = R() * sum; for (const [id, w] of table) { if ((r -= w) < 0) { add(got, id, 1); break; } } }
     if (!vk && d.eff === 1 && R() < .4) for (const id in got) delete got[id];
     for (const [id, v] of Object.entries(got)) add(G.carry, id, v);
@@ -1437,8 +1477,9 @@ function chestLoot(ch, beat) {
   const gold = Math.floor((ch.gold ? 40 : 8) * (1 + floorNo * .3) * (.7 + R() * .6));
   if (beat) for (const k of Object.keys(got)) got[k]++;
   for (const [k, v] of Object.entries(got)) add(G.carry, k, v); G.gold += gold; gotToast('gold', gold);
-  if (beat) return `ミミックが守っていた宝箱の中身: ${matText(got)}、${gold}G。`;
-  log(`宝箱を開けた！ ${matText(got)}、${gold}G。`, true); dungeonUI(); hud();
+  const bp = bpDrop(beat ? .5 : ch.gold ? .18 : .06, '宝箱の底に、');
+  if (beat) return `ミミックが守っていた宝箱の中身: ${matText(got)}、${gold}G。${bp}`;
+  log(`宝箱を開けた！ ${matText(got)}、${gold}G。${bp}`, true); dungeonUI(); hud();
 }
 function stairs() {
   sfx('stairs', { max: 1.6 });
@@ -1509,7 +1550,7 @@ const alive = () => B.ms.filter(x => x.hp > 0);
 const allDead = () => B.ms.every(x => x.hp <= 0);
 // 狙っている敵（倒れていたら、次の生きている敵に移る）
 function target() { let m = B.ms[B.ti]; if (!m || m.hp <= 0) { B.ti = B.ms.findIndex(x => x.hp > 0); m = B.ms[B.ti]; } return m || B.ms[0]; }
-function apBase() { return 3 + (has('p_ap') ? 1 : 0) - (hurt('rib') ? 1 : 0); }
+function apBase() { return 3 + (has('p_ap') ? 1 : 0) + (MK().ap || 0) - (hurt('rib') ? 1 : 0); }
 const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 // ケガをする（すでに全部のケガをしていたら何もしない）
 function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
@@ -1530,7 +1571,7 @@ function startBattle(boss) {
   if (G.als && floorNo <= 10) log('アルスも剣を構えた。');
   // 70〜95階: ジンの影が現れて、一閃して去っていく
   if (!boss && floorNo >= 70 && floorNo <= 95 && R() < .04) { playFx('jin', { x: VW / 2, y: VH / 2 }); for (const x of ms) x.hp = 0; win(); log('……どこからか、杖をついた老人の影が現れた。\n一閃。魔物は倒れ、影はもういない。'); return; }
-  if (has('p_first')) { const d = dmgTo(target(), atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (allDead()) { win(); return; } }
+  if (has('p_first') || MK().first) { const d = dmgTo(target(), atkPower() * .8); log(`先制！ ${d}のダメージ。`); if (allDead()) { win(); return; } }
   battleUI(); hud();
 }
 // レベルアップ: 画面全体に大きく出す（押すか2.4秒で消える）
@@ -1650,18 +1691,36 @@ function doItem(k) {
   return 'ok';
 }
 // 重い武器（斧・刀・大剣）は、ふつうの攻撃にAPが2かかる。軽い武器ほど回避しやすい
-const apCost = id => id === 'attack' && isHeavy() ? 2 : SKILLS[id].ap;
+const apCost = id => id === 'attack' && (isHeavy() || MK().heavy) ? 2 : SKILLS[id].ap;
 const evade = () => hurt('leg') ? 0 : (isHeavy() ? .03 : .10) + (mainWeapon() && mainWeapon().type === 'dagger' ? .05 : 0);
-const carryMax = () => 1 + (has('p_carry') ? 1 : 0);
+const carryMax = () => 1 + (has('p_carry') ? 1 : 0) + (MK().carry || 0);
 function dmgTo(m, power, pierce, critBonus) {
-  let d = Math.max(1, Math.round((power - (pierce ? 0 : Math.max(0, m.def - B.broken))) * (.85 + R() * .3)));
-  const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0) + ((mainWeapon() || {}).crit || 0);  // 黒鋼は会心が出やすい
+  const K = MK(), def = Math.max(0, m.def - B.broken) * (K.melt ? .5 : 1);
+  let d = Math.max(1, Math.round((power - (pierce ? 0 : def)) * (.85 + R() * .3) * weaponMult(m)));
+  const crit = !hurt('head') && (K.alwaysCrit && B.basic || R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0) + ((mainWeapon() || {}).crit || 0) + (K.crit || 0));  // 黒鋼・名品は会心が出やすい
   const dl = B.hitDelay || 0;  // 技の当たる瞬間に合わせて、数字や揺れを遅らせる
-  if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: dl + 120, size: .7 }); } else B.lastCrit = false;
+  if (crit) { d = Math.round(d * (K.critMul || 1.8)); B.lastCrit = true; playFx('crit', { delay: dl + 120, size: .7 }); } else B.lastCrit = false;
   m.hp -= d; if (m.hp <= 0 && !m.dying) m.dying = performance.now() + dl;
   const show = () => { popNum(d, 'mon', crit ? 'crit' : '', m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
   if (dl) setTimeout(show, dl); else show();
   return d;
+}
+// 名品: 攻撃が当たったあとの効果
+function mkAfterHit(K, m, total) {
+  let t = '';
+  if (K.drain) { const h = healMe(Math.ceil(total * K.drain)); if (h) t += `HPを${h}吸った。`; }
+  if (K.healHit) { const h = healMe(Math.ceil(G.mhp * K.healHit)); if (h) t += `HPが${h}回復。`; }
+  if (K.freeze && m.hp > 0 && !m.boss && R() < K.freeze) { m.stun = true; t += `${m.name}は凍りついた！`; playFx('ice_burst', { size: .6 }); }
+  if (K.stun && m.hp > 0 && !m.boss && R() < K.stun) { m.stun = true; t += `${m.name}はひるんだ！`; }
+  if (K.brk) B.broken += K.brk;
+  if (K.poison && m.hp > 0 && !m.poison) { m.poison = Math.max(2, Math.round(atkPower() * .15)); t += `${m.name}は毒をうけた。`; playFx('poison_bubble', { size: .6 }); }
+  if (K.steal && m.hp > 0 && R() < .5) { const g = Math.ceil(m.gold * .3) + 1; G.gold += g; t += `${g}G盗んだ。`; }
+  if (K.splash && B.ms.length > 1) for (const x of alive()) if (x !== m) dmgTo(x, total * K.splash, true);
+  if (K.exec && m.hp > 0 && !m.boss && m.hp < m.mhp * .25 && R() < K.exec) { m.hp = 0; m.dying = performance.now(); t += `${m.name}を断罪した！`; }
+  if (K.guard) B.cut = Math.min(B.cut, K.guard);
+  if (K.selfCut) { const c = Math.ceil(G.mhp * K.selfCut); G.hp = Math.max(1, G.hp - c); t += `HPを${c}削った。`; }
+  if (K.cure && G.injuries.length && R() < K.cure) { const x = G.injuries.shift(); t += `${INJURIES[x].name}が治った！`; }
+  return t;
 }
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
 function doSkill(id) {
@@ -1670,12 +1729,16 @@ function doSkill(id) {
   if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; skillFx(id); FX_AT = null; }
   // 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる
   const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; sh.hit(i, dl, tg); FX_AT = null; B.hitDelay = dl + (sh.at || 0); };
-  const power = atkPower() * (s.mult || 1) * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0);
+  const K = MK(); B.basic = id === 'attack';
+  const power = (atkPower() * (s.mult || 1) * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0)) * (s.magic && K.magic ? K.magic : 1) * (id === 'jin1' && K.issen ? 1.5 : 1);
   switch (s.kind) {
     case 'atk': {
       if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; m.dying = performance.now(); fx.hit = 1; m.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ ${m.name}の急所を貫いた。`); break; }
       const ds = []; let crit = false;
-      if (s.all) { for (const x of alive()) { hitAt(0, x); ds.push(dmgTo(x, power, s.pierce, s.crit)); crit = crit || B.lastCrit; } }   // 全体に当たる
+      if (B.basic && K.allHit) { for (const x of alive()) { ds.push(dmgTo(x, power * K.allHit)); crit = crit || B.lastCrit; } }   // 巨人の斧: 全体に
+      else if (B.basic && K.hits) { for (let i = 0; i < K.hits; i++) { const tg = m.hp > 0 ? m : alive()[0]; if (!tg) break; B.hitDelay = i * 160; if (i) weaponFx((mainWeapon() || {}).type); ds.push(dmgTo(tg, power * K.per)); crit = crit || B.lastCrit; if (allDead()) break; } }   // 名品の連続攻撃
+      else if (B.basic && (K.twice || K.thrice)) { const n = 1 + (R() < (K.twice || 0) ? 1 : 0) + (R() < (K.thrice || 0) ? 1 : 0); for (let i = 0; i < n; i++) { const tg = m.hp > 0 ? m : alive()[0]; if (!tg) break; B.hitDelay = i * 200; ds.push(dmgTo(tg, power)); crit = crit || B.lastCrit; if (allDead()) break; } }
+      else if (s.all) { for (const x of alive()) { hitAt(0, x); ds.push(dmgTo(x, power, s.pierce, s.crit)); crit = crit || B.lastCrit; } }   // 全体に当たる
       else for (let i = 0; i < (s.hits || 1) + (s.twice && R() < s.twice ? 1 : 0); i++) {
         const tg = s.spread && i > 0 && alive().length ? pick(alive()) : m.hp > 0 ? m : alive()[0];   // 連続攻撃は、ほかの敵にも散る
         if (!tg) break; hitAt(i, tg); ds.push(dmgTo(tg, power, s.pierce, s.crit)); crit = crit || B.lastCrit; if (allDead()) break;
@@ -1688,6 +1751,7 @@ function doSkill(id) {
       if (s.stun) for (const x of s.all ? alive() : [m]) if (x.hp > 0 && !x.boss && R() < s.stun) { x.stun = true; t += `${x.name}は動けない！`; }
       if (s.guardToo) B.cut = Math.min(B.cut, .5);
       if (s.cutToo) B.cut = Math.min(B.cut, s.cutToo);
+      if (B.basic || !s.magic) t += mkAfterHit(K, m, ds.reduce((a, b) => a + b, 0));
       if (s.stealToo && m.hp > 0 && R() < (has('p_steal') ? .7 : .4)) { const k = Object.keys(m.drop)[0]; add(G.carry, k, 1); t += `${NAMES[k]}を奪った！`; }
       log(t); break;
     }
@@ -1723,9 +1787,10 @@ function endTurn() {
       if (B.counter) { d = Math.ceil(d * B.counter.cut); const c = dmgTo(m, atkPower() * B.counter.back); log(`受け止めて反撃！ ${c}のダメージ。`); B.counter = null; }
       else d = Math.ceil(d * B.cut);
       if (m.boss && G.bless === 'ward') d = Math.ceil(d * .7);
+      { const rf = MK().reflect; if (rf && m.hp > 0) { const back = dmgTo(m, d * rf, true); log(`鏡の盾が、${back}のダメージを返した。`); } }
       G.hp -= d; { const dd = d, w = (order - 1) * 220; setTimeout(() => { popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
       // 大きな一撃（最大HPの35%以上）はケガが残ることがある
-      if (G.hp > 0 && d >= G.mhp * .35 && R() < .25) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
+      if (G.hp > 0 && d >= G.mhp * .35 && R() < .25 && !MK().noInjury) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
       if (allDead()) { win(); return; }
       if (m.hp <= 0) break;
       if (G.hp <= 0 && G.bless === 'stand' && !B.stood) { G.hp = 1; B.stood = true; G.bless = null; playFx('blessing', { self: true, size: 1.2 }); say('resolve', '「……まだだ！」\nエリーの祈りで、踏みとどまった！'); continue; }
@@ -1733,16 +1798,23 @@ function endTurn() {
     }
   }
   if (has('p_regen')) healMe(3);
+  { const K = MK(); if (K.regen) healMe(Math.ceil(G.mhp * K.regen)); if (K.curse) { G.hp = Math.max(1, G.hp - Math.ceil(G.mhp * K.curse)); log('呪いの刀が、HPを吸った。'); }
+    for (const m of alive()) if (m.poison) { const d = dmgTo(m, m.poison, true); log(`${m.name}は毒で${d}のダメージ。`); }
+    if (allDead()) { win(); return; } }
   B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud();
   if (B.auto) setTimeout(autoTurn, 550);
 }
 function win() {
   // 倒した敵（群れ）の分をまとめてもらう
-  const ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0), gold = ms.reduce((s, x) => s + x.gold, 0), drop = {};
-  for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') ? .12 : 0))) add(drop, k, n);
+  const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1), gold = ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1), drop = {};
+  for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') || K.loot ? .12 : 0))) add(drop, k, n);
   sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
   B.over = true; for (const x of ms) if (!x.dying) x.dying = performance.now();
   G.exp += exp; G.gold += gold; allyTick();
+  let mkMsg = '';
+  if (K.killHeal) mkMsg += `魂を吸って、HPが${healMe(Math.ceil(G.mhp * K.killHeal * ms.length))}回復。`;
+  if (K.cook && R() < .4) mkMsg += `魔物をさばいて、その場で焼いて食べた。HPが${healMe(Math.ceil(G.mhp * .2))}回復。`;
+  if (K.rust) { const w = mainWeapon(); if (w && w.mk && w.mk.rust && (w.rust || 0) < 40) { w.rust = (w.rust || 0) + 1; w.atk++; if (w.rust % 10 === 0) mkMsg += `${w.name}の錆が、少し落ちた気がする。`; } }
   // 上の金属の鉱石は、上の階の魔物ほどよく持っている
   if (!ms.some(x => x.chest)) { if (floorNo >= 21 && R() < .22) add(drop, 'ore_silver', 1); if (floorNo >= 41 && R() < .16) add(drop, 'ore_mithril', 1); if (floorNo >= 71 && R() < .12) add(drop, 'ore_orichalcum', 1); if (floorNo >= 61 && R() < .12) add(drop, 'dark_steel', 1);
     for (const x of ms) if (/dragon|wyvern|drake/.test(x.id) && R() < (x.boss ? 1 : .35)) add(drop, 'dragon_bone', x.boss ? 3 : 1); if (floorNo >= 85 && R() < .07) add(drop, 'dragon_bone', 1); }
@@ -1765,6 +1837,8 @@ function win() {
   for (const u of UPPERS) if (upperReady(u) && !readyBefore.includes(u.job)) say('shock', `${WEAPON_TYPES[u.exp].name}の経験が生きてきた。${WEAPON_TYPES[u.hold].name}を持つと${u.job}になれる！`);
   const w1 = mainWeapon(); if (w1 && WEAPON_TYPES[w1.type].twoHand && G.prof[w1.type] === ONE_HAND_NEED) log(`${WEAPON_TYPES[w1.type].name}を片手で扱えるようになった！`);
   save();
+  if (mkMsg) msg += '\n' + mkMsg;
+  if (m.boss && !m.mirror && !ms.some(x => x.chest)) msg += bpDrop(.6, '主の倒れたあとに、');
   if (ms.some(x => x.mirror)) { const first = !G.cleared; buttons([{ t: '……', hot: true, f: () => first ? ending() : (B = null, fadeGo(() => toTown('鏡はまた、静かに砕けた。', true))) }]); return; }
   buttons([{ t: '先へ進む', hot: true, f: () => { B = null; mode = 'dungeon'; dungeonUI(); hud(); } }]);
   hud();
@@ -2058,6 +2132,8 @@ function weaponTierFx(type, w) {
 function weaponFx(type) {
   weaponTierFx(type, mainWeapon());
   { const w = mainWeapon(); if (w && w.fire) { playFx('fire_s', { delay: 160, size: .75, vol: .6 }); fxSparks(160, '#ff8a3d', 14); } }  // 竜の武器は炎が乗る
+  { const e = MK().elem; const E = { fire: ['m_fire1', '#ff8a3d'], ice: ['m_ice1', '#8fd8ff'], bolt: ['m_bolt1', '#ffe14a'], holy: ['m_holy1', '#fff0b0'], dark: ['m_dark1', '#b45cff'] }[e];
+    if (E) { playFx(E[0], { delay: 150, size: .6, vol: .55 }); fxSparks(150, E[1], 12); } }  // 名品の属性
   const shake = (n, d) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n); }, d || 0);
   // 音: 剣=剣で斬る 刀=刀で斬る 大剣・斧=大剣で斬る 槌=重いパンチ ダガー=素振り×2 弓=弓矢 魔導書=魔法陣 杖=打撃
   switch (type) {
