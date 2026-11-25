@@ -575,7 +575,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 89'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 90'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1990,7 +1990,11 @@ function lose() {
   const inj = injure(); G.runs++; finishRun(true); G.ally = null; G.bandaged = []; G.enc = null; G.als = false;
   G.carry = {}; G.gold = 0; G.bless = null; endMeal(); endRun(); rollRumor(); G.hp = G.mhp; FLOORS = {}; save();
   say('sad', `倒れた……。素材（${lost}）と、手持ちの${lostG}Gはなくなった。${kept !== '' && kept !== 'なし' ? `\n持ち帰りのおかげで、${kept}は工房に残った。` : ''}`, true);
-  buttons([{ t: '……', hot: true, f: () => { mode = 'town'; B = null; F = null; if (evReady('elly', .6)) { SND.lost = false; ellieEvent(inj); return; } inside('clinic'); say('wince', `気がつくと治療院の天井だった。${inj ? INJURIES[inj].name + 'が残っている。' : ''}\nエリー「もう、心配したんですから。レベルと装備は無事です」\n「……っ、またやられたか」`, true); hud(); } }]);
+  buttons([{ t: '……', hot: true, f: () => { mode = 'town'; B = null; F = null; if (evReady('elly', .6)) { SND.lost = false; ellieEvent(inj); return; } fadeGo(() => {
+      // 治療院のベッドで目を覚ます。エリーのひとことは、前回（倒れた）に合わせたもの
+      const el = (typeof runLine === 'function' && runLine('elly')) || pick(['エリー[worried]「……よかった。目が覚めたんですね。丸一日、眠っていらしたんですよ」', 'エリー「運ばれてきたときは、本当にどうなるかと……。レベルと装備は、無事ですよ」']);
+      inside('clinic', el); hud();
+    }, { text: '……\n治療院のベッドで、目を覚ました', hold: 1800 }); } }]);
 }
 
 // ---------- 魔物の絵（待機・攻撃・攻撃を受けた の3枚＋コードの動き） ----------
