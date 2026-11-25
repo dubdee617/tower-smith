@@ -436,12 +436,12 @@ new ResizeObserver(() => fitStage()).observe(document.querySelector('main'));
 const TOWN_IMG = 'assets/town/';
 const PLACES = {
   home:   { name: '工房（自宅）', box: [168,  468,  302,  560], hello: ['アルス「師匠、おかえりなさい！ 今日の名言、まだですか」', 'チッチ「掃除しといたっす。あ、炉の火は落としてないっす」', 'チッチ[laugh]「親方の剣、磨いといたっす！ ……盗んでないっすよ？」', 'チッチ[shy]「アルス君に『チッチさんの料理、最高です』って言われたっす。……照れるっす」', 'チッチ[think]「鍵なら開けられるっす。心の鍵？ ……知らないっす」', '床に獲物が置いてある。オルグだろう。'] },
-  weapon: { name: '武具屋', box: [321,  410,  445,  490], hello: ['ジェニー「打ったの見せて。値段はあたしが決める」', 'ジェニー[laugh]「叩けば直る。人生以外は」',
-    'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー[angry]「塔で死んだら、誰があたしの店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」'] },
+  weapon: { name: '武具屋', box: [321,  410,  445,  490], hello: ['ジェニー「打ったの見せて。値段は私が決める」', 'ジェニー[laugh]「叩けば直る。人生以外は」',
+    'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー[angry]「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」'] },
   clinic: { name: '治療院', box: [312,  242,  413,  325], hello: ['エリー[smile]「あ、おかえりなさい！ 今日はケガしてませんか？」', 'エリー「神様はちゃんと聞いてますよ。……たまに返事が遅いだけで」',
-    'エリー[smile]「これ、お守りです。手作りなんですけど……」\n「ありがとう。治療院の新しい商品か？」', 'エリー「無茶しないでくださいね。……わたし、毎晩お祈りしてるんですから」\n「神様も忙しいだろうに、悪いな」'] },
+    'エリー[smile]「これ、お守りです。手作りなんですけど……」\n「ありがとう。治療院の新しい商品か？」', 'エリー「無茶しないでくださいね。……私、毎晩お祈りしてるんですから」\n「神様も忙しいだろうに、悪いな」'] },
   guild:  { name: 'ギルド', box: [25,  325,  149,  407], hello: ['ジロ「ゴローが、今日の塔は機嫌が悪いって言ってる」', 'リア「最高到達記録は86階。近衛兵長のギャバンさんの記録です」', 'リア[smile]「依頼はまだ準備中です。……もう少し待っててくださいね」',
-    'リア「あなたの到達記録は、毎回わたしが書いてます。……ほかの人のは新人に任せてますけど」\n「そうか、大変だな」', 'リア[smile]「記録を更新したら、お祝いしましょうか。……ふたりで」\n「いいな。ギルドのみんなも呼ぼう」', 'ボルツ[laugh]「旦那！ 戦利品があるなら奥に回してくれ。加工は俺の仕事だ」'] },
+    'リア「鍛冶屋さんの到達記録は、毎回私が書いてます。……ほかの人のは新人に任せてますけど」\n「そうか、大変だな」', 'リア[smile]「記録を更新したら、お祝いしましょうか。……ふたりで」\n「いいな。ギルドのみんなも呼ぼう」', 'ボルツ[laugh]「旦那！ 戦利品があるなら奥に回してくれ。加工は俺の仕事だ」'] },
   item:   { name: '道具屋', box: [324,  325,  445,  407], hello: ['ドーラ「薬草は多めに持っていきな。塔の中じゃ買えないよ」', 'ドーラ[laugh]「若いの、いや若くもないか。死ぬんじゃないよ」'] },
   bank:   { name: '銀行', box: [54,  245,  162,  325], hello: ['ベルナルド「お預かりしたお金は、塔の中で倒れても無事です」', 'ベルナルド[think]「お金は裏切りません。人と違って」'] },
   inn:    { name: '宿屋', box: [22,  410,  146,  490], hello: ['ガストン「素材を持ってきな。うまく料理してやるよ」'] },
@@ -466,7 +466,7 @@ const STAGE = {
   clinic: [
     [0, ['エリー[shock]「えっ、塔に行くんですか！？ 町いちばんの鍛冶屋さんが……？」']],
     [5, ['エリー「5階まで行ったって聞きました。……本当に、無茶しないでくださいね」']],
-    [10, ['エリー[smile]「10階の主を……！ みんな驚いてましたけど、わたしは信じてましたよ」']],
+    [10, ['エリー[smile]「10階の主を……！ みんな驚いてましたけど、私は信じてましたよ」']],
   ],
   guild: [
     [0, ['リア[shock]「鍛冶屋さんが冒険者登録……？ 前例がありません。……書類、探してきます」', '冒険者たちが、主人公を見てひそひそ話している。']],
@@ -571,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 83'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 85'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -681,10 +681,10 @@ function talkTo(who, back) {
 // 親密度が届いたとき: 向こうから好意を示してくる＋特典
 function affEvent(who) {
   const L = {
-    jenny: 'ジェニー[inlove]「……あんたのこと、ずっと前から見てたのよ。……気づきなさいよ、バカ」\n「……？ ああ、いつも店番ありがとうな」',
-    elly:  'エリー[happy]「わたし、あなたが帰ってくるのが、一番うれしいんです。……それだけ、です」\n「そうか。俺も治療院があって助かってる」',
-    ria:   'リア[happy]「あなたの記録を書くのが、わたしの一番の楽しみなんです。……仕事として、ですよ？」\n「そうか。いい仕事だな」',
-    fuuka: 'フウカ[love]「……好き。……あ、ちがっ、その、刀が！ 刀が好きなの！」\n「そうか。今度、いい刀を打ってやる」',
+    jenny: (G.seen || {}).jenny ? 'ジェニー[inlove]「……あの雨の夜から、私、もう隠すのやめたの。\n……覚悟しなさいよね」' : 'ジェニー[inlove]「ねえ……あんたって、誰にでもそんなに優しいの？\n……私にだけなら、いいのに」',
+    elly:  'エリー[happy]「今日は怪我ではないんですね。……よかった。\n……いえ、その……お顔が見られて、嬉しかったので」',
+    ria:   'リア[happy]「鍛冶屋さんとお話ししてると、なんだか安心するんです。\n……仕事中でも、つい、扉のほうを見ちゃうんですよ」',
+    fuuka: 'フウカ[love]「……あなたといると、時々、自分が忍びであることを忘れそうになります。\n……忘れはしませんが。……少しだけ、です」',
     jin:   'ジン[laugh]「お主には、いずれ教えたいことがある。……その時が来たらな」',
   };
   if (who === 'jenny') npcFig('weapon_inlove');
@@ -1137,7 +1137,7 @@ function clinic(msg) {
   const half = perk('elly') ? .5 : 1, cost = Math.floor(G.injuries.length * INJURY_PRICE * half);
   L.push({ t: 'ケガを治す', s: G.injuries.length ? `${cost}G` : 'ケガなし', hot: G.injuries.length > 0, off: !G.injuries.length, f: () => {
     const note = payClinic(cost); G.injuries = []; G.hp = G.mhp; G.treated++; save();
-    const t = G.treated, line = t >= 6 ? 'エリー[angry]「もう！ わたし、本気で怒ってるんですからね！」' : t >= 3 ? 'エリー[think]「……また、ですか。次は、もっと気をつけてください」' : 'エリー[smile]「はい、もう大丈夫です。無理はしないでくださいね」';
+    const t = G.treated, line = t >= 6 ? 'エリー[angry]「もう！ 私、本気で怒ってるんですからね！」' : t >= 3 ? 'エリー[think]「……また、ですか。次は、もっと気をつけてください」' : 'エリー[smile]「はい、もう大丈夫です。無理はしないでくださいね」';
     clinic(`${line}${note}\n「助かったよ」`); } });
   L.push({ title: G.bless ? `祝福: ${BLESSINGS[G.bless].name}（次の挑戦で効く）` : '祝福（次の1回の挑戦だけ。どれか1つ）' });
   for (const [id, b] of Object.entries(BLESSINGS)) { const bp = Math.floor(b.price * half); L.push({ t: b.name, s: `${b.desc}／${bp}G`, off: !!G.bless || G.gold < bp, f: () => {
@@ -1449,7 +1449,7 @@ function meetNpc(id) {
   if (id === 'fuuka') {
     talkTo('fuuka', () => {
       G.ally = { id, left: perk('fuuka') ? 20 : TOWER_NPCS.fuuka.battles }; save();
-      log(`フウカ「……しばらく、一緒に行ってあげる」\nフウカが一緒に戦ってくれる（${G.ally.left}回）。`, true);
+      log(`フウカ「……しばらく、ご一緒します」\nフウカが一緒に戦ってくれる（${G.ally.left}回）。`, true);
       buttons([{ t: '先へ進む', hot: true, f: go }]);
     });
   }
@@ -1493,7 +1493,7 @@ function allyTick() {
   const a = G.ally; if (!a) return; a.left--;
   if (a.left > 0) return;
   G.ally = null;
-  log(a.id === 'gaban' ? 'ギャバン[laugh]「自分はここまでです！ 鍛冶屋殿、その先を……どうか！」' : a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……もう行かなきゃ。……また、会えるよね？」');
+  log(a.id === 'gaban' ? 'ギャバン[laugh]「自分はここまでです！ 鍛冶屋殿、その先を……どうか！」' : a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……そろそろ、任務に戻ります。……また、お会いできますね」');
 }
 // ---------- 調べる（床の小物） ----------
 const propAt = (x, y) => (F.props || []).find(p => p.cx === x && p.cy === y);
@@ -1968,7 +1968,7 @@ function win() {
   save();
   if (mkMsg) msg += '\n' + mkMsg;
   if (m.boss && !m.mirror && !m.trial && !ms.some(x => x.chest)) msg += bpDrop(.6, '主の倒れたあとに、');
-  if (ms.some(x => x.mirror)) { const first = !G.cleared; buttons([{ t: '……', hot: true, f: () => first ? ending() : (B = null, fadeGo(() => toTown('鏡はまた、静かに砕けた。', true))) }]); return; }
+  if (ms.some(x => x.mirror)) { const first = !G.cleared; buttons([{ t: '……', hot: true, f: () => first ? ending() : (B = null, fadeGo(() => toTown('鏡は、また静かに光っていた。……塔は、今日も人を見ている。', true))) }]); return; }
   buttons([{ t: '先へ進む', hot: true, f: () => { B = null; mode = 'dungeon'; dungeonUI(); hud(); } }]);
   hud();
 }
