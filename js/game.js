@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 107'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 108'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1296,6 +1296,53 @@ function guildBuy(msg, face) {
 }
 // タイトルの設定: 音とデータ消去（町の地図から移した）
 function settings() { openMenu(); }
+// ---------- テストモード（2026-11-25）: 設定の「Tower of Hope」の文字を5回押すと出る。確認用 ----------
+function testMenu(msg) {
+  if (mode !== 'town' || document.body.classList.contains('story')) { log('テストモードは、町にいるときに使える。', true); return; }
+  place = null; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
+  t.innerHTML = `<img src="${TOWN_IMG}tower.jpg" alt="" style="filter:brightness(.5) saturate(.6)"><div class="name">テストモード</div>`; clearFig();
+  const done = m => { save(); hud(); testMenu(m); };
+  buttons([
+    { t: '好きな階へ行く', s: '1〜100階', hot: true, f: testFloors },
+    { t: '強さを階に合わせる', s: `今 Lv${G.lv}`, f: testPower },
+    { t: 'お金と素材', s: '+20000G・素材+30', f: () => { G.gold += 20000; for (const k of Object.keys(MATS)) G.store[k] = (G.store[k] || 0) + 30; done('お金と素材を増やした。'); } },
+    { t: '工房を最大まで強化', f: () => { G.forgeUp = {}; for (const [k, u] of Object.entries(UPG)) G.forgeUp[k] = u.max; done('炉・金床・作業台を最大にした。'); } },
+    { t: '名品の設計図を全部', f: () => { G.bp = MEIKA.map(x => x[0]); done(`名品の設計図を${G.bp.length}枚すべて手に入れた。`); } },
+    { t: '親密度を最大に', s: 'ヒロイン4人・ジン', f: () => { for (const w of [...HEROINES, 'jin']) G.aff[w] = Math.max(G.aff[w] || 0, AFF_NEED + 2); G.jinMet = true; done('ヒロイン4人とジンの親密度を最大にした。\n（イベントは、それぞれの場所で起きる）'); } },
+    { t: '鏡と戦う', s: '100階', f: () => { testUnlock(100); goFloor(100); setTimeout(() => { if (mode === 'dungeon') mirrorScene(); }, 1600); } },
+    { t: 'エンディングを見る', f: () => { closeMenu(); ending(); } },
+    { t: 'テストモードを終える', tail: true, f: townMap },
+  ], 'three small');
+  log(msg || 'テストモード。ここで変えたことは、今のセーブにそのまま記録される。\n試すときは、別のスロットにセーブしてから使うと安心。', true);
+}
+// その階まで登ったことにする（下の階の主は倒したことに）
+function testUnlock(n) {
+  G.maxFloor = Math.max(G.maxFloor || 0, n); G.bosses = G.bosses || {};
+  for (let f = 10; f < n; f += 10) G.bosses[f] = true; if (n > 10) G.bossDown = true;
+  if (n > 5 && !G.bosses[5]) for (let f = 5; f < n; f += 10) G.bosses[f] = true;
+  if (G.maxFloor >= 50) G.castle = true;
+  save();
+}
+function testFloors() {
+  const L = [1, 5, 11, 21, 31, 41, 51, 61, 71, 81, 86, 91, 95, 99, 100].map(n => ({ t: `${n}階`, s: areaOf(n)[2], f: () => { testUnlock(n); goFloor(n); } }));
+  L.push({ t: '戻る', f: () => testMenu() });
+  buttons(L, 'three small'); log('どの階へ行く？（そこまで登ったことになる）', true);
+}
+// 階に合ったレベルと装備にする（目安）
+function testPower() {
+  const L = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(n => ({ t: `${n}階向け`, f: () => {
+    const lv = Math.round(6 + n * .62);  // 目安: 10階でLv12、50階でLv37、100階でLv68
+    while (G.lv < lv) { G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.atk += g.atk; G.def += g.def; } G.exp = 0; G.hp = G.mhp;
+    const tier = n <= 20 ? 1 : n <= 40 ? 2 : n <= 60 ? 3 : n <= 80 ? 5 : 6, w = mainWeapon(), type = w ? w.type : 'sword';
+    const best = list => list.sort((a, b) => (b.atk || 0) + (b.def || 0) - (a.atk || 0) - (a.def || 0))[0];
+    const rw = best(RECIPES.filter(r => r.type === type && !r.meika && !r.royal && TIER_OF(r) === tier)), ra = best(RECIPES.filter(r => r.type === 'armor' && !r.meika && !r.royal && TIER_OF(r) === tier));
+    const got = []; if (rw) { const g = newGear(rw, true); G.gear.push(g); G.equip.r = g.uid; got.push(g.name); } if (ra) { const g = newGear(ra, true); G.gear.push(g); G.equip.armor = g.uid; got.push(g.name); }
+    testUnlock(Math.max(1, n - 9)); save(); hud();
+    testMenu(`Lv${G.lv}にした。${got.length ? `\n装備: ${got.join('・')}` : ''}`);
+  } }));
+  L.push({ t: '戻る', f: () => testMenu() });
+  buttons(L, 'three small'); log('どの階に合わせる？（レベルと、その段階の武器・鎧）', true);
+}
 // 設定・セーブ・ロードの画面（どこからでも開ける。下のボタンは変えない）
 // ---------- 図鑑（2026-11-25）: 装備・名品・魔物、それと武器の手引き。メニューの「図鑑」と工房の「書棚」から ----------
 // 手に入れた装備・会った魔物を G.dex に記録していく。知らない物は影だけ出る
@@ -1406,7 +1453,7 @@ function openMenu(tab) {
     <dt>画面の揺れ</dt><dd>${seg('shake', ['なし', '弱い', 'ふつう', '強い'])}</dd>
     <dt>名前</dt><dd><div class="seg"><button data-act="name">${heroName()}（変える）</button></div></dd>
     <dt>オートセーブ</dt><dd><div class="seg"><button data-k="auto" data-v="1" class="${OPTS.auto ? 'on' : ''}">オン</button><button data-k="auto" data-v="0" class="${!OPTS.auto ? 'on' : ''}">オフ</button></div></dd></dl>
-    <p class="note">オートセーブは、町に戻ったときや階を移ったときに自動で記録します。</p>`;
+    <p class="note">オートセーブは、町に戻ったときや階を移ったときに自動で記録します。</p><p class="note" data-act="ver" style="text-align:right;opacity:.45">Tower of Hope</p>`;
   if (tab === 'save') body = (inTown ? '' : '<p class="note warn">セーブは町にいるときだけできます。</p>') + [1, 2, 3].map(n => `<button class="slot" data-save="${n}" ${inTown && G ? '' : 'disabled'}><b>スロット${n}</b><small>${slotText(n)}</small></button>`).join('');
   if (tab === 'load') body = [0, 1, 2, 3].map(n => `<button class="slot" data-load="${n}" ${slotInfo(n) ? '' : 'disabled'}><b>${n ? 'スロット' + n : 'オートセーブ'}</b><small>${slotText(n)}</small></button>`).join('') + '<p class="note">ロードすると、町から始まります。</p>';
   if (tab === 'dex') body = dexBody();
@@ -1428,6 +1475,7 @@ function openMenu(tab) {
     m.querySelector('[data-no]').onclick = () => openMenu('load');
     m.querySelector('[data-yes]').onclick = () => { G = Object.assign(NEW_GAME(), i.g); FLOORS = {}; B = null; closeMenu(); document.body.classList.remove('story', 'title', 'intro'); fadeGo(() => { townMap(); say('normal', '「さて、続きといくか」', true); save(); }, { hold: 400 }); };
   });
+  { const vb = m.querySelector('[data-act="ver"]'); if (vb) vb.onclick = () => { openMenu.tap = (openMenu.tap || 0) + 1; if (openMenu.tap >= 5) { openMenu.tap = 0; closeMenu(); testMenu(); } }; }  // 5回押すとテストモード
   { const nb = m.querySelector('[data-act="name"]'); if (nb) nb.onclick = () => { closeMenu(); const back = ['home', 'weapon', 'clinic', 'guild', 'item', 'bank', 'inn'].includes(place) ? (() => { const p = place; return () => inside(p); })() : townMap; if (mode === 'dungeon' || mode === 'battle') { log('名前は、町にいるときに変えられる。', true); return; } nameScreen(back, true); }; }
   m.querySelector('[data-act="close"]').onclick = closeMenu;
   { const t = m.querySelector('[data-act="title"]'); if (t) t.onclick = () => { t.outerHTML = `<button data-act="title2" class="hot">${OPTS.auto ? 'タイトルへ戻る' : 'セーブせずに戻る'}</button>`; m.querySelector('[data-act="title2"]').onclick = () => { save(); closeMenu(); FLOORS = {}; B = null; titleScreen(); }; }; }
