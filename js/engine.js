@@ -292,7 +292,7 @@ function genFloor(floor, seed) {
     }
     return null;
   };
-  for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35)) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
+  for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35) * (typeof ECON !== 'undefined' ? ECON.chestN : 1)) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
   if (typeof PROPS !== 'undefined') {
     const own = (AREA_PROPS[area] || []).map((p, k) => [`${area}_p${k + 1}`, p[1], area === 'stone' ? 6 : 10]);
     const table = (area === 'stone' ? own.concat(FLOOR_PROPS_STONE, floor >= 6 ? FLOOR_PROPS_DEEP : []) : own).concat(AREA_EXTRA[area] || []), tw = table.reduce((s, p) => s + p[2], 0);

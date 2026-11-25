@@ -5,6 +5,9 @@ const MATS = { copper:'銅', iron:'鉄', bone:'骨', leather:'革', stone:'魔�
 // 塔で手に入るのは「使える前の状態」の戦利品（2026-11-23 決定）
 // ギルドに持ち込むと、鍛冶に使える素材に加工してもらえて、さらに報酬（お金）がもらえる
 // to: 加工するとなる素材。reward: 1個あたりのギルドの報酬
+// お金の出方（2026-11-25 調整。10階まで登って帰ると、工房の強化が1つできるかどうか。6階あたりでやっと鉄の装備）
+// mon=魔物のお金 guild=ギルドの持ち込み報酬 chestN=宝箱の数 chestG=宝箱のお金 prop=小物から出るお金 sell=武具の売値（定価に対して）
+const ECON = { mon: .5, guild: .5, chestN: .55, chestG: .35, prop: .5, sell: .5 };
 const RAW = {
   rat_hide:    { name:'大ネズミの毛皮',   to:{leather:1}, reward:3 },
   cursed_bone: { name:'呪われた骨',       to:{bone:1},    reward:2 },
