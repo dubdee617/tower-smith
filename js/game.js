@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 106'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 107'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1057,7 +1057,7 @@ function forgeConfirm(cat, r) {
 }
 function forgeMake(cat, r, q) {
   for (let i = 0; i < q; i++) { if (!canMake(r)) { q = i; break; } for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n; G.gear.push(newGear(r, true)); }
-  save();
+  G.forged = (G.forged || 0) + q; save();
   const hits = [['forge1', 250], ['forge1', 700], ['forge1', 1150]]; if (q > 1) hits.push(['forge1', 1600], ['forge1', 2050]); hits.push(['forge2', q > 1 ? 2500 : 1600]);
   fadeGo(() => { buttons.keepTab = true; forgeList(cat, q > 1 ? `「${r.name}を${q}本。……腕が鳴ったな」` : `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}${q > 1 ? ` ×${q}` : ''}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}${q > 1 ? ` ×${q}` : ''}\n制作中`, hold: q > 1 ? 2400 : 1500, sfx: hits });
 }

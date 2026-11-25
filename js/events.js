@@ -335,7 +335,7 @@ const PROLOGUE = [
 function runSeq(L, i, end, setup) {
   const P = L[i];
   if (i === 0 && setup) setup();
-  if (P.bg) { mode = 'town'; showTown(true, P.aspect || 4 / 3); const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${P.bg}" alt="">` + (P.cap ? `<div class="caption">${P.cap}</div>` : ''); }
+  if (P.bg) { mode = 'town'; showTown(true, P.aspect !== undefined ? P.aspect : 4 / 3); const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${P.bg}" alt="">` + (P.cap ? `<div class="caption">${P.cap}</div>` : ''); }
   if (P.music !== undefined) SND.scene = P.music;
   if (P.clear) clearFig();
   if (P.fig) npcFig(P.fig);
@@ -430,11 +430,18 @@ const ENDING_TOP = [
   { ev: 'mirror', hero: 'doubt', t: '「……なんでも、か」' },
   { ev: 'mirror', hero: 'calm', t: '「……いらないよ」' },
   { ev: 'mirror', t: '「……いらない？」' },
-  { ev: 'mirror', hero: 'smile', t: '「町に帰れば、口うるさい武具屋がいて、心配性の治療院の子がいて、\n俺の記録を一番きれいな字で書いてくれる子がいる」' },
+  { ev: 'mirror', hero: 'smile', t: '「町に帰れば、口うるさい武具屋がいて、心配性の治療院の子がいて、\n俺の記録を一番きれいな字で書いてくれる子がいる。\n……塔の中じゃ、影から見守ってくれる忍びもいる」' },
   { ev: 'mirror', hero: 'smile', t: '「弟子も、居候も、腹を空かせて待ってる。\n……これ以上、望むものなんてない。俺は、もう十分もらってる」' },
   { ev: 'mirror', t: '鏡は、しばらく黙っていた。\nそれから、ほんの少し、笑ったような気がした。' },
   { ev: 'mirror', t: '「……そうか。それが、人間か。\n……また来るといい。わたしは、ここで待っている」' },
   { ev: '', t: '百階。誰も見たことのない、塔のてっぺん。\n東の空が、白んでいく。' },
+  // 女神たち: 鏡の意思を知っていて、邪魔をせず見守ってきた（2026-11-25）
+  { fig: 'forest', t: '風の中に、やわらかな声がまじった。\n森の女神[smile]「……見ていたわ、鍛冶屋。ずっと」' },
+  { fig: 'desert', t: '砂の女神[laugh]「ふふ。あの子が、あんなふうに笑うなんてね」' },
+  { fig: 'mountain', t: '山の女神「私たちが建てた塔が、自分で選んで、鏡になった。\n……私たちは、ただ見守ることにしていたのだ」' },
+  { fig: 'ice', t: '氷の女神[smile]「人の子が、自分と向き合って、それでも笑った。\n……あの子も、ひとつ、人間を知ったのね」' },
+  { fig: 'druid', t: '花の女神[laugh]「おつかれさま。\n……帰り道に、お花、咲かせておくね」' },
+  { clear: true, t: '気がつくと、声はもう聞こえなかった。\n朝の光だけが、静かにあたりを満たしていた。' },
   { t: '朝日が、エルディアの町を照らしていた。\n工房の煙突から、細い煙がのぼっているのが見えた。' },
   { hero: 'calm', t: '「……てっぺんに、宝はなかったな」' },
   { hero: 'smile', t: '「……いや。登ってきた道が、全部宝だったか」' },
@@ -445,6 +452,13 @@ const ENDING_TOP = [
   { fig: 'guild', t: 'リア[smile]「最高到達記録、百階。\n……私が、書きました。いちばんきれいな字で」' },
   { fig: 'gaban', t: 'ギャバン[laugh]「鍛冶屋殿……！ 自分は、自分は……！\n……っ、おかえりなさいませ！」' },
   { fig: 'king', t: '王様[laugh]「わっはっは！ やりおったわ！\n今夜は国じゅうで祝いじゃ！」' },
+  // ジン: 教えの回収（2026-11-25）
+  { clear: true, bg: 'statue.jpg', aspect: 0, t: '騒ぎを抜けて、広場へ行った。\n像の足元で、いつもの老人が日向ぼっこをしていた。' },
+  { fig: 'jin', t: 'ジン[smile]「ほっほっほ。帰ってきたか。\n……てっぺんで、何を見た？」' },
+  { fig: 'jin', hero: 'calm', t: '「……自分だった」' },
+  { fig: 'jin', t: 'ジン[think]「……そうか」' },
+  { fig: 'jin', t: 'ジン[laugh]「ほっほっほ。それでよい。それでよいのじゃ。\n……お主は、己を見失わなんだ」' },
+  { fig: 'jin', t: 'ジン[smile]「さて、わしは昼寝の時間じゃ。\n……まあ、人生、どうにかなるものじゃよ」' },
   { clear: true, bg: 'home_in.jpg', t: 'その夜。\n工房には、いつもの炉の火が灯っていた。' },
   { fig: 'chicchi', t: 'チッチ[smile]「親方、おかえりっす。\nメシ、冷めないうちにどうぞっす」' },
   { fig: 'apprentice', t: 'ルゥ[laugh]「親方！ 塔のてっぺん、どんなでした！？」' },
@@ -542,7 +556,6 @@ const ENDING_LAST = [
   { t: '鍛冶屋は、ずっと誰かのために武器を打ってきた。\n……そして一度だけ、自分のために振った。' },
   { bg: 'intro_tower.jpg', t: '塔は今日も、エルディアの真ん中に立っている。\n人々に恵みを与え、ときに試練を与えながら。' },
   { t: '最上階の鏡は、次に来る誰かを、静かに待っている。\n……人間とは何かを、知るために。' },
-  { bg: 'title.jpg', aspect: 2 / 3, t: '― Tower of Hope ―\n\nおしまい。……でも、塔はまだ、そこにある。' },
 ];
 // いちばん親密度の高いヒロイン（最大まで届いているときだけ）
 // 2026-11-25: 大筋のヒロインはジェニー（幼なじみ）。ほかの誰かがジェニーより親密度が高く、しかも最大のときだけ、その人になる。
@@ -553,9 +566,55 @@ function loveOf() {
   if (other && other[1] >= AFF_NEED && other[1] > j) return other[0];
   return j >= EV_NEED ? 'jenny' : null;
 }
+// ---------- 冒険の記録（エンディングの最後、2026-11-25） ----------
+function endRecord(next) {
+  const d = (G.dex || {}).m || {}, kills = Object.values(d).reduce((a, b) => a + (b || 0), 0), kinds = Object.keys(d).length;
+  const rows = [['塔に登った回数', `${G.runs || 0}回`], ['倒した魔物', `${kills}体（${kinds}種類）`], ['名品の設計図', `${(G.bp || []).length} / ${MEIKA.length}`], ['覚えた技', `${(G.learned || []).length}`], ['工房の武具', `${(G.gear || []).length}本`]];
+  if (G.forged) rows.splice(2, 0, ['打った武具', `${G.forged}本`]);
+  if (G.partner) rows.push(['隣にいる人', WHO_NAME[G.partner]]);
+  mode = 'town'; showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
+  t.innerHTML = `<img src="${TOWN_IMG}home_in.jpg" alt="" style="filter:brightness(.35)"><div class="endrec"><b>${heroName()}の冒険の記録</b>${rows.map(([a, b]) => `<p><span>${a}</span><em>${b}</em></p>`).join('')}<p class="top"><span>最高到達</span><em>100階</em></p></div>`;
+  clearFig(); log('塔のてっぺんまで、たどり着いた。', true);
+  buttons([{ t: '次へ', hot: true, stay: true, f: next }]); hud();
+}
+// ---------- 音楽に合わせて、出会った人たちの絵を次々に → フェードアウトして The End ----------
+const END_CAST = [
+  ['weapon_in', 'weapon_happy', 'ジェニー'], ['clinic_in', 'clinic', 'エリー'], ['guild_in', 'guild', 'リア'], ['tower', 'fuuka', 'フウカ'],
+  ['home_in', 'als', 'アルス'], ['home_in', 'apprentice', 'ルゥ'], ['home_in', 'chicchi', 'チッチ'], ['home_in', 'buppa_laugh', 'ブッパ'],
+  ['guild_in', 'craft', 'ボルツ'], ['guild_in', 'gunther', 'ガンター'], ['guild_in', 'guildnpc_a', 'ダリオたち', 1], ['guild_in', 'guildnpc_b', 'ゴルドたち', 1],
+  ['item_in', 'item', 'ドーラ'], ['bank_in', 'bank', 'ベルナルド'], ['inn_in', 'inn', 'ガストン'], ['inn_in', 'drunks', 'のんだくれたち', 1], ['inn_in', 'bar', '酒場の客たち', 1],
+  ['castle_out', 'gate', '門兵'], ['castle_in', 'king', '王様'], ['castle_in', 'minister', '大臣'], ['castle_in', 'gaban', 'ギャバン'],
+  ['tower', 'dan', 'ダン'], ['tower', 'gurugamo', 'グルガモ'], ['statue', 'jin', 'ジン'],
+  ['intro_tower', 'forest', '森の女神'], ['intro_tower', 'desert', '砂の女神'], ['intro_tower', 'mountain', '山の女神'], ['intro_tower', 'ice', '氷の女神'], ['intro_tower', 'druid', '花の女神'],
+];
+function endMontage(partner, done) {
+  SND.scene = 'ending'; clearFig(); $('ctl').innerHTML = ''; log('', true);
+  const ov = document.createElement('div'); ov.id = 'montage'; document.body.appendChild(ov);
+  const ext = b => ['tower', 'statue', 'intro_tower', 'title', 'map', 'town_view'].includes(b) || /_in$/.test(b) || b === 'castle_out' ? '.jpg' : '.png';
+  const shots = END_CAST.map(([bg, f, n, wide]) => ({ bg: TOWN_IMG + bg + ext(bg), f: `assets/npc/${f}.webp`, n, wide }));
+  if (partner) shots.push({ ev: `assets/event/end_${partner}.webp` }); else shots.push({ bg: TOWN_IMG + 'town_view.jpg', n: 'エルディア' });
+  const D = 2400; let i = 0, gone = false;
+  const show = () => {
+    if (gone) return;
+    if (i >= shots.length) return theEnd();
+    const s = shots[i], c = document.createElement('div'); c.className = 'shot' + (i % 2 ? ' r' : '') + (s.wide ? ' wide' : '') + (s.ev ? ' ev' : '');
+    c.innerHTML = (s.bg ? `<img class="bg" src="${s.bg}" alt="">` : '') + (s.f ? `<img class="fg" src="${s.f}" alt="">` : '') + (s.ev ? `<img class="cg" src="${s.ev}" alt="">` : '') + (s.n ? `<span>${s.n}</span>` : '');
+    ov.appendChild(c); void c.offsetWidth; c.classList.add('on');
+    const old = [...ov.querySelectorAll('.shot')].slice(0, -1); old.forEach(o => { o.classList.remove('on'); o.classList.add('off'); setTimeout(() => o.remove(), 1400); });
+    i++; setTimeout(show, s.ev ? D * 2 : D);
+  };
+  const theEnd = () => {
+    gone = true; ov.querySelectorAll('.shot').forEach(o => { o.classList.remove('on'); o.classList.add('off'); });
+    setTimeout(() => { const e = document.createElement('div'); e.className = 'theend'; e.innerHTML = '<b>The End</b><small>Tower of Hope</small>'; ov.appendChild(e); void e.offsetWidth; e.classList.add('on');
+      setTimeout(() => { e.classList.add('tap'); ov.onclick = () => { ov.onclick = null; ov.classList.add('out'); setTimeout(() => { ov.remove(); done(); }, 1200); }; }, 3500); }, 1800);
+  };
+  // 2回目からは、押すと The End へ飛ばせる
+  if (G.endSeen) ov.onclick = () => { if (!gone) { ov.onclick = null; theEnd(); } };
+  setTimeout(show, 600);
+}
 function ending() {
   B = null; F = null; G.cleared = true; const love = loveOf(); save(); clearFig();
-  const fin = () => runSeq(ENDING_LAST, 0, () => { SND.scene = ''; clearFig(); fadeGo(() => inside('home', '工房の朝。炉に火を入れる。\n……さて、今日は何を打とうか。'), { hold: 900 }); });
+  const fin = () => runSeq(ENDING_LAST, 0, () => endRecord(() => endMontage(love && G.partner === love ? love : null, () => { SND.scene = ''; clearFig(); G.endSeen = true; save(); fadeGo(() => inside('home', '工房の朝。炉に火を入れる。\n……さて、今日は何を打とうか。'), { hold: 900 }); })));
   const loveScene = () => { const E = ENDING_LOVE[love]; runSeq(E.pre, 0, () => buttons([
     { t: E.ask[0], hot: true, f: () => { G.partner = love; save(); runSeq(E.yes, 0, fin); } },
     { t: E.ask[1], f: () => { G.partner = null; save(); runSeq(E.no, 0, fin); } }], 'one')); };
@@ -681,7 +740,7 @@ function jennySeq(key, done) {
   const step = () => {
     if (i >= L.length) { clearFig(); done(); return; }
     const P = L[i++];
-    if (P.bg) { mode = 'town'; showTown(true, P.aspect || 4 / 3); const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${P.bg}" alt="">`; }
+    if (P.bg) { mode = 'town'; showTown(true, P.aspect !== undefined ? P.aspect : 4 / 3); const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${P.bg}" alt="">`; }
     if (P.night) { const im = $('town').querySelector('img'); if (im) im.style.filter = 'brightness(.45) saturate(.7) hue-rotate(200deg)'; }
     if (P.ev === '') { const pe = $('town').querySelector('.portrait.ev'); if (pe) pe.remove(); }
     if (P.ev) { clearFig(); const t = $('town'); let pe = t.querySelector('.portrait.ev'); if (!pe) { pe = document.createElement('div'); pe.className = 'portrait npc ev'; pe.innerHTML = '<img alt="">'; t.appendChild(pe); } pe.querySelector('img').src = `assets/event/${P.ev}.webp`; }
