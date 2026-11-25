@@ -231,7 +231,9 @@ function homeVisit() {
   let j = L.findIndex((_, n) => !used.includes(n)); if (j < 0) { G.visitUsed[a] = []; j = Math.floor(R() * L.length); }
   G.visitUsed[a].push(j);
   G.visit.line = true; const gift = VISIT_GIFT[a](); save();
-  return (w.length > 1 ? pick(VISIT_TWO)(VNAME[w[0]], VNAME[w[1]]) : L[j]) + '\n' + gift;
+  // 前回の塔のぼりのひとこと（来た人が、まだ話していなければ）を先に
+  const rl = typeof runLine === 'function' ? runLine(a) : null;
+  return (rl || (w.length > 1 ? pick(VISIT_TWO)(VNAME[w[0]], VNAME[w[1]]) : L[j])) + '\n' + gift;
 }
 
 // ---------- 会話の種類を増やす（同じことばかり言わないように。1人4〜5種類） ----------

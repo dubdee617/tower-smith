@@ -494,6 +494,7 @@ const buppaHere = () => ((G.runs * 7 + 3) % 10) < 3;
 const BUPPA = ['ブッパ「……ぐう……ぐう……」', 'ブッパ[eat]「お、親方。台所にあった肉……もう食べちまった」', 'ブッパ[laugh]「がっはっは！ 今日も平和だなぁ」', 'ブッパ[shock]「うおっ！ ……なんだ、親方か。寝てた寝てた」', 'ブッパ[tired]「……ここ、寝心地いいんだよなぁ」', 'ブッパ[grumpy]「……起こすなよぉ」'];
 const HELPER = ['ルゥ[smile]「親方、炉の温度、上げておきました！」', 'ルゥ[laugh]「見てください、初めて釘がまっすぐ打てました！」', 'ルゥ「チッチさんに、鍵の開け方を教わってます。……鍛冶に関係ないですけど」', 'ルゥ[laugh]「アルスさん、また素振りしてますね。すごいなぁ」'];
 function greet(id) {
+  { const r = RUN_WHO[id] && typeof runLine === 'function' ? runLine(RUN_WHO[id]) : null; if (r && !(id === 'home' && G.visit && G.visit.run === G.runs && G.visit.who.length)) return r; }
   if (id === 'home') { const v = homeVisit(); if (v) return v; if (buppaHere() && R() < .6) return pick(BUPPA); if (R() < .3) return pick(HELPER); }
   { const w = SHOP_WHO[id]; if (w && (G.seen || {})[w] && R() < .35) return pick(CLOSE_GREET[w]); }
   const st = STAGE[id], base = PLACES[id].hello;
@@ -507,13 +508,15 @@ let place = null;
 
 function showTown(on, aspect) { document.body.classList.remove('story', 'title', 'intro', 'big'); if ($('town')) $('town').onclick = null; $('town').style.display = on ? 'block' : 'none'; $('view').style.display = on ? 'none' : 'block'; ASPECT = aspect || (on ? 2 / 3 : 4 / 3); COVER = on && (aspect === 4 / 3 || aspect === 0); spkFace = null; drawSpk(); fitStage(); }
 function rollRumor() { const k = Object.keys(RUMORS); G.rumor = k[Math.floor(R() * k.length)]; }
-function startRun() { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; }
+function startRun(n) { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; G.cur = { start: n || 1, top: n || 1, before: G.maxFloor || 0, boss: 0, kills: 0 }; }
+// 塔から戻ったとき（倒れたときも）、今回の塔のぼりを G.last に残す。町の人のあいさつに使う
+function finishRun(lost) { const c = G.cur || { start: 1, top: floorNo || 1, before: G.maxFloor, boss: 0, kills: 0 }; G.last = { ...c, lost: !!lost, run: G.runs, told: [] }; G.cur = null; }
 function endRun() { G.mhp -= G.runHp || 0; G.hp = Math.min(G.hp, G.mhp); G.runHp = 0; }
 function endMeal() { if (G.meal === 'stew') { G.mhp -= 10; G.hp = Math.min(G.hp, G.mhp); } G.meal = null; }
 function toTown(msg, fromTower, then) {
   mode = 'town'; B = null; F = null; FLOORS = {};
   let letter = false;
-  if (fromTower) { endMeal(); endRun(); rollRumor(); G.bless = null; G.runs++; G.ally = null; G.bandaged = []; G.enc = null; G.als = false; if (G.maxFloor >= 50 && !G.castle) { G.castle = true; letter = true; } }
+  if (fromTower) { endMeal(); endRun(); rollRumor(); G.bless = null; G.runs++; finishRun(false); G.ally = null; G.bandaged = []; G.enc = null; G.als = false; if (G.maxFloor >= 50 && !G.castle) { G.castle = true; letter = true; } }
   const brought = matText(G.carry);
   for (const [k, n] of Object.entries(G.carry)) add(RAW[k] ? G.raw : G.store, k, n);
   G.carry = {}; save();
@@ -529,6 +532,7 @@ function viewScreen(caption, story, big) {
 }
 // 塔から戻ったら、まずギルドへ。リアが出迎える
 function guildWelcome(has) {
+  { const r = typeof runLine === 'function' ? runLine('ria') : null; if (r) return r; }
   const close = (G.seen || {}).ria;
   const L = has ? [
     'リア[smile]「おかえりなさい！ 無事でよかった。\n……戦利品、ボルツさんに回しますね」',
@@ -571,7 +575,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 88'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 89'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -647,6 +651,7 @@ function inside(id, msg) {
   if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
   const lastSaid = msg || greet(id); log(lastSaid, true);
   { const sp = /^([^\s「\[]+)(?:\[(\w+)\])?/.exec(lastSaid || ''); if (sp && sp[1] === 'ブッパ') npcFig('buppa_' + (NPCS['ブッパ'][sp[2] || 'normal'] || 'sleep')); else if (sp && NPCS[sp[1]] && ['ボルツ', 'アルス', '客', 'チッチ', 'ルゥ'].includes(sp[1])) npcFig(NPCS[sp[1]].id); }
+  if (id === 'inn') inn.first = lastSaid;
   ({ home: homeMenu, weapon: shop, clinic: clinic, guild: guild, item: itemShop, bank: bank, inn: inn })[id](); hud();
 }
 const leave = { t: '外に出る', tail: true, f: () => townMap() };
@@ -1125,7 +1130,7 @@ function inn(msg) {
     } });
   }
   L.push(leave); buttons(L);
-  log(msg || (G.meal ? `今は${MEALS[G.meal].name}を食べたところ。次に塔から戻るまで効く。` : 'ガストン「素材を持ってきな。うまく料理してやるよ」'), true);
+  log(msg || inn.first || (G.meal ? `今は${MEALS[G.meal].name}を食べたところ。次に塔から戻るまで効く。` : 'ガストン「素材を持ってきな。うまく料理してやるよ」'), true); inn.first = null;
 }
 // 治療院: ケガを治す（ベッドでは治らない）／祝福を受ける（次の1回の挑戦だけ効く守り）
 // お代は手持ちから。足りなければ銀行から引き落とし。それでも足りなければ出世払い
@@ -1343,7 +1348,8 @@ let FLOORS = {};
 function enterFloor(n, fromAbove) {
   showTown(false, 4 / 3);
   if (!G.rumor) rollRumor(); TODAY = RUMORS[G.rumor].mod;
-  if (!Object.keys(FLOORS).length) startRun();
+  if (!Object.keys(FLOORS).length) startRun(n);
+  if (G.cur) G.cur.top = Math.max(G.cur.top, n);
   // 魔除け・魔寄せは、使ってから3フロアで切れる（階が変わるたびに1減る）
   let encEnd = false; if (G.enc && n !== floorNo) { G.enc.floors--; if (G.enc.floors <= 0) { G.enc = null; encEnd = true; } }
   { const ar = areaOf(n)[1]; if (TEX.area !== ar) loadTextures(ar); }  // エリアが変わったら絵を読み替える（読み終わるまで暗いまま）
@@ -1448,6 +1454,7 @@ function meetNpc(id) {
     buttons([{ t: '「頼もしいな」', hot: true, f: go }]); return;
   }
   if (id === 'fuuka' && evReady('fuuka', .6)) { fuukaEvent(go); return; }
+  if (id === 'fuuka' && !meetNpc.fr) { const rl = typeof runLine === 'function' ? runLine('fuuka') : null; if (rl) { log(rl, true); buttons([{ t: '次へ', hot: true, f: () => { meetNpc.fr = true; meetNpc(id); meetNpc.fr = false; } }]); return; } }
   if (id === 'fuuka') {
     talkTo('fuuka', () => {
       G.ally = { id, left: perk('fuuka') ? 20 : TOWER_NPCS.fuuka.battles }; save();
@@ -1956,6 +1963,7 @@ function win() {
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
     if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
   { const mc = ms.find(x => x.chest); if (mc) { mc.chest.mimic = false; msg += '\n' + chestLoot(mc.chest, true); } }
+  if (G.cur) { G.cur.kills += ms.length; if (m.boss && !m.trial && !m.mirror) G.cur.boss = floorNo; }
   if (m.trial) msg += '\n' + trialWon(m.trial);
   else if (m.boss && !m.mirror) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
@@ -1979,7 +1987,7 @@ function lose() {
   B.over = true; let kept = '';
   if (has('p_keep')) { const k = {}; for (const [m, n] of Object.entries(G.carry)) { const h = Math.floor(n / 2); if (h) { k[m] = h; add(RAW[m] ? G.raw : G.store, m, h); G.carry[m] -= h; } } kept = matText(k); }
   const lost = matText(G.carry), lostG = G.gold;
-  const inj = injure(); G.runs++; G.ally = null; G.bandaged = []; G.enc = null; G.als = false;
+  const inj = injure(); G.runs++; finishRun(true); G.ally = null; G.bandaged = []; G.enc = null; G.als = false;
   G.carry = {}; G.gold = 0; G.bless = null; endMeal(); endRun(); rollRumor(); G.hp = G.mhp; FLOORS = {}; save();
   say('sad', `倒れた……。素材（${lost}）と、手持ちの${lostG}Gはなくなった。${kept !== '' && kept !== 'なし' ? `\n持ち帰りのおかげで、${kept}は工房に残った。` : ''}`, true);
   buttons([{ t: '……', hot: true, f: () => { mode = 'town'; B = null; F = null; if (evReady('elly', .6)) { SND.lost = false; ellieEvent(inj); return; } inside('clinic'); say('wince', `気がつくと治療院の天井だった。${inj ? INJURIES[inj].name + 'が残っている。' : ''}\nエリー「もう、心配したんですから。レベルと装備は無事です」\n「……っ、またやられたか」`, true); hud(); } }]);
