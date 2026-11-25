@@ -74,3 +74,18 @@ HP MAX|HP MAX
 鏡|Mirror
 侍女|Maid
 12文字まで。空のままなら「鍛冶屋」|Up to 12 characters. Leave empty for "Blacksmith"
+鍛冶|Smithing
+炉Lv{0} 金床Lv{1} 作業台Lv{2}|Forge Lv{0}  Anvil Lv{1}  Bench Lv{2}
+打ちたい物を選ぶ。足りない素材は赤く出る。|Choose what to forge. Missing materials show in red.
+打てる物がない。|Nothing you can forge.
+設計図がまだない。宝箱・主・ミミックから、まれに見つかる。|No blueprints yet. Found rarely in chests, from lords, and from mimics.
+今の装備: {0}|Current gear: {0}
+1本に:|Per piece:
+売値{0}G|Sells for {0}G
+{0}本打つ|Forge {0}
+作れるだけ（{0}本）|Forge max ({0})
+足りない: {0}|Missing: {0}
+{0}を打つには、炉をLv{1}に（工房の強化）|To forge {0}, upgrade the forge to Lv{1} (Workshop Upgrades)
+炉Lv{0}|Forge Lv{0}
+{0}・耐久{1}|{0}, Durability {1}
+{0}あと{1}|{0} {1} short
