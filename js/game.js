@@ -571,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 80'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 81'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -688,6 +688,7 @@ function affEvent(who) {
     jin:   'ジン[laugh]「お主には、いずれ教えたいことがある。……その時が来たらな」',
   };
   if (who === 'jenny') npcFig('weapon_inlove');
+  if (who === 'forest') setTimeout(() => godBp('forest'), 1200);
   log(L[who] || `${TOWER_NPCS[who].name}[laugh]「あなたのこと、気に入ったわ。……また会いに来なさい」\n「ああ。また寄らせてもらう」`, true);
 }
 // 店の中の立ち絵を入れ替える（ギルドの加工職人など）
@@ -810,8 +811,8 @@ function warpMenu() {
   // 4人の女神の像を並べて出す。加護を受けた像だけが光る
   showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
   const lit = id => G.warps.some(n => GOD_OF_AREA[n] === id);
-  t.innerHTML = `<div class="statues">${['forest', 'desert', 'mountain', 'ice'].map(id => `<img class="${lit(id) ? 'lit' : ''}" src="${TOWN_IMG}gstatue_${id}.png" alt="${TOWER_NPCS[id].name}の像">`).join('')}</div><div class="name">女神の像</div>`;
-  if (!G.warps.length) { buttons([{ t: '戻る', f: () => towerScreen() }]); log('塔の入口に、4人の女神の像が並んでいる。\nまだどれも光っていない。……塔の中で、女神に会えたら。', true); return; }
+  t.innerHTML = `<div class="statues">${['forest', 'desert', 'mountain', 'ice', 'druid'].map(id => `<img class="${lit(id) ? 'lit' : ''}" src="${TOWN_IMG}gstatue_${id}.png" alt="${TOWER_NPCS[id].name}の像">`).join('')}</div><div class="name">女神の像</div>`;
+  if (!G.warps.length) { buttons([{ t: '戻る', f: () => towerScreen() }]); log('塔の入口に、5人の女神の像が並んでいる。\nまだどれも光っていない。……塔の中で、女神に会えたら。', true); return; }
   const L = G.warps.map(n => ({ t: `${n}階へ`, s: `${TOWER_NPCS[GOD_OF_AREA[n]].name}・${areaOf(n)[2]}`, f: () => { log(`${TOWER_NPCS[GOD_OF_AREA[n]].name}の像に触れた。光に包まれて……`, true); setTimeout(() => goFloor(n), 400); } }));
   L.push({ t: 'やめる', f: () => towerScreen() });
   buttons(L, L.length > 6 ? 'three small' : ''); log('女神の像が、やさしく光っている。どこへ行く？', true);
@@ -877,7 +878,7 @@ const SHELF = {
 // ---------- 名品の設計図（2026-11-25） ----------
 function bpDrop(chance, why) {
   G.bp = G.bp || []; if (R() >= chance) return '';
-  const can = MEIKA.filter(x => x[0] !== 'mk_nameless' && !G.bp.includes(x[0]) && MK_TIER[x[3]].floor <= floorNo);
+  const can = MEIKA.filter(x => x[0] !== 'mk_nameless' && !Object.values(GOD_MK).includes(x[0]) && !G.bp.includes(x[0]) && MK_TIER[x[3]].floor <= floorNo);
   if (!can.length) return '';
   const w = can.map(x => 1 + x[3]), sum = w.reduce((a, b) => a + b, 0); let q = R() * sum, x = can[0];
   for (let i = 0; i < can.length; i++) if ((q -= w[i]) < 0) { x = can[i]; break; }
@@ -1272,7 +1273,7 @@ function dexCard(x, k) {
   return `<div class="dexcard"><div class="pic">${src ? `<img src="${src}" alt="">` : ''}</div><div class="txt"><b>${x.name}</b><small>${gearKind(x.type)}　${stat}${WEAPON_TYPES[x.type] && WEAPON_TYPES[x.type].twoHand ? '　両手' : ''}</small>${tr ? `<small class="mkd">${tr}</small>` : ''}<small>売値：<em class="wk">${sellPrice(x)}G</em>　入手：${gearHow(x)}${DEX.cat === 'meika' && !made ? '　（まだ打っていない）' : ''}</small></div></div>`;
 }
 // 手引き: 章を選んで読む
-const DEX_CH = [['武器の種類', 'w_sword'], ['素材の段階', 'iron'], ['属性と弱点', 'ember_stone'], ['名品と設計図', 'w_book'], ['ジョブと進化', 'w_staff']];
+const DEX_CH = [['武器の種類', 'w_sword'], ['素材の段階', 'iron'], ['属性と弱点', 'ember_stone'], ['名品と設計図', 'w_book'], ['ジョブと進化', 'w_staff'], ['女神の話', 'star_dust']];
 function dexGuide() {
   const tabs = `<div class="dexch">${DEX_CH.map(([n, ic], i) => `<button data-ch="${i}" class="${DEX.ch === i ? 'on' : ''}">${icoImg(ic)}<span>${n}</span></button>`).join('')}</div>`;
   let h = '';
@@ -1284,12 +1285,14 @@ function dexGuide() {
     ['fire', '炎', '氷・毒の魔物（虫・草木）', '炎の魔法・竜の武器・炎の剣'], ['ice', '氷', '炎・竜の魔物', '氷の魔法・氷の刀・霜の弓'], ['bolt', '雷', '獣・竜の魔物', '雷の魔法・雷の槍斧・嵐の剣'], ['holy', '聖', '亡霊・不死の魔物', '聖光・聖なる杖・太陽の大剣'], ['dark', '闇', '魔法を使う魔物（精霊など）', '闇の魔法・闇の大剣']].map(([k, n, a, b]) => `<tr><td><em class="el ${k}">${n}</em></td><td>${a}</td><td>${b}</td></tr>`).join('')}</table><p class="note">弱点を突くと1.5倍。魔物の弱点は「魔物」の頁に載る（会った魔物だけ）。魔法は守りを無視する。</p>`;
   if (DEX.ch === 3) { const n = DEX_MEIKA().length, b = (G.bp || []).length; h = `<div class="dexw one"><div><b>${icoImg('w_book')}名品とは<em>${b}/${n}</em></b><small>ふつうの武具にない特徴を持つ、名のある武具。2回攻撃、属性、HPを吸う、会心が出やすい、お金が増える……など。</small></div><div><b>設計図<em>見つけると工房へ</em></b><small>宝箱 6%・豪華な宝箱 18%・ミミック 50%・各階の主 60%で見つかる。高い階ほど強い名品の設計図が出る（1・11・31・51・71階から）。</small></div><div><b>打ち方<em>工房 →「名品」</em></b><small>段階に合った金属と魔石で打つ。名もなき剣だけは、ジンに一閃を教わるとき一緒に渡される。</small></div></div>`; }
   if (DEX.ch === 4) h = `<div class="dexw">${Object.entries(WEAPON_TYPES).filter(([, W]) => W.job).map(([t, W]) => { const J = JOBS[W.job], ups = UPPERS.filter(u => u.hold === t).map(u => `${u.job}(+${WEAPON_TYPES[u.exp].name})`); return `<div><b>${icoImg('w_' + t)}${W.job}<em>${W.name}</em></b><small>${J.learn.map(([n, s]) => (SKILLS[s] || PASSIVES[s] || {}).name).filter(Boolean).join('・')}${ups.length ? `<br>進化：${ups.join('・')}` : ''}</small></div>`; }).join('')}</div><p class="note">右手の武器でジョブが決まる。別の武器を使い込んでおくと、上級職に進化する。</p>`;
+  if (DEX.ch === 5) h = dexGodLore() + '<p class="note">女神に初めて会ったとき（1周目は11〜50階、2周目は51〜90階）に聞ける。</p>';
   return tabs + `<div class="dexread">${h}</div>`;
 }
 function dexBind(m) {
   m.querySelectorAll('[data-dex]').forEach(b => b.onclick = () => { DEX = { cat: b.dataset.dex, page: 0, sel: -1, ch: DEX.ch }; sfx('page', { vol: .5 }); openMenu('dex'); });
   m.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { DEX.ch = +b.dataset.ch; sfx('page', { vol: .5 }); openMenu('dex'); });
   m.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { DEX.sel = +b.dataset.sel; sfx('select', { vol: .4 }); openMenu('dex'); });
+  m.querySelectorAll('[data-lore]').forEach(b => b.onclick = () => { DEX.lore = +b.dataset.lore; sfx('page', { vol: .5 }); openMenu('dex'); });
   m.querySelectorAll('[data-pg]').forEach(b => b.onclick = () => { DEX.page += +b.dataset.pg; DEX.sel = -1; sfx('page', { vol: .5 }); openMenu('dex'); });
 }
 function openMenu(tab) {
@@ -1452,8 +1455,9 @@ function meetNpc(id) {
   }
 }
 // 女神: 会話（親密度）→ 戦利品をもらう／回復してもらう（親密度が上がると選べる）
-function meetGod(id, go0) {
+function meetGod(id, go0, after) {
   SND.goddess = true; const go = () => { SND.goddess = false; go0(); };
+  if (!after && godStory(id, () => meetGod(id, go0, true), go)) return;
   const name = TOWER_NPCS[id].name, start = areaOf(floorNo)[0];
   if (start > 1 && !G.warps.includes(start)) { G.warps.push(start); G.warps.sort((a, b) => a - b); save(); setTimeout(() => log(`（${name}の加護を受けた。塔の入口の女神像から、${start}階へ来られるようになった）`), 0); }
   talkTo(id, () => {
@@ -1678,7 +1682,7 @@ const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
 function startBattle(boss) {
   const n = boss ? 1 : groupSize(), ms = [];
-  const BM = boss && !boss.chest && !boss.mirror ? midPow(floorNo) : { hp: 1, atk: 1, def: 1 };
+  const BM = boss && !boss.chest && !boss.mirror && !boss.trial ? midPow(floorNo) : { hp: 1, atk: 1, def: 1 };
   for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1) * BM.hp), atk: Math.round(boss.atk * BM.atk), def: Math.round(boss.def * BM.def) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
   // 同じ魔物が2体以上なら A・B… と呼ぶ
   const cnt = {}; for (const m of ms) cnt[m.id] = (cnt[m.id] || 0) + 1;
@@ -1950,7 +1954,8 @@ function win() {
     while (G.exp >= expNeed()) { G.exp -= expNeed(); G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.hp += g.hp; G.atk += g.atk; G.def += g.def; up.hp += g.hp; up.atk += g.atk; up.def += g.def; }
     if (G.lv > lv0) { msg += `\nレベル${G.lv}になった！`; setTimeout(() => levelUpFx(G.lv, up), 900); } }
   { const mc = ms.find(x => x.chest); if (mc) { mc.chest.mimic = false; msg += '\n' + chestLoot(mc.chest, true); } }
-  if (m.boss && !m.mirror) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
+  if (m.trial) msg += '\n' + trialWon(m.trial);
+  else if (m.boss && !m.mirror) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);
   G.jobWins[j] = (G.jobWins[j] || 0) + 1;
@@ -1962,7 +1967,7 @@ function win() {
   const w1 = mainWeapon(); if (w1 && WEAPON_TYPES[w1.type].twoHand && G.prof[w1.type] === ONE_HAND_NEED) log(`${WEAPON_TYPES[w1.type].name}を片手で扱えるようになった！`);
   save();
   if (mkMsg) msg += '\n' + mkMsg;
-  if (m.boss && !m.mirror && !ms.some(x => x.chest)) msg += bpDrop(.6, '主の倒れたあとに、');
+  if (m.boss && !m.mirror && !m.trial && !ms.some(x => x.chest)) msg += bpDrop(.6, '主の倒れたあとに、');
   if (ms.some(x => x.mirror)) { const first = !G.cleared; buttons([{ t: '……', hot: true, f: () => first ? ending() : (B = null, fadeGo(() => toTown('鏡はまた、静かに砕けた。', true))) }]); return; }
   buttons([{ t: '先へ進む', hot: true, f: () => { B = null; mode = 'dungeon'; dungeonUI(); hud(); } }]);
   hud();

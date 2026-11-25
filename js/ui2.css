@@ -140,8 +140,8 @@ button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;l
 #menu .dexcell.boss{border-color:#8a3a20}
 #menu .dexpage{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:13px;color:#cdb894}
 #menu .dexpage b{color:#ffe7a3;font-weight:400}#menu .dexpage button{width:56px}
-#menu .dexch{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:6px}
-#menu .dexch button{display:flex;flex-direction:column;align-items:center;font-size:10.5px;line-height:1.15;padding:3px 1px;min-height:48px}
+#menu .dexch{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-bottom:6px}
+#menu .dexch button{display:flex;flex-direction:column;align-items:center;font-size:10px;line-height:1.15;padding:3px 1px;min-height:48px}
 #menu .dexch button img.mi{width:22px;height:22px}
 #menu .dexread{font-size:12px}
 #menu .dexw{display:grid;grid-template-columns:1fr 1fr;gap:4px}

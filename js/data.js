@@ -313,7 +313,14 @@ const MEIKA = [
   ['mk_wood_katana', '子どもの木刀', 'katana', 1, .3, { expx: 2 }, 'とても弱いが、経験値2倍'],
   ['mk_cleaver', '料理人の包丁', 'dagger', 2, 1, { cook: true }, '倒した魔物を料理して、たまにHP回復'],
   ['mk_dragon_spear', '竜殺しの槍', 'greatsword', 4, 1, { slay: 'dragon', slayMul: 3 }, '竜に3倍'],
+  // 女神の名品（2026-11-25）。宝箱からは出ない。森の女神は仲良くなると、ほかの4人は2周目の試練に勝つと設計図をくれる
+  ['mk_g_forest', '森の女神の弓', 'bow', 2, 1.1, { hits: 2, per: .6, regen: .03 }, '森の女神の名品。矢が2本飛び、毎ターンHPが少し回復'],
+  ['mk_g_druid', '花の女神の杖', 'staff', 4, 1.1, { regen: .06, cure: .3, killHeal: .08 }, '花の女神の名品。毎ターン回復し、ケガも治りやすく、倒すとさらに回復'],
+  ['mk_g_desert', '砂の女神の曲刀', 'sword', 4, 1.1, { melt: true, twice: .3 }, '砂の女神の名品。敵の守りを半分にし、たまに2回当たる'],
+  ['mk_g_mountain', '山の女神の大槌', 'hammer', 5, 1.25, { stun: .25, brk: 2, guard: .8 }, '山の女神の名品。ひるませ、守りを大きく崩し、受けるダメージも減る'],
+  ['mk_g_ice', '氷の女神の刀', 'katana', 5, 1.1, { elem: 'ice', freeze: .35, crit: .1 }, '氷の女神の名品。よく凍らせ、会心も出やすい'],
 ];
+const GOD_MK = { forest: 'mk_g_forest', druid: 'mk_g_druid', desert: 'mk_g_desert', mountain: 'mk_g_mountain', ice: 'mk_g_ice' };
 { const base = { sword: 11, katana: 17, greatsword: 19, axe: 18, hammer: 10, dagger: 8, bow: 13, book: 7, staff: 7 };
   for (const [id, name, type, t, mod, mk, desc] of MEIKA) {
     const T = MK_TIER[t], r = { id, name, type, mk, desc, meika: true, tier: t, cost: Object.assign({ stone: 2 }, T.cost), price: Math.round(120 * Math.pow(2.1, t)) };
@@ -540,7 +547,7 @@ const AFF_PERKS = {
   ria:   '戦利品の持ち込みの報酬が+15%',
   fuuka: 'フウカが一緒に戦う回数が20回になり、40階より上にも現れる',
   jin:   'ジンが技「一閃」を教えてくれる（95階に着くと「流水」も）',
-  desert: '砂の女神がめずらしい素材をくれて、回復もしてくれる', forest: '森の女神がめずらしい素材をくれて、回復もしてくれる',
+  desert: '砂の女神がめずらしい素材をくれて、回復もしてくれる', forest: '森の女神がめずらしい素材をくれて、回復もしてくれる。名品「森の女神の弓」の設計図ももらえる',
   druid: '花の女神がめずらしい素材をくれて、回復もしてくれる', mountain: '山の女神がめずらしい素材をくれて、回復もしてくれる', ice: '氷の女神がめずらしい素材をくれて、回復もしてくれる',
 };
 // 塔でたまに会う人（階の範囲）
@@ -551,10 +558,10 @@ const TOWER_NPCS = {
   gaban:    { name:'ギャバン', from:60, to:80, battles:8 },
   // 属性の階にランダムに現れる女神たち（戦利品をくれる。親密度が上がるとレアな素材、回復も選べる）
   // 2026-11-23: エリアを並べ直して、女神4人が塔を2周するように（森→砂→花→氷 を2回）
-  forest:   { name:'森の女神', ranges:[[11,20],[51,60]], god:true },
+  forest:   { name:'森の女神', ranges:[[11,20]], god:true },
+  druid:    { name:'花の女神', ranges:[[51,60]], god:true },  // 2026-11-25: ジャングル（51〜60階）は花の女神
   desert:   { name:'砂の女神', ranges:[[21,30],[61,70]], god:true },
   mountain: { name:'山の女神', ranges:[[31,40],[71,80]], god:true },
-  // 花の女神（druid）は今は出番なし。画像と会話は残してある
   ice:      { name:'氷の女神', ranges:[[41,50],[81,90]], god:true },
 };
 
@@ -573,7 +580,7 @@ const TOOL_EFF = {
   shovel: { stone:1, forest:2, desert:3, mountain:1, snow:2, jungle:1, ruins:3, canyon:2, glacier:2, castle:1 },
 };
 // 女神の像（塔の入口）: 女神に会ったエリアの最初の階へワープできる
-const GOD_OF_AREA = { 11:'forest', 21:'desert', 31:'mountain', 41:'ice', 51:'forest', 61:'desert', 71:'mountain', 81:'ice' };
+const GOD_OF_AREA = { 11:'forest', 21:'desert', 31:'mountain', 41:'ice', 51:'druid', 61:'desert', 71:'mountain', 81:'ice' };
 const DIG_HITS = { 3:2, 2:3, 1:5 };
 // 掘るととれる物（エリアごと。[戦利品, 重み]）。鉱脈の絵が入ったら、鉱脈の壁は多めに出す
 const DIG_YIELD = {
