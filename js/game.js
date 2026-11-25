@@ -487,11 +487,11 @@ const BUPPA = ['ブッパ「……ぐう……ぐう……」', 'ブッパ[eat]�
 const HELPER = ['ルゥ[smile]「親方、炉の温度、上げておきました！」', 'ルゥ[laugh]「見てください、初めて釘がまっすぐ打てました！」', 'ルゥ「チッチさんに、鍵の開け方を教わってます。……鍛冶に関係ないですけど」', 'ルゥ[laugh]「アルスさん、また素振りしてますね。すごいなぁ」'];
 function greet(id) {
   if (id === 'home') { const v = homeVisit(); if (v && R() < .8) return v; if (buppaHere() && R() < .6) return pick(BUPPA); if (R() < .3) return pick(HELPER); }
-  { const w = SHOP_WHO[id]; if (w && (G.seen || {})[w] && R() < .55) return pick(CLOSE_GREET[w]); }
+  { const w = SHOP_WHO[id]; if (w && (G.seen || {})[w] && R() < .35) return pick(CLOSE_GREET[w]); }
   const st = STAGE[id], base = PLACES[id].hello;
   if (!st) return pick(base);
-  let tier = st[0][1]; for (const [n, L] of st) if (G.maxFloor >= n && (n < 10 || G.bossDown)) tier = L;  // 10階の段は、10階の主を倒してから
-  return R() < .6 ? pick(tier) : pick(base);
+  let tier = st[0][1]; for (const [n, L] of st) if (n === 'clear' ? G.cleared : G.maxFloor >= n && (n < 10 || G.bossDown)) tier = L;  // 10階の段は、10階の主を倒してから
+  return R() < (G.maxFloor >= 20 ? .75 : .6) ? pick(tier) : pick(base);
 }
 const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7, silver: 45, mithril: 110, orichalcum: 240, darksteel: 160, dragonbone: 380 };
 const pick = a => a[Math.floor(R() * a.length)];
@@ -563,7 +563,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 76'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 77'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -654,11 +654,16 @@ function affAdd(who, pt) { const b = G.aff[who] || 0, c = affCap(who); G.aff[who
 const canTalk = who => G.talkRun[who] !== G.runs;
 function talkBtn(who, back) { return { t: '話す', tail: true, s: canTalk(who) ? WHO_NAME[who] : 'また今度', off: !canTalk(who), f: () => talkTo(who, back) }; }
 function talkTo(who, back) {
+  // 塔を登るほど話が変わる: 今の段階（なければ前の段階）で、まだ聞いていない話を先に出す
+  const st = typeof TALKS_ST !== 'undefined' && TALKS_ST[who], used = (G.talkUsed = G.talkUsed || {})[who] = G.talkUsed[who] || [];
+  let stKey = null, stT = null;
+  if (st) { const now = talkStage(), order = ['clear'].concat(TALK_STAGES.slice().reverse()).filter(k => k === now || (now === 'clear' ? true : k !== 'clear' && k <= now));
+    for (const k of order) { const L = st[k] || []; const j = L.findIndex((_, n) => !used.includes(k + '-' + n)); if (j >= 0) { stKey = k + '-' + j; stT = L[j]; break; } } }
   const close = (G.seen || {})[who] && TALKS_CLOSE[who], key = close ? who + '_close' : who;
-  const list = close || TALKS[who], i = (G.talkIdx[key] || 0) % list.length, T = list[i];
+  const list = close || TALKS[who], i = (G.talkIdx[key] || 0) % list.length, T = stT || list[i];
   log(T.q, true);
   buttons(T.a.map(([ans, pt, reply]) => ({ t: ans, f: () => {
-    const before = G.aff[who] || 0, capped = affAdd(who, pt); G.talkIdx[key] = i + 1; G.talkRun[who] = G.runs; save();
+    const before = G.aff[who] || 0, capped = affAdd(who, pt); if (stKey) used.push(stKey); else G.talkIdx[key] = i + 1; G.talkRun[who] = G.runs; save();
     log(reply + (capped ? `\n（……今はまだ、これ以上は近づけない気がする。${affNext()}階まで登れば、何か変わるだろうか）` : ''), true);
     const done = () => buttons([{ t: '戻る', hot: true, f: back }]);
     if (before < AFF_NEED && G.aff[who] >= AFF_NEED) { buttons([{ t: '……', hot: true, f: () => { affEvent(who); buttons([{ t: '……！', hot: true, f: () => { log(`親密度の特典: ${AFF_PERKS[who]}`, true); done(); } }]); } }]); return; }
