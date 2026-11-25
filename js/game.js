@@ -103,7 +103,7 @@ function atkPower() {
   if (hurt('arm')) a = Math.floor(a * .8);
   return a;
 }
-function defPower() { let d = G.def; for (const k of ['l', 'armor']) { const g = gearBy(G.equip[k]); if (g && g.def) d += g.def; } if (has('p_def')) d += 3; return d; }
+function defPower() { let d = G.def; for (const k of ['r', 'l', 'armor']) { const g = gearBy(G.equip[k]); if (g && g.def) d += g.def; } if (has('p_def')) d += 3; return d; }
 // そのジョブで覚える技のうち、勝利数が足りたものを覚える
 // 勝ち数はもう足りているのに覚えていない技（あとから足した技など）を、まとめて覚える
 function relearnAll(quiet) {
@@ -127,7 +127,7 @@ const expNeed = () => Math.floor(10 * Math.pow(G.lv, 1.5));
 const matText = o => Object.entries(o).filter(([, n]) => n > 0).map(([k, n]) => NAMES[k] + n).join(' ') || 'なし';
 function add(o, k, n) { o[k] = (o[k] || 0) + n; if (o === G.carry && n > 0 && mode !== 'town') gotToast(k, n); }
 // ---------- アイテムのアイコン（2026-11-24。assets/icon） ----------
-const ICON_KEYS = new Set(['silver', 'mithril', 'orichalcum', 'ore_silver', 'ore_mithril', 'ore_orichalcum'].concat(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem"]));
+const ICON_KEYS = new Set(['silver', 'mithril', 'orichalcum', 'ore_silver', 'ore_mithril', 'ore_orichalcum', 'darksteel', 'dragonbone', 'dragon_bone'].concat(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem"]));
 const TOOL_ICON = { pick: 'w_pick', axe: 'w_axe', shovel: 'w_shovel' };
 function iconOf(k) {
   if (k === 'gold') return typeof UI_ICON !== 'undefined' ? UI_ICON.coin : '';
@@ -136,7 +136,7 @@ function iconOf(k) {
   return '';
 }
 // 装備ひとつずつの絵（assets/gear）があれば、それを使う
-const GEAR_IMG = new Set(["mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword"]);
+const GEAR_IMG = new Set(["bone_bow", "bone_dagger", "bone_staff", "copper_axe", "copper_hammer", "copper_pick", "copper_shield", "copper_sword", "darksteel_armor", "darksteel_axe", "darksteel_book", "darksteel_bow", "darksteel_dagger", "darksteel_greatsword", "darksteel_hammer", "darksteel_katana", "darksteel_shield", "darksteel_staff", "darksteel_sword", "dragon_armor", "dragon_axe", "dragon_book", "dragon_bow", "dragon_dagger", "dragon_greatsword", "dragon_hammer", "dragon_katana", "dragon_shield", "dragon_staff", "dragon_sword", "iron_armor", "iron_axe", "iron_great", "iron_hammer", "iron_katana", "iron_shield", "iron_sword", "leather_armor", "lumber_axe", "mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "royal_armor", "royal_axe", "royal_book", "royal_bow", "royal_dagger", "royal_greatsword", "royal_hammer", "royal_katana", "royal_shield", "royal_staff", "royal_sword", "shovel", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword", "stone_book", "treasure_axe", "treasure_book", "treasure_bow", "treasure_dagger", "treasure_greatsword", "treasure_hammer", "treasure_katana", "treasure_staff", "treasure_sword"]);
 function iconOfType(r) {
   if (GEAR_IMG.has(r.id)) return `assets/gear/${r.id}.webp`; const k = r.type === 'tool' ? TOOL_ICON[r.tool] : 'w_' + r.type; return ICON_KEYS.has(k) ? `assets/icon/${k}.webp` : ''; }
 // 手に入れたとき、絵の上にアイコン付きの札をぽんと出す
@@ -481,7 +481,7 @@ function greet(id) {
   let tier = st[0][1]; for (const [n, L] of st) if (G.maxFloor >= n && (n < 10 || G.bossDown)) tier = L;  // 10階の段は、10階の主を倒してから
   return R() < .6 ? pick(tier) : pick(base);
 }
-const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7, silver: 45, mithril: 110, orichalcum: 240 };
+const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7, silver: 45, mithril: 110, orichalcum: 240, darksteel: 160, dragonbone: 380 };
 const pick = a => a[Math.floor(R() * a.length)];
 let place = null;
 
@@ -551,7 +551,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 71'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 72'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -821,7 +821,7 @@ function prepMenu() {
   log('出発の前に、装備と持ち物を確かめる。', true);
 }
 function newGear(r, forged) {
-  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
+  const x = { uid: G.uidNext++, id: r.id, name: r.name, type: r.type, atk: r.atk || 0, def: r.def || 0 }; if (r.crit) x.crit = r.crit; if (r.fire) x.fire = true; if (r.type === 'tool') { x.tool = r.tool; x.dur = x.maxDur = r.dur; }
   const a = forged && r.type !== 'tool' ? upLv('anvil') : 0;  // 金床の強化ぶん、自分で打った武具は強くなる
   if (a) { if (x.atk) x.atk += a; if (x.def) x.def += a; x.name += `+${a}`; }
   return x;
@@ -839,7 +839,7 @@ const UPG = {
   bench:   { name: '作業台', max: 3, price: [300, 900, 2500], eff: ['一番多い素材が1つ減る（3つ以上のとき）', '一番多い素材が1つ減る（2つ以上のとき）', 'さらに、二番目に多い素材も1つ減る'], now: l => l ? ['', '素材を少し節約', '素材を節約', '素材をかなり節約'][l] : '節約なし' },
 };
 const upLv = k => (G.forgeUp || {})[k] || 0;
-const needFurnace = r => { const c = Object.keys(r.cost); return c.includes('orichalcum') ? 4 : c.includes('mithril') ? 3 : c.includes('silver') ? 2 : c.includes('iron') ? 1 : 0; };
+const needFurnace = r => { const c = Object.keys(r.cost); return c.includes('dragonbone') || c.includes('orichalcum') ? 4 : c.includes('darksteel') ? 3 : c.includes('mithril') ? 3 : c.includes('silver') ? 2 : c.includes('iron') ? 1 : 0; };
 // 作業台の段階に合わせて、必要な素材を減らす
 function costOf(r) {
   const c = { ...r.cost }, b = upLv('bench'); if (!b) return c;
@@ -1655,7 +1655,7 @@ const evade = () => hurt('leg') ? 0 : (isHeavy() ? .03 : .10) + (mainWeapon() &&
 const carryMax = () => 1 + (has('p_carry') ? 1 : 0);
 function dmgTo(m, power, pierce, critBonus) {
   let d = Math.max(1, Math.round((power - (pierce ? 0 : Math.max(0, m.def - B.broken))) * (.85 + R() * .3)));
-  const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0);
+  const crit = !hurt('head') && R() < .08 + (critBonus || 0) + (has('p_crit') ? .15 : 0) + ((mainWeapon() || {}).crit || 0);  // 黒鋼は会心が出やすい
   const dl = B.hitDelay || 0;  // 技の当たる瞬間に合わせて、数字や揺れを遅らせる
   if (crit) { d = Math.round(d * 1.8); B.lastCrit = true; playFx('crit', { delay: dl + 120, size: .7 }); } else B.lastCrit = false;
   m.hp -= d; if (m.hp <= 0 && !m.dying) m.dying = performance.now() + dl;
@@ -1744,7 +1744,8 @@ function win() {
   B.over = true; for (const x of ms) if (!x.dying) x.dying = performance.now();
   G.exp += exp; G.gold += gold; allyTick();
   // 上の金属の鉱石は、上の階の魔物ほどよく持っている
-  if (!ms.some(x => x.chest)) { if (floorNo >= 21 && R() < .22) add(drop, 'ore_silver', 1); if (floorNo >= 41 && R() < .16) add(drop, 'ore_mithril', 1); if (floorNo >= 71 && R() < .12) add(drop, 'ore_orichalcum', 1); }
+  if (!ms.some(x => x.chest)) { if (floorNo >= 21 && R() < .22) add(drop, 'ore_silver', 1); if (floorNo >= 41 && R() < .16) add(drop, 'ore_mithril', 1); if (floorNo >= 71 && R() < .12) add(drop, 'ore_orichalcum', 1); if (floorNo >= 61 && R() < .12) add(drop, 'dark_steel', 1);
+    for (const x of ms) if (/dragon|wyvern|drake/.test(x.id) && R() < (x.boss ? 1 : .35)) add(drop, 'dragon_bone', x.boss ? 3 : 1); if (floorNo >= 85 && R() < .07) add(drop, 'dragon_bone', 1); }
   for (const [k, n] of Object.entries(drop)) add(G.carry, k, n);
   if (G.meal === 'broth') { G.hp = Math.min(G.mhp, G.hp + 6); }
   let msg = `${ms.length > 1 ? ms.length + '体の魔物' : m.name}を倒した！ 経験値${exp}、${gold}G。${Object.keys(drop).length ? '素材: ' + matText(drop) : ''}`;
@@ -2001,10 +2002,10 @@ const SKILL_SHOW = {
 };
 // ---------- 武器の強さで足すエフェクト（コードで描く） ----------
 // 段階: 銅・骨・魔石=1、鉄=2、銀=3、ミスリル=4、オリハルコン・竜=5。金床の+2ごとに1段上がる
-const W_COLOR = { royal: '#ffd24a', treasure: '#ffe98a', copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
+const W_COLOR = { darksteel: '#b45cff', dragon: '#ff5a2a', royal: '#ffd24a', treasure: '#ffe98a', copper: '#ff9a4a', bone: '#f0e2c0', stone: '#c08cff', iron: '#d6e8ff', silver: '#9ff6ff', mithril: '#7dffb0', orichalcum: '#ffd24a', dragon: '#ff5a5a' };
 function weaponTier(w) {
   if (!w) return { tier: 0, c: '#ffffff' };
-  const mat = Object.keys(W_COLOR).find(m => (w.id || '').startsWith(m)) || 'copper', base = { royal: 4, treasure: 5, copper: 1, bone: 1, stone: 1, iron: 2, silver: 3, mithril: 4, orichalcum: 5, dragon: 5 }[mat];
+  const mat = Object.keys(W_COLOR).find(m => (w.id || '').startsWith(m)) || 'copper', base = { darksteel: 4, royal: 4, treasure: 5, copper: 1, bone: 1, stone: 1, iron: 2, silver: 3, mithril: 4, orichalcum: 5, dragon: 5 }[mat];
   const plus = +(((w.name || '').match(/\+(\d+)/) || [])[1] || 0);
   return { tier: Math.min(5, base + Math.floor(plus / 2)), c: W_COLOR[mat] };
 }
@@ -2056,6 +2057,7 @@ function weaponTierFx(type, w) {
 // ふつうの攻撃: 武器の種類ごとに、絵の重ね方・大きさ・揺れで手ごたえを変える
 function weaponFx(type) {
   weaponTierFx(type, mainWeapon());
+  { const w = mainWeapon(); if (w && w.fire) { playFx('fire_s', { delay: 160, size: .75, vol: .6 }); fxSparks(160, '#ff8a3d', 14); } }  // 竜の武器は炎が乗る
   const shake = (n, d) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n); }, d || 0);
   // 音: 剣=剣で斬る 刀=刀で斬る 大剣・斧=大剣で斬る 槌=重いパンチ ダガー=素振り×2 弓=弓矢 魔導書=魔法陣 杖=打撃
   switch (type) {
