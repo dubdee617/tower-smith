@@ -604,7 +604,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 114'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 115'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2056,12 +2056,14 @@ const PLANT_RE = /treant|vine|mushroom|tree|cactus|flower|plant|ent|moss|pixie|s
 function doSkill(id) {
   if (B.over) return 'end'; const s = SKILLS[id], m = target();
   const sh = SKILL_SHOW[id]; B.hitDelay = 0;
-  if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; skillFx(id); FX_AT = null; }
+  FX_COLOR = SKILL_COLOR[id] || null;
+  if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; if (MAGIC_HUE[id]) { FX_COLOR = MAGIC_HUE[id]; FX_COLOR_ALL = true; } skillFx(id); FX_COLOR_ALL = false; FX_AT = null; }
   // 振付のない技（魔法など）も、数字と揺れをエフェクトが当たる瞬間に合わせる（大きな魔法は画面が暗くなってから）
   if (!sh && id !== 'attack') { const f = (SKILL_FX[id] || [])[0], n = Array.isArray(f) ? f[0] : f, mv = n && FX_MOVE[n]; B.hitDelay = mv === 'big' ? 380 : mv === 'travel' ? 260 : n ? 120 : 0; }
+  FX_COLOR = null;
   if (!sh) magicFlash(id, B.hitDelay);
   /* 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる */
-  const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; sh.hit(i, dl, tg); FX_AT = null; B.hitDelay = dl + (sh.at || 0); };
+  const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; FX_COLOR = SKILL_COLOR[id] || null; sh.hit(i, dl, tg); FX_AT = null; FX_COLOR = null; B.hitDelay = dl + (sh.at || 0); };
   const K = MK(); B.basic = id === 'attack';
   const mult = (s.mult || 1) + (s.rageScale ? s.rageScale * (1 - G.hp / G.mhp) : 0), tgx = (s.bossx && m.boss ? s.bossx : 1) * (s.plantx && PLANT_RE.test(m.id || '') ? s.plantx : 1);
   const power = (atkPower() * mult * tgx * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0)) * (s.magic && K.magic ? K.magic : 1) * (id === 'jin1' && K.issen ? 1.5 : 1);
@@ -2254,10 +2256,11 @@ const PART_META = {
 for (const [n, [c, add]] of Object.entries(PART_META)) { const i = new Image(); i.src = `assets/fx/${n}.webp`; FXI[n] = i; if (typeof FX_META !== 'undefined') FX_META[n] = { c, add: !!add }; }
 // 白い部品に色を付けた絵（色ごとに一度だけ作る）
 const TINT = {};
-function tintOf(img, c) {
-  if (!img.complete || !img.naturalWidth) return img; const k = img.src.slice(-24) + c; if (TINT[k]) return TINT[k];
+function tintOf(img, c, hue) {
+  if (!img.complete || !img.naturalWidth) return img; const k = img.src.slice(-24) + c + (hue ? 'h' : ''); if (TINT[k]) return TINT[k];
   const o = document.createElement('canvas'); o.width = img.naturalWidth; o.height = img.naturalHeight; const g = o.getContext('2d');
-  g.drawImage(img, 0, 0); g.globalCompositeOperation = 'multiply'; g.fillStyle = c; g.fillRect(0, 0, o.width, o.height); g.globalCompositeOperation = 'destination-in'; g.drawImage(img, 0, 0);
+  // hue: 色のある絵の明るさはそのまま、色だけ差し替える（2026-11-25）。そうでなければ白い部品に色をかける
+  g.drawImage(img, 0, 0); g.globalCompositeOperation = hue ? 'color' : 'multiply'; g.fillStyle = c; g.fillRect(0, 0, o.width, o.height); g.globalCompositeOperation = 'destination-in'; g.drawImage(img, 0, 0);
   return (TINT[k] = o);
 }
 let fxDim = 0;  // 大きな魔法の前に、画面を暗くする
@@ -2331,6 +2334,11 @@ function monAttackFx(m, blocked, dl) {
   }
 }
 function playFx(name, opt = {}) {
+  if (FX_COLOR && FX_COLOR_ALL && !opt.hue && !opt.noColor && !/^m_/.test(name)) opt = { ...opt, hue: FX_COLOR };  // 魔法の段階ごとの色
+  else if (FX_COLOR && !opt.hue && !opt.noColor) {  // 技の色に染める
+    if (PART_META[name] && PART_META[name][0] && (!opt.tint || NEUTRAL.has(opt.tint)) && ['s_slash', 's_flash', 's_vslash', 's_sweep', 's_thrust', 's_arrow', 's_sword', 's_fist', 's_hit'].includes(name)) opt = { ...opt, tint: FX_COLOR };
+    else if (RECOLOR.has(name)) opt = { ...opt, hue: FX_COLOR };
+  }
   const img = FXI[name], meta = (typeof FX_META !== 'undefined' && FX_META[name]) || { c: '#ffffff', add: true };
   if (!img) return;
   const mv = opt.mv || FX_MOVE[name] || 'burst', self = opt.self || mv === 'rise';
@@ -2343,12 +2351,12 @@ function playFx(name, opt = {}) {
   // ばらばらに飛ぶ・舞うエフェクト（岩・氷・葉・きらめき）
   if (DEBRIS[name]) { debrisFx(img, x, y, opt, DEBRIS[name]); if (!DEBRIS[name].keep) return; }
   if (name === 'explosion') playFx('rocks', { delay: (opt.delay || 0) + 60, size: (opt.size || .9) * .8, x, y });
-  fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: opt.flip !== undefined ? opt.flip : R() < .5 && mv === 'slash', spin: SPIN[name] || 0, wob: name === 'dark_mist', tint: opt.tint });
+  fxList.push({ name, img, meta, mv, x, y, t0: performance.now() + (opt.delay || 0), dur: FX_DUR[mv] * (opt.slow || 1), size: opt.size || (mv === 'screen' ? 2.8 : self ? 1.05 : .95), rot: opt.rot !== undefined ? opt.rot : mv === 'slash' ? (R() - .5) * .5 : 0, flip: opt.flip !== undefined ? opt.flip : R() < .5 && mv === 'slash', spin: SPIN[name] || 0, wob: name === 'dark_mist', tint: opt.tint, hue: opt.hue });
   // 同じ色の粒
-  const n = opt.parts !== undefined ? opt.parts : mv === 'rise' ? 18 : 14;
+  const n = opt.parts !== undefined ? opt.parts : mv === 'rise' ? 18 : 14, pc = opt.hue || opt.tint || meta.c;
   for (let i = 0; i < n; i++) {
     const a = mv === 'rise' ? -Math.PI / 2 + (R() - .5) * 1.2 : R() * Math.PI * 2, sp = mv === 'rise' ? 20 + R() * 40 : 40 + R() * 110;
-    fxParts.push({ x: x + (mv === 'rise' ? (R() - .5) * 70 : 0), y: y + (mv === 'rise' ? 30 : 0), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, c: meta.c, t0: performance.now() + (opt.delay || 0) + (mv === 'travel' ? 260 : 0), life: 380 + R() * 420, r: 1 + R() * 1.8, add: meta.add });
+    fxParts.push({ x: x + (mv === 'rise' ? (R() - .5) * 70 : 0), y: y + (mv === 'rise' ? 30 : 0), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, c: pc, t0: performance.now() + (opt.delay || 0) + (mv === 'travel' ? 260 : 0), life: 380 + R() * 420, r: 1 + R() * 1.8, add: meta.add });
   }
 }
 function drawFx() {
@@ -2373,11 +2381,11 @@ function drawFx() {
     // うしろの光（絵と同じ色）
     ctx.globalCompositeOperation = e.meta.add ? 'lighter' : 'source-over';
     const r = Math.max(w, h) * s * .55, gr = ctx.createRadialGradient(x, y, 0, x, y, r);
-    const gc = e.tint || e.meta.c; gr.addColorStop(0, gc + (e.meta.add ? '66' : '33')); gr.addColorStop(1, gc + '00');
+    const gc = e.hue || e.tint || e.meta.c; gr.addColorStop(0, gc + (e.meta.add ? '66' : '33')); gr.addColorStop(1, gc + '00');
     ctx.globalAlpha = a; ctx.fillStyle = gr; ctx.fillRect(x - r, y - r, r * 2, r * 2);
     ctx.translate(x, y); ctx.rotate(e.rot + e.spin * k); if (e.flip) ctx.scale(-1, 1); if (e.wob) ctx.scale(1 + Math.sin(k * 9) * .08, 1 - Math.sin(k * 9) * .06);
-    ctx.drawImage(e.tint ? tintOf(e.img, e.tint) : e.img, -w * s / 2, -h * s / 2, w * s, h * s);
-    if (e.tint) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .3; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); }  // 芯は白く
+    ctx.drawImage(e.hue ? tintOf(e.img, e.hue, true) : e.tint ? tintOf(e.img, e.tint) : e.img, -w * s / 2, -h * s / 2, w * s, h * s);
+    if (e.tint && !e.hue) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .3; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); }  // 芯は白く
     if (e.meta.add && k < .35) { ctx.globalAlpha = a * .5; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); } // 最初だけ強く光らせる
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
@@ -2435,6 +2443,34 @@ function fxPins(dl, c) {
 }
 const WHITE = '#ffffff';
 // pre: 技の始まり（ため・照準など） wait: 1回目までの待ち gap: 2回目からの間隔 at: 絵が出てから当たるまで len: 技の長さ（次の行動を待つ）
+// 技ごとの色（2026-11-25）: 白い部品と、前からある斬撃・打撃・突き・矢などの絵を、この色に染める。ジョブごとに色の系統をそろえ、技ごとに少しずつ変える
+const SKILL_COLOR = {
+  // 鍛冶屋・鍛冶師範＝炉の橙
+  smash: '#ffb070', mine: '#ffd9a0', tettsui: '#ff9a40', temper: '#ff8a30', masterstrike: '#ff7a20',
+  // 剣士＝青白
+  double: '#a8d8ff', lunge: '#d0ecff', nagi: '#8fc8ff', kabuto: '#7ab0ff',
+  // 侍＝水色、剣豪＝桜色
+  iai: '#a0f0ff', zantetsu: '#c8f8ff', munen: '#e8fbff', tsubame: '#ffc0dc', ranbu: '#ffa8cc',
+  // 騎士・聖騎士＝金
+  heavyslash: '#ffe9a8', juji: '#ffd870', fudou: '#ffe08a', seiken: '#fff0b0', holyguard: '#fff0c0',
+  // 山賊・狂戦士・略奪者＝赤と橙
+  rage: '#ff5a30', cleave: '#ffb070', makiwari: '#d8a060', ikari: '#ff3a20', frenzy: '#ff8a50', daisenpu: '#ff7040', plunder: '#ffc040', bomb: '#ff9030', jiware: '#d0a070',
+  // 盗賊＝若草、アサシン＝紅、忍者＝紫
+  stab: '#ff8a8a', bundoru: '#c8ff70', assassin: '#ff3050', noroi: '#9a5aff', kagenui: '#a070ff', shuriken: '#c0b0ff', bunshin: '#b090ff',
+  // アーチャー・狩人＝黄と緑、魔弓士＝青紫
+  aim: '#fff0a0', volley: '#ffe680', midare: '#ffd060', senbon: '#fff6c0', snipe: '#ff9a7a', wana: '#a0e080', arcanearrow: '#b090ff', ryusei: '#a8a0ff',
+  // 素手・僧兵＝白と橙
+  punch: '#ffe0c0', mawashi: '#ffd0a0', flurry: '#fff0e0', hyaku: '#ffc890', kiai: '#ffb060', monkstrike: '#fff0a0', kongou: '#ffe08a',
+  // 魔法剣士・黒騎士
+  magicblade: '#ff9a4a', shigen: '#ffffff', darkblade: '#b040ff', kyuushu: '#c060ff',
+  // 剣聖
+  kensei: '#ffe08a', senken: '#e8f0ff', jin1: '#ffffff',
+};
+const RECOLOR = new Set(['slash_h', 'slash_v', 'slash_x', 'thrust', 'impact', 'impact_heavy', 'arrow', 'spark', 'crit', 'flurry', 'tsubame', 'iai', 'jin', 'afterimage', 'barrier', 'power']);
+const NEUTRAL = new Set(['#ffffff', '#dce8ff', '#cfe3ff', '#fff0c8', '#ffe0c0', '#ffd8a0', '#ffe2b8', '#ffd8d8']);
+let FX_COLOR = null, FX_COLOR_ALL = false;
+// 魔法: 小・中・大で、重ねる絵の色を少しずつ変える（新しい魔法の絵 m_ はそのまま）
+const MAGIC_HUE = { fire2: '#ff7a30', fire3: '#ff4a20', ice2: '#7ac8ff', ice3: '#c8f0ff', bolt2: '#ffe14a', bolt3: '#fff6b0', holy2: '#ffe08a', holy3: '#fffbe0', dark2: '#8a2cff', dark3: '#ff3a8a', sagefire: '#a0ffb0' };
 const SKILL_SHOW = {
   // ---- 剣・刀・大剣・斧（2026-11-25: 部品の絵 s_* を、技ごとに回数・向き・色を変えて出す。音は絵が出る瞬間に鳴らす） ----
   double:   { gap: 280, at: 50, len: 250, hit: (i, dl) => { playFx('s_slash', { delay: dl, rot: i ? .2 : -.2, flip: !!i, size: 1.15, tint: '#dce8ff', snd: 'w_sword' }); fxSparks(dl + 50, WHITE, 8); if (i) fxTint(dl + 30, WHITE, .14); shakeAt(dl + 50, 4 + i * 2); } },
