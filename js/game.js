@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 103'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 104'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2295,7 +2295,7 @@ const WHITE = '#ffffff';
 // pre: 技の始まり（ため・照準など） wait: 1回目までの待ち gap: 2回目からの間隔 at: 絵が出てから当たるまで len: 技の長さ（次の行動を待つ）
 const SKILL_SHOW = {
   double:   { gap: 300, at: 60, len: 250, hit: (i, dl) => { playFx('slash_h', { delay: dl, rot: i ? .55 : -.55, size: 1.05 }); fxArc(dl, WHITE, 3, i ? .6 + Math.PI : -.6); fxSparks(dl + 50, WHITE, 8); shakeAt(dl + 50, 4); } },
-  lunge:    { pre: () => fxSpeed(0, 260), wait: 160, at: 80, len: 150, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.1 }); fxRing(dl + 80, WHITE, .22, 3); shakeAt(dl + 80, 4); } },
+  lunge:    { pre: () => fxSpeed(0, 260), wait: 160, at: 80, len: 150, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.1 }); sfx('hit1', { delay: dl + 80, vol: .8 }); fxRing(dl + 80, WHITE, .22, 3); shakeAt(dl + 80, 4); } },
   iai:      { pre: () => { fxDark(0, 700, .55); sfx('swing', { vol: .5 }); }, wait: 380, at: 40, len: 450, hit: (i, dl) => { fxBeam(dl, '#cfe3ff'); playFx('iai', { delay: dl, rot: 0, size: 1.4 }); fxSparks(dl + 40, WHITE, 18); fxTint(dl + 30, WHITE, .3); shakeAt(dl + 40, 9); } },
   tsubame:  { gap: 260, at: 60, len: 300, hit: (i, dl) => { playFx(i ? 'tsubame' : 'slash_v', { delay: dl, rot: i ? Math.PI + .3 : .3, size: 1.2, snd: 'w_katana' }); fxArc(dl, '#cfe3ff', 4, i ? -Math.PI / 2 - .4 : Math.PI / 2 - .4); fxSparks(dl + 60, WHITE, 10); shakeAt(dl + 60, 6); } },
   frenzy:   { gap: 150, at: 40, len: 450, hit: (i, dl) => { const r = (R() - .5) * 2.4; playFx('slash_h', { delay: dl, rot: r, size: .85 }); fxArc(dl, '#ffd0a0', 2, r * 1.5, VH * (.22 + R() * .12)); shakeAt(dl + 40, 3); } },
@@ -2306,17 +2306,26 @@ const SKILL_SHOW = {
   snipe:    { pre: () => fxReticle(0, 520, '#ff7a5c'), wait: 420, at: 260, len: 550, hit: (i, dl) => { fxDark(0, 600, .35); playFx('arrow', { delay: dl, size: 1.1 }); fxRays(dl + 260, '#ff7a5c', 10, .45); shakeAt(dl + 260, 6); } },
   stab:     { at: 120, len: 100, hit: (i, dl) => { fxSpeed(dl, 180, '#ffcfcf'); playFx('thrust', { delay: dl, size: .9, snd: 'w_dagger' }); fxSparks(dl + 120, '#ff9a8a', 8); shakeAt(dl + 120, 4); } },
   assassin: { pre: () => { fxDark(0, 800, .6); playFx('dark_mist', { size: .7 }); }, wait: 360, at: 80, len: 500, hit: (i, dl) => { playFx('thrust', { delay: dl, size: 1.2, snd: 'w_dagger' }); fxTint(dl + 80, '#ff2030', .35); fxRays(dl + 80, '#ff5060', 12, .5); shakeAt(dl + 80, 8); } },
-  kagenui:  { at: 120, len: 400, hit: (i, dl) => { playFx('dark_mist', { delay: dl, size: .8 }); playFx('thrust', { delay: dl + 80, size: .9 }); fxPins(dl + 160, '#8a5cff'); shakeAt(dl + 120, 4); } },
+  kagenui:  { at: 120, len: 400, hit: (i, dl) => { playFx('dark_mist', { delay: dl, size: .8 }); playFx('thrust', { delay: dl + 80, size: .9 }); sfx('hit1', { delay: dl + 160, vol: .7 }); fxPins(dl + 160, '#8a5cff'); shakeAt(dl + 120, 4); } },
   smash:    { at: 90, len: 150, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.2 }); playFx('rocks', { delay: dl + 60, size: .7, parts: 16 }); fxRing(dl + 60, '#d9b07a', .34, 5); shakeAt(dl + 90, 9); } },
   rage:     { pre: () => fxTint(0, '#ff2010', .35), wait: 120, at: 90, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.45, snd: 'w_axe' }); fxRays(dl + 60, '#ff5030', 12, .6); fxRing(dl + 60, '#ff7050', .42, 6); shakeAt(dl + 90, 12); } },
   heavyslash:{ at: 150, len: 250, hit: (i, dl) => { playFx('slash_v', { delay: dl, rot: 0, size: 1.45, slow: 1.2 }); fxArc(dl, WHITE, 5, Math.PI / 2 - 1.1 + .55); playFx('impact_heavy', { delay: dl + 140, size: .85 }); fxRing(dl + 150, WHITE, .36, 5); shakeAt(dl + 150, 10); } },
   cleave:   { pre: () => { const k = FX_AT; FX_AT = null; fxArc(0, '#ffd8a0', 6, Math.PI / 2 - .2, VH * .55); playFx('slash_h', { size: 1.7, rot: 0, x: VW / 2, snd: 'w_axe' }); FX_AT = k; }, wait: 160, at: 40, len: 250, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: .75, parts: 6 }); shakeAt(dl + 40, 9); } },
   plunder:  { at: 100, len: 200, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.1, snd: 'w_axe' }); fxSparks(dl + 80, '#ffd24a', 20); playFx('sparkle', { delay: dl + 160, size: .6 }); shakeAt(dl + 100, 7); } },
-  shieldbash:{ at: 80, len: 150, hit: (i, dl) => { fxSpeed(dl, 160); playFx('impact', { delay: dl + 60, size: 1.1 }); fxRing(dl + 80, '#cfe3ff', .3, 5); playFx('barrier', { delay: dl + 60, size: .5, self: false }); shakeAt(dl + 80, 6); } },
+  shieldbash:{ at: 80, len: 150, hit: (i, dl) => { fxSpeed(dl, 160); playFx('impact', { delay: dl + 60, size: 1.1, snd: 'punch' }); fxRing(dl + 80, '#cfe3ff', .3, 5); playFx('barrier', { delay: dl + 60, size: .5, self: false, snd: null }); shakeAt(dl + 80, 6); } },
   monkstrike:{ at: 80, len: 300, hit: (i, dl) => { playFx('impact', { delay: dl, size: 1 }); fxRays(dl + 60, '#ffe9a0', 10, .45); playFx('heal', { delay: dl + 240, self: true, size: .8 }); shakeAt(dl + 80, 5); } },
   magicblade:{ at: 100, len: 250, hit: (i, dl) => { playFx('slash_x', { delay: dl, size: 1.1 }); fxArc(dl, '#ff9a4a', 4, -.6); playFx('fire_s', { delay: dl + 120, size: .8 }); fxSparks(dl + 120, '#ffb060', 14); shakeAt(dl + 100, 6); } },
   darkblade:{ pre: () => fxDark(0, 700, .5, '#12001a'), wait: 200, at: 120, len: 400, hit: (i, dl) => { playFx('dark_blade', { delay: dl, size: 1.3 }); fxArc(dl, '#b45cff', 5, .6 + Math.PI); playFx('dark_mist', { delay: dl + 140, size: 1 }); fxRing(dl + 140, '#b45cff', .4, 5); shakeAt(dl + 120, 9); } },
   bomb:     { pre: () => fxTint(160, '#ff9030', .3), wait: 120, at: 60, len: 300, hit: (i, dl) => { playFx('explosion', { delay: dl, size: 1.05 }); playFx('rocks', { delay: dl + 80, size: .6, parts: 12 }); shakeAt(dl + 60, 11); } },
+  // 2026-11-25: 音もエフェクトもなかった技
+  kensei:   { pre: () => { fxDark(0, 900, .62); sfx('swing', { vol: .45 }); fxRing(120, '#ffe08a', .18, 2); }, wait: 440, at: 40, len: 600, hit: (i, dl) => { fxBeam(dl, '#ffe08a'); playFx('jin', { delay: dl, rot: 0, size: 1.6, snd: 'slash' }); fxTint(dl + 30, '#ffd060', .35); fxSparks(dl + 40, '#ffe08a', 26); fxRays(dl + 40, '#ffe08a', 14, .6); shakeAt(dl + 40, 12); } },
+  senken:   { pre: () => { fxDark(0, 1300, .5, '#05081a'); for (let j = 0; j < 16; j++) { const t = 120 + j * 55, x = VW * (.15 + R() * .7), r = (R() - .5) * 3; fxArc(t, j % 3 ? '#cfe3ff' : WHITE, 2, r, VH * (.18 + R() * .14)); playFx('slash_h', { delay: t, size: .55, rot: r, x, y: VH * (.35 + R() * .3), parts: 3, snd: j % 4 ? null : 'w_sword', vol: .6 }); } },
+              wait: 1000, gap: 90, at: 40, len: 700, hit: (i, dl, tg) => { playFx('slash_x', { delay: dl, size: 1.3, snd: tg && tg !== alive()[0] ? null : 'slash' }); fxTint(dl + 20, WHITE, .3); fxSparks(dl + 40, WHITE, 16); shakeAt(dl + 40, 10); } },
+  masterstrike:{ pre: () => { playFx('power', { self: true, size: .8, snd: null }); sfx('forge1', { vol: .7 }); fxSparks(120, '#ffb060', 10); }, wait: 420, at: 60, len: 450, hit: (i, dl) => { playFx('impact_heavy', { delay: dl, size: 1.5, snd: 'punch' }); sfx('forge2', { delay: dl + 40, vol: .7 }); fxSparks(dl + 50, '#ffb060', 32); fxRing(dl + 60, '#ffb060', .45, 6); fxRays(dl + 60, '#ffcf80', 12, .5); fxTint(dl + 40, '#ff9030', .25); shakeAt(dl + 60, 11); } },
+  jin1:     { pre: () => { fxDark(0, 800, .66); sfx('swing', { vol: .4 }); }, wait: 460, at: 30, len: 500, hit: (i, dl) => { fxBeam(dl, WHITE); playFx('jin', { delay: dl, rot: 0, size: 1.5, snd: 'slash' }); fxTint(dl + 20, WHITE, .4); fxSparks(dl + 30, WHITE, 20); shakeAt(dl + 30, 10); } },
+  jin2:     { pre: () => { playFx('afterimage', { self: true, size: 1, snd: 'swing' }); fxRing(80, '#9fd8ff', .26, 3); fxRing(260, '#9fd8ff', .34, 2); } },
+  temper:   { pre: () => { playFx('power', { self: true, size: .9, snd: null }); sfx('forge1', { vol: .7 }); fxSparks(150, '#ffb060', 18); fxTint(150, '#ff9030', .18); } },
+  steal:    { pre: () => { playFx('afterimage', { size: .8, snd: 'dash' }); playFx('sparkle', { delay: 260, size: .6, snd: null }); fxSparks(260, '#ffd24a', 10); } },
   arcanearrow:{ pre: () => playFx('magic_circle', { y: VH * .78, size: .6, parts: 8 }), wait: 200, gap: 220, at: 260, len: 450, hit: (i, dl) => { playFx('magic_arrow', { delay: dl, size: .9 }); fxRing(dl + 260, '#c08cff', .2, 3); } },
 };
 // ---------- 武器の強さで足すエフェクト（コードで描く） ----------
