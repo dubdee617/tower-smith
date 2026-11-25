@@ -469,20 +469,22 @@ const LOG_MIN = 120;
 function fitStage() {
   const s = $('stage'), main = s.parentNode, el = mode === 'town' ? $('town') : $('view');
   const dg = mode !== 'town'; document.body.classList.toggle('dg', dg);
+  const bt = mode === 'battle'; document.body.classList.toggle('bt', bt);  /* 2026-11-25: 戦闘は絵を大きく（迫力）。台詞の欄を少し低くして、そのぶん絵へ */
   const ctl = $('ctl'); if (dg) ctl.style.flex = 'none';
   const cs = getComputedStyle(main), W = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const logOn = getComputedStyle($('log')).display !== 'none';
-  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn ? LOG_MIN : -6);
+  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn ? (bt ? 84 : LOG_MIN) : -6);
   for (const c of main.children) if (c !== s && c.id !== 'log' && getComputedStyle(c).display !== 'none') used += c.offsetHeight;
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
-  const Hdg = Math.max(120, main.clientHeight - used + (dg ? ctl.offsetHeight - Math.max(268, ctl.offsetHeight) : 0));
+  const Hdg = Math.max(120, main.clientHeight - used + (dg && !bt ? ctl.offsetHeight - Math.max(268, ctl.offsetHeight) : 0));
   let w = W, h;
   if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
-  else if (dg) h = Math.min(H, Hdg, W * .98);  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
+  else if (dg) h = Math.min(H, Hdg, W * (bt ? 1.12 : .98));  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
   ctl.style.flex = '';
+  slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;  /* 絵の左右が切れるぶん、群れを内側に寄せる */
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
   if (!dg && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
@@ -634,7 +636,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 122'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 123'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2715,25 +2717,25 @@ function weaponTierFx(type, w) {
   // 段階5（オリハルコン・竜）: 画面が武器の色に光り、大きく揺れる
   if (tier >= 5) { fxTint(hit, c, .35); fxRing(hit + 80, '#ffffff', .6, 6); setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); }, hit); }
 }
-// ふつうの攻撃: 武器の種類ごとに、絵の重ね方・大きさ・揺れで手ごたえを変える
+// ふつうの攻撃（2026-11-25 Daichiさん）: どの武器も、エフェクトは1つだけ。重ねない
+// 武器の段階が上がると、少し大きく・揺れも強く。属性の武器（竜・名品）は、その色に染める
 function weaponFx(type) {
-  weaponTierFx(type, mainWeapon());
-  { const w = mainWeapon(); if (w && w.fire) { playFx('fire_s', { delay: 160, size: .75, vol: .6 }); fxSparks(160, '#ff8a3d', 14); } }  // 竜の武器は炎が乗る
-  { const e = MK().elem; const E = { fire: ['m_fire1', '#ff8a3d'], ice: ['m_ice1', '#8fd8ff'], bolt: ['m_bolt1', '#ffe14a'], holy: ['m_holy1', '#fff0b0'], dark: ['m_dark1', '#b45cff'] }[e];
-    if (E) { playFx(E[0], { delay: 150, size: .6, vol: .55 }); fxSparks(150, E[1], 12); } }  // 名品の属性
-  const shake = (n, d) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n); }, d || 0);
-  // 音: 剣=剣で斬る 刀=刀で斬る 大剣・斧=大剣で斬る 槌=重いパンチ ダガー=素振り×2 弓=弓矢 魔導書=魔法陣 杖=打撃
+  const w = mainWeapon(), { tier } = weaponTier(w), big = 1 + Math.max(0, tier - 1) * .06;
+  const e = MK().elem || (w && w.fire ? 'fire' : null), hue = { fire: '#ff8a3d', ice: '#8fd8ff', bolt: '#ffe14a', holy: '#fff0b0', dark: '#b45cff' }[e];
+  const o = (size, extra) => Object.assign({ size: size * big, parts: 8 }, hue ? { hue } : {}, extra || {});
+  const shake = (n, d) => setTimeout(() => { fx.shake = Math.max(fx.shake || 0, n + Math.max(0, tier - 2)); }, d || 0);
+  // 音: 剣=剣で斬る 刀=刀で斬る 大剣=重い 斧=斧 槌=重いパンチ ダガー=短剣 弓=弓矢 魔導書=魔法 杖=打撃
   switch (type) {
-    case 'sword': playFx(R() < .5 ? 'slash_h' : 'slash_v', { size: 1 }); shake(3); break;
-    case 'katana': sfx('swing', { vol: .5 }); playFx('iai', { delay: 200, size: 1.25, rot: 0, snd: 'w_katana' }); playFx('spark', { delay: 300, size: .55, parts: 8, snd: null }); shake(5, 220); break;  // 一瞬ためて、横一閃
-    case 'greatsword': playFx('slash_v', { size: 1.4, slow: 1.2, rot: 0, snd: 'heavy' }); playFx('impact_heavy', { delay: 140, size: .85, vol: .6 }); shake(10, 140); break;
-    case 'axe': playFx('impact_heavy', { size: 1.3, snd: 'w_axe' }); playFx('rocks', { delay: 80, size: .7, vol: .5 }); shake(11); break;
-    case 'hammer': playFx('impact_heavy', { size: 1.15 }); playFx('spark', { delay: 60, size: .8, parts: 22, vol: .7 }); shake(8); break;
-    case 'dagger': playFx('slash_h', { size: .7, rot: -.6, snd: 'w_dagger' }); playFx('slash_h', { delay: 130, size: .7, rot: .6, parts: 6, snd: 'w_dagger' }); shake(2); shake(2, 130); break;
-    case 'bow': playFx('arrow', { size: .85 }); playFx('impact', { delay: 270, size: .5, parts: 6, vol: .6 }); shake(3, 270); break;
-    case 'book': playFx('magic_circle', { y: VH * .78, size: .55, parts: 6 }); playFx('magic_arrow', { delay: 180, size: .8, snd: null }); shake(3, 400); break;
-    case 'staff': playFx('impact', { size: .95 }); playFx('sparkle', { delay: 90, size: .6, parts: 10, snd: null }); shake(4); break;
-    default: playFx('impact', { size: .9, snd: 'punch' }); shake(4);
+    case 'sword': playFx(R() < .5 ? 'slash_h' : 'slash_v', o(1)); shake(3); break;
+    case 'katana': playFx('iai', o(1.2, { rot: 0, snd: 'w_katana' })); shake(5); break;
+    case 'greatsword': playFx('slash_v', o(1.35, { slow: 1.2, rot: 0, snd: 'heavy' })); shake(9); break;
+    case 'axe': playFx('impact_heavy', o(1.25, { snd: 'w_axe' })); shake(10); break;
+    case 'hammer': playFx('impact_heavy', o(1.15)); shake(8); break;
+    case 'dagger': playFx('slash_h', o(.8, { rot: -.6, snd: 'w_dagger' })); shake(2); break;
+    case 'bow': playFx('arrow', o(.9)); shake(3, 250); break;
+    case 'book': playFx('magic_arrow', o(.85, { snd: 'magic' })); shake(3, 200); break;
+    case 'staff': playFx('impact', o(.95)); shake(4); break;
+    default: playFx('impact', o(.9, { snd: 'punch' })); shake(4);
   }
 }
 function skillFx(id) {
@@ -2749,7 +2751,7 @@ function skillFx(id) {
 // 群れの並び方: 横に並べて、数が多いほど小さく。真ん中は少し奥
 // 絵の左右は画面からはみ出す（見えるのは横の真ん中 76% ほど）ので、その内側に並べる
 const SLOT = { 1: [[.5, 1, 0]], 2: [[.36, .8, 0], [.64, .8, 0]], 3: [[.27, .66, .02], [.5, .62, -.05], [.73, .66, .02]], 4: [[.22, .54, .02], [.407, .5, -.05], [.593, .5, -.05], [.78, .54, .02]] };
-function slotOf(i) { const L = SLOT[B.ms.length] || SLOT[1]; return L[i] || L[0]; }
+function slotOf(i) { const L = SLOT[B.ms.length] || SLOT[1], p = L[i] || L[0], k = slotOf.k || 1; return k < 1 ? [.5 + (p[0] - .5) * k, p[1] * (k < .9 ? .94 : 1), p[2]] : p; }
 function drawMonsterImg(m, t, i) {
   const A = m.anim || {}, dt = t - (A.t0 || -1e9), [px, sc, dy] = slotOf(i || 0);
   let pose = 'idle', sx = 1, sy = 1, ox = 0, oy = 0, white = 0, alpha = 1;

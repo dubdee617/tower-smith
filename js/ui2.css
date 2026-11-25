@@ -259,3 +259,9 @@ button small .gcmp{white-space:nowrap}
 #fw .fwwhy{flex:1;display:flex;align-items:center;justify-content:center;color:#ff8a7a;font-size:13px;border:1px dashed rgba(255,138,122,.4);border-radius:4px}
 html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 @media (max-height:700px){#fw .fwd{height:128px}#fw .fwh b{font-size:17px}}
+/* 戦闘の画面（2026-11-25）: 絵を大きく。敵が出ると、絵がぐっと寄る */
+.bt .log{flex:0 0 84px!important;min-height:84px}
+.dg #stage,.dg #view{transition:height .35s ease-out}
+.bt .log{flex:1 1 84px!important}
+.bt .ctl .btns{gap:4px}.bt .ctl>.btns.sk{grid-auto-rows:38px!important}.bt .ctl .btns.four button,.bt .ctl .btns.sk button{min-height:38px;height:38px}
+.bt .ctl>.btns.four{margin-bottom:4px}.bt .ctl .btns.tail button{min-height:44px}
