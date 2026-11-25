@@ -27,7 +27,7 @@ const NEW_GAME = () => ({
   als: false,          // アルスを冒険に誘ったか（1〜10階だけ一緒に来て、たまに攻撃してくれる）
   bandaged: [],        // 包帯で一時的に治しているケガ（町に戻ると元に戻る）
   enc: null,           // 魔除け・魔寄せ { k, floors }
-  items: { herb: 3, herb_m: 0, herb_l: 0, wing: 1, bandage: 0, bird: 0, ward: 0, lure: 0 },
+  items: { herb: 3, herb_m: 0, herb_l: 0, wing: 1, bandage: 0, bird: 0, ward: 0, lure: 0, guide: 0 },
   gear: [{ uid: 1, id: 'old_hammer', name: '古い槌', type: 'hammer', atk: 4 }],
   equip: { r: 1, l: null, armor: null, tool: null },  // tool: 地形を変えるツール（1つだけ）
   uidNext: 2,
@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 108'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 109'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1553,7 +1553,7 @@ function chestAhead(any) { if (!F) return null; const [fdx, fdy] = DIRS[dir], x 
 const chestHere = () => chestAhead();
 function facingNote() {
   const [fdx, fdy] = DIRS[dir], c = cellTo(fdx, fdy);
-  if (c === 2) log(BOSSES[floorNo] && !bossBeat(floorNo) ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
+  if (c === 2) log(BOSSES[floorNo] && (!bossBeat(floorNo) || midAgain(floorNo)) ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
   else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。（▲で下りる）' : '下り階段がある。（▲で下りる）');
   else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石', v_orichalcum: 'オリハルコン' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
   else if (c === 6) { const ch = chestAhead(true), p = propAhead(); if (ch) log(ch.open ? '開けた宝箱がある。' : ch.gold ? '豪華な宝箱がある！' : '宝箱がある。'); else if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
@@ -1789,7 +1789,7 @@ function stairs() {
   if (c === 3) { if (floorNo === 1) fadeGo(() => toTown('塔から出た。', true)); else goFloor(floorNo - 1, true); }
   else if (c === 2) {
     if (floorNo === 100) { mirrorScene(); return; }
-    if (BOSSES[floorNo] && !bossBeat(floorNo)) { startBattle(BOSSES[floorNo]); return; }
+    if (BOSSES[floorNo] && (!bossBeat(floorNo) || midAgain(floorNo))) { startBattle(BOSSES[floorNo]); return; }
     if (floorNo >= TOP_FLOOR) { log(`${TOP_FLOOR + 1}階から上は、まだ作っていない。`, true); return; }
     goFloor(floorNo + 1);
   }
@@ -1814,6 +1814,15 @@ function useItem(k) {
   }
   if (k === 'ward' || k === 'lure') { G.items[k]--; sfx(k === 'ward' ? 'holy' : 'dark', { vol: .75 }); sfx('ignite', { vol: .4 }); G.enc = { k, floors: 3 }; save(); log(k === 'ward' ? '魔除けを焚いた。魔物の気配が遠のく。（3フロア）' : '魔寄せを焚いた。魔物の気配が近づいてくる……。（3フロア）', true); return true; }
   if (k === 'wing') { G.items[k]--; warpOut(); return true; }
+  if (k === 'guide') {  // 導きの灯: この階の階段が地図に出て、方角と歩数を教えてくれる（2026-11-25）
+    if (!F) return false; const px = Math.floor(T.x), py = Math.floor(T.y), found = [];
+    for (let y = 0; y < F.M.length; y++) for (let x = 0; x < F.M[y].length; x++) if (F.M[y][x] === 2 || F.M[y][x] === 3) { reveal(F, x, y); found.push([F.M[y][x], x, y]); }
+    if (!found.length) { log('灯は、ゆらゆら揺れるだけだった。'); return false; }
+    G.items[k]--; sfx('magic', { vol: .5, max: 1.2 }); F.guide = true; save();
+    const dirName = (dx, dy) => { const a = Math.atan2(dy, dx); return ['東', '南東', '南', '南西', '西', '北西', '北', '北東'][((Math.round(a / (Math.PI / 4)) % 8) + 8) % 8]; };
+    const say = ([c, x, y]) => `${c === 2 ? '上り' : '下り'}階段は${dirName(x - px, y - py)}の方、およそ${Math.abs(x - px) + Math.abs(y - py)}歩。`;
+    log(`導きの灯をともした。炎が、すっと階段のほうへ傾いた。\n${found.sort((a, b) => a[0] - b[0]).map(say).join('\n')}\n（地図に階段が出た）`, true); return true;
+  }
   return false;
 }
 // 塔の中の道具メニュー
@@ -2163,7 +2172,8 @@ function win() {
   { const mc = ms.find(x => x.chest); if (mc) { mc.chest.mimic = false; msg += '\n' + chestLoot(mc.chest, true); } }
   if (G.cur) { G.cur.kills += ms.length; if (m.boss && !m.trial && !m.mirror) G.cur.boss = floorNo; }
   if (m.trial) msg += '\n' + trialWon(m.trial);
-  else if (m.boss && !m.mirror) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
+  else if (m.boss && !m.mirror && !m.trial && bossBeat(floorNo) && floorNo % 10 === 5) { (G.midRun = G.midRun || {})[floorNo] = G.runs; m.again = true; msg += `\n${floorNo}階の番人を、また倒した。`; }
+  else if (m.boss && !m.mirror) { G.bosses = G.bosses || {}; G.bosses[floorNo] = true; if (floorNo % 10 === 5) (G.midRun = G.midRun || {})[floorNo] = G.runs; if (floorNo === 10) G.bossDown = true; msg += `\n${floorNo}階の${floorNo % 10 === 5 ? '番人' : '主'}を倒した。上への道が開いた。`; }
   // ジョブの勝利数と武器の熟練度
   const j = job(), r = gearBy(G.equip.r), l = gearBy(G.equip.l);
   G.jobWins[j] = (G.jobWins[j] || 0) + 1;
@@ -2175,7 +2185,7 @@ function win() {
   const w1 = mainWeapon(); if (w1 && WEAPON_TYPES[w1.type].twoHand && G.prof[w1.type] === ONE_HAND_NEED) log(`${WEAPON_TYPES[w1.type].name}を片手で扱えるようになった！`);
   save();
   if (mkMsg) msg += '\n' + mkMsg;
-  if (m.boss && !m.mirror && !m.trial && !ms.some(x => x.chest)) msg += bpDrop(.6, '主の倒れたあとに、');
+  if (m.boss && !m.mirror && !m.trial && !m.again && !ms.some(x => x.chest)) msg += bpDrop(.6, '主の倒れたあとに、');
   if (ms.some(x => x.mirror)) { const first = !G.cleared; buttons([{ t: '……', hot: true, f: () => first ? ending() : (B = null, fadeGo(() => toTown('鏡は、また静かに光っていた。……塔は、今日も人を見ている。', true))) }]); return; }
   buttons([{ t: '先へ進む', hot: true, f: () => { B = null; mode = 'dungeon'; dungeonUI(); hud(); } }]);
   hud();
@@ -2201,6 +2211,8 @@ for (const [k, src] of Object.entries(ASSETS.mon || {})) { const i = new Image()
 // ミミックの絵（床の小物の絵を使う）
 if (typeof PROPS !== 'undefined') for (const [id, k] of [['mimic', 'f_mimic'], ['mimic_gold', 'f_mimic_gold']]) if (PROPS[k]) for (const pose of ['idle', 'attack', 'hit']) { const i = new Image(); i.src = PROPS[k]; MON_IMG[id + '_' + pose] = i; }
 // 11階より上の魔物はファイルから読む（出会ったときに読み込む）
+// 番人（5・15・25…階）は、塔に入るたびにまた出てくる（2026-11-25）。2回目からは設計図は出ない
+const midAgain = n => n % 10 === 5 && (G.midRun || {})[n] !== G.runs;
 const bossBeat = n => n === 10 ? G.bossDown || (G.bosses || {})[10] : !!(G.bosses || {})[n];
 function monImg(m, pose) {
   const k = m.id + '_' + pose;
@@ -2563,7 +2575,7 @@ function drawMonsterImg(m, t, i) {
   if (m.charge && !m.dying) { sy *= 1.04; oy -= 3 + Math.sin(t / 90) * 1.5; }
   if (m.dying && t >= m.dying) { const d = Math.min(1, (t - m.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
   const img = (monImg(m, pose) && monImg(m, pose).complete && monImg(m, pose).naturalWidth ? monImg(m, pose) : null) || monImg(m, 'idle');
-  const H = VH * (m.size || .7) * sc, W = H * img.width / img.height, cx = VW * px + ox, by = VH * (.93 + dy) + oy; m.cx = VW * px; m.top = by - H;
+  const big = m.boss && !m.mirror, by = VH * ((big ? 1.08 : .93) + dy) + oy, H = big ? Math.min(VH * (m.size || .7) * sc * 1.22, by - oy - VH * .11, VW * .98 * img.height / img.width) : VH * (m.size || .7) * sc, W = H * img.width / img.height, cx = VW * px + ox;  // 主と番人は大きく。頭は名前の帯の下に収め、はみ出すなら足元を切る（2026-11-25） m.cx = VW * px; m.top = by - H;
   ctx.save(); ctx.globalAlpha = alpha;
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(cx, by - 2, W * .38, 8, 0, 0, 7); ctx.fill();
   ctx.imageSmoothingEnabled = true;
