@@ -596,7 +596,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 98'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 99'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1886,8 +1886,10 @@ function mkAfterHit(K, m, total) {
 function healMe(n) { const h = Math.min(G.mhp - G.hp, n); G.hp += h; if (h > 0 && mode === 'battle') popNum(h, 'me', 'heal'); return h; }
 function doSkill(id) {
   if (B.over) return 'end'; const s = SKILLS[id], m = target();
-  const sh = SKILL_SHOW[id];
+  const sh = SKILL_SHOW[id]; B.hitDelay = 0;
   if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; skillFx(id); FX_AT = null; }
+  // 振付のない技（魔法など）も、数字と揺れをエフェクトが当たる瞬間に合わせる（大きな魔法は画面が暗くなってから）
+  if (!sh && id !== 'attack') { const f = (SKILL_FX[id] || [])[0], n = Array.isArray(f) ? f[0] : f, mv = n && FX_MOVE[n]; B.hitDelay = mv === 'big' ? 380 : mv === 'travel' ? 260 : n ? 120 : 0; }
   // 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる
   const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; sh.hit(i, dl, tg); FX_AT = null; B.hitDelay = dl + (sh.at || 0); };
   const K = MK(); B.basic = id === 'attack';
@@ -2117,8 +2119,9 @@ function monAttackFx(m, blocked, dl) {
 function playFx(name, opt = {}) {
   const img = FXI[name], meta = (typeof FX_META !== 'undefined' && FX_META[name]) || { c: '#ffffff', add: true };
   if (!img) return;
-  { const k = opt.snd !== undefined ? opt.snd : FX_SFX[name]; if (k) sfx(k, { delay: opt.delay || 0, max: 2.5, vol: opt.vol }); }  // snd: 音を変える（null で鳴らさない）
   const mv = opt.mv || FX_MOVE[name] || 'burst', self = opt.self || mv === 'rise';
+  // 音はエフェクトに合わせる（2026-11-25）: 大きな魔法は画面が暗くなってから出るので、音もそこに合わせる。長さはエフェクトが見えている間＋少し
+  { const k = opt.snd !== undefined ? opt.snd : FX_SFX[name]; if (k) { const d = (opt.delay || 0) + (mv === 'big' ? 280 : 0), len = (FX_DUR[mv] || 500) * (opt.slow || 1) / 1000; sfx(k, { delay: d, max: Math.min(2.5, Math.max(.6, len + .45)), vol: opt.vol }); } }  // snd: 音を変える（null で鳴らさない）
   // 大きな魔法: 画面が暗くなってから、画面いっぱいに出る。強く揺れて、粒も多い
   if (mv === 'big') { fxDim = performance.now() + (opt.delay || 0); opt = { ...opt, delay: (opt.delay || 0) + 280, parts: 40, y: VH * .56 }; setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 12); fx.flash = .5; }, opt.delay + 80); }
   if (/^m_\w+2$/.test(name)) setTimeout(() => { fx.shake = Math.max(fx.shake || 0, 6); }, (opt.delay || 0) + 60);
