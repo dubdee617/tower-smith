@@ -1,7 +1,7 @@
 // ゲームのデータ（数値はすべて仮。あとで調整する）
 
 // 素材（17種のうち、1〜10階で出るもの）
-const MATS = { copper:'銅', iron:'鉄', bone:'骨', leather:'革', stone:'魔石', wood:'木' };
+const MATS = { copper:'銅', iron:'鉄', bone:'骨', leather:'革', stone:'魔石', wood:'木', silver:'銀', mithril:'ミスリル', orichalcum:'オリハルコン' };
 // 塔で手に入るのは「使える前の状態」の戦利品（2026-11-23 決定）
 // ギルドに持ち込むと、鍛冶に使える素材に加工してもらえて、さらに報酬（お金）がもらえる
 // to: 加工するとなる素材。reward: 1個あたりのギルドの報酬
@@ -10,6 +10,10 @@ const RAW = {
   cursed_bone: { name:'呪われた骨',       to:{bone:1},    reward:2 },
   ore_copper:  { name:'銅の鉱石',         to:{copper:1},  reward:4 },
   ore_iron:    { name:'鉄の鉱石',         to:{iron:1},    reward:8 },
+  // 2026-11-24: 上の金属。銀は21階から、ミスリルは41階から、オリハルコンは71階から
+  ore_silver:  { name:'銀の鉱石',         to:{silver:1},  reward:30 },
+  ore_mithril: { name:'ミスリルの鉱石',   to:{mithril:1}, reward:70 },
+  ore_orichalcum:{ name:'オリハルコンの原石', to:{orichalcum:1}, reward:150 },
   dim_stone:   { name:'くすんだ魔石',     to:{stone:1},   reward:8 },
   iron_shell:  { name:'鉄喰いの甲殻',     to:{iron:1, leather:1}, reward:12 },
   golem_core:  { name:'ゴーレムの核',     to:{stone:3, iron:2},   reward:60 },
@@ -32,9 +36,9 @@ Object.assign(RAW, {
   rock_core:   { name:'岩の核',         to:{stone:2, iron:1},    reward:24 },
   feather:     { name:'大きな羽根',     to:{leather:1, wood:1},  reward:12 },
   ice_shard:   { name:'溶けない氷',     to:{stone:2},            reward:26 },
-  ember_stone: { name:'燃える石',       to:{stone:2, iron:1},    reward:30 },
+  ember_stone: { name:'燃える石',       to:{stone:2, silver:1},  reward:34 },
   star_dust:   { name:'星のかけら',     to:{stone:3},            reward:40 },
-  dark_steel:  { name:'黒い鋼の欠片',   to:{iron:3},             reward:45 },
+  dark_steel:  { name:'黒い鋼の欠片',   to:{iron:2, mithril:1},  reward:60 },
   worm_gem:    { name:'大砂蟲の宝石',   to:{stone:4, iron:2},    reward:150 },
 });
 const NAMES = Object.assign({}, MATS, Object.fromEntries(Object.entries(RAW).map(([k, v]) => [k, v.name])));
@@ -223,6 +227,21 @@ const RECIPES = [
   { id:'iron_armor',    name:'鉄の鎧',       type:'armor',      def:5,  cost:{iron:3, leather:2},           price:120 },
 ];
 
+// 銀・ミスリル・オリハルコン（2026-11-24）。炉の段階（銀2・ミスリル3・オリハルコン4）で打てる
+{ const base = { sword:11, katana:17, greatsword:19, axe:18, hammer:10, dagger:8, bow:13, book:7, staff:7 }, jp = { sword:'剣', katana:'刀', greatsword:'大剣', axe:'斧', hammer:'槌', dagger:'ダガー', bow:'弓', book:'魔導書', staff:'杖' };
+  // 武器ごとの副素材（前の段階の金属＋その武器らしい素材）
+  const sub = { sword:{leather:1}, katana:{leather:1, bone:1}, greatsword:{leather:2}, axe:{wood:1, bone:1}, hammer:{wood:2}, dagger:{leather:1}, bow:{wood:2, leather:1}, book:{leather:2, stone:2}, staff:{wood:2, stone:2} };
+  const main = { sword:3, katana:4, greatsword:5, axe:4, hammer:4, dagger:2, bow:2, book:2, staff:2 };
+  const T = [['silver', '銀', 1.6, 'iron', 280], ['mithril', 'ミスリル', 2.35, 'silver', 700], ['orichalcum', 'オリハルコン', 3.7, 'mithril', 1600]];
+  for (const [m, mj, k, prev, pr] of T) {
+    for (const [t, a] of Object.entries(base)) {
+      const cost = Object.assign({ [m]: main[t], [prev]: 2 }, sub[t]); if (m === 'orichalcum') cost.stone = (cost.stone || 0) + 3;
+      RECIPES.push({ id: m + '_' + t, name: mj + 'の' + jp[t], type: t, atk: Math.round(a * k), cost, price: Math.round(pr * (main[t] + 1) / 4) });
+    }
+    RECIPES.push({ id: m + '_shield', name: mj + 'の盾', type: 'shield', atk: 0, def: Math.round(6 * (k * .9)), cost: { [m]: 3, [prev]: 2, leather: 2 }, price: pr });
+    RECIPES.push({ id: m + '_armor', name: mj + 'の鎧', type: 'armor', def: Math.round(5 * (k * 1.08)), cost: { [m]: 4, [prev]: 2, leather: 3 }, price: Math.round(pr * 1.3) });
+  }
+}
 // 王様からの褒美（2026-11-24）。工房では打てない。種類ごとに「王家の〇〇」「王家の宝〇〇」
 { const base = { sword:11, katana:17, greatsword:19, axe:18, hammer:10, dagger:8, bow:13, book:7, staff:7 }, jp = { sword:'剣', katana:'刀', greatsword:'大剣', axe:'斧', hammer:'槌', dagger:'短剣', bow:'弓', book:'魔導書', staff:'杖' };
   for (const [t, a] of Object.entries(base)) {
@@ -482,12 +501,12 @@ const DIG_YIELD = {
   desert: [['sand_find',50], ['cursed_bone',25], ['ore_copper',25]],
   forest: [['log',60], ['old_wood',20], ['spore',10], ['ore_copper',10]],
   // 2026-11-24: エリアごとに、そのエリアらしい物が出る
-  mountain:[['rubble',30], ['ore_copper',30], ['ore_iron',25], ['rock_core',10], ['dim_stone',5]],
+  mountain:[['rubble',25], ['ore_copper',25], ['ore_iron',25], ['ore_silver',12], ['rock_core',8], ['dim_stone',5]],
   snow:    [['ice_shard',35], ['rubble',35], ['ore_iron',15], ['dim_stone',15]],
   jungle:  [['log',50], ['old_wood',30], ['spore',10], ['ore_copper',10]],
   ruins:   [['sand_find',40], ['cursed_bone',25], ['cursed_gold',15], ['raw_gem',10], ['ore_copper',10]],
-  canyon:  [['rubble',30], ['ore_iron',30], ['ember_stone',15], ['rock_core',15], ['dim_stone',10]],
-  glacier: [['ice_shard',45], ['dim_stone',25], ['rubble',15], ['star_dust',15]],
+  canyon:  [['rubble',25], ['ore_iron',20], ['ore_mithril',15], ['ore_orichalcum',8], ['ember_stone',12], ['rock_core',12], ['dim_stone',8]],
+  glacier: [['ice_shard',40], ['dim_stone',20], ['ore_mithril',12], ['rubble',13], ['star_dust',15]],
   castle:  [['rubble',50], ['ore_iron',25], ['dark_steel',15], ['cursed_gold',10]],
 };
 const NO_DIG_FLOORS = [10, 86, 100];  // 節目の階の壁は「塔の骨」で掘れない

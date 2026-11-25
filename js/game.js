@@ -127,7 +127,7 @@ const expNeed = () => Math.floor(10 * Math.pow(G.lv, 1.5));
 const matText = o => Object.entries(o).filter(([, n]) => n > 0).map(([k, n]) => NAMES[k] + n).join(' ') || 'なし';
 function add(o, k, n) { o[k] = (o[k] || 0) + n; if (o === G.carry && n > 0 && mode !== 'town') gotToast(k, n); }
 // ---------- アイテムのアイコン（2026-11-24。assets/icon） ----------
-const ICON_KEYS = new Set(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem"]);
+const ICON_KEYS = new Set(['silver', 'mithril', 'orichalcum', 'ore_silver', 'ore_mithril', 'ore_orichalcum'].concat(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem"]));
 const TOOL_ICON = { pick: 'w_pick', axe: 'w_axe', shovel: 'w_shovel' };
 function iconOf(k) {
   if (k === 'gold') return typeof UI_ICON !== 'undefined' ? UI_ICON.coin : '';
@@ -135,7 +135,10 @@ function iconOf(k) {
   const r = RECIPES.find(x => x.id === k); if (r) return iconOfType(r);
   return '';
 }
-function iconOfType(r) { const k = r.type === 'tool' ? TOOL_ICON[r.tool] : 'w_' + r.type; return ICON_KEYS.has(k) ? `assets/icon/${k}.webp` : ''; }
+// 装備ひとつずつの絵（assets/gear）があれば、それを使う
+const GEAR_IMG = new Set(["mithril_armor", "mithril_axe", "mithril_book", "mithril_bow", "mithril_dagger", "mithril_greatsword", "mithril_hammer", "mithril_katana", "mithril_shield", "mithril_staff", "mithril_sword", "orichalcum_armor", "orichalcum_axe", "orichalcum_book", "orichalcum_bow", "orichalcum_dagger", "orichalcum_greatsword", "orichalcum_hammer", "orichalcum_katana", "orichalcum_shield", "orichalcum_staff", "orichalcum_sword", "silver_armor", "silver_axe", "silver_book", "silver_bow", "silver_dagger", "silver_greatsword", "silver_hammer", "silver_katana", "silver_shield", "silver_staff", "silver_sword"]);
+function iconOfType(r) {
+  if (GEAR_IMG.has(r.id)) return `assets/gear/${r.id}.webp`; const k = r.type === 'tool' ? TOOL_ICON[r.tool] : 'w_' + r.type; return ICON_KEYS.has(k) ? `assets/icon/${k}.webp` : ''; }
 // 手に入れたとき、絵の上にアイコン付きの札をぽんと出す
 function gotToast(k, n) {
   const st = $('stage'); if (!st) return;
@@ -478,7 +481,7 @@ function greet(id) {
   let tier = st[0][1]; for (const [n, L] of st) if (G.maxFloor >= n && (n < 10 || G.bossDown)) tier = L;  // 10階の段は、10階の主を倒してから
   return R() < .6 ? pick(tier) : pick(base);
 }
-const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7 };
+const MAT_PRICE = { copper: 6, iron: 15, bone: 4, leather: 5, stone: 12, wood: 7, silver: 45, mithril: 110, orichalcum: 240 };
 const pick = a => a[Math.floor(R() * a.length)];
 let place = null;
 
@@ -548,7 +551,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 70'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 71'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -831,12 +834,12 @@ for (const k of Object.keys(FORGE_CAT)) { const f = FORGE_CAT[k][1]; FORGE_CAT[k
 // ---------- 工房の強化（お金の使い道） ----------
 // 炉: 打てる金属が増える（1で鉄）。金床: 打った武具の攻撃・守りが段階ぶん上がる。作業台: 使う素材が減る
 const UPG = {
-  furnace: { name: '炉', max: 1, price: [300], eff: ['鉄が打てるようになる'], now: l => l ? '鉄まで打てる' : '銅・骨・革・魔石だけ' },
+  furnace: { name: '炉', max: 4, price: [300, 1500, 4000, 9000], eff: ['鉄が打てるようになる', '銀が打てるようになる', 'ミスリルが打てるようになる', 'オリハルコンが打てるようになる'], now: l => ['銅・骨・革・魔石だけ', '鉄まで打てる', '銀まで打てる', 'ミスリルまで打てる', 'オリハルコンまで打てる'][l] },
   anvil:   { name: '金床', max: 5, price: [200, 500, 1000, 2000, 4000], eff: l => `打った武器の攻撃・防具の守り +${l}`, now: l => l ? `打つ武具 +${l}` : '強化なし' },
   bench:   { name: '作業台', max: 3, price: [300, 900, 2500], eff: ['一番多い素材が1つ減る（3つ以上のとき）', '一番多い素材が1つ減る（2つ以上のとき）', 'さらに、二番目に多い素材も1つ減る'], now: l => l ? ['', '素材を少し節約', '素材を節約', '素材をかなり節約'][l] : '節約なし' },
 };
 const upLv = k => (G.forgeUp || {})[k] || 0;
-const needFurnace = r => Object.keys(r.cost).includes('iron') ? 1 : 0;
+const needFurnace = r => { const c = Object.keys(r.cost); return c.includes('orichalcum') ? 4 : c.includes('mithril') ? 3 : c.includes('silver') ? 2 : c.includes('iron') ? 1 : 0; };
 // 作業台の段階に合わせて、必要な素材を減らす
 function costOf(r) {
   const c = { ...r.cost }, b = upLv('bench'); if (!b) return c;
@@ -880,17 +883,17 @@ function forge(msg, face) {
   if (face) say(face, msg, true); else say('serious', msg || (Object.keys(G.raw).some(k => G.raw[k]) ? '「戦利品は、まずギルドで加工してもらわないとな」' : '「何を打とうか」'), true);
 }
 function forgeList(cat, msg, face) {
-  const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(f).sort((a, b) => canMake(b) - canMake(a));
+  const [name, f] = FORGE_CAT[cat], rs = RECIPES.filter(r => f(r) && needFurnace(r) <= upLv('furnace') + 1).sort((a, b) => canMake(b) - canMake(a) || needFurnace(b) - needFurnace(a));  // 炉の次の段階までを出す
   const L = [{ title: name, titleHtml: `${name}<span class="have">${Object.keys(MATS).map(k => `<span>${icoImg(k)}${G.store[k] || 0}</span>`).join('')}</span>` }];
   for (const r of rs) {
     const ok = canMake(r), stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}`;
     const lock = upLv('furnace') < needFurnace(r);
-    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? '炉Lv1が必要' : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
-      if (lock) { log(`鉄を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv1に）`, true); return; }
+    L.push({ t: r.name + (ok ? '' : `<i class="lack">${lock ? `炉Lv${needFurnace(r)}が必要` : '素材不足'}</i>`), s: `${stat}${upLv('anvil') && r.type !== 'tool' ? ` (+${upLv('anvil')})` : ''}<span class="sellp">売値${sellPrice(r)}G</span><br>${needHtml(r)}`, cls: ok ? '' : 'dim', f: () => {
+      if (lock) { log(`${['', '鉄', '銀', 'ミスリル', 'オリハルコン'][needFurnace(r)]}を打つには、炉を強くしないと。\n（鍛冶 →「工房の強化」で炉をLv${needFurnace(r)}に）`, true); return; }
       if (!canMake(r)) { log(`${r.name}を打つには、${lackText(r)}が足りない。\n必要: ${matText(costOf(r))}`, true); return; }
       for (const [k, n] of Object.entries(costOf(r))) G.store[k] -= n;
       G.gear.push(newGear(r, true)); save();
-      fadeGo(() => forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'), { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
+      fadeGo(() => { forgeList(cat, `「${r.name}、できた。悪くない」`, 'grin'); const src = iconOfType(r); if (src) bigFx(`<img class="gearimg" src="${src}" alt=""><b>${r.name}</b><small>${gearKind(r.type)}${r.atk ? ' 攻' + r.atk : ''}${r.def ? ' 守' + r.def : ''}</small>`, 'equip', 'reward', 2400); }, { text: `${r.name}\n制作中`, hold: 1500, sfx: [['hit1', 250], ['hit1', 700], ['hit1', 1150], ['heavy', 1600]] });
     } });
   }
   L.push({ t: '戻る', f: () => forge() });
@@ -1241,7 +1244,7 @@ function facingNote() {
   const [fdx, fdy] = DIRS[dir], c = cellTo(fdx, fdy);
   if (c === 2) log(BOSSES[floorNo] && !bossBeat(floorNo) ? '上り階段。上から重い足音がする……。\n（▲で上る）' : '上り階段がある。（▲で上る）');
   else if (c === 3) log(floorNo === 1 ? '下り階段。町に戻れる。（▲で下りる）' : '下り階段がある。（▲で下りる）');
-  else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石', v_orichalcum: '燃える石' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
+  else if (c === 1 && F.vein && F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]) log({ v_copper: '銅', v_iron: '鉄', v_stone: '魔石', v_gems: '宝石', v_orichalcum: 'オリハルコン' }[F.vein[(Math.floor(T.x) + fdx) + ',' + (Math.floor(T.y) + fdy)]] + 'の鉱脈が見える。ツールで掘れそうだ。');
   else if (c === 6) { const ch = chestAhead(true), p = propAhead(); if (ch) log(ch.open ? '開けた宝箱がある。' : ch.gold ? '豪華な宝箱がある！' : '宝箱がある。'); else if (p && PROP_INFO[p.key]) log(`${PROP_INFO[p.key][0]}がある。${p.searched ? '（調べた）' : ''}`); }
 }
 function afterStep() {
@@ -1397,7 +1400,8 @@ function dig() {
   } else {
     F.M[d.y][d.x] = 0; delete F.dmg[k]; delete F.crack[k]; reveal(F, d.x, d.y);
     const vk = F.vein && F.vein[k]; if (vk) delete F.vein[k];
-    const table = vk ? [[VEIN_RAW[vk], 1]] : DIG_YIELD[areaOf(floorNo)[1]] || DIG_YIELD.stone, sum = table.reduce((s, [, w]) => s + w, 0), got = {};
+    const vRaw = vk === 'v_iron' && floorNo >= 31 && R() < .45 ? 'ore_silver' : vk === 'v_orichalcum' ? (floorNo >= 71 && R() < .55 ? 'ore_orichalcum' : 'ore_mithril') : VEIN_RAW[vk];
+    const table = vk ? [[vRaw, 1]] : DIG_YIELD[areaOf(floorNo)[1]] || DIG_YIELD.stone, sum = table.reduce((s, [, w]) => s + w, 0), got = {};
     const n = (d.eff === 3 ? 2 : 1) + (vk ? 1 : 0);
     for (let i = 0; i < n; i++) { let r = R() * sum; for (const [id, w] of table) { if ((r -= w) < 0) { add(got, id, 1); break; } } }
     if (!vk && d.eff === 1 && R() < .4) for (const id in got) delete got[id];
@@ -1739,6 +1743,8 @@ function win() {
   sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
   B.over = true; for (const x of ms) if (!x.dying) x.dying = performance.now();
   G.exp += exp; G.gold += gold; allyTick();
+  // 上の金属の鉱石は、上の階の魔物ほどよく持っている
+  if (!ms.some(x => x.chest)) { if (floorNo >= 21 && R() < .22) add(drop, 'ore_silver', 1); if (floorNo >= 41 && R() < .16) add(drop, 'ore_mithril', 1); if (floorNo >= 71 && R() < .12) add(drop, 'ore_orichalcum', 1); }
   for (const [k, n] of Object.entries(drop)) add(G.carry, k, n);
   if (G.meal === 'broth') { G.hp = Math.min(G.mhp, G.hp + 6); }
   let msg = `${ms.length > 1 ? ms.length + '体の魔物' : m.name}を倒した！ 経験値${exp}、${gold}G。${Object.keys(drop).length ? '素材: ' + matText(drop) : ''}`;
