@@ -353,7 +353,7 @@ function hud() {
 }
 // ボタン: 「戻る」系はいつも右下。見出しが2つ以上ある長い一覧はタブに分け、多すぎるときはページ送り
 const TAIL_T = ['戻る', 'やめる', '外に出る'];
-buttons.tab = {}; buttons.pg = {};
+buttons.tab = {}; buttons.pg = {}; buttons.lp = {};  // lp: 一覧（list）の1ページの数を、画面の高さごとに覚えておく
 function buttons(list, cls) {
   const box = $('ctl'); box.innerHTML = '';
   // 主人公の立ち絵は、その画面で jobScene がもう一度呼ばれなければ消す
@@ -378,7 +378,7 @@ function buttons(list, cls) {
   const n = shown.filter(b => !b.title).length;
   if (!cls) cls = n > 6 ? 'three small' : n === 3 ? 'three' : n === 1 ? 'one' : '';
   if (cls === 'list') cls = 'list';
-  const per = cls.includes('three') ? 9 : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
+  const per = cls === 'list' ? (buttons.lp[innerHeight] || 6) : cls.includes('three') ? 9 : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
   let pages = 1, pg = 0, items = shown;
   if (n > per + (tail.length ? 0 : 1)) {
     const flat = shown.filter(b => !b.title); pages = Math.ceil(flat.length / per); pg = Math.min(buttons.pg[pk] || 0, pages - 1);
@@ -408,6 +408,8 @@ function buttons(list, cls) {
     box.appendChild(tr);
   }
   fitStage();
+  // 2026-11-25: 一覧が画面からはみ出したら（小さい画面・作れる物が多いとき）、1ページの数を減らして並べ直す。戻るボタンが見切れないように
+  if (cls === 'list' && per > 2) { const r = box.getBoundingClientRect(); if (r.bottom > innerHeight + 2) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); return; } }
   setTimeout(refitLog, 0);  // ボタンで台詞の欄が狭くなったら、ページを分け直す
 }
 // 暗転: 画面を一度黒くしてから切り替える。場所が変わるとき・工房で何かを作るとき
@@ -604,7 +606,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 117'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 118'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
