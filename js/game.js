@@ -571,7 +571,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 79'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 80'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -611,7 +611,7 @@ function townMark(id) {
 // 次の目標（10階ごとの主を順に）
 function nextGoal() {
   if (!G.maxFloor) return '塔に入ってみる';
-  for (let f = 10; f < TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(f * .8); return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
+  for (let f = 10; f < TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(f * (f >= 30 ? .9 : .8)); return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
   return G.cleared ? '塔のてっぺんに立った。……また登るのも、悪くない' : '100階へ。てっぺんで、何かが待っている';
 }
 function townMap() {
@@ -1652,17 +1652,20 @@ function useHerb() { if (!G.items.herb || G.hp >= G.mhp) return false; G.items.h
 // ---------- 戦闘（AP制） ----------
 // その階に出る魔物（出る最初の階〜そのエリアの最後の階）
 const monPool = n => { const L = MONSTERS.filter(m => m.from <= n && n <= m.to); return L.length ? L : MONSTERS.filter(m => m.from <= n); };
+// 中盤から強く（2026-11-25）: 21階から少しずつ上がり、60階で HP1.5倍・攻撃1.35倍・守り1.25倍。経験値とお金も少し増える
+function midPow(f) { const r = Math.max(0, Math.min(1, (f - 20) / 40)); return { hp: 1 + .5 * r, atk: 1 + .35 * r, def: 1 + .25 * r, rew: 1 + .2 * r }; }
 function pickMonster() {
   const pool = monPool(floorNo);
   if (TODAY.goblin && floorNo >= 3) pool.push(MONSTERS.find(m => m.id === 'goblin'), MONSTERS.find(m => m.id === 'goblin'));
   const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = (TODAY.danger ? 1.2 : 1) * (floorNo >= 6 && floorNo <= 10 ? 1.12 : 1), rw = TODAY.danger ? 1.4 : 1;  // 6〜10階は少し強く
   // 2026-11-24: 全体に少し強く（HP×1.2・攻撃×1.12）
-  return { ...base, hp: Math.round(base.hp * k * dz * 1.2), atk: Math.round(base.atk * k * dz * 1.12), def: Math.round(base.def * k), exp: Math.round(base.exp * k * rw), gold: Math.round(base.gold * k * rw) };
+  const M = midPow(floorNo);
+  return { ...base, hp: Math.round(base.hp * k * dz * 1.2 * M.hp), atk: Math.round(base.atk * k * dz * 1.12 * M.atk), def: Math.round(base.def * k * M.def), exp: Math.round(base.exp * k * rw * M.rew), gold: Math.round(base.gold * k * rw * M.rew) };
 }
 // 何体で出てくるか（低い階は1体。上ほど群れる。最大4体）
 function groupSize() {
   const r = R(), f = floorNo;
-  const T = f <= 3 ? [1] : f <= 10 ? [.6, 1] : f <= 30 ? [.35, .8, 1] : f <= 60 ? [.25, .65, .9, 1] : [.15, .5, .8, 1];
+  const T = f <= 3 ? [1] : f <= 10 ? [.6, 1] : f <= 30 ? [.35, .8, 1] : f <= 60 ? [.2, .6, .88, 1] : [.15, .5, .8, 1];
   return T.findIndex(x => r < x) + 1;
 }
 const alive = () => B.ms.filter(x => x.hp > 0);
@@ -1675,7 +1678,8 @@ const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
 function startBattle(boss) {
   const n = boss ? 1 : groupSize(), ms = [];
-  for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1)) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
+  const BM = boss && !boss.chest && !boss.mirror ? midPow(floorNo) : { hp: 1, atk: 1, def: 1 };
+  for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1) * BM.hp), atk: Math.round(boss.atk * BM.atk), def: Math.round(boss.def * BM.def) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
   // 同じ魔物が2体以上なら A・B… と呼ぶ
   const cnt = {}; for (const m of ms) cnt[m.id] = (cnt[m.id] || 0) + 1;
   const seen = {}; for (const m of ms) if (cnt[m.id] > 1) { seen[m.id] = (seen[m.id] || 0) + 1; m.name += 'ABCD'[seen[m.id] - 1]; }
