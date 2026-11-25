@@ -603,7 +603,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 105'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 106'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -758,40 +758,87 @@ function towerScreen(msg) {
   if (!msg && G.injuries.length) say('tired', `${G.injuries.map(k => INJURIES[k].name).join('・')}が痛む。\n「……まぁ〜、どうにかなるんじゃないか」`);
   hud();
 }
-// 広場の像: 300年前の剣士の像（実はジン。95階で知る）。ジンにたまに会える
-// ジンの技: 親密度が届くと「一閃」、95階に着いていると「流水」
+// ---------- ジン（設定資料 Ver.1.0 / 2026-11-25） ----------
+// いつ来ても像の前にいる老人。実は像の剣士本人。塔の意志を感じ取った人で、女神や鏡のことは知らない
+// 流れ: 初めて会う（像は強そうか？）→ 塔の進み具合で話が変わる → 親密度が届き50階に着くと正体を明かす → 稽古で「無心」と奥義「一閃」→ 90階で「流水」
+const JIN_HELLO = {
+  early: ['ジン「ほっほっほ。また塔へ行くのか？」', 'ジン「お主、鍛冶屋じゃったな？ 剣を作る者が、自分で振るうとは面白いのう」', 'ジン[smile]「今日もよい日和じゃ。像も、気持ちよさそうじゃろ？」', 'ジン[laugh]「四十から冒険を始めるとは、なかなかやるのう。ほっほっほ」'],
+  mid: ['ジン[think]「ふむ……お主、少し腕を上げたようじゃな」', 'ジン「じゃが、まだ肩に力が入りすぎておる。剣は、力任せに振ればよいというものではないぞ」', 'ジン[smile]「しくじったか？ ほっほっほ。しくじった日は、学ぶことが多い日じゃ」', 'ジン「急がんでよい。塔は、逃げはせんよ」'],
+  late: ['ジン[think]「……ほう。あそこまで登ったか」', 'ジン[think]「お主、塔の中で何か感じたことはないか？ ……そうか。ほっほっほ。いや、何でもない」', 'ジン「上のほうは、空気が違うじゃろう。……ゆっくり息をするんじゃぞ」'],
+  known: ['ジン[laugh]「ほっほっほ。今日も像を磨いておいたぞ。……自分で自分を磨くのは、妙な気分じゃがな」', 'ジン「本当に難しいのは、誰かに勝つことではない。自分自身と、うまく付き合っていくことじゃよ」', 'ジン[smile]「まあ、人生、どうにかなるものじゃよ」', 'ジン「ほっほっほ。また会ったのう、鍛冶屋の」'],
+  clear: ['ジン[laugh]「ほっほっほ。帰ってきたか。……てっぺんで何を見たか？ いや、言わんでよい。顔に書いてある」', 'ジン[smile]「強くなったのう。……いや、強さの話ではない。いい顔になった、ということじゃ」'],
+};
+function jinHello() {
+  if (G.cleared) return pick(JIN_HELLO.clear);
+  if (G.jinReveal) return pick(JIN_HELLO.known);
+  const f = G.maxFloor || 0; return pick(f >= 50 ? JIN_HELLO.late : f >= 20 ? JIN_HELLO.mid : JIN_HELLO.early);
+}
+// 初めて会ったとき
+function jinFirst() {
+  const after = (pt, line) => { G.jinMet = true; affAdd('jin', pt); save(); log(line, true); buttons([{ t: '次へ', hot: true, f: () => { log('ジン[smile]「わしはジン。この像の前で日向ぼっこをするのが、仕事みたいなものじゃ。\n……また来るとよい、鍛冶屋の」', true); statueButtons(); } }]); };
+  log('ジン[smile]「ほっほっほ。見事な銅像じゃろ？\n昔、この国には、たいそう腕の立つ剣士がおったそうじゃ。\n……どうじゃ？ 強そうに見えるかの？」', true);
+  buttons([
+    { t: '「ああ、強そうだ」', hot: true, f: () => after(2, 'ジン[laugh]「ほっほっほ！ そうじゃろ、そうじゃろ！\nなかなか見る目があるのう！」') },
+    { t: '「格好つけすぎじゃないか」', f: () => after(1, 'ジン[laugh]「ほっほっほ！ 手厳しいのう！\nまあ、銅像というものは、少々格好よく作りすぎるものじゃからな」') },
+    { t: '「それより腹が減った」', f: () => after(1, 'ジン[smile]「ほっほっほ。そうか、そうか。\nまあ、昔の英雄より、今日の飯のほうが大事じゃな」') },
+  ], 'one');
+}
+// 正体・稽古・流水（順番に、一度ずつ）
 function jinTeach() {
-  const k = perk('jin') && !G.learned.includes('jin1') ? 'jin1' : perk('jin') && G.maxFloor >= 95 && !G.learned.includes('jin2') ? 'jin2' : null;
+  const k = !G.jinReveal ? (perk('jin') && G.maxFloor >= 50 ? 'reveal' : null) : !G.learned.includes('jin1') ? 'jin1' : G.maxFloor >= 90 && !G.learned.includes('jin2') ? 'jin2' : null;
   if (!k) return null;
-  return { t: '技を教わる', s: 'ジンから', hot: true, f: () => {
-    const L = k === 'jin1' ? [
-      { fig: 'jin', t: 'ジン[think]「……鍛冶屋の。約束どおり、ひとつ教えよう」' },
-      { fig: 'jin', sfx: 'slash', t: 'ジンが杖を、すっと横に払った。\n――風が、遅れて吹いた。' },
-      { fig: 'jin', t: 'ジン「斬ろうと思うな。……もう斬れている、と思え。\nそれが『一閃』じゃ」' },
-      { hero: 'shock', t: '「……今の、杖ですよね」' },
-      { fig: 'jin', t: 'ジン[laugh]「ほっほっほ。得物は何でもよい。\nお主の打った刃なら、なおさらじゃ」' },
+  const T = { reveal: ['話を聞く', 'ジンが何か言いたそうだ'], jin1: ['稽古をつけてもらう', '奥義を教わる'], jin2: ['技を教わる', 'ジンから'] }[k];
+  return { t: T[0], s: T[1], hot: true, f: () => {
+    const L = k === 'reveal' ? [
+      { fig: 'jin', t: 'ジン[think]「……鍛冶屋の。お主には、そろそろ話してもよいかもしれんのう」' },
+      { fig: 'jin', t: 'ジン「この銅像の男じゃがな……」' },
+      { fig: 'jin', t: 'ジン[smile]「実は、わしなんじゃよ」' },
+      { hero: 'shock', t: '「……え？」' },
+      { fig: 'jin', t: 'ジン[laugh]「ほっほっほ！ 信じられんか？\nまあ、無理もない。わしも、ずいぶん老けたからのう」' },
+      { fig: 'jin', t: 'ジン「若い頃は、誰よりも強くなりたいと思っておった。\n強い敵を倒して、誰よりも高く登る。……それが強さじゃと、信じておった」' },
+      { fig: 'jin', t: 'ジン[think]「じゃが、塔の上のほうでな。妙な感じがしたんじゃ。\n……塔が、わしらを見ておる、とな」' },
+      { fig: 'jin', t: 'ジン「怖くはなかった。子どもが、知らん大人をじっと見つめるような……そんな目じゃった」' },
+      { fig: 'jin', t: 'ジン[think]「塔は生きておる。そして、人間を知ろうとしておる。\n……わしにわかったのは、そこまでじゃ」' },
+      { fig: 'jin', t: 'ジン[smile]「強さとは何か。長いこと考えて、ようやく答えらしきものに辿り着いた。\n真の強さとは、自分自身を知ることじゃ」' },
+      { fig: 'jin', t: 'ジン[laugh]「それがわかったら、もう剣はいらんようになってのう。\n……ほっほっほ。それで、ここで日向ぼっこじゃ」' },
+    ] : k === 'jin1' ? [
+      { fig: 'jin', t: 'ジン[smile]「さて、少しばかり稽古をつけてやろうかの」\nジンは木の枝を一本拾って、こちらに向き直った。' },
+      { fig: 'jin', t: 'ジン「遠慮はいらん。好きなように打ち込んでみい」' },
+      { fig: 'jin', sfx: 'swing', t: '打ち込んだ。……当たらない。\nもう一度。……当たらない。ジンは、ほとんど動いていない。' },
+      { fig: 'jin', t: 'ジン[laugh]「ほっほっほ。まだまだじゃな。\nお主は、相手ばかり見ておる」' },
+      { fig: 'jin', t: 'ジン「まずは、自分の心を見つめてみい。\n恐れも、焦りも、欲も、すべてお主自身じゃ。それを無理に消そうとする必要はない」' },
+      { fig: 'jin', t: 'ジン[think]「ただ、心を静かにするのじゃ」' },
+      { fig: 'jin', t: '炉の前に立つときのように、息をととのえた。\n……槌を振り下ろす、あの一瞬のように。' },
+      { fig: 'jin', sfx: 'slash', t: '枝が、ジンの袖をかすめた。' },
+      { fig: 'jin', t: 'ジン[smile]「ほっほっほ。ようやく掴んだようじゃな。\nそれが『無心』。……そこから放つ一太刀を、わしは『一閃』と呼んでおった」' },
+      { fig: 'jin', t: 'ジン「忘れるでないぞ。\nどれほど強い敵と向き合おうとも……己を見失わぬことじゃ」' },
       { fig: 'jin', t: 'ジン[smile]「……そうじゃ、これも渡しておこう。昔使っておった剣の、作り方じゃ」\n（名品「名もなき剣」の設計図をもらった）' },
     ] : [
-      { fig: 'jin', t: 'ジン[think]「95階まで行ったか。……あの城を見たのじゃな」' },
-      { fig: 'jin', t: 'ジン「わしも、昔あそこを歩いた。……ずっと昔にな」' },
-      { fig: 'jin', t: 'ジン「最後に教えよう。『流水』。\n受けるのではない。流して、返すのじゃ」' },
-      { fig: 'jin', t: 'ジン[smile]「てっぺんで待つものは、お主がいちばんよく知っておる相手じゃ。\n……怖がらんでいい」' },
+      { fig: 'jin', t: 'ジン[think]「……ほう。そこまで登ったか」' },
+      { fig: 'jin', t: 'ジン「塔の目は、まだお主を見ておるか？ ……そうか。\nあやつも、ずいぶんお主が気に入ったようじゃな」' },
+      { fig: 'jin', t: 'ジン「最後に、もうひとつだけ教えよう。『流水』。\n受けるのではない。流して、返すのじゃ」' },
+      { fig: 'jin', t: 'ジン[smile]「上で何が待っておるか、わしは知らん。\nじゃが……己を見失わなければ、大丈夫じゃ」' },
     ];
-    runSeq(L, 0, () => { G.learned.push(k); if (k === 'jin1') { G.bp = G.bp || []; if (!G.bp.includes('mk_nameless')) G.bp.push('mk_nameless'); } if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(k); save(); sfx('levelup', { vol: .8 }); bigFx(`<b>技を覚えた</b><em>${SKILLS[k].name}</em><small>${SKILLS[k].desc}（どのジョブでも使える）</small>`); statueScreen('ジン[smile]「さて、わしは昼寝の時間じゃ」'); });
+    runSeq(L, 0, () => {
+      if (k === 'reveal') { G.jinReveal = true; save(); statueScreen('ジン[laugh]「ほっほっほ。じゃが、明日からも、わしはただの日向ぼっこのじいさんじゃ。よろしくのう」'); return; }
+      G.learned.push(k); if (k === 'jin1') { G.bp = G.bp || []; if (!G.bp.includes('mk_nameless')) G.bp.push('mk_nameless'); } if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(k); save(); sfx('levelup', { vol: .8 }); bigFx(`<b>技を覚えた</b><em>${SKILLS[k].name}</em><small>${SKILLS[k].desc}（どのジョブでも使える）</small>`); statueScreen('ジン[smile]「さて、わしは昼寝の時間じゃ」'); });
   } };
+}
+function statueButtons() {
+  const L = [{ t: '碑文を読む', f: () => { log('「剣士ジン　塔に挑み、多くの民を救いし者」\n……台座の文字は、少しすり減っている。', true); if (G.jinMet && !G.jinReveal) setTimeout(() => { log('「ジン……。あのじいさんと、同じ名前だな」'); log('ジン[laugh]「ほっほっほ。よくある名前じゃよ」'); }, 900); } }];
+  L.push(talkBtn('jin', () => statueScreen(byeLine('jin')))); const tj = jinTeach(); if (tj) L.push(tj);
+  L.push({ t: '戻る', f: townMap });
+  buttons(L); hud();
 }
 function statueScreen(msg) {
   place = 'statue'; showTown(true, 0);
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img src="${TOWN_IMG}statue.jpg" alt="剣士の像"><div class="name">剣士の像</div>`;
-  if (statueScreen.run !== G.runs) { statueScreen.run = G.runs; statueScreen.jin = R() < .4; }
-  const L = [{ t: '碑文を読む', f: () => log('「三百年前、この塔に挑みし名もなき剣士」\n……台座の文字は、少しすり減っている。', true) }];
-  if (statueScreen.jin) { npcFig('jin'); L.push(talkBtn('jin', () => statueScreen(byeLine('jin')))); const tj = jinTeach(); if (tj) L.push(tj); }
-  L.push({ t: '戻る', f: townMap });
-  buttons(L); hud();
-  if (msg) { log(msg, true); return; }
-  if (statueScreen.jin) log(pick(['ジン「ほっほっほ。また会ったのう、鍛冶屋の」', 'ジン[smile]「この像の前は、なぜか落ち着くのじゃ」', 'ジン「塔の上は、まだ遠いかの」']), true);
-  else say('lookup', pick(PLACES.statue.hello) + '\n「三百年前か……。どんな剣を持ってたんだろうな」', true);
+  npcFig('jin');  // ジンは、いつ来ても像の前にいる
+  if (!G.jinMet && (G.aff.jin || 0) > 0) G.jinMet = true;  // 前の版で、もう話したことがある
+  if (!G.jinMet) { hud(); jinFirst(); return; }
+  statueButtons();
+  log(msg || jinHello(), true);
 }
 // ---------- お城（50階に着いて生きて戻ると行ける） ----------
 function castleScreen() {
@@ -2010,7 +2057,8 @@ function endTurn() {
       if (big) { d = Math.round(Math.max(d, m.atk * .4) * (m.boss ? 1.6 : floorNo <= 5 ? 1.6 : 2)); /* 5階までは控えめ */ log(`${m.name}の${pick(['渾身の一撃', '強烈な一撃', '大技'])}！`); shakeAt((order - 1) * 220 + 60, 12); fxTint((order - 1) * 220, '#ff2010', .3); }
       if (m.mirror) {  // 鏡は、自分の技を使ってくる
         if (!m.said && m.hp < m.mhp * .5) { m.said = true; log('鏡の中の自分が、口をひらいた。\n「……{name}。どうして、登る？」'); }
-        const sk = battleSkills().filter(id => SKILLS[id].kind === 'atk'); if (sk.length && R() < .35) { const id = pick(sk); d = Math.round(d * 1.5); log(`鏡の中の自分は、${SKILLS[id].name}を使った！`); }
+        if (!m.mushin && G.learned.includes('jin1')) { m.mushin = true; log('ジンの声が、聞こえた気がした。\n「どれほど強い敵と向き合おうとも……己を見失わぬことじゃ」'); }  // 無心: 鏡に技を写されにくい（なくても勝てる）
+        const sk = battleSkills().filter(id => SKILLS[id].kind === 'atk'); if (sk.length && R() < (m.mushin ? .15 : .35)) { const id = pick(sk); d = Math.round(d * 1.5); log(`鏡の中の自分は、${SKILLS[id].name}を使った！`); }
       }
       monAttackFx(m, B.counter || B.cut < 1, (order - 1) * 220);
       if (B.counter) { d = Math.ceil(d * B.counter.cut); const c = dmgTo(m, atkPower() * B.counter.back); log(`受け止めて反撃！ ${c}のダメージ。`); B.counter = null; }

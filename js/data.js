@@ -180,7 +180,7 @@ const SKILLS = {
   senken:   { name:'千の剣',   ap:4, kind:'atk', mult:3.2, all:true, desc:'敵全体を千の斬撃で包む。APを溜めて撃つ' },
   temper:   { name:'鍛え直し', ap:1, kind:'buff', boost:1.7, desc:'その場で刃を鍛え直す。このターンの攻撃1.7倍' },
   masterstrike:{ name:'名工の一撃', ap:3, kind:'atk', mult:4.8, break:3, desc:'武器の芯を知る者の一撃＋守りを大きく崩す' },
-  jin1:     { name:'一閃',     ap:3, kind:'atk', mult:4.0, pierce:true, desc:'ジンに教わった一閃。守りを無視する' },
+  jin1:     { name:'一閃',     ap:3, kind:'atk', mult:4.0, pierce:true, desc:'ジンに教わった奥義。無心から放つ一太刀。守りを無視する' },
   jin2:     { name:'流水',     ap:1, kind:'counter', cut:.1, back:2.2, desc:'ジンに教わった構え。攻撃を流して、倍にして返す' },
   flurry:   { name:'連打',     ap:2, kind:'atk', mult:.65, hits:4, desc:'4回攻撃', spread:true },
 };
@@ -546,7 +546,7 @@ const AFF_PERKS = {
   elly:  '治療費と祈りが半額',
   ria:   '戦利品の持ち込みの報酬が+15%',
   fuuka: 'フウカが一緒に戦う回数が12回になり、40階より上にも現れる',
-  jin:   'ジンが技「一閃」を教えてくれる（95階に着くと「流水」も）',
+  jin:   '50階に着くとジンが昔の話をしてくれて、稽古で奥義「一閃」を教わる（90階で「流水」も）',
   desert: '砂の女神がめずらしい素材をくれて、回復もしてくれる', forest: '森の女神がめずらしい素材をくれて、回復もしてくれる。名品「森の女神の弓」の設計図ももらえる',
   druid: '花の女神がめずらしい素材をくれて、回復もしてくれる', mountain: '山の女神がめずらしい素材をくれて、回復もしてくれる', ice: '氷の女神がめずらしい素材をくれて、回復もしてくれる',
 };
