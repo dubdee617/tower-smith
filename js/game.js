@@ -604,7 +604,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 115'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 116'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -644,7 +644,7 @@ function townMark(id) {
 // 次の目標（10階ごとの主を順に）
 function nextGoal() {
   if (!G.maxFloor) return '塔に入ってみる';
-  for (let f = 10; f < TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(f * (f >= 30 ? .9 : .8)); return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
+  for (let f = 10; f < TOP_FLOOR; f += 10) if (!bossBeat(f)) { const lv = Math.round(3 + f * .7); /* 2026-11-25: レベルの上がり方（2乗）に合わせた目安 */ return (G.maxFloor < f ? `${f}階を目指す` : `${f}階の主を倒す`) + `（目安Lv${lv}${f === 10 ? '・鉄の装備' : ''}）`; }
   return G.cleared ? '塔のてっぺんに立った。……また登るのも、悪くない' : '100階へ。てっぺんで、何かが待っている';
 }
 function townMap() {
@@ -1335,7 +1335,7 @@ function testFloors() {
 // 階に合ったレベルと装備にする（目安）
 function testPower() {
   const L = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(n => ({ t: `${n}階向け`, f: () => {
-    const lv = Math.round(6 + n * .62);  // 目安: 10階でLv12、50階でLv37、100階でLv68
+    const lv = Math.round(3 + n * .7); /* 目安: 10階でLv10、50階でLv38、100階でLv73 */
     while (G.lv < lv) { G.lv++; const g = (JOBS[job()] || JOBS['素手']).grow; G.mhp += g.hp; G.atk += g.atk; G.def += g.def; } G.exp = 0; G.hp = G.mhp;
     const tier = n <= 20 ? 1 : n <= 40 ? 2 : n <= 60 ? 3 : n <= 80 ? 5 : 6, w = mainWeapon(), type = w ? w.type : 'sword';
     const best = list => list.sort((a, b) => (b.atk || 0) + (b.def || 0) - (a.atk || 0) - (a.def || 0))[0];
@@ -1858,13 +1858,17 @@ function useHerb() { if (!G.items.herb || G.hp >= G.mhp) return false; G.items.h
 const monPool = n => { const L = MONSTERS.filter(m => m.from <= n && n <= m.to); return L.length ? L : MONSTERS.filter(m => m.from <= n); };
 // 中盤から強く（2026-11-25）: 21階から少しずつ上がり、60階で HP1.5倍・攻撃1.35倍・守り1.25倍。経験値とお金も少し増える
 function midPow(f) { const r = Math.max(0, Math.min(1, (f - 20) / 40)); return { hp: 1 + .5 * r, atk: 1 + .35 * r, def: 1 + .25 * r, rew: 1 + .2 * r }; }
+// 強さの調整（2026-11-25）: エリアごと（10階ごと）の魔物と、階ごとのボスに掛ける倍率 [HP, 攻撃]。シミュレーションで合わせた値は data.js の BAL_MON・BAL_BOSS
+const balMon = f => (typeof BAL_MON !== 'undefined' && BAL_MON[Math.floor((f - 1) / 10)]) || [1, 1, 1];
+const balBoss = f => (typeof BAL_BOSS !== 'undefined' && BAL_BOSS[f]) || [1, 1, 1];
 function pickMonster() {
   const pool = monPool(floorNo);
   if (TODAY.goblin && floorNo >= 3) pool.push(MONSTERS.find(m => m.id === 'goblin'), MONSTERS.find(m => m.id === 'goblin'));
   const base = pool[Math.floor(R() * pool.length)], k = 1 + (floorNo - base.from) * .15, dz = (TODAY.danger ? 1.2 : 1) * (floorNo >= 6 && floorNo <= 10 ? 1.12 : 1), rw = TODAY.danger ? 1.4 : 1;  // 6〜10階は少し強く
   // 2026-11-24: 全体に少し強く（HP×1.2・攻撃×1.12）
   const M = midPow(floorNo);
-  return { ...base, hp: Math.round(base.hp * k * dz * 1.2 * M.hp), atk: Math.round(base.atk * k * dz * 1.12 * M.atk), def: Math.round(base.def * k * M.def), exp: Math.round(base.exp * k * rw * M.rew), gold: Math.round(base.gold * k * rw * M.rew) };
+  const Q = balMon(floorNo);
+  return { ...base, hp: Math.round(base.hp * k * dz * 1.2 * M.hp * Q[0]), atk: Math.round(base.atk * k * dz * 1.12 * M.atk * Q[1]), def: Math.round(base.def * k * M.def * (Q[2] || 1)), exp: Math.round(base.exp * k * rw * M.rew), gold: Math.round(base.gold * k * rw * M.rew) };
 }
 // 何体で出てくるか（低い階は1体。上ほど群れる。最大4体）
 function groupSize() {
@@ -1883,7 +1887,8 @@ function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!
 function startBattle(boss) {
   const n = boss ? 1 : groupSize(), ms = [];
   const BM = boss && !boss.chest && !boss.mirror && !boss.trial ? midPow(floorNo) : { hp: 1, atk: 1, def: 1 };
-  for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1) * BM.hp), atk: Math.round(boss.atk * BM.atk), def: Math.round(boss.def * BM.def) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
+  const QB = !boss || boss.mirror ? [1, 1, 1] : boss.chest || boss.trial ? balMon(floorNo) : balBoss(floorNo);
+  for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1) * BM.hp * QB[0]), atk: Math.round(boss.atk * BM.atk * QB[1]), def: Math.round(boss.def * BM.def * (QB[2] || 1)) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
   // 同じ魔物が2体以上なら A・B… と呼ぶ
   const cnt = {}; for (const m of ms) cnt[m.id] = (cnt[m.id] || 0) + 1;
   const seen = {}; for (const m of ms) if (cnt[m.id] > 1) { seen[m.id] = (seen[m.id] || 0) + 1; m.name += 'ABCD'[seen[m.id] - 1]; }

@@ -409,8 +409,20 @@ const MIRROR_PRE = [
 function mirrorBoss() {
   const j = job(), img = (JOBS[j] || {}).img || 'smith', src = `assets/jobs/job_${img}.webp`;
   for (const pose of ['idle', 'attack', 'hit']) { const i = new Image(); i.src = src; MON_IMG['mirror_' + pose] = i; }
+  // 2026-11-25: 持ち込んだ技の強さも写す。1ターンに出せる一番大きな攻撃（強化の技も込み）から、およそ9ターンかかるHPにする
   return { id: 'mirror', name: '鏡の中の自分', mirror: true, boss: true, size: .95, drop: {}, gold: 0, exp: 5000,
-    hp: Math.round(G.mhp * 2.5 + atkPower() * 10), atk: Math.round(G.mhp * .09 + defPower()), def: Math.round(atkPower() * .45) };
+    hp: Math.round(atkPower() * kitTurnMult() * MIRROR_K.hp + G.mhp * 1.5), atk: Math.round(G.mhp * MIRROR_K.atk + defPower()), def: Math.round(atkPower() * .45) };
+}
+const MIRROR_K = { hp: 9, atk: .058 };  // 2026-11-25 シミュレーションで合わせた（アイテムなしで勝率8割ほど、11ターンほど）
+// 持ち込んだ技で、1ターンに出せる攻撃の倍率（強化の技を先に使い、残りのAPで一番効率のいい攻撃を重ねる）
+function kitTurnMult() {
+  const ids = battleSkills(), ap = apBase() + Math.min(1, carryMax() - 1); let left = ap, boost = 1;
+  const buffs = ids.filter(id => SKILLS[id] && SKILLS[id].kind === 'buff');
+  if (buffs.length && ap >= 2) { boost = Math.max(...buffs.map(id => SKILLS[id].boost || 1)); left -= 1; }
+  const atks = ids.filter(id => SKILLS[id] && SKILLS[id].kind === 'atk').map(id => ({ ap: SKILLS[id].ap, v: (SKILLS[id].mult || 1) * (SKILLS[id].hits || 1) * (1 + (SKILLS[id].crit || 0)) })).concat([{ ap: apCost('attack'), v: 1 }]);
+  let total = 0;
+  while (left > 0) { const c = atks.filter(x => x.ap <= left).sort((x, y) => y.v / y.ap - x.v / x.ap)[0]; if (!c) break; total += c.v; left -= c.ap; }
+  return Math.max(1, total) * boost;
 }
 function mirrorShow(on) { const m = $('meet'); if (!m) return; if (on) { m.innerHTML = '<img src="assets/monsters/the_mirror.webp" alt="鏡">'; m.style.display = 'flex'; } else { m.style.display = 'none'; m.innerHTML = ''; } }
 function mirrorScene() {
