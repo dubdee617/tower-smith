@@ -273,3 +273,7 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .tw #ctl{min-height:216px;display:flex;flex-direction:column}
 .tw #ctl>.btns:not(.tail){flex:1 1 auto;grid-auto-rows:1fr}
 .tw #ctl>.btns:not(.tail) button{height:auto}
+/* 2026-11-26 塔の中は、移動も戦闘も倒したあとも絵の大きさを同じに。台詞の欄は84px固定、ボタンの欄は残り全部 */
+.dg .log{flex:0 0 84px!important;min-height:84px}
+.dg #stage,.dg #view{transition:none}
+.dg .ctl{flex:1 1 0!important;min-height:0;overflow:hidden}
