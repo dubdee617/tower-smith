@@ -480,9 +480,14 @@ function fitStage() {
   /* 2026-11-26: 塔の中（移動・戦闘・倒したあと）は、絵の大きさを固定。台詞の欄とボタンの欄の高さを決め打ちにして、ボタンの数で絵が変わらないようにする */
   let Hdg = 0;
   if (dg) { Hdg = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + LOG_DG + CTL_DG; for (const c of main.children) if (c !== s && c.id !== 'log' && c.id !== 'ctl' && getComputedStyle(c).display !== 'none') Hdg += c.offsetHeight; Hdg = Math.max(120, main.clientHeight - Hdg); }
+  /* 2026-11-26: 町の建物の中（工房・店など）も、ボタンの数で絵の大きさが変わらないように固定（画面酔い対策）。ボタンが少ないときは台詞の欄が広がる */
+  const bc = document.body.classList, tc = !dg && !tw && COVER && !bc.contains('intro') && !bc.contains('big'); bc.toggle('tc', tc);
+  let Htc = 0;
+  if (tc) { Htc = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + LOG_MIN + CTL_TOWN; for (const c of main.children) if (c !== s && c.id !== 'log' && c.id !== 'ctl' && getComputedStyle(c).display !== 'none') Htc += c.offsetHeight; Htc = Math.max(120, main.clientHeight - Htc); }
   let w = W, h;
   /* 2026-11-26: 塔の入口は、横いっぱいに大きく（縦は少し切る）。準備する・女神の像でボタンが増えても絵が動かないよう、ボタン用の高さを決めておく */
   if (tw) h = Math.max(120, main.clientHeight - used + ctl.offsetHeight - Math.max(216, ctl.offsetHeight));
+  else if (tc) h = Math.min(Htc, W * 1.25);
   else if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(Hdg, W * 1.6);  /* 塔の中: 4:3の絵の左右を落として、縦を大きく見せる（移動も戦闘も同じ大きさ） */
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
@@ -496,7 +501,7 @@ function fitStage() {
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
   if (!dg && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
-const LOG_DG = 84, CTL_DG = 238;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
+const LOG_DG = 84, CTL_DG = 238, CTL_TOWN = 240;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
 new ResizeObserver(() => fitStage()).observe(document.querySelector('main'));
 new ResizeObserver(() => { if (fitStage.ch !== $('ctl').offsetHeight) { fitStage.ch = $('ctl').offsetHeight; fitStage(); } }).observe($('ctl'));  /* ボタンの高さがあとから変わったとき（アイコンの読み込みなど）も、絵の大きさを合わせ直す */
 
@@ -645,7 +650,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 131'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 132'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
