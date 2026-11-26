@@ -278,3 +278,6 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .dg #stage,.dg #view{transition:none}
 .dg .ctl{flex:1 1 0!important;min-height:0;overflow:hidden}
 .dg .ctl{flex:0 0 auto!important}
+/* 地図（2026-11-26）: 右上に小さく・はっきり。押すと階全体を大きく */
+.view #map{left:auto;right:7px;top:7px;bottom:auto;width:34%;height:auto;aspect-ratio:1/1;opacity:1;image-rendering:auto;border:2px solid #c9a25d;border-radius:3px;box-shadow:0 0 0 1px #000,0 3px 8px rgba(0,0,0,.6)}
+.view #map.big{right:6%;top:6%;width:88%}

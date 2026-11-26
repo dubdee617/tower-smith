@@ -428,19 +428,33 @@ function renderView(ctx, F, P, t, dim) {
 const ZB = new Float32Array(VW);
 
 // ---------- オートマップ ----------
-function renderMap(ctx, F, P) {
-  const N = F.N, s = Math.floor(64 / N) || 1, o = Math.floor((64 - s * N) / 2);
-  ctx.clearRect(0, 0, 64, 64); ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(0, 0, 64, 64);
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-    if (!F.seen[y][x]) continue; const c = F.M[y][x];
-    ctx.fillStyle = c === 1 ? '#5a4a3c' : c === 2 ? '#ffc069' : c === 3 ? '#5fb0e6' : c === 4 || c === 5 ? '#c07a3a' : c === 6 ? '#3f6a32' : '#b8a68c';
-    ctx.fillRect(o + x * s, o + y * s, s, s);
+/* 2026-11-26: 地図を見やすく。ふだんは自分のまわり（9×9マス）を大きく、押すと階全体。壁・床・階段・扉・宝箱をはっきり色分け */
+function renderMap(ctx, F, P, big) {
+  const S = ctx.canvas.width, N = F.N, R = 4;
+  const n = big ? N : R * 2 + 1, s = S / n;
+  const ox = big ? 0 : Math.floor(P.x) - R, oy = big ? 0 : Math.floor(P.y) - R;
+  ctx.clearRect(0, 0, S, S); ctx.fillStyle = 'rgba(14,10,7,.86)'; ctx.fillRect(0, 0, S, S);
+  const X = x => (x - ox) * s, Y = y => (y - oy) * s;
+  for (let y = oy; y < oy + n; y++) for (let x = ox; x < ox + n; x++) {
+    if (!F.seen[y] || !F.seen[y][x]) continue; const c = F.M[y][x];
+    ctx.fillStyle = c === 1 ? '#5a4636' : c === 2 ? '#ffc069' : c === 3 ? '#5fb0e6' : c === 4 || c === 5 ? '#c07a3a' : c === 6 ? '#5c8a46' : '#d8c6a2';
+    ctx.fillRect(X(x), Y(y), s + .5, s + .5);
+    if (c !== 1) { ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = Math.max(1, s * .06); ctx.strokeRect(X(x) + .5, Y(y) + .5, s - 1, s - 1); }
+    if (c === 2 || c === 3) { /* 階段: ▲上り ▼下り */
+      const cx = X(x) + s / 2, cy = Y(y) + s / 2, r = s * .3, d = c === 2 ? -1 : 1;
+      ctx.fillStyle = '#1a120c'; ctx.beginPath(); ctx.moveTo(cx, cy + d * r); ctx.lineTo(cx - r, cy - d * r * .8); ctx.lineTo(cx + r, cy - d * r * .8); ctx.fill();
+    }
   }
-  for (const ch of F.chests || []) if (F.seen[ch.y][ch.x] && !ch.open) { ctx.fillStyle = '#ffe14a'; ctx.fillRect(o + ch.x * s, o + ch.y * s, s, s); }
-  const cx = o + (P.x) * s, cy = o + (P.y) * s, a = P.a;
-  ctx.fillStyle = '#ff5a3d'; ctx.beginPath();
-  ctx.moveTo(cx + Math.cos(a) * s * 1.2, cy + Math.sin(a) * s * 1.2);
-  ctx.lineTo(cx + Math.cos(a + 2.5) * s * .8, cy + Math.sin(a + 2.5) * s * .8);
-  ctx.lineTo(cx + Math.cos(a - 2.5) * s * .8, cy + Math.sin(a - 2.5) * s * .8); ctx.fill();
+  for (const ch of F.chests || []) if (F.seen[ch.y] && F.seen[ch.y][ch.x] && !ch.open) {
+    const r = s * .3, cx = X(ch.x) + s / 2, cy = Y(ch.y) + s / 2;
+    ctx.fillStyle = '#ffe14a'; ctx.strokeStyle = '#3a2410'; ctx.lineWidth = Math.max(1, s * .08);
+    ctx.fillRect(cx - r, cy - r * .75, r * 2, r * 1.5); ctx.strokeRect(cx - r, cy - r * .75, r * 2, r * 1.5);
+  }
+  const cx = X(P.x), cy = Y(P.y), a = P.a, k = big ? Math.max(s * 1.1, 14) : s * 1.25;
+  ctx.beginPath();
+  ctx.moveTo(cx + Math.cos(a) * k * .48, cy + Math.sin(a) * k * .48);
+  ctx.lineTo(cx + Math.cos(a + 2.4) * k * .4, cy + Math.sin(a + 2.4) * k * .4);
+  ctx.lineTo(cx + Math.cos(a - 2.4) * k * .4, cy + Math.sin(a - 2.4) * k * .4); ctx.closePath();
+  ctx.fillStyle = '#ff3d1f'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.5, k * .08); ctx.stroke();
 }
 function reveal(F, x, y) { for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) if (F.seen[y + j] && F.seen[y + j][x + i] !== undefined) F.seen[y + j][x + i] = 1; }

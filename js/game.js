@@ -645,7 +645,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 130'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 131'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -2887,7 +2887,7 @@ function loop(t) {
     if (TEX.ready && F) renderView(ctx, F, P, t, mode === 'battle' ? .5 : 1);
     if (mode === 'battle' && B && B.ms) { B.ms.forEach((m, i) => { if (m.hp > 0 || (m.dying && t - m.dying < 700)) drawMonster(m, t, i); }); drawMonsterBars(t); }
     if (mode === 'battle' || mode === 'dungeon') drawFx();
-    if (F) { mapCv.style.display = mode === 'battle' ? 'none' : ''; renderMap(mapCtx, F, P); }
+    if (F) { mapCv.style.display = mode === 'battle' ? 'none' : ''; renderMap(mapCtx, F, P, mapCv.classList.contains('big')); }
   } else { mapCv.style.display = 'none'; }
   if (fx.flash > .02) { ctx.fillStyle = `rgba(255,60,40,${fx.flash * .35})`; ctx.fillRect(0, 0, VW, VH); fx.flash *= .85; }
   if (fx.hit > .02) { ctx.fillStyle = `rgba(255,255,255,${fx.hit * .25})`; ctx.fillRect(0, 0, VW, VH); fx.hit *= .7; }
