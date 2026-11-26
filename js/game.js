@@ -141,7 +141,7 @@ const expNeed = () => Math.floor(10 * Math.pow(G.lv, 2));  // 2026-11-25: 1.5乗
 const matText = o => Object.entries(o).filter(([, n]) => n > 0).map(([k, n]) => NAMES[k] + n).join(' ') || 'なし';
 function add(o, k, n) { o[k] = (o[k] || 0) + n; if (o === G.carry && n > 0 && mode !== 'town') gotToast(k, n); }
 // ---------- アイテムのアイコン（2026-11-24。assets/icon） ----------
-const ICON_KEYS = new Set(['silver', 'mithril', 'orichalcum', 'ore_silver', 'ore_mithril', 'ore_orichalcum', 'darksteel', 'dragonbone', 'dragon_bone'].concat(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem"]));
+const ICON_KEYS = new Set(['silver', 'mithril', 'orichalcum', 'ore_silver', 'ore_mithril', 'ore_orichalcum', 'darksteel', 'dragonbone', 'dragon_bone'].concat(["bandage", "beast_fang", "beast_pelt", "bird", "bone", "copper", "cursed_bone", "cursed_gold", "dark_steel", "dim_stone", "ember_stone", "feather", "golem_core", "hard_shell", "herb", "herb_l", "herb_m", "ice_shard", "iron", "iron_shell", "leather", "log", "lure", "old_cloth", "old_wood", "ore_copper", "ore_iron", "rat_hide", "raw_gem", "rock_core", "rubble", "sand_find", "scale", "spider_silk", "spore", "star_dust", "stone", "w_armor", "w_axe", "w_book", "w_bow", "w_dagger", "w_greatsword", "w_hammer", "w_katana", "w_pick", "w_shield", "w_shovel", "w_staff", "w_sword", "ward", "wing", "wood", "worm_gem", "guide"]));
 const TOOL_ICON = { pick: 'w_pick', axe: 'w_axe', shovel: 'w_shovel' };
 function iconOf(k) {
   if (k === 'gold') return typeof UI_ICON !== 'undefined' ? UI_ICON.coin : '';
@@ -669,7 +669,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 140'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 141'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
