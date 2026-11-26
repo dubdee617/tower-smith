@@ -267,3 +267,9 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .bt .ctl>.btns.four{margin-bottom:4px}.bt .ctl .btns.tail button{min-height:44px}
 #fw .fwi.tl .nm{white-space:normal;font-size:13px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tw .log{flex:1 1 84px!important;min-height:84px}
+/* 塔の入口（2026-11-26）: 台詞を絵の下に重ねる */
+.tw #log.over{position:absolute;left:18px;right:18px;height:88px;min-height:0;flex:none!important;z-index:3;background:linear-gradient(rgba(12,8,4,.55),rgba(12,8,4,.82));border-color:rgba(201,162,93,.7);backdrop-filter:blur(1px)}
+/* 塔の入口: どのメニューでもボタンの欄の高さを同じにして、すき間を作らない（ボタンが少ない画面はボタンを大きく） */
+.tw #ctl{min-height:216px;display:flex;flex-direction:column}
+.tw #ctl>.btns:not(.tail){flex:1 1 auto;grid-auto-rows:1fr}
+.tw #ctl>.btns:not(.tail) button{height:auto}

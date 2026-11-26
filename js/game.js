@@ -474,7 +474,7 @@ function fitStage() {
   const ctl = $('ctl'); if (dg) ctl.style.flex = 'none';
   const cs = getComputedStyle(main), W = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const logOn = getComputedStyle($('log')).display !== 'none';
-  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn ? (bt || tw ? 84 : LOG_MIN) : -6);
+  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn && !tw ? (bt ? 84 : LOG_MIN) : -6);
   for (const c of main.children) if (c !== s && c.id !== 'log' && getComputedStyle(c).display !== 'none') used += c.offsetHeight;
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
@@ -487,7 +487,11 @@ function fitStage() {
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
   ctl.style.flex = '';
-  slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;  /* 絵の左右が切れるぶん、群れを内側に寄せる */
+  slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;
+  /* 塔の入口: 台詞は絵の下の方に重ねて出す（台詞の欄のぶんも塔を大きく） */
+  const lg = $('log');
+  if (tw) { main.style.position = 'relative'; lg.classList.add('over'); lg.style.top = Math.round(s.offsetTop + h - 96) + 'px'; }
+  else if (lg.classList.contains('over')) { lg.classList.remove('over'); lg.style.top = ''; }  /* 絵の左右が切れるぶん、群れを内側に寄せる */
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
   if (!dg && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
@@ -639,7 +643,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 127'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 128'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
