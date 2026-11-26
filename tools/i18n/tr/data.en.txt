@@ -850,7 +850,7 @@
 849|Weapons and armor sell to Jenny for +25%
 850|Treatment and prayers are half price
 851|+15% reward for loot you bring in
-852|Fuuka fights alongside you 12 times and appears above floor 40
+852|Fuuka fights alongside you 12 times and appears above floor 70
 853|At floor 50 Jin tells you his story and teaches you the secret art "Issen" in training ("Ryusui" too, at floor 90)
 854|The Sand Goddess gives you rare materials and heals you
 855|The Forest Goddess gives you rare materials and heals you. You also get the blueprint for the masterwork "Forest Goddess's Bow"

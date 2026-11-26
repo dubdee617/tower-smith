@@ -88,7 +88,9 @@ function topReady(u) {
 }
 function job() {
   const w = mainWeapon(); if (!w) return '素手';
-  { const tp = TOPS.find(u => u.hold === w.type && topReady(u)); if (tp && G.upperPick[w.type] !== '-top') return tp.job; }
+  const pk = G.upperPick[w.type];  // なし=おまかせ ／ '-base'=基本職 ／ 上級職・最上級職の名前=それ ／ '-top'=最上級職にしない（古いセーブ）
+  if (pk === '-base') return WEAPON_TYPES[w.type].job;
+  { const tp = TOPS.find(u => u.hold === w.type && topReady(u)); if (tp && (!pk || pk === tp.job)) return tp.job; }
   const ups = uppersFor(w.type);
   if (ups.length) { const pick = ups.find(u => u.job === G.upperPick[w.type]); return (pick || ups.sort((a, b) => (G.prof[b.exp] || 0) - (G.prof[a.exp] || 0))[0]).job; }
   return WEAPON_TYPES[w.type].job;
@@ -182,7 +184,8 @@ function drawLog(cont) {
   const tx = document.createTextNode(last); s.appendChild(tx);
   // 2026-11-25: 欄に入りきらないときは、ページに分ける（押すと続きが出る）
   drawLog.rest = '';
-  const over = () => el.scrollHeight > el.clientHeight + 2;
+  // 顔の絵は欄の右上に重ねているだけなので、はみ出しの計算には入れない（入れると「「」だけのページになっていた）
+  const fc = el.querySelector('.face'); const over = () => { if (fc) fc.style.display = 'none'; const o = el.scrollHeight > el.clientHeight + 2; if (fc) fc.style.display = ''; return o; };
   if (el.clientHeight > 20 && over()) {
     const whole = pre + last; pn.textContent = '';
     let lo = 1, hi = whole.length;
@@ -656,7 +659,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 136'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 137'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1223,21 +1226,44 @@ function passiveMenu(back) {
   buttons(L); log(mine.length ? '押して付ける／外す。' : 'まだパッシブを覚えていない。ジョブで何度も勝つと覚える。', true);
 }
 // ジョブの一覧（基本職の勝利数、上級職の条件）。解放した上級職を押すと、その武器を持ったときにそのジョブになる
+// ジョブを選ぶと、本当にそのジョブになる（2026-11-26）。その武器を持っていなければ、持っている中でいちばん強いものに持ち替える
+function takeJob(j, type, pk, back) {
+  const w = mainWeapon();
+  if (!w || w.type !== type) {
+    const g = G.gear.filter(x => x.type === type).sort((a, b) => (b.atk || 0) - (a.atk || 0))[0];
+    if (!g) { say('doubt', `「${WEAPON_TYPES[type].name}を持っていないな……」\n（${j}になるには、${WEAPON_TYPES[type].name}を工房で打とう）`, true); return; }
+    const E = G.equip; if (E.l === g.uid) E.l = null; E.r = g.uid;
+    if (WEAPON_TYPES[type].twoHand && !canOneHand(type)) E.l = null;
+  }
+  const before = job();
+  if (pk === undefined) delete G.upperPick[type]; else G.upperPick[type] = pk;
+  save(); const now = job();
+  if (now !== before) { sfx('change'); sfx('equip', { vol: .5, delay: 350 }); }
+  jobList(back); jobScene(now); statusView.prev = null;
+  say('smug', now === j ? `「${now}か。悪くない」\n（${mainWeapon().name}を持った）` : `「……${now}のままだ」`, true);
+}
 function jobList(back) {
   const L = [], cur = job();
   for (const t of ['hammer', 'sword', 'book', 'staff', 'dagger', 'axe', 'katana', 'greatsword', 'bow']) {
     const j = WEAPON_TYPES[t].job, w = G.jobWins[j] || 0;
-    L.push({ t: j + (j === cur ? ' ◀' : ''), s: `${WEAPON_TYPES[t].name}・熟練${G.prof[t] || 0}・勝${w}`, hot: j === cur, f: () => { jobScene(j); log(`${j}: ${WEAPON_TYPES[t].name}を持つ。${WEAPON_TYPES[t].twoHand ? '両手武器。' : '片手武器（盾を持てる）。'}`, true); } });
+    L.push({ t: j + (j === cur ? ' ◀' : ''), s: `${WEAPON_TYPES[t].name}・熟練${G.prof[t] || 0}・勝${w}`, hot: j === cur, f: () => {
+      if (j === cur) { jobScene(j); log(`${j}: ${WEAPON_TYPES[t].name}を持つ。${WEAPON_TYPES[t].twoHand ? '両手武器。' : '片手武器（盾を持てる）。'}`, true); return; }
+      const hasUp = uppersFor(t).length || TOPS.some(u => u.hold === t && topReady(u));
+      takeJob(j, t, hasUp ? '-base' : undefined, back); } });
   }
   for (const u of UPPERS) {
     const ok = upperReady(u);
     L.push({ t: (ok ? u.job : '？？？') + (u.job === cur ? ' ◀' : ''), s: `${WEAPON_TYPES[u.hold].name}${G.prof[u.hold] || 0}/${UPPER_NEED.hold}＋${WEAPON_TYPES[u.exp].name}${G.prof[u.exp] || 0}/${UPPER_NEED.exp}`, hot: u.job === cur, f: () => {
-      if (!ok) { log('まだ知らないジョブ。持つ武器と、経験する武器の熟練度が条件。', true); return; }
-      G.upperPick[u.hold] = u.job; save(); jobList(back); jobScene(u.job); log(`${WEAPON_TYPES[u.hold].name}を持ったときは${u.job}になる。`, true); } });
+      if (!ok) { log(`まだ知らないジョブ。\n${WEAPON_TYPES[u.hold].name}の熟練${UPPER_NEED.hold}と、${WEAPON_TYPES[u.exp].name}の熟練${UPPER_NEED.exp}で、なれるようになる。\n（熟練は、その武器を持って戦いに勝つと1ずつ上がる）`, true); return; }
+      if (u.job === cur) { jobScene(u.job); return; }
+      takeJob(u.job, u.hold, u.job, back); } });
   }
-  for (const u of TOPS) { const ok = topReady(u); L.push({ t: (ok ? u.job : '？？？') + (u.job === cur ? ' ◀' : ''), s: `最上級職・${WEAPON_TYPES[u.hold].name}`, hot: u.job === cur, f: () => { if (ok) jobScene(u.job); log(ok ? `${u.job}: ${WEAPON_TYPES[u.hold].name}を持つと、この姿になる。` : `まだ知らないジョブ。\n条件: ${u.hint}`, true); } }); }
+  for (const u of TOPS) { const ok = topReady(u); L.push({ t: (ok ? u.job : '？？？') + (u.job === cur ? ' ◀' : ''), s: `最上級職・${WEAPON_TYPES[u.hold].name}`, hot: u.job === cur, f: () => {
+    if (!ok) { log(`まだ知らないジョブ。条件: ${u.hint}`, true); return; }
+    if (u.job === cur) { jobScene(u.job); return; }
+    takeJob(u.job, u.hold, u.job, back); } }); }
   L.push({ t: '戻る', f: back });
-  buttons(L, 'three small'); jobScene(cur); log('熟練度は、その武器を持って勝つと上がる。', true);
+  buttons(L, 'three small'); jobScene(cur); log('ジョブを押すと、その武器に持ち替えてジョブが変わる。\n熟練度は、その武器を持って勝つと上がる。', true);
 }
 // 武具屋: まず「買う／売る／話す／外に出る」。押してから、それぞれの一覧を出す
 function shop(msg) {
@@ -1695,8 +1721,7 @@ function meetNpc(id) {
   }
   if (id === 'gurugamo') {
     G.ally = { id, left: TOWER_NPCS.gurugamo.battles }; save();
-    log(floorNo >= 91 ? pick(['グルガモ[laugh]「おう、鍛冶屋！ 城の階まで来ちまったぜ。……ここまで来たら、てっぺんまで付き合うしかねえな」', 'グルガモ「城の騎士ども、固えのなんの。……斧が欠けちまった。帰ったら研いでくれよ」'])
-      : floorNo >= 71 ? pick(['グルガモ[laugh]「おう、鍛冶屋！ こんな高えとこで会うとはな。……風が冷てえ。ちょっと付き合うぜ」', 'グルガモ「雲の上ってのは、足元がふわふわして落ち着かねえ。……お前の後ろなら、歩ける気がするぜ」'])
+    log(floorNo >= 71 ? pick(['グルガモ[laugh]「おう、鍛冶屋！ こんな高えとこで会うとはな。……風が冷てえ。ちょっと付き合うぜ」', 'グルガモ「雲の上ってのは、足元がふわふわして落ち着かねえ。……お前の後ろなら、歩ける気がするぜ」'])
       : 'グルガモ[laugh]「おう、鍛冶屋！ ちょうど暇してたんだ。ちょっと付き合うぜ」', true);
     log(`グルガモが一緒に戦ってくれる（${G.ally.left}回）。`);
     buttons([{ t: '「頼もしいな」', hot: true, f: go }]); return;

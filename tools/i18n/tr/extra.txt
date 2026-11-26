@@ -159,3 +159,14 @@ HP {0}/{1}|HP {0}/{1}
 グルガモ「城の騎士ども、固えのなんの。……斧が欠けちまった。帰ったら研いでくれよ」|Gurugamo "These castle knights are tough as nails. ...Chipped my axe. Sharpen it for me when we get back."
 グルガモ[laugh]「おう、鍛冶屋！ こんな高えとこで会うとはな。……風が冷てえ。ちょっと付き合うぜ」|Gurugamo[laugh] "Hey, smith! Fancy meeting you up this high. ...Wind's cold. I'll tag along for a bit."
 グルガモ「雲の上ってのは、足元がふわふわして落ち着かねえ。……お前の後ろなら、歩ける気がするぜ」|Gurugamo "Walking on clouds makes my feet nervous. ...Behind you, though, I think I can manage."
+「{0}を持っていないな……」|"I don't have a {0}..."
+（{0}になるには、{1}を工房で打とう）|(Forge a {1} at the workshop to become a {0})
+「{0}か。悪くない」|"{0}, huh. Not bad."
+（{0}を持った）|(Now holding {0})
+「……{0}のままだ」|"...Still a {0}."
+ジョブを押すと、その武器に持ち替えてジョブが変わる。|Tap a job to switch to its weapon and change jobs.
+熟練度は、その武器を持って勝つと上がる。|Proficiency rises when you win holding that weapon.
+まだ知らないジョブ。|An unknown job.
+{0}の熟練{1}と、{2}の熟練{3}で、なれるようになる。|Unlocked at {0} proficiency {1} and {2} proficiency {3}.
+（熟練は、その武器を持って戦いに勝つと1ずつ上がる）|(Proficiency rises by 1 each time you win a battle holding that weapon)
+まだ知らないジョブ。条件: {0}|An unknown job. Requirement: {0}
