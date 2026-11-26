@@ -195,6 +195,8 @@ function drawLog(cont) {
     pre = ''; last = whole.slice(0, cut); drawLog.rest = whole.slice(cut).replace(/^\n+/, '');
   }
   tx.textContent = '';
+  /* 2026-11-26: 会話に続きのページがあるあいだは、下の選択肢を押せないようにする（押すと続きのページへ）。最後まで読んでから選ぶ */
+  { const c = $('ctl'); if (c) c.classList.toggle('pg', !!drawLog.rest && mode !== 'battle'); }
   clearInterval(drawLog.tm); const chars = [...last]; let k = 0;
   const more = () => { if (drawLog.rest) { const mk = document.createElement('span'); mk.className = 'more'; mk.textContent = '▼'; s.appendChild(mk); } };
   const speed = (mode === 'battle' ? 2 : 1) * [1, 1, 2, 999][OPTS.text], done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; if (!s.querySelector('.more')) more(); };
@@ -346,10 +348,13 @@ function figTalk(id) {
   const f = document.querySelector(`.fig[data-who="${id}"]`); if (!f) return;
   f.classList.remove('talk'); void f.offsetWidth; f.classList.add('talk'); clearTimeout(figTalk.t); figTalk.t = setTimeout(() => f.classList.remove('talk'), 450);
 }
+const JOB_SHORT = { 鍛冶屋: '鍛冶', 剣士: '剣', 魔導士: '魔導', 僧侶: '僧', 盗賊: '盗賊', 山賊: '山賊', 侍: '侍', 騎士: '騎士', アーチャー: '弓', 魔法剣士: '魔剣', 賢者: '賢者', 僧兵: '僧兵', 狩人: '狩人', 魔弓士: '魔弓', 略奪者: '略奪', 狂戦士: '狂戦', 聖騎士: '聖騎', 黒騎士: '黒騎', 剣豪: '剣豪', 忍者: '忍者', アサシン: '暗殺', 剣聖: '剣聖', 大魔導: '大魔', 鍛冶師範: '師範' };
 function hud() {
-  $('who').textContent = `Lv${G.lv} ${job()}　攻${atkPower()} 守${defPower()}　${G.gold}G${G.injuries.length ? '　ケガ' + G.injuries.length : ''}`;
+  // 2026-11-26: 上の帯はぎゅうぎゅうなので、ジョブは1〜2文字に。攻・守はステータスのボタンで見る
+  $('who').textContent = `Lv${G.lv} ${I18N.on ? job() : JOB_SHORT[job()] || job()} ${G.gold}G${G.injuries.length ? ' ケガ' + G.injuries.length : ''}`;
   $('where').textContent = document.body.classList.contains('story') ? 'Tower of Hope' : mode === 'town' ? (place ? (place === 'tower' ? '塔の入口' : (PLACES[place] || { name: 'お城' }).name) : 'エルディアの町') : `塔 ${floorNo}階`;
-  $('hpb').style.width = (100 * G.hp / G.mhp) + '%'; $('hpt').textContent = `${G.hp}/${G.mhp}`;
+  { const hs = Math.max(0, Math.min(G.mhp, G.hp + (B && B.pendMe || 0)));  // 受けたダメージは、数字が出てからバーに（2026-11-26）
+    $('hpb').style.width = (100 * hs / G.mhp) + '%'; $('hpt').textContent = `${hs}/${G.mhp}`; }
   const ap = B ? B.ap : 0, apMax = 4;
   $('apb').style.width = (100 * ap / apMax) + '%'; $('apt').textContent = B ? `${ap}` : '-';
   for (const id of ['apl', 'apbar', 'apt']) $(id).style.visibility = mode === 'battle' ? 'visible' : 'hidden';
@@ -664,7 +669,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 138'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 139'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -815,7 +820,8 @@ function towerScreen(msg) {
   place = 'tower'; showTown(true, 941 / 1672);
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img data-tw src="${TOWN_IMG}tower.jpg" alt="塔の入口" style="object-position:50% 30%"><div class="name">塔</div>`;
-  buttons([{ t: '入る', hot: true, stay: true, f: () => (G.maxFloor >= 90 && !(G.jstory || {}).s3 && !G.cleared) ? jennySeq('s3', () => towerScreen('「……行ってくる」')) : G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', f: prepMenu }, { t: '戻る', f: townMap }]);
+  // 2026-11-26: 準備を忘れないよう、目立つのは「準備する」
+  buttons([{ t: '入る', stay: true, f: () => (G.maxFloor >= 90 && !(G.jstory || {}).s3 && !G.cleared) ? jennySeq('s3', () => towerScreen('「……行ってくる」')) : G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', hot: true, f: prepMenu }, { t: '戻る', f: townMap }]);
   if (msg) say('resolve', msg, true); else log(pick(PLACES.tower.hello), true);
   if (!msg && G.gold > 0) log(`手持ちの${G.gold}Gは、倒れるとなくなる。`);
   if (!msg && G.injuries.length) say('tired', `${G.injuries.map(k => INJURIES[k].name).join('・')}が痛む。\n「……まぁ〜、どうにかなるんじゃないか」`);
@@ -1361,11 +1367,24 @@ function clinic(msg) {
     const note = payClinic(cost); G.injuries = []; G.hp = G.mhp; G.treated++; save();
     const t = G.treated, line = t >= 6 ? 'エリー[angry]「もう！ 私、本気で怒ってるんですからね！」' : t >= 3 ? 'エリー[think]「……また、ですか。次は、もっと気をつけてください」' : 'エリー[smile]「はい、もう大丈夫です。無理はしないでくださいね」';
     clinic(`${line}${note}\n「助かったよ」`); } });
-  L.push({ title: G.bless ? `祝福: ${BLESSINGS[G.bless].name}（次の挑戦で効く）` : '祝福（次の1回の挑戦だけ。どれか1つ）' });
-  for (const [id, b] of Object.entries(BLESSINGS)) { const bp = Math.floor(b.price * half); L.push({ t: b.name, s: `${b.desc}／${bp}G`, off: !!G.bless || G.gold < bp, f: () => {
-    G.gold -= bp; G.bless = id; save(); clinic(`エリー[smile]「神様、この人をお守りください。……はい、${b.name}です」`); } }); }
+  // 2026-11-26: お祈りは別の画面で、ひとつずつ中身を全部読んでから選ぶ
+  L.push({ t: 'お祈り', s: G.bless ? `${BLESSINGS[G.bless].name}（次の挑戦で効く）` : '次の1回の挑戦だけ守ってもらう', f: () => blessMenu() });
   L.push(talkBtn('elly', () => inside('clinic', byeLine('elly'))), leave); buttons(L);
   if (msg) log(msg, true);
+}
+// お祈り: 一覧 → 選ぶと中身を全部見せる → 受けるか戻るか
+function blessMenu(msg) {
+  const half = perk('elly') ? .5 : 1, L = [{ title: G.bless ? `今の祈り: ${BLESSINGS[G.bless].name}` : 'お祈り（次の1回の挑戦だけ。どれか1つ）' }];
+  for (const [id, b] of Object.entries(BLESSINGS)) { const bp = Math.floor(b.price * half); L.push({ t: b.name + (G.bless === id ? ' ◀' : ''), s: `${bp}G`, hot: G.bless === id, f: () => blessPick(id) }); }
+  L.push({ t: '戻る', f: () => clinic() }); buttons(L);
+  log(msg || (G.bless ? `エリー[smile]「${BLESSINGS[G.bless].name}は、次の挑戦で効きますよ」` : 'エリー「どのお祈りにしますか？ 押すと、くわしく説明しますね」'), true);
+}
+function blessPick(id) {
+  const half = perk('elly') ? .5 : 1, b = BLESSINGS[id], bp = Math.floor(b.price * half), ok = !G.bless && G.gold >= bp;
+  buttons([{ title: b.name }, { t: 'お祈りを受ける', s: G.bless ? 'もう祈ってもらっている' : G.gold < bp ? `お金が足りない（${bp}G）` : `次の1回の挑戦だけ・${bp}G`, hot: ok, off: !ok, f: () => {
+      sfx('holy', { vol: .5 }); G.gold -= bp; G.bless = id; save(); clinic(`エリー[smile]「神様、この人をお守りください。……はい、${b.name}です」`); } },
+    { t: 'ほかの祈りを見る', f: () => blessMenu() }]);
+  log(`${b.name}\n${b.desc}。`, true);
 }
 // ギルドに戦利品を持ち込む → 鍛冶の素材に加工＋報酬。ここに来ないと鍛冶ができない
 // 持ち込みの絵: 戦利品 → 素材 を1行ずつ
@@ -2192,6 +2211,9 @@ function doItem(k) {
 const apCost = id => id === 'attack' && (isHeavy() || MK().heavy) ? 2 : SKILLS[id].ap;
 const evade = () => hurt('leg') ? 0 : (isHeavy() ? .03 : .10) + (mainWeapon() && mainWeapon().type === 'dagger' ? .05 : 0);
 const carryMax = () => 1 + (has('p_carry') ? 1 : 0) + (MK().carry || 0);
+// 敵のゲージに出すHP: 当たったぶんだけ減り、なめらかに動く（2026-11-26）
+function hpShown(m) { const tgt = Math.max(0, m.hp + (m.pend || 0)); if (m.gv === undefined || m.gv < tgt) m.gv = tgt; else m.gv += (tgt - m.gv) * .3; if (Math.abs(m.gv - tgt) < .3) m.gv = tgt; return m.gv; }
+const WEAPON_HIT = { sword: 120, katana: 200, greatsword: 160, axe: 140, hammer: 130, dagger: 90, bow: 270, book: 260, staff: 120 };
 function dmgTo(m, power, pierce, critBonus) {
   const K = MK(), def = Math.max(0, m.def - B.broken) * (K.melt ? .5 : 1);
   let d = Math.max(1, Math.round((power - (pierce ? 0 : def)) * (.85 + R() * .3) * weaponMult(m)));
@@ -2199,7 +2221,8 @@ function dmgTo(m, power, pierce, critBonus) {
   const dl = B.hitDelay || 0;  // 技の当たる瞬間に合わせて、数字や揺れを遅らせる
   if (crit) { d = Math.round(d * (K.critMul || 1.8)); B.lastCrit = true; playFx('crit', { delay: dl, size: .7 }); /* 会心の光と音も、当たる瞬間に */ } else B.lastCrit = false;
   m.hp -= d; if (m.hp <= 0 && !m.dying) m.dying = performance.now() + dl;
-  const ally = B.ally, show = () => { popNum(d, 'mon', (crit ? 'crit' : '') + (ally ? ' ally' : ''), m); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
+  m.pend = (m.pend || 0) + d;  // ゲージは、エフェクトが当たって数字が出てから減らす（2026-11-26）
+  const ally = B.ally, show = () => { popNum(d, 'mon', (crit ? 'crit' : '') + (ally ? ' ally' : ''), m); setTimeout(() => { m.pend = Math.max(0, (m.pend || 0) - d); }, 110); fx.hit = .6; m.anim = { kind: 'hit', t0: performance.now() }; fx.shake = Math.max(fx.shake || 0, Math.min(8, 2 + d / 6)); };
   if (dl) setTimeout(show, dl); else show();
   return d;
 }
@@ -2229,6 +2252,7 @@ function doSkill(id) {
   if (sh) { FX_AT = m; if (sh.pre) sh.pre(); FX_AT = null; } else { FX_AT = s.all ? null : m; if (MAGIC_HUE[id]) { FX_COLOR = MAGIC_HUE[id]; FX_COLOR_ALL = true; } skillFx(id); FX_COLOR_ALL = false; FX_AT = null; }
   // 振付のない技（魔法など）も、数字と揺れをエフェクトが当たる瞬間に合わせる（大きな魔法は画面が暗くなってから）
   if (!sh && id !== 'attack') { const f = (SKILL_FX[id] || [])[0], n = Array.isArray(f) ? f[0] : f, mv = n && FX_MOVE[n]; B.hitDelay = mv === 'big' ? 380 : mv === 'travel' ? 260 : n ? 120 : 0; }
+  if (id === 'attack') B.hitDelay = WEAPON_HIT[(mainWeapon() || {}).type] || 100;  // ふつうの攻撃も、当たる瞬間に数字とゲージ
   FX_COLOR = null;
   if (!sh) magicFlash(id, B.hitDelay);
   /* 1回ごとのエフェクトと、当たる瞬間（数字・揺れ）を合わせる */
@@ -2241,8 +2265,8 @@ function doSkill(id) {
       if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; m.dying = performance.now(); fx.hit = 1; m.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ ${m.name}の急所を貫いた。`); break; }
       const ds = []; let crit = false;
       if (B.basic && K.allHit) { for (const x of alive()) { ds.push(dmgTo(x, power * K.allHit)); crit = crit || B.lastCrit; } }   // 巨人の斧: 全体に
-      else if (B.basic && K.hits) { for (let i = 0; i < K.hits; i++) { const tg = m.hp > 0 ? m : alive()[0]; if (!tg) break; B.hitDelay = i * 160; if (i) weaponFx((mainWeapon() || {}).type); ds.push(dmgTo(tg, power * K.per)); crit = crit || B.lastCrit; if (allDead()) break; } }   // 名品の連続攻撃
-      else if (B.basic && (K.twice || K.thrice)) { const n = 1 + (R() < (K.twice || 0) ? 1 : 0) + (R() < (K.thrice || 0) ? 1 : 0); for (let i = 0; i < n; i++) { const tg = m.hp > 0 ? m : alive()[0]; if (!tg) break; B.hitDelay = i * 200; ds.push(dmgTo(tg, power)); crit = crit || B.lastCrit; if (allDead()) break; } }
+      else if (B.basic && K.hits) { for (let i = 0; i < K.hits; i++) { const tg = m.hp > 0 ? m : alive()[0]; if (!tg) break; B.hitDelay = (WEAPON_HIT[(mainWeapon() || {}).type] || 100) + i * 160; if (i) setTimeout(() => weaponFx((mainWeapon() || {}).type), i * 160); ds.push(dmgTo(tg, power * K.per)); crit = crit || B.lastCrit; if (allDead()) break; } }   // 名品の連続攻撃
+      else if (B.basic && (K.twice || K.thrice)) { const n = 1 + (R() < (K.twice || 0) ? 1 : 0) + (R() < (K.thrice || 0) ? 1 : 0); for (let i = 0; i < n; i++) { const tg = m.hp > 0 ? m : alive()[0]; if (!tg) break; B.hitDelay = (WEAPON_HIT[(mainWeapon() || {}).type] || 100) + i * 200; if (i) setTimeout(() => weaponFx((mainWeapon() || {}).type), i * 200); ds.push(dmgTo(tg, power)); crit = crit || B.lastCrit; if (allDead()) break; } }
       else if (s.all) { for (const x of alive()) { hitAt(0, x); ds.push(dmgTo(x, power, s.pierce, s.crit)); crit = crit || B.lastCrit; } }   // 全体に当たる
       else for (let i = 0; i < (s.hits || 1) + (s.twice && R() < s.twice ? 1 : 0); i++) {
         const tg = s.spread && i > 0 && alive().length ? pick(alive()) : m.hp > 0 ? m : alive()[0];   // 連続攻撃は、ほかの敵にも散る
@@ -2305,7 +2329,7 @@ function endTurn() {
       else d = Math.ceil(d * B.cut);
       if (m.boss && G.bless === 'ward') d = Math.ceil(d * .7);
       { const rf = MK().reflect; if (rf && m.hp > 0) { const back = dmgTo(m, d * rf, true); log(`鏡の盾が、${back}のダメージを返した。`); } }
-      G.hp -= d; { const dd = d, w = (order - 1) * 220; setTimeout(() => { popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
+      G.hp -= d; B.pendMe = (B.pendMe || 0) + d; { const dd = d, w = (order - 1) * 220, BB = B; setTimeout(() => { BB.pendMe = Math.max(0, (BB.pendMe || 0) - dd); hud(); popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
       // 大きな一撃（最大HPの35%以上）はケガが残ることがある
       if (G.hp > 0 && d >= G.mhp * .35 && R() < .25 && !MK().noInjury && !(big && floorNo <= 5)) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
       if (allDead()) { win(); return; }
@@ -2443,6 +2467,8 @@ const FX_MOVE = {
   m_fire1:'travel', m_ice1:'travel', m_dark1:'travel', m_bolt1:'burst', m_holy1:'burst', m_fire2:'burst', m_ice2:'burst', m_bolt2:'burst', m_holy2:'burst', m_dark2:'burst',
   m_fire3:'big', m_ice3:'big', m_bolt3:'big', m_holy3:'big', m_dark3:'big',
 };
+// 飛んでいく絵の「前」の向き（ラジアン）。足元から敵へ、まっすぐ向かうように回す（2026-11-26）
+const TRAVEL_FWD = { m_fire1: Math.PI * .75, fire_s: Math.PI * .75, m_ice1: -Math.PI / 4, ice_spear: -Math.PI / 4, magic_arrow: -.2, arrow: 0, s_arrow: 0 };
 const FX_DUR = { slash: 380, burst: 520, travel: 520, rise: 900, screen: 700, big: 1100, drop: 620, fade: 650 };
 Object.assign(FX_MOVE, { s_slash: 'slash', s_flash: 'slash', s_vslash: 'slash', s_sweep: 'slash', s_fireslash: 'slash', s_darkslash: 'slash', s_thrust: 'burst', s_arrow: 'travel', s_sword: 'drop', s_needle: 'burst', s_ghost: 'fade',
   s_fist: 'burst', s_hit: 'burst', s_heavy: 'burst', s_shock: 'burst', s_holyhit: 'burst', s_shield: 'burst', s_barrier: 'rise', s_water: 'rise', s_sparks: 'burst', s_sparkle: 'burst', s_coins: 'burst', s_boom: 'burst', s_blade: 'rise' });
@@ -2552,7 +2578,7 @@ function drawFx() {
     const r = Math.max(w, h) * s * .55, gr = ctx.createRadialGradient(x, y, 0, x, y, r);
     const gc = e.hue || e.tint || e.meta.c; gr.addColorStop(0, gc + (e.meta.add ? '66' : '33')); gr.addColorStop(1, gc + '00');
     ctx.globalAlpha = a; ctx.fillStyle = gr; ctx.fillRect(x - r, y - r, r * 2, r * 2);
-    ctx.translate(x, y); ctx.rotate(e.rot + e.spin * k); if (e.flip) ctx.scale(-1, 1); if (e.wob) ctx.scale(1 + Math.sin(k * 9) * .08, 1 - Math.sin(k * 9) * .06);
+    ctx.translate(x, y); ctx.rotate(e.mv === 'travel' && TRAVEL_FWD[e.name] !== undefined ? Math.atan2(e.y - VH * 1.05, e.x - VW / 2) - TRAVEL_FWD[e.name] : e.rot + e.spin * k); if (e.flip) ctx.scale(-1, 1); if (e.wob) ctx.scale(1 + Math.sin(k * 9) * .08, 1 - Math.sin(k * 9) * .06);
     ctx.drawImage(e.hue ? tintOf(e.img, e.hue, true) : e.tint ? tintOf(e.img, e.tint) : e.img, -w * s / 2, -h * s / 2, w * s, h * s);
     if (e.tint && !e.hue) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .3; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); }  // 芯は白く
     if (e.meta.add && k < .35) { ctx.globalAlpha = a * .5; ctx.drawImage(e.img, -w * s / 2, -h * s / 2, w * s, h * s); } // 最初だけ強く光らせる
@@ -2572,7 +2598,7 @@ const SKILL_FX = {
   stab:['thrust'], assassin:['thrust','crit'], snipe:['arrow'], aim:['arrow'], volley:['arrow','arrow'], kagenui:['thrust','dark_mist'], plunder:['impact_heavy'], punch:['impact'], monkstrike:['impact','heal'],
   shieldbash:['impact'], sagefire:['fire_l',['heal',200]],
   // 魔法: 新しい絵（m_）に、前からあるエフェクトを重ねる。[名前, 遅れms, 大きさ]
-  fire:['m_fire1',['fire_s',260,.5]], fire2:['fire_s','m_fire2',['fire_l',260,.8]], fire3:['m_fire3',['explosion',420,1.2],['fire_l',620,1.3]],
+  fire:['m_fire1',['impact',270,.45]],  /* 2026-11-26: 炎は1つだけ（当たったところに小さな衝撃） */ fire2:['fire_s','m_fire2',['fire_l',260,.8]], fire3:['m_fire3',['explosion',420,1.2],['fire_l',620,1.3]],
   ice:['m_ice1',['ice_burst',300,.45]], ice2:['ice_spear','m_ice2',['ice_burst',260,.9]], ice3:['m_ice3',['ice_burst',450,1.3],['ice_spear',650,1]],
   bolt:['m_bolt1',['spark',120,.5]], bolt2:['m_bolt2',['thunder_ball',220,.8]], bolt3:['m_bolt3',['thunder',380,1.3],['thunder_ball',560,1.1],['paralyze',760,.9]],
   holy:['m_holy1',['sparkle',140,.6]], holy2:['m_holy2',['holy_pillar',200,.9]], holy3:['m_holy3',['holy_cross',420,1.2],['blessing',640,1.1]],
@@ -2754,6 +2780,26 @@ function fxRing(dl, c, size, w) {
   codeFx(dl, 480, k => { const e = easeOut(k); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * .85; ctx.strokeStyle = c; ctx.lineWidth = (w || 4) * (1 - k * .6);
     ctx.beginPath(); ctx.ellipse(x, y, VH * size * e, VH * size * e * .42, 0, 0, 7); ctx.stroke(); });
 }
+// 魔弾（2026-11-26）: 足元から光の玉が飛んでいって、敵に当たってはじける。魔導書のふつうの攻撃
+function magicBolt(c, big) {
+  big = big || 1; const tx = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, ty = VH * .52, sx = VW / 2, sy = VH * 1.02, D = 520, hitK = .5;
+  sfx('magic', { max: .9 });
+  codeFx(0, D, k => {
+    ctx.globalCompositeOperation = 'lighter';
+    if (k < hitK) {  // 飛んでいく玉と、うしろの尾
+      const q = k / hitK, e = q * q * (3 - 2 * q), x = sx + (tx - sx) * e, y = sy + (ty - sy) * e, r = VH * .045 * big * (.7 + q * .4);
+      for (let i = 6; i >= 1; i--) { const qq = Math.max(0, e - i * .045), px = sx + (tx - sx) * qq, py = sy + (ty - sy) * qq; ctx.globalAlpha = (1 - i / 7) * .45; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(px, py, r * (1 - i * .1), 0, 7); ctx.fill(); }
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.2); g.addColorStop(0, '#ffffff'); g.addColorStop(.25, '#ffffff'); g.addColorStop(.45, c); g.addColorStop(1, c + '00');
+      ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.2, 0, 7); ctx.fill();
+    } else {  // 当たって、はじける
+      const q = (k - hitK) / (1 - hitK), r = VH * (.05 + q * .16) * big;
+      ctx.globalAlpha = (1 - q) * .9; ctx.strokeStyle = c; ctx.lineWidth = 4 * (1 - q) + 1; ctx.beginPath(); ctx.arc(tx, ty, r, 0, 7); ctx.stroke();
+      const g = ctx.createRadialGradient(tx, ty, 0, tx, ty, VH * .1 * big); g.addColorStop(0, '#ffffff'); g.addColorStop(.4, c); g.addColorStop(1, c + '00');
+      ctx.globalAlpha = (1 - q) * .8; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(tx, ty, VH * .1 * big, 0, 7); ctx.fill();
+    }
+  });
+  fxSparks(D * hitK, c, 12);
+}
 // 放射する光の筋
 function fxRays(dl, c, n, len) {
   const x = FX_AT && FX_AT.cx !== undefined ? FX_AT.cx : VW / 2, y = VH * .5, off = R() * 6;
@@ -2798,7 +2844,7 @@ function weaponFx(type) {
     case 'hammer': playFx('impact_heavy', o(1.15)); shake(8); break;
     case 'dagger': playFx('slash_h', o(.8, { rot: -.6, snd: 'w_dagger' })); shake(2); break;
     case 'bow': playFx('arrow', o(.9)); shake(3, 250); break;
-    case 'book': playFx('magic_arrow', o(.85, { snd: 'magic' })); shake(3, 200); break;
+    case 'book': magicBolt(hue || '#4aa8ff', big); shake(3, 260); break;  // 2026-11-26: 矢ではなく、青い魔弾
     case 'staff': playFx('impact', o(.95)); shake(4); break;
     default: playFx('impact', o(.9, { snd: 'punch' })); shake(4);
   }
@@ -2881,13 +2927,13 @@ const MIRROR_FRAME = new Image(); MIRROR_FRAME.src = 'assets/monsters/the_mirror
 function drawMonsterBars(t) {
   const n = B.ms.length, tg = target();
   B.ms.forEach((m, i) => {
-    if (m.hp <= 0) return;
+    const hv = hpShown(m); if (m.hp <= 0 && hv <= 0) return;
     const w = n === 1 ? 120 : n === 2 ? 76 : n === 3 ? 62 : 50, cx = n === 1 ? VW / 2 : VW * slotOf(i)[0], y = 6;
     const x = cx - w / 2;
     ctx.fillStyle = 'rgba(0,0,0,.62)'; ctx.fillRect(x - 4, y - 2, w + 8, 24);
     if (n > 1 && m === tg && !B.over) { ctx.strokeStyle = '#ffc069'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 4, y - 2, w + 8, 24); }
     ctx.fillStyle = '#efe3cc'; ctx.font = (n > 3 ? '8px' : n > 2 ? '9px' : '11px') + ' Dot, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(tr(m.name), cx, y + 10);
-    ctx.fillStyle = '#3a1410'; ctx.fillRect(x, y + 14, w, 5); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y + 14, w * Math.max(0, m.hp) / m.mhp, 5);
+    ctx.fillStyle = '#3a1410'; ctx.fillRect(x, y + 14, w, 5); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y + 14, w * hv / m.mhp, 5);
     if (n > 1 && m === tg && !B.over && m.top !== undefined) { const b = Math.sin(t / 180) * 2; ctx.fillStyle = '#ffc069'; ctx.beginPath(); ctx.moveTo(cx - 6, m.top - 10 + b); ctx.lineTo(cx + 6, m.top - 10 + b); ctx.lineTo(cx, m.top - 2 + b); ctx.fill(); }
   });
 }
@@ -2907,7 +2953,7 @@ function drawMonsterShape(m, t) {
   ctx.restore();
   // HPバー
   const w = 120, x = cx - w / 2, y = 14;
-  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x - 2, y - 2, w + 4, 10); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y, w * Math.max(0, m.hp) / m.mhp, 6);
+  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x - 2, y - 2, w + 4, 10); ctx.fillStyle = '#d9553f'; ctx.fillRect(x, y, w * hpShown(m) / m.mhp, 6);
   ctx.fillStyle = '#efe3cc'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(tr(m.name), cx, y + 20);
 }
 

@@ -55,4 +55,6 @@
 // セリフ欄を押すと、1文字ずつの表示を飛ばして全部出す
 // 台詞の欄の大きさが変わったら、ページを分け直す
 try { let lastH = 0; new ResizeObserver(() => { const h = $('log').clientHeight; if (Math.abs(h - lastH) > 4) { lastH = h; if (typeof refitLog === 'function') refitLog(); } }).observe($('log')); } catch (e) {}
+// 続きのページがあるあいだに選択肢を押したら、選ばずに続きのページを出す（2026-11-26）
+$('ctl').addEventListener('click', e => { const c = $('ctl'); if (!c.classList.contains('pg')) return; e.preventDefault(); e.stopPropagation(); if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (!nextLogPage()) c.classList.remove('pg'); }, true);
 $('log').addEventListener('click', () => { if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (typeof nextLogPage === 'function') nextLogPage(); });

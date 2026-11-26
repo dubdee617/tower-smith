@@ -170,3 +170,17 @@ HP {0}/{1}|HP {0}/{1}
 {0}の熟練{1}と、{2}の熟練{3}で、なれるようになる。|Unlocked at {0} proficiency {1} and {2} proficiency {3}.
 （熟練は、その武器を持って戦いに勝つと1ずつ上がる）|(Proficiency rises by 1 each time you win a battle holding that weapon)
 まだ知らないジョブ。条件: {0}|An unknown job. Requirement: {0}
+売{0}G|Sell {0}G
+お祈り|Prayers
+次の1回の挑戦だけ守ってもらう|Protection for your next climb only
+{0}（次の挑戦で効く）|{0} (works on your next climb)
+今の祈り: {0}|Current prayer: {0}
+お祈り（次の1回の挑戦だけ。どれか1つ）|Prayers (next climb only, pick one)
+エリー[smile]「{0}は、次の挑戦で効きますよ」|Elly[smile] "{0} will protect you on your next climb."
+エリー「どのお祈りにしますか？ 押すと、くわしく説明しますね」|Elly "Which prayer would you like? Tap one and I'll explain it."
+お祈りを受ける|Receive prayer
+もう祈ってもらっている|Already blessed
+お金が足りない（{0}G）|Not enough gold ({0}G)
+ほかの祈りを見る|See other prayers
+（次の1回の挑戦だけ。{0}G）|(Next climb only. {0}G)
+次の1回の挑戦だけ・{0}G|Next climb only · {0}G

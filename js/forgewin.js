@@ -46,7 +46,7 @@ function fwDraw() {
     const ok = canMake(r), lock = upLv('furnace') < needFurnace(r), c = cmpNow(r), src = iconOfType(r);
     const stat = r.type === 'tool' ? `${TOOL_NAMES[r.tool]}・耐久${r.dur}` : `${gearKind(r.type)}${r.atk ? ' 攻' + (r.atk + upLv('anvil')) : ''}${r.def ? ' 守' + (r.def + upLv('anvil')) : ''}`;
     const d = c ? `${dTag(c.da, '攻')}${dTag(c.dd, '守')}` : '';
-    return `<button class="fwi${r.type === 'tool' ? ' tl' : ''}${ok ? '' : ' dim'}${sel === r ? ' sel' : ''}" data-id="${r.id}">${src ? `<img src="${src}" alt="">` : ''}<span class="nm">${r.name}</span><small>${stat}</small><span class="dl">${lock ? `<em class="lk">炉Lv${needFurnace(r)}</em>` : d}</span></button>`;
+    return `<button class="fwi${r.type === 'tool' ? ' tl' : ''}${ok ? '' : ' dim'}${sel === r ? ' sel' : ''}" data-id="${r.id}">${src ? `<img src="${src}" alt="">` : ''}<span class="nm">${r.name}</span><span class="sp">売${sellPrice(r)}G</span><small>${stat}</small><span class="dl">${lock ? `<em class="lk">炉Lv${needFurnace(r)}</em>` : d}</span></button>`;
   };
   // 下のくわしい情報
   let det = '', acts = '';

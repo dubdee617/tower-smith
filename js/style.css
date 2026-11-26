@@ -304,3 +304,16 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .log .face{max-height:calc(100% - 14px)}
 body.title #stb,body.story #stb,body.intro #stb{visibility:hidden}
 body.title #ctl{overflow:hidden}body.title #ctl button{height:100%}
+/* 2026-11-26: 会話の文字を少し小さく。顔があるときは、文字が顔の下に入らないよう右をあける（上の !important に消されていた） */
+.log{font-size:15px!important;line-height:1.5}
+.log.hasface{padding-right:86px!important}
+.log .plate{font-size:13px}
+/* 続きのページがあるあいだ、選択肢はうすく（押すと続きが出る） */
+#ctl.pg button{opacity:.35;filter:saturate(.4)}
+#ctl.pg{position:relative}
+#ctl.pg::after{content:'▼ タップで続き';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 16px;background:rgba(10,6,3,.85);border:1px solid #c9a25d;color:#ffd76a;font-size:14px;border-radius:4px;pointer-events:none;white-space:nowrap}
+html.en #ctl.pg::after{content:'▼ Tap to continue'}
+#hpb{transition:width .25s ease-out}
+/* 工房の窓: カードの右上に売値（2026-11-26） */
+#fw .fwi{position:relative}#fw .fwi .sp{position:absolute;top:3px;right:5px;font-size:10px;color:#ffd76a;line-height:1;pointer-events:none}
+#fw .fwi .nm{padding-right:42px}
