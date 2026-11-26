@@ -108,3 +108,22 @@ HP MAX|HP MAX
 ◎2回 ◯3回 △5回|◎2 ◯3 △5
 {0}で覚えた（どのジョブでも使える）|Learned as a {0} (usable by any job)
 AP{0}・{1}|AP{0} - {1}
+ステータス|Status
+閉じる|Close
+右手|Right
+左手|Left
+鎧|Armor
+ツール|Tool
+技|Skills
+パッシブ|Passives
+道具|Items
+ケガ|Injury
+料理|Meal
+手持ち|Gold
+戦利品|Loot
+なし|None
+経験値 {0}/{1}|EXP {0}/{1}
+HP {0}/{1}|HP {0}/{1}
+{0}（耐久{1}/{2}）|{0} (Durability {1}/{2})
+{0}G（倒れるとなくなる）|{0}G (lost if you fall)
+{0}（倒れるとなくなる）|{0} (lost if you fall)

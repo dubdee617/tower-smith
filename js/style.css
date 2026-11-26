@@ -289,3 +289,15 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 #ctl.tight .sub,#ctl.tight .ttl,#ctl.tight p{margin:0;font-size:12px}
 #ctl.tighter button{min-height:31px;font-size:13px;line-height:1.15}#ctl.tighter button small{font-size:10px;line-height:1.1}
 #ctl.tight h2{margin:2px 0 0;font-size:12px;line-height:1.2}
+/* 上のステータス（2026-11-26） */
+#stb img{width:18px;height:18px;image-rendering:pixelated;vertical-align:middle}
+#stp{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:calc(56px + env(safe-area-inset-top)) 10px 10px}
+#stp .stw{width:100%;max-width:500px;border:2px solid #c9a25d;border-radius:8px;background:linear-gradient(#2a1d12,#140d08);padding:10px 12px;color:#efe3cc;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.7)}
+#stp .sth{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}#stp .sth b{color:#ffc069;font-size:17px;letter-spacing:.1em}
+#stp .sth .x{min-height:30px;padding:0 12px;font-size:13px}
+#stp .stt{display:flex;gap:10px;align-items:flex-end}#stp .stt img{height:110px;width:auto;object-fit:contain;filter:drop-shadow(0 0 6px rgba(0,0,0,.8))}
+#stp .stn{display:flex;flex-direction:column;gap:2px}#stp .stn b{font-size:17px;color:#fff3d6}#stp .stn span{color:#cdb894}
+#stp .sts{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin:8px 0}
+#stp .srow .sl{display:flex;justify-content:space-between;font-size:12px}#stp .srow .sl b{color:#fff3d6}
+#stp .sbar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}#stp .sbar i{display:block;height:100%}
+#stp table{width:100%;border-collapse:collapse}#stp th{text-align:left;color:#cdb894;font-weight:400;width:4.5em;vertical-align:top;padding:2px 0}#stp td{padding:2px 0;line-height:1.35}
