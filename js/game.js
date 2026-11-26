@@ -656,7 +656,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 135'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 136'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1695,7 +1695,9 @@ function meetNpc(id) {
   }
   if (id === 'gurugamo') {
     G.ally = { id, left: TOWER_NPCS.gurugamo.battles }; save();
-    log('グルガモ[laugh]「おう、鍛冶屋！ ちょうど暇してたんだ。ちょっと付き合うぜ」', true);
+    log(floorNo >= 91 ? pick(['グルガモ[laugh]「おう、鍛冶屋！ 城の階まで来ちまったぜ。……ここまで来たら、てっぺんまで付き合うしかねえな」', 'グルガモ「城の騎士ども、固えのなんの。……斧が欠けちまった。帰ったら研いでくれよ」'])
+      : floorNo >= 71 ? pick(['グルガモ[laugh]「おう、鍛冶屋！ こんな高えとこで会うとはな。……風が冷てえ。ちょっと付き合うぜ」', 'グルガモ「雲の上ってのは、足元がふわふわして落ち着かねえ。……お前の後ろなら、歩ける気がするぜ」'])
+      : 'グルガモ[laugh]「おう、鍛冶屋！ ちょうど暇してたんだ。ちょっと付き合うぜ」', true);
     log(`グルガモが一緒に戦ってくれる（${G.ally.left}回）。`);
     buttons([{ t: '「頼もしいな」', hot: true, f: go }]); return;
   }

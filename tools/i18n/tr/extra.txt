@@ -155,3 +155,7 @@ HP {0}/{1}|HP {0}/{1}
 「帰り道、お花でいっぱいにしておいたよ」|"I filled your way home with flowers!"
 「おかえり、鍛冶屋さん！」|"Welcome home, smith!"
 エルディアのみんな|Everyone in Eldia
+グルガモ[laugh]「おう、鍛冶屋！ 城の階まで来ちまったぜ。……ここまで来たら、てっぺんまで付き合うしかねえな」|Gurugamo[laugh] "Hey, smith! Made it all the way to the castle floors. ...Guess I'm sticking with you to the top now."
+グルガモ「城の騎士ども、固えのなんの。……斧が欠けちまった。帰ったら研いでくれよ」|Gurugamo "These castle knights are tough as nails. ...Chipped my axe. Sharpen it for me when we get back."
+グルガモ[laugh]「おう、鍛冶屋！ こんな高えとこで会うとはな。……風が冷てえ。ちょっと付き合うぜ」|Gurugamo[laugh] "Hey, smith! Fancy meeting you up this high. ...Wind's cold. I'll tag along for a bit."
+グルガモ「雲の上ってのは、足元がふわふわして落ち着かねえ。……お前の後ろなら、歩ける気がするぜ」|Gurugamo "Walking on clouds makes my feet nervous. ...Behind you, though, I think I can manage."

@@ -607,9 +607,10 @@ const AFF_PERKS = {
 // 塔でたまに会う人（階の範囲）
 const TOWER_NPCS = {
   dan:      { name:'ダン',     from:1,  to:45 },
-  fuuka:    { name:'フウカ',   from:5,  to:40, battles:8 },
-  gurugamo: { name:'グルガモ', from:30, to:70, battles:8 },
-  gaban:    { name:'ギャバン', from:60, to:80, battles:8 },
+  // 2026-11-26: 80階より上で誰にも会わなくなっていたので、フウカとグルガモは最上階の手前まで、ギャバンは自分の記録（86階）まで来る
+  fuuka:    { name:'フウカ',   from:5,  to:99, battles:8 },
+  gurugamo: { name:'グルガモ', from:30, to:99, battles:8 },
+  gaban:    { name:'ギャバン', from:60, to:86, battles:8 },
   // 属性の階にランダムに現れる女神たち（戦利品をくれる。親密度が上がるとレアな素材、回復も選べる）
   // 2026-11-23: エリアを並べ直して、女神4人が塔を2周するように（森→砂→花→氷 を2回）
   forest:   { name:'森の女神', ranges:[[11,20]], god:true },
