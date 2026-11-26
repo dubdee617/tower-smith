@@ -484,10 +484,10 @@ function fitStage() {
   /* 2026-11-26: 塔の入口は、横いっぱいに大きく（縦は少し切る）。準備する・女神の像でボタンが増えても絵が動かないよう、ボタン用の高さを決めておく */
   if (tw) h = Math.max(120, main.clientHeight - used + ctl.offsetHeight - Math.max(216, ctl.offsetHeight));
   else if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
-  else if (dg) h = Math.min(Hdg, W * 1.2);  /* 塔の中: 4:3の絵の左右を落として、縦を大きく見せる（移動も戦闘も同じ大きさ） */
+  else if (dg) h = Math.min(Hdg, W * 1.6);  /* 塔の中: 4:3の絵の左右を落として、縦を大きく見せる（移動も戦闘も同じ大きさ） */
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
-  ctl.style.flex = '';
+  ctl.style.flex = ''; ctl.style.height = dg ? CTL_DG + 'px' : '';  /* 塔の中のボタン欄は高さ固定。余った高さは全部、絵へ */
   slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;
   /* 塔の入口: 台詞は絵の下の方に重ねて出す（台詞の欄のぶんも塔を大きく） */
   const lg = $('log');
@@ -496,7 +496,7 @@ function fitStage() {
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
   if (!dg && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
-const LOG_DG = 84, CTL_DG = 230;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
+const LOG_DG = 84, CTL_DG = 238;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
 new ResizeObserver(() => fitStage()).observe(document.querySelector('main'));
 new ResizeObserver(() => { if (fitStage.ch !== $('ctl').offsetHeight) { fitStage.ch = $('ctl').offsetHeight; fitStage(); } }).observe($('ctl'));  /* ボタンの高さがあとから変わったとき（アイコンの読み込みなど）も、絵の大きさを合わせ直す */
 
@@ -645,7 +645,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 129'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 130'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {

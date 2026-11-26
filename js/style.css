@@ -277,3 +277,4 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .dg .log{flex:0 0 84px!important;min-height:84px}
 .dg #stage,.dg #view{transition:none}
 .dg .ctl{flex:1 1 0!important;min-height:0;overflow:hidden}
+.dg .ctl{flex:0 0 auto!important}
