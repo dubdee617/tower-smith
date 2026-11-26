@@ -236,6 +236,7 @@ button small .gcmp{white-space:nowrap}
 #fw button:disabled{opacity:.35}
 #fw .fwh{flex:none;display:flex;align-items:center;gap:8px}#fw .fwh b{font-size:20px;color:#ffc069;letter-spacing:.1em}#fw .fwh small{flex:1;color:#cdb894;font-size:12px}
 #fw .fwh .x{min-height:34px;padding:0 14px}
+#fw .fwb{flex:none;display:flex}#fw .fwb button{flex:1;min-height:44px;font-size:15px}
 #fw .fwc,#fw .fws{flex:none;display:flex;gap:4px}#fw .fwc button,#fw .fws button{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #fw .fwc button i{font-style:normal;font-size:11px;margin-left:4px;background:#2f7a3a;color:#fff;border-radius:8px;padding:0 5px}
 #fw .fws button{min-height:30px;font-size:13px}

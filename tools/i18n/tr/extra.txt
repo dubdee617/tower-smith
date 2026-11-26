@@ -187,3 +187,11 @@ HP {0}/{1}|HP {0}/{1}
 ドーラ「ほかに要るものは？」|Dora「Anything else you need?」
 受け取る|Take it
 {0}（AP{1}）: {2}|{0} (AP{1}): {2}
+フウカ「……任務の途中です。ですが、行き先は同じようですね」|Fuuka「...I'm in the middle of a mission. But it seems we're headed the same way.」
+「一緒に行くか」|「Want to come along?」
+フウカ「……はい。少しの間だけ、ですが」|Fuuka「...Yes. Only for a little while, though.」
+「無理はするなよ」|「Don't push yourself.」
+フウカ「……はい。しばらくは、私があなたの背中を守ります」|Fuuka「...I won't. For a while, I'll guard your back.」
+フウカ「……お答えできません。……でも、少しの間なら、ご一緒できます」|Fuuka「...I can't say. ...But I can travel with you for a little while.」
+フウカ「……少しの間なら。私には、私の道がありますので」|Fuuka「...For a little while. I do have my own path to walk.」
+「助かった。またな」|「Thanks for the help. See you.」

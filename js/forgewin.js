@@ -69,14 +69,15 @@ function fwDraw() {
       acts = qs.slice(0, 4).map((q, i) => `<button data-make="${q}" class="${i === 0 ? 'hot' : ''}">${q === max && q > 1 && ![1, 2, 3, 5].includes(q) ? `作れるだけ（${q}本）` : `${q}本打つ`}</button>`).join(''); }
   }
   w.innerHTML = `<div class="fwp">
-    <div class="fwh"><b>鍛冶</b><small>炉Lv${upLv('furnace')} 金床Lv${upLv('anvil')} 作業台Lv${upLv('bench')}</small><button class="x" data-act="back">戻る</button></div>
+    <div class="fwh"><b>鍛冶</b><small>炉Lv${upLv('furnace')} 金床Lv${upLv('anvil')} 作業台Lv${upLv('bench')}</small></div>
     <div class="fwc">${FW_CATS.map(catBtn).join('')}</div>
     <div class="fwm have">${have}</div>
     ${shelves.length > 1 ? `<div class="fws">${shelves.map(([n], i) => `<button data-sh="${i}" class="${i === si ? 'on' : ''}">${n}</button>`).join('')}</div>` : ''}
     <div class="fwg">${items.map(card).join('')}</div>
     <div class="fwpg">${pages > 1 ? `<button data-pg="-1" ${FW.page ? '' : 'disabled'}>◀</button><span>${FW.page + 1}/${pages}</span><button data-pg="1" ${FW.page < pages - 1 ? '' : 'disabled'}>▶</button>` : ''}</div>
     <div class="fwd">${det}</div>
-    <div class="fwa">${acts}</div></div>`;
+    <div class="fwa">${acts}</div>
+    <div class="fwb"><button data-act="back">${typeof UI_ICON !== 'undefined' && UI_ICON.back ? `<i class="ic" style="background-image:url('${UI_ICON.back}')"></i>` : ''}戻る</button></div></div>`;  /* 2026-11-26: 戻るは、ほかの画面と同じく一番下に */
   // 押したとき
   w.querySelector('[data-act="back"]').onclick = () => { sfx('select', { vol: .5 }); fwClose(); };
   w.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { sfx('page', { vol: .5 }); forgeList(b.dataset.cat); });

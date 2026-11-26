@@ -69,5 +69,15 @@
 // 台詞の欄の大きさが変わったら、ページを分け直す
 try { let lastH = 0; new ResizeObserver(() => { const h = $('log').clientHeight; if (Math.abs(h - lastH) > 4) { lastH = h; if (typeof refitLog === 'function') refitLog(); } }).observe($('log')); } catch (e) {}
 // 続きのページがあるあいだに選択肢を押したら、選ばずに続きのページを出す（2026-11-26）
-$('ctl').addEventListener('click', e => { const c = $('ctl'); if (!c.classList.contains('pg')) return; e.preventDefault(); e.stopPropagation(); if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (!nextLogPage()) c.classList.remove('pg'); }, true);
+/* 2026-11-26: 続きがあるあいだは、画面のどこを押しても続きへ（ボタン・上の帯・移動のボタンも反応しない）。最後のページが出た直後の押しすぎも受け流す */
+{
+  const pgOn = () => { const c = $('ctl'); return c && c.classList.contains('pg'); };
+  const guarded = () => Date.now() < (drawLog.guard || 0);
+  const eat = e => { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); };
+  for (const ev of ['pointerdown', 'pointerup']) document.addEventListener(ev, e => { if (pgOn() || guarded()) eat(e); }, true);
+  document.addEventListener('click', e => {
+    if (pgOn()) { eat(e); if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (!nextLogPage()) { $('ctl').classList.remove('pg'); document.body.classList.remove('pgon'); } return; }
+    if (guarded()) eat(e);
+  }, true);
+}
 $('log').addEventListener('click', () => { if (drawLog.tm && drawLog.skip) drawLog.skip(); else if (typeof nextLogPage === 'function') nextLogPage(); });

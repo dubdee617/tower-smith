@@ -196,7 +196,7 @@ function drawLog(cont) {
   }
   tx.textContent = '';
   /* 2026-11-26: 会話に続きのページがあるあいだは、下の選択肢を押せないようにする（押すと続きのページへ）。最後まで読んでから選ぶ */
-  { const c = $('ctl'); if (c) c.classList.toggle('pg', !!drawLog.rest && mode !== 'battle'); }
+  { const c = $('ctl'); if (c) { const was = c.classList.contains('pg'), on = !!drawLog.rest && mode !== 'battle'; c.classList.toggle('pg', on); document.body.classList.toggle('pgon', on); if (was && !on) drawLog.guard = Date.now() + 450; } }
   clearInterval(drawLog.tm); const chars = [...last]; let k = 0;
   const more = () => { if (drawLog.rest) { const mk = document.createElement('span'); mk.className = 'more'; mk.textContent = '▼'; s.appendChild(mk); } };
   const speed = (mode === 'battle' ? 2 : 1) * [1, 1, 2, 999][OPTS.text], done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; if (!s.querySelector('.more')) more(); };
@@ -252,6 +252,8 @@ const BLUSH = { happy: 'smile', shy: 'think', inlove: 'smile', worried: 'think',
 const heroName = () => (G && G.name) || '鍛冶屋';
 function log(t, clear) {
   if (typeof t === 'string' && t.includes('{name}')) t = t.replace(/\{name\}/g, heroName());
+  /* 2026-11-26: 前の会話やナレーションは残さない。少し時間をおいて（＝プレイヤーが何か押したあとに）来た文は、新しい欄で始める。戦闘中は流れを見せたいので残す */
+  { const now = Date.now(); if (!clear && mode !== 'battle' && log.at && now - log.at > 400) clear = true; log.at = now; }
   if (clear) { logLines = []; logFace = null; spkFace = null; }
   const m = /^([^\s「\[]+)(?:\[(\w+)\])?「/.exec(t);
   if (m && NPCS[m[1]] && NPCS[m[1]].noFace) { /* 顔なし */ }
@@ -421,6 +423,8 @@ function buttons(list, cls) {
     for (const b of tail) mk(b, tr);
     box.appendChild(tr);
   }
+  /* 2026-11-26: 塔の中で会話しているとき（選択肢が1段だけ）は、ボタンの欄を低くして、そのぶん台詞の欄を広げる。足すと同じ高さなので絵は動かない */
+  document.body.classList.toggle('dgtalk', mode === 'dungeon' && !box.querySelector('.pad') && pages === 1 && !tail.length && items.filter(b => !b.title).length <= 3 && !items.some(b => b.title) && !head);
   fitStage();
   // 2026-11-25: 一覧が画面からはみ出したら（小さい画面・作れる物が多いとき）、1ページの数を減らして並べ直す。戻るボタンが見切れないように
   if (cls === 'list' && per > 2) { const r = box.getBoundingClientRect(); if (r.bottom > innerHeight + 2 || (fitStage.res && $('ctl').offsetHeight > fitStage.res + 2)) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); return; } }
@@ -511,7 +515,9 @@ function fitStage() {
   else if (dg) h = Math.min(Hdg, W * 1.6);  /* 塔の中: 4:3の絵の左右を落として、縦を大きく見せる（移動も戦闘も同じ大きさ） */
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
-  ctl.style.flex = ''; ctl.style.height = dg ? CTL_DG + 'px' : ttl ? TITLE_CTL + 'px' : '';  /* 塔の中のボタン欄は高さ固定。余った高さは全部、絵へ */
+  const talk = dg && !bt && bc.contains('dgtalk');
+  ctl.style.flex = ''; ctl.style.height = dg ? (talk ? CTL_TALK : CTL_DG) + 'px' : ttl ? TITLE_CTL + 'px' : '';
+  { const lgx = $('log'); if (talk) lgx.style.setProperty('flex', `0 0 ${LOG_DG + CTL_DG - CTL_TALK}px`, 'important'); else lgx.style.removeProperty('flex'); }  /* 塔の中のボタン欄は高さ固定。余った高さは全部、絵へ */
   slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;
   /* 塔の入口: 台詞は絵の下の方に重ねて出す（台詞の欄のぶんも塔を大きく） */
   const lg = $('log');
@@ -520,7 +526,7 @@ function fitStage() {
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
   if (!dg && !tw && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
-const LOG_DG = 84, CTL_DG = 238, CTL_TOWN = 240;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
+const LOG_DG = 84, CTL_DG = 238, CTL_TOWN = 240, CTL_TALK = 72;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
 new ResizeObserver(() => fitStage()).observe(document.querySelector('main'));
 new ResizeObserver(() => { if (fitStage.ch !== $('ctl').offsetHeight) { fitStage.ch = $('ctl').offsetHeight; fitStage(); } }).observe($('ctl'));  /* ボタンの高さがあとから変わったとき（アイコンの読み込みなど）も、絵の大きさを合わせ直す */
 
@@ -669,7 +675,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 142'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 143'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1653,7 +1659,10 @@ function enterFloor(n, fromAbove) {
   if (G.als && n > ALS_TOP) { G.als = false; save(); log('アルス「ここから先は、まだ僕には……。師匠、先に町へ戻ってます！ ご無事で！」', true); }
 }
 function dungeonUI() {
+  if (allyTick.bye && mode === 'dungeon') { const [id, line] = allyTick.bye; allyTick.bye = null; if ($('meet')) $('meet').style.display = 'none'; meetShow(id); log(line, true);
+    buttons([{ t: '「助かった。またな」', hot: true, f: () => { clearFig(); dungeonUI(); } }]); hud(); return; }
   if ($('meet')) $('meet').style.display = 'none';
+  document.body.classList.remove('dgtalk');
   clearFig(); spkFace = null; drawSpk();
   const box = $('ctl'); box.innerHTML = '';
   const pad = document.createElement('div'); pad.className = 'pad';
@@ -1850,7 +1859,8 @@ function allyTick() {
   const a = G.ally; if (!a) return; a.left--;
   if (a.left > 0) return;
   G.ally = null; (G.allyGone = G.allyGone || {})[a.id] = G.runs; save();
-  log(a.id === 'gaban' ? 'ギャバン[laugh]「自分はここまでです！ 鍛冶屋殿、その先を……どうか！」' : a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……そろそろ、任務に戻ります。……また、お会いできますね」');
+  /* 2026-11-26: 戦闘の結果の文で消えてしまっていたので、戦闘が終わって塔に戻ったときに、立ち絵つきでひとこと言う */
+  allyTick.bye = [a.id, a.id === 'gaban' ? 'ギャバン[laugh]「自分はここまでです！ 鍛冶屋殿、その先を……どうか！」' : a.id === 'gurugamo' ? 'グルガモ「おっと、そろそろ帰らねえと、かみさんに怒られる！ じゃあな！」' : 'フウカ[shy]「……そろそろ、任務に戻ります。……また、お会いできますね」'];
 }
 // ---------- 調べる（床の小物） ----------
 const propAt = (x, y) => (F.props || []).find(p => p.cx === x && p.cy === y);
