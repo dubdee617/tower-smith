@@ -22,6 +22,9 @@
         else if (h === 'learn') { G.jobWins={'鍛冶屋':9}; G.learned=['smash']; G.loadout.skills=['smash']; G.exp=9999; enterFloor(3); setTimeout(()=>{ startBattle(); setTimeout(()=>{ for (const m of B.ms) m.hp=0; win(); }, 400); }, 200); }
         else if (h === 'tower') { towerScreen(); }
         else if (h === 'prep') { towerScreen(); setTimeout(()=>prepMenu(), 300); }
+        else if (h === 'eqm') { inside('home'); setTimeout(()=>equipMenu(),300); }
+        else if (h === 'forgetop') { inside('home'); setTimeout(()=>forge(),300); }
+        else if (h === 'skm') { G.learned=['smash','hone','double','lunge','iai','mikiri','fire','ice']; inside('home'); setTimeout(()=>skillMenu&&skillMenu(),300); }
         else if (h === 'battle') { enterFloor(3); setTimeout(()=>startBattle(), 200); }
         else if (h === 'boss') { enterFloor(10); setTimeout(()=>startBattle(true), 200); }
         else if (h === 'forge') { inside('home'); setTimeout(()=>{ const b=[...document.querySelectorAll('button')].find(b=>/Smithing|鍛冶をする/.test(b.textContent)); b&&b.click(); },300); }

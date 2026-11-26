@@ -356,6 +356,7 @@ function hud() {
 const TAIL_T = ['戻る', 'やめる', '外に出る'];
 buttons.tab = {}; buttons.pg = {}; buttons.lp = {};  // lp: 一覧（list）の1ページの数を、画面の高さごとに覚えておく
 function buttons(list, cls) {
+  $('ctl').classList.remove('tight', 'tighter');
   { const fw = document.getElementById('fw'); if (fw) fw.remove(); }  /* 鍛冶の窓を閉じる */
   buttons.cur = list;
   { const o = document.querySelector('.fcmp'); if (o) o.remove(); }
@@ -413,7 +414,7 @@ function buttons(list, cls) {
   }
   fitStage();
   // 2026-11-25: 一覧が画面からはみ出したら（小さい画面・作れる物が多いとき）、1ページの数を減らして並べ直す。戻るボタンが見切れないように
-  if (cls === 'list' && per > 2) { const r = box.getBoundingClientRect(); if (r.bottom > innerHeight + 2) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); return; } }
+  if (cls === 'list' && per > 2) { const r = box.getBoundingClientRect(); if (r.bottom > innerHeight + 2 || (fitStage.res && $('ctl').offsetHeight > fitStage.res + 2)) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); return; } }
   /* 絵の大きさが決まったあと（fitStage・タブの切り替え）に、はみ出すこともある。少し待ってもう一度確かめる */
   if (cls === 'list' && per > 2) { buttons.cur = list; clearTimeout(buttons.chk); buttons.chk = setTimeout(() => { if (buttons.cur !== list) return; fitStage(); const r = box.getBoundingClientRect(); if (!box.isConnected || r.bottom <= innerHeight + 2) return; const d = Math.ceil(r.bottom - innerHeight) + 4, st = $('stage'), el = mode === 'town' ? $('town') : $('view'), h = st.offsetHeight;
     /* はみ出しが小さければ、絵を少し小さくして収める。大きいときは1ページの数を減らす */
@@ -470,8 +471,13 @@ function fitStage() {
   const s = $('stage'), main = s.parentNode, el = mode === 'town' ? $('town') : $('view');
   const dg = mode !== 'town'; document.body.classList.toggle('dg', dg);
   const bt = mode === 'battle'; document.body.classList.toggle('bt', bt);
-  const tw = !dg && place === 'tower' && !!$('town').querySelector('img[data-tw]'); document.body.classList.toggle('tw', tw);  /* 塔の入口: 台詞の欄を低くして、塔を大きく */  /* 2026-11-25: 戦闘は絵を大きく（迫力）。台詞の欄を少し低くして、そのぶん絵へ */
-  const ctl = $('ctl'); if (dg) ctl.style.flex = 'none';
+  /* 2026-11-26: 町の中の場面（工房・お店・塔の入口など）は、絵の大きさを固定する。台詞は絵の下に重ね、ボタンの欄は決まった高さ（RES）にして、
+     どのメニューを開いても絵が動かないように（画面酔いしないように）。地図・物語・タイトルは今まで通り */
+  const bc = document.body.classList, tw = !dg && !!place && !['intro', 'story', 'title', 'big'].some(c => bc.contains(c)) && $('town').style.display !== 'none';
+  bc.toggle('tw', tw); const RES = place === 'tower' ? 216 : 270; fitStage.res = tw ? RES : 0;  /* 2026-11-25: 戦闘は絵を大きく（迫力）。台詞の欄を少し低くして、そのぶん絵へ */
+  const ctl = $('ctl'); if (dg) ctl.style.flex = 'none'; ctl.style.minHeight = tw ? RES + 'px' : '';
+  /* ボタンが多くて決まった高さに入らないときは、ボタンを低く詰める（2段階） */
+  if (tw) { if (ctl.scrollHeight > RES + 2 && !ctl.classList.contains('tight')) ctl.classList.add('tight'); if (ctl.scrollHeight > RES + 2 && !ctl.classList.contains('tighter')) ctl.classList.add('tighter'); } else ctl.classList.remove('tight', 'tighter');
   const cs = getComputedStyle(main), W = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const logOn = getComputedStyle($('log')).display !== 'none';
   let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn && !tw ? (bt ? 84 : LOG_MIN) : -6);
@@ -481,13 +487,12 @@ function fitStage() {
   let Hdg = 0;
   if (dg) { Hdg = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + LOG_DG + CTL_DG; for (const c of main.children) if (c !== s && c.id !== 'log' && c.id !== 'ctl' && getComputedStyle(c).display !== 'none') Hdg += c.offsetHeight; Hdg = Math.max(120, main.clientHeight - Hdg); }
   /* 2026-11-26: 町の建物の中（工房・店など）も、ボタンの数で絵の大きさが変わらないように固定（画面酔い対策）。ボタンが少ないときは台詞の欄が広がる */
-  const bc = document.body.classList, tc = !dg && !tw && COVER && !bc.contains('intro') && !bc.contains('big'); bc.toggle('tc', tc);
+  const tc = false; bc.remove('tc');  /* 町の建物の中は、上の tw（絵に台詞を重ねる）で固定するので使わない */
   let Htc = 0;
   if (tc) { Htc = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + LOG_MIN + CTL_TOWN; for (const c of main.children) if (c !== s && c.id !== 'log' && c.id !== 'ctl' && getComputedStyle(c).display !== 'none') Htc += c.offsetHeight; Htc = Math.max(120, main.clientHeight - Htc); }
   let w = W, h;
   /* 2026-11-26: 塔の入口は、横いっぱいに大きく（縦は少し切る）。準備する・女神の像でボタンが増えても絵が動かないよう、ボタン用の高さを決めておく */
-  if (tw) h = Math.max(120, main.clientHeight - used + ctl.offsetHeight - Math.max(216, ctl.offsetHeight));
-  else if (tc) h = Math.min(Htc, W * 1.25);
+  if (tw) h = Math.max(120, main.clientHeight - used + ctl.offsetHeight - RES);
   else if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(Hdg, W * 1.6);  /* 塔の中: 4:3の絵の左右を落として、縦を大きく見せる（移動も戦闘も同じ大きさ） */
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
@@ -499,7 +504,7 @@ function fitStage() {
   if (tw) { main.style.position = 'relative'; lg.classList.add('over'); lg.style.top = Math.round(s.offsetTop + h - 96) + 'px'; }
   else if (lg.classList.contains('over')) { lg.classList.remove('over'); lg.style.top = ''; }  /* 絵の左右が切れるぶん、群れを内側に寄せる */
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
-  if (!dg && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
+  if (!dg && !tw && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
 const LOG_DG = 84, CTL_DG = 238, CTL_TOWN = 240;  /* 塔の中の台詞の欄・ボタンの欄の高さ */
 new ResizeObserver(() => fitStage()).observe(document.querySelector('main'));
@@ -650,7 +655,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 132'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 133'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {

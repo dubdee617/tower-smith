@@ -270,7 +270,7 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 /* 塔の入口（2026-11-26）: 台詞を絵の下に重ねる */
 .tw #log.over{position:absolute;left:18px;right:18px;height:88px;min-height:0;flex:none!important;z-index:3;background:linear-gradient(rgba(12,8,4,.55),rgba(12,8,4,.82));border-color:rgba(201,162,93,.7);backdrop-filter:blur(1px)}
 /* 塔の入口: どのメニューでもボタンの欄の高さを同じにして、すき間を作らない（ボタンが少ない画面はボタンを大きく） */
-.tw #ctl{min-height:216px;display:flex;flex-direction:column}
+.tw #ctl{display:flex;flex-direction:column}
 .tw #ctl>.btns:not(.tail){flex:1 1 auto;grid-auto-rows:1fr}
 .tw #ctl>.btns:not(.tail) button{height:auto}
 /* 2026-11-26 塔の中は、移動も戦闘も倒したあとも絵の大きさを同じに。台詞の欄は84px固定、ボタンの欄は残り全部 */
@@ -283,3 +283,9 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 .view #map.big{right:6%;top:6%;width:88%}
 /* 町の建物の中（2026-11-26）: 絵の大きさは固定。ボタンが多いときは台詞の欄が少し縮む */
 .tc .log{min-height:84px}
+/* 決まった高さに入らないメニューは、ボタンを低く（2026-11-26） */
+#ctl.tight{gap:4px}#ctl.tight .btns{gap:4px}#ctl.tight button{min-height:36px;padding:2px 4px;font-size:14px}
+#ctl.tight button .ic{display:inline-block;width:16px;height:16px;margin:0 3px 0 0;vertical-align:-3px}
+#ctl.tight .sub,#ctl.tight .ttl,#ctl.tight p{margin:0;font-size:12px}
+#ctl.tighter button{min-height:31px;font-size:13px;line-height:1.15}#ctl.tighter button small{font-size:10px;line-height:1.1}
+#ctl.tight h2{margin:2px 0 0;font-size:12px;line-height:1.2}
