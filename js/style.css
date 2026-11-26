@@ -302,3 +302,5 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 #stp .sbar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}#stp .sbar i{display:block;height:100%}
 #stp table{width:100%;border-collapse:collapse}#stp th{text-align:left;color:#cdb894;font-weight:400;width:4.5em;vertical-align:top;padding:2px 0}#stp td{padding:2px 0;line-height:1.35}
 .log .face{max-height:calc(100% - 14px)}
+body.title #stb,body.story #stb,body.intro #stb{visibility:hidden}
+body.title #ctl{overflow:hidden}body.title #ctl button{height:100%}
