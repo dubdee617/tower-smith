@@ -469,17 +469,20 @@ const LOG_MIN = 120;
 function fitStage() {
   const s = $('stage'), main = s.parentNode, el = mode === 'town' ? $('town') : $('view');
   const dg = mode !== 'town'; document.body.classList.toggle('dg', dg);
-  const bt = mode === 'battle'; document.body.classList.toggle('bt', bt);  /* 2026-11-25: 戦闘は絵を大きく（迫力）。台詞の欄を少し低くして、そのぶん絵へ */
+  const bt = mode === 'battle'; document.body.classList.toggle('bt', bt);
+  const tw = !dg && place === 'tower' && !!$('town').querySelector('img[data-tw]'); document.body.classList.toggle('tw', tw);  /* 塔の入口: 台詞の欄を低くして、塔を大きく */  /* 2026-11-25: 戦闘は絵を大きく（迫力）。台詞の欄を少し低くして、そのぶん絵へ */
   const ctl = $('ctl'); if (dg) ctl.style.flex = 'none';
   const cs = getComputedStyle(main), W = main.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const logOn = getComputedStyle($('log')).display !== 'none';
-  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn ? (bt ? 84 : LOG_MIN) : -6);
+  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 6 * 4 + (logOn ? (bt || tw ? 84 : LOG_MIN) : -6);
   for (const c of main.children) if (c !== s && c.id !== 'log' && getComputedStyle(c).display !== 'none') used += c.offsetHeight;
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
   // 塔の中は、十字キーと戦闘のボタンで高さが変わらないように、ボタン用の高さを決めておく（敵が出たときに絵がずれない）
   const Hdg = Math.max(120, main.clientHeight - used + (dg && !bt ? ctl.offsetHeight - Math.max(268, ctl.offsetHeight) : 0));
   let w = W, h;
-  if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
+  /* 2026-11-26: 塔の入口は、横いっぱいに大きく（縦は少し切る）。準備する・女神の像でボタンが増えても絵が動かないよう、ボタン用の高さを決めておく */
+  if (tw) h = Math.max(120, main.clientHeight - used + ctl.offsetHeight - Math.max(216, ctl.offsetHeight));
+  else if (COVER) h = document.body.classList.contains('intro') || document.body.classList.contains('big') ? H : Math.min(H, W * 1.25);
   else if (dg) h = Math.min(H, Hdg, W * (bt ? 1.12 : .98));  // 塔の中: 4:3の絵の左右を少し落として、縦を大きく見せる
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
@@ -636,7 +639,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 126'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 127'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -786,7 +789,7 @@ function homeMenu() {
 function towerScreen(msg) {
   place = 'tower'; showTown(true, 941 / 1672);
   const t = $('town'); t.className = 'box town';
-  t.innerHTML = `<img src="${TOWN_IMG}tower.jpg" alt="塔の入口"><div class="name">塔</div>`;
+  t.innerHTML = `<img data-tw src="${TOWN_IMG}tower.jpg" alt="塔の入口" style="object-position:50% 30%"><div class="name">塔</div>`;
   buttons([{ t: '入る', hot: true, stay: true, f: () => (G.maxFloor >= 90 && !(G.jstory || {}).s3 && !G.cleared) ? jennySeq('s3', () => towerScreen('「……行ってくる」')) : G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', f: prepMenu }, { t: '戻る', f: townMap }]);
   if (msg) say('resolve', msg, true); else log(pick(PLACES.tower.hello), true);
   if (!msg && G.gold > 0) log(`手持ちの${G.gold}Gは、倒れるとなくなる。`);
