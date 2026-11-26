@@ -47,6 +47,7 @@ button .ic{display:inline-block;width:18px;height:18px;margin:0 4px -3px 0;backg
 .btns:not(.three):not(.one):not(.list):not(.tail) button{font-size:15px}
 .dg .ctl .btns button .ic{display:block;margin:0 auto 1px;width:20px;height:20px}
 .dg .pad button .ic{display:none}
+.dg .ctl .btns.small button .ic{display:inline-block;width:22px;height:22px;margin:0 4px -5px 0}  /* 塔の中の道具も、道具屋と同じくアイコンを名前の横に（2026-11-26） */
 /* ダメージの数字 */
 .pop{position:absolute;z-index:8;transform:translate(-50%,-50%);font-family:Dot,sans-serif;font-size:42px;color:#fff;pointer-events:none;
  text-shadow:-3px -3px 0 #1a0f08,-3px -2px 0 #1a0f08,-3px 0px 0 #1a0f08,-3px 2px 0 #1a0f08,-3px 3px 0 #1a0f08,-2px -3px 0 #1a0f08,-2px -2px 0 #1a0f08,-2px 0px 0 #1a0f08,-2px 2px 0 #1a0f08,-2px 3px 0 #1a0f08,0px -3px 0 #1a0f08,0px -2px 0 #1a0f08,0px 2px 0 #1a0f08,0px 3px 0 #1a0f08,2px -3px 0 #1a0f08,2px -2px 0 #1a0f08,2px 0px 0 #1a0f08,2px 2px 0 #1a0f08,2px 3px 0 #1a0f08,3px -3px 0 #1a0f08,3px -2px 0 #1a0f08,3px 0px 0 #1a0f08,3px 2px 0 #1a0f08,3px 3px 0 #1a0f08,0 5px 6px rgba(0,0,0,.6);animation:popUp 1.05s ease-out forwards}

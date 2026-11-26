@@ -184,3 +184,6 @@ HP {0}/{1}|HP {0}/{1}
 ほかの祈りを見る|See other prayers
 （次の1回の挑戦だけ。{0}G）|(Next climb only. {0}G)
 次の1回の挑戦だけ・{0}G|Next climb only · {0}G
+ドーラ「ほかに要るものは？」|Dora「Anything else you need?」
+受け取る|Take it
+{0}（AP{1}）: {2}|{0} (AP{1}): {2}

@@ -29,8 +29,21 @@
       if (!src) continue;
       const i = document.createElement('i'); i.className = 'ic' + (k ? '' : ' item'); i.style.backgroundImage = `url("${src}")`; b.insertBefore(i, b.firstChild);
     }
+    /* 2026-11-26: 3列のボタンは、アイコンと名前を1行にまとめる。入らないとき（バードキャリーなど）は名前だけ少し詰める */
+    for (const b of document.querySelectorAll('#ctl .btns.small button:not([data-fit])')) {
+      b.dataset.fit = 1; const t = [...b.childNodes].find(n => n.nodeType === 3 && n.textContent.trim()); if (!t) continue;
+      const row = document.createElement('span'); row.className = 'nmrow'; const ic = b.querySelector(':scope > i.ic');
+      t.replaceWith(row); if (ic) row.appendChild(ic); row.appendChild(t);
+    }
+    clearTimeout(icons.ft); icons.ft = setTimeout(fitNames, 30);  /* 英語に置きかわったあとで測る */
     const log = $('log'), n = document.querySelectorAll('#ctl button').length;
     log.classList.toggle('wait', n === 1 && !document.body.classList.contains('title'));
+  }
+  function fitNames() {
+    for (const row of document.querySelectorAll('#ctl .btns.small .nmrow')) {
+      const b = row.parentNode, room = () => b.clientWidth - 8; row.classList.remove('fit', 'fit2', 'fit3', 'wrap');
+      for (const c of ['fit', 'fit2', 'fit3', 'wrap']) if (row.scrollWidth > room()) row.classList.add(c); else break;
+    }
   }
   function who() {
     const w = $('who'), raw = w.textContent; if (w.dataset.raw === raw) return;

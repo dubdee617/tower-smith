@@ -62,7 +62,7 @@ main{max-width:520px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-
 .btns.list button small{white-space:normal;line-height:1.35}
 button.dim{opacity:.55;border-style:dashed}
 button i.lack{font-style:normal;font-size:11px;color:#ff8a7a;margin-left:6px}
-.btns.small button{font-size:15px;padding:3px 4px}
+.btns.small button{font-size:15px;padding:3px 4px;position:relative}.btns.small button .nmrow{display:block;white-space:nowrap;overflow:hidden}.btns.small button .nmrow.fit{font-size:13px;letter-spacing:-.04em}.btns.small button .nmrow.fit2{font-size:12px;letter-spacing:-.06em}.btns.small button .nmrow.fit3{font-size:11px;letter-spacing:-.08em}.btns.small button .nmrow.wrap{white-space:normal;line-height:1.15}button .cnt{position:absolute;top:2px;right:6px;font-size:11px;font-weight:400;color:var(--dim)}.btns.small button .nmrow.fit .ic.item{width:20px;height:20px;margin-right:2px}.btns.small button .nmrow.fit2 .ic.item{width:18px;height:18px;margin-right:1px}
 .btns.tail{display:flex;margin-top:6px}.btns.tail button{flex:1}.btns.tail .pg{flex:0 0 52px;font-size:18px}
 .tabs{display:flex;gap:4px;margin-bottom:6px}
 .tabs button{flex:1;min-height:36px;font-size:15px;border-radius:8px 8px 3px 3px;background:#1b1511;color:var(--dim)}
@@ -70,7 +70,7 @@ button i.lack{font-style:normal;font-size:11px;color:#ff8a7a;margin-left:6px}
 button{font:inherit;font-size:16px;color:var(--ink);background:#2c231c;border:2px solid var(--line);border-radius:9px;min-height:48px;padding:3px 6px;cursor:pointer;touch-action:manipulation;line-height:1.25}
 button:disabled{opacity:.4}
 button.hot{border-color:var(--ember);background:#5a2a10}
-button small{display:block;font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+button small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:12px;line-height:1.3;color:var(--dim);white-space:normal;overflow:hidden;overflow-wrap:anywhere}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .pad button{font-size:26px;min-height:56px}
 h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}

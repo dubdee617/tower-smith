@@ -392,7 +392,7 @@ function buttons(list, cls) {
   const n = shown.filter(b => !b.title).length;
   if (!cls) cls = n > 6 ? 'three small' : n === 3 ? 'three' : n === 1 ? 'one' : '';
   if (cls === 'list') cls = 'list';
-  const per = cls === 'list' ? (buttons.lp[innerHeight] || 6) : cls.includes('three') ? 9 : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
+  const per = cls === 'list' ? (buttons.lp[innerHeight] || 6) : cls.includes('three') ? (cls.includes('p6') ? 6 : 9) : 6, pk = key + '#' + (tabbed ? buttons.tab[key] || 0 : '') + '#' + shown.length;
   let pages = 1, pg = 0, items = shown;
   if (n > per + (tail.length ? 0 : 1)) {
     const flat = shown.filter(b => !b.title); pages = Math.ceil(flat.length / per); pg = Math.min(buttons.pg[pk] || 0, pages - 1);
@@ -669,7 +669,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 141'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 142'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1211,7 +1211,7 @@ function equipItem(g) {
   save();
 }
 // 塔に持ち込む技（6個まで）
-function skillMenu(back) {
+function skillMenu(back, msg) {
   relearnAll(true);
   if (G.loadout.skills.length > SKILL_MAX) G.loadout.skills = G.loadout.skills.slice(0, SKILL_MAX);
   const mine = G.learned.filter(id => SKILLS[id]);
@@ -1220,21 +1220,21 @@ function skillMenu(back) {
     L.push({ t: s.name + (on ? ' ✓' : ''), s: `AP${s.ap}・${s.desc}`, hot: on, f: () => {
       if (on) G.loadout.skills = G.loadout.skills.filter(x => x !== id);
       else if (G.loadout.skills.length < SKILL_MAX) G.loadout.skills.push(id); else { log(`持ち込める技は${SKILL_MAX}個まで。`, true); return; }
-      save(); skillMenu(back); } }); }
+      save(); skillMenu(back, `${s.name}（AP${s.ap}）: ${s.desc}`); } }); }
   L.push({ t: '戻る', f: back });
-  buttons(L); if (!mine.length) log('まだ技を覚えていない。ジョブで戦って勝つと覚える。', true); else log('押して選ぶ／外す。', true);
+  buttons(L); if (!mine.length) log('まだ技を覚えていない。ジョブで戦って勝つと覚える。', true); else log(msg || '押して選ぶ／外す。', true);
 }
 // パッシブ（3つまで。覚えたジョブ以外でも付けられる）
-function passiveMenu(back) {
+function passiveMenu(back, msg) {
   const mine = G.learned.filter(id => PASSIVES[id]);
   const L = [{ title: `パッシブ ${G.loadout.passives.length}/${PASSIVE_SLOTS}（どのジョブでも効く）` }];
   for (const id of mine) { const p = PASSIVES[id], on = G.loadout.passives.includes(id);
     L.push({ t: p.name + (on ? ' ✓' : ''), s: p.desc, hot: on, f: () => {
       if (on) G.loadout.passives = G.loadout.passives.filter(x => x !== id);
       else if (G.loadout.passives.length < PASSIVE_SLOTS) G.loadout.passives.push(id); else { log(`パッシブは${PASSIVE_SLOTS}つまで。`, true); return; }
-      save(); passiveMenu(back); } }); }
+      save(); passiveMenu(back, `${p.name}: ${p.desc}`); } }); }
   L.push({ t: '戻る', f: back });
-  buttons(L); log(mine.length ? '押して付ける／外す。' : 'まだパッシブを覚えていない。ジョブで何度も勝つと覚える。', true);
+  buttons(L); log(msg || (mine.length ? '押して付ける／外す。' : 'まだパッシブを覚えていない。ジョブで何度も勝つと覚える。'), true);
 }
 // ジョブの一覧（基本職の勝利数、上級職の条件）。解放した上級職を押すと、その武器を持ったときにそのジョブになる
 // ジョブを選ぶと、本当にそのジョブになる（2026-11-26）。その武器を持っていなければ、持っている中でいちばん強いものに持ち替える
@@ -1327,8 +1327,9 @@ function shopBuy(msg) {
   L.push({ t: '戻る', f: () => shop() });
   buttons(L); log(msg || 'ジェニー「うちの品よ。自分で打つより高いけど、急ぎならね」', true);
 }
+const ITEM_HELLO = 'ドーラ「ほかに要るものは？」';
 function itemShop(msg) {
-  const L = Object.entries(ITEMS).map(([k, it]) => ({ t: `${it.name}<small>${it.price}G・持${G.items[k] || 0}</small>`, s: it.short, off: G.gold < it.price, f: () => deal(`${it.name}を${it.price}Gで買う？（手持ち${G.gold}G）`, () => { G.gold -= it.price; G.items[k] = (G.items[k] || 0) + 1; save(); itemShop(`${it.name}を買った。${it.desc}。`); }, () => itemShop()) }));
+  const L = Object.entries(ITEMS).map(([k, it]) => ({ t: `${it.name}<small>${it.price}G・持${G.items[k] || 0}</small>`, s: it.short, off: G.gold < it.price, f: () => { log(`${it.name}: ${it.desc}`, true); deal(`${it.name}を${it.price}Gで買う？（手持ち${G.gold}G）`, () => { G.gold -= it.price; G.items[k] = (G.items[k] || 0) + 1; save(); itemShop(`${it.name}を買った。${it.desc}。`); }, () => itemShop(ITEM_HELLO)); } }));
   L.push(leave); buttons(L, 'three small');
   if (msg) log(msg, true);
 }
@@ -1733,15 +1734,16 @@ function meetNpc(id) {
     G.danRun = G.runs;
     const k = pick(['herb', 'herb', 'herb_m', 'wing', 'bandage']), n = k === 'herb' ? 2 : 1; G.items[k] += n; save();
     log(pick(['ダン「なんだ、鍛冶屋がこんな所で何してる。……ほら、余ったからやるよ。捨てるとこだっただけだ」', 'ダン[laugh]「まだ生きてたのか。しぶといな。……これ持ってけ。死なれると寝覚めが悪い」', 'ダン「勘違いするなよ。荷物が重いだけだ」']), true);
-    log(`${ITEMS[k].name}を${n}個もらった。`);
-    buttons([{ t: '「ありがとう」', hot: true, f: () => { log('ダン「……礼なんかいらねえよ」', true); go(); } }]); return;
+    /* 2026-11-26: 受け取ったとき、宝箱と同じように札と音を同時に出す */
+    buttons([{ t: '受け取る', hot: true, f: () => { log(`${ITEMS[k].name}を${n}個もらった。`, true); gotToast(k, n);
+      buttons([{ t: '「ありがとう」', hot: true, f: () => { log('ダン「……礼なんかいらねえよ」', true); go(); } }]); } }]); return;
   }
   if (TOWER_NPCS[id].god) { meetGod(id, go); return; }
   if (id === 'gaban') {
     G.hp = G.mhp; G.items.herb_l++; if (!G.ally) G.ally = { id, left: TOWER_NPCS.gaban.battles }; save();
     log(pick(['ギャバン[laugh]「鍛冶屋殿！ こんな上で会えるとは！ さあ、近衛兵の秘薬です。遠慮なく！」', 'ギャバン「自分も、ここまでは来られたのです。……鍛冶屋殿なら、その先へ行けます！」']), true);
-    log(`HPが全回復した。大薬草をもらった。${G.ally && G.ally.id === 'gaban' ? `\nギャバンが一緒に戦ってくれる（${G.ally.left}回）。` : ''}`);
-    buttons([{ t: '「ありがとう、ギャバン」', hot: true, f: () => { log('ギャバン[laugh]「はっ！ ご武運を！」', true); go(); } }]); return;
+    buttons([{ t: '受け取る', hot: true, f: () => { log(`HPが全回復した。大薬草をもらった。${G.ally && G.ally.id === 'gaban' ? `\nギャバンが一緒に戦ってくれる（${G.ally.left}回）。` : ''}`, true); gotToast('herb_l', 1); hud();
+      buttons([{ t: '「ありがとう、ギャバン」', hot: true, f: () => { log('ギャバン[laugh]「はっ！ ご武運を！」', true); go(); } }]); } }]); return;
   }
   if (id === 'gurugamo') {
     G.ally = { id, left: TOWER_NPCS.gurugamo.battles }; save();
@@ -2003,10 +2005,10 @@ function useItem(k) {
 }
 // 塔の中の道具メニュー
 function itemMenu() {
-  const L = Object.entries(ITEMS).filter(([k]) => G.items[k] > 0).map(([k, it]) => ({ t: it.name, s: `${G.items[k]}個・${it.short}`, f: () => itemConfirm(k) }));
+  const L = Object.entries(ITEMS).filter(([k]) => G.items[k] > 0).map(([k, it]) => ({ t: `${it.name}<b class="cnt">×${G.items[k]}</b>`, s: it.short, f: () => itemConfirm(k) }));
   if (!L.length) L.push({ title: '道具を持っていない' });
   L.push({ t: '戻る', hot: true, f: () => { facingNote(); dungeonUI(); } });
-  buttons(L); log(G.enc ? `${ITEMS[G.enc.k].name}: あと${G.enc.floors}フロア` : 'どれを使う？', true);
+  buttons(L, L.length > 4 ? 'three small p6' : ''); log(G.enc ? `${ITEMS[G.enc.k].name}: あと${G.enc.floors}フロア` : 'どれを使う？', true);
 }
 // 2026-11-25: 使う前に確認する
 function itemConfirm(k) {
