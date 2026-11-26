@@ -216,7 +216,7 @@ function popNum(n, who, kind, m) {
 function drawSpk() {
   const sp = $('spk'); if (!sp) return;
   const evOn = document.querySelector('#town .portrait.ev') || ($('meet') && $('meet').classList.contains('ev') && $('meet').style.display === 'flex');
-  if (!spkFace || evOn || document.body.classList.contains('title')) { sp.className = ''; sp.removeAttribute('src'); return; }
+  if (!spkFace || evOn || document.body.classList.contains('title') || document.body.classList.contains('ending')) { sp.className = ''; sp.removeAttribute('src'); return; }
   const f = document.querySelector('.fig'), side = f && f.classList.contains('L') ? 'R' : 'L';
   const src = `assets/face/${spkFace.replace(/^npc\//, '')}.webp`;
   if (sp.getAttribute('src') !== src || !sp.classList.contains('on')) { sp.className = ''; void sp.offsetWidth; sp.src = src; }
@@ -316,7 +316,8 @@ function showFig(src, opt) {
   const lastSide = showFig.side;
   if (old) old.remove();
   const side = opt.side || 'L';  // 立ち絵はみんな右を向いているので、左に立たせる
-  const m = opt.mode || (R() < .45 ? 'bust' : 'full');
+  // エンディング中は、切れた絵（腰から上）を使わず、いつも全身で出す
+  const m = document.body.classList.contains('ending') && opt.mode !== 'wide' ? 'full' : opt.mode || (R() < .45 ? 'bust' : 'full');
   const d = document.createElement('div'); d.className = `fig ${m === 'wide' ? 'wide C' : side} ${m === 'bust' ? 'bust' : ''}`;
   d.dataset.src = src; d.dataset.who = opt.who || '';
   d.innerHTML = `<img src="${src}" alt="">` + (opt.label ? `<span>${opt.label}</span>` : '');
@@ -326,7 +327,7 @@ function clearFig() { for (const f of document.querySelectorAll('.fig')) f.remov
 // ジェニーは60階を越えると、照れ・笑顔・心配の顔のとき、立ち絵も前屈みの絵になる（それ以外の顔で元に戻る）
 const LEAN = { 'ジェニー': { id: 'weapon', floor: 60, faces: ['happy', 'inlove', 'shy', 'worried'] } };
 function leanFig(name, e) {
-  const L = LEAN[name]; if (!L || (G.maxFloor || 0) < L.floor) return;
+  const L = LEAN[name]; if (!L || (G.maxFloor || 0) < L.floor || document.body.classList.contains('ending')) return;
   const f = document.querySelector(`.fig[data-who="${L.id}"] img`); if (!f) return;
   const want = `assets/npc/${L.faces.includes(e) ? L.id + '_' + e : L.id}.webp`;
   if (!f.src.endsWith(want)) { f.src = want; f.parentNode.dataset.src = want; }
@@ -655,7 +656,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 134'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 135'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {

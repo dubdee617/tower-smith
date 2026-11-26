@@ -594,44 +594,69 @@ function endRecord(next) {
   clearFig(); log('塔のてっぺんまで、たどり着いた。', true);
   buttons([{ t: '次へ', hot: true, stay: true, f: next }]); hud();
 }
-// ---------- 音楽に合わせて、出会った人たちの絵を次々に → フェードアウトして The End ----------
+// ---------- 音楽に合わせて、出会った人たちの絵とひとことを次々に → フェードアウトして The End ----------
+// 2026-11-26: 切れた絵（前屈み・腰から上・頭が切れた集合絵）は使わない。全身の絵だけ。ひとりずつ、ひとことを添える
 const END_CAST = [
-  ['weapon_in', 'weapon_happy', 'ジェニー'], ['clinic_in', 'clinic', 'エリー'], ['guild_in', 'guild', 'リア'], ['tower', 'fuuka', 'フウカ'],
-  ['home_in', 'als', 'アルス'], ['home_in', 'apprentice', 'ルゥ'], ['home_in', 'chicchi', 'チッチ'], ['home_in', 'buppa_laugh', 'ブッパ'],
-  ['guild_in', 'craft', 'ボルツ'], ['guild_in', 'gunther', 'ガンター'], ['guild_in', 'guildnpc_a', 'ダリオたち', 1], ['guild_in', 'guildnpc_b', 'ゴルドたち', 1],
-  ['item_in', 'item', 'ドーラ'], ['bank_in', 'bank', 'ベルナルド'], ['inn_in', 'inn', 'ガストン'], ['inn_in', 'drunks', 'のんだくれたち', 1], ['inn_in', 'bar', '酒場の客たち', 1],
-  ['castle_out', 'gate', '門兵'], ['castle_in', 'king', '王様'], ['castle_in', 'minister', '大臣'], ['castle_in', 'gaban', 'ギャバン'],
-  ['tower', 'dan', 'ダン'], ['tower', 'gurugamo', 'グルガモ'], ['statue', 'jin', 'ジン'],
-  ['intro_tower', 'forest', '森の女神'], ['intro_tower', 'desert', '砂の女神'], ['intro_tower', 'mountain', '山の女神'], ['intro_tower', 'ice', '氷の女神'], ['intro_tower', 'druid', '花の女神'],
+  ['weapon_in', 'weapon', 'ジェニー', '「……また、いい剣を打ちなさいよね」'],
+  ['clinic_in', 'clinic', 'エリー', '「ケガをしたら、すぐ来てくださいね」'],
+  ['guild_in', 'guild', 'リア', '「次の記録も、楽しみにしてます！」'],
+  ['tower', 'fuuka', 'フウカ', '「……これからも、影から見守っております」'],
+  ['home_in', 'als', 'アルス', '「ぼくの塔も、いつか登ってみせます！」'],
+  ['home_in', 'apprentice', 'ルゥ', '「親方！ 次は何を打つんですか！？」'],
+  ['home_in', 'chicchi', 'チッチ', '「メシ、できてるっすよ、親方」'],
+  ['home_in', 'buppa_laugh', 'ブッパ', '「がっはっは！ ……で、メシはまだか？」'],
+  ['guild_in', 'craft', 'ボルツ', '「旦那ぁ！ 素材なら、いつでも持ってきてくれ！」'],
+  ['guild_in', 'gunther', 'ガンター', '「……剣は振るものでもあったか。認めよう」'],
+  ['item_in', 'item', 'ドーラ', '「生きて帰ってきたなら、それでいいんだよ」'],
+  ['bank_in', 'bank', 'ベルナルド', '「あなたの信用は、町一番です。帳簿がそう言っています」'],
+  ['inn_in', 'inn', 'ガストン', '「百階の鍛冶屋に乾杯だ！ 今日は店のおごりだ」'],
+  ['inn_in', 'drunks', 'のんだくれたち', '「かんぱーい！ ……で、何の祝いだっけ？」', 1],
+  ['castle_out', 'gate', '門兵', '「おかえりなさい。……門は、ちゃんと見張ってましたよ」'],
+  ['castle_in', 'king', '王様', '「わっはっは！ 国じゅうで祝いじゃ！」'],
+  ['castle_in', 'minister', '大臣', '「陛下は今夜も、あなたの記録を読んでおられます」'],
+  ['castle_in', 'gaban', 'ギャバン', '「鍛冶屋殿……！ 自分は、一生ついてまいります！」'],
+  ['tower', 'dan', 'ダン', '「……あいつにも、見せてやりたかったな」'],
+  ['tower', 'gurugamo', 'グルガモ', '「おう、鍛冶屋！ 今度また付き合えよ！」'],
+  ['statue', 'jin', 'ジン', '「ほっほっほ。人生、どうにかなるものじゃよ」'],
+  ['intro_tower', 'forest', '森の女神', '「……ずっと、見ていたわ」'],
+  ['intro_tower', 'desert', '砂の女神', '「ふふ。また遊びにいらっしゃい」'],
+  ['intro_tower', 'mountain', '山の女神', '「塔は、これからもお前を待っている」'],
+  ['intro_tower', 'ice', '氷の女神', '「人の子よ。……よく、笑ったわね」'],
+  ['intro_tower', 'druid', '花の女神', '「帰り道、お花でいっぱいにしておいたよ」'],
 ];
 function endMontage(partner, done) {
-  SND.scene = 'ending'; clearFig(); $('ctl').innerHTML = ''; log('', true);
+  clearFig(); $('ctl').innerHTML = ''; log('', true);
+  SND.replay('ending');  // 締めの曲は、いつも頭から
   const ov = document.createElement('div'); ov.id = 'montage'; document.body.appendChild(ov);
   const ext = b => ['tower', 'statue', 'intro_tower', 'title', 'map', 'town_view'].includes(b) || /_in$/.test(b) || b === 'castle_out' ? '.jpg' : '.png';
-  const shots = END_CAST.map(([bg, f, n, wide]) => ({ bg: TOWN_IMG + bg + ext(bg), f: `assets/npc/${f}.webp`, n, wide }));
-  if (partner) shots.push({ ev: `assets/event/end_${partner}.webp` }); else shots.push({ bg: TOWN_IMG + 'town_view.jpg', n: 'エルディア' });
-  const D = 2400; let i = 0, gone = false;
+  const shots = END_CAST.map(([bg, f, n, line, wide]) => ({ bg: TOWN_IMG + bg + ext(bg), f: `assets/npc/${f}.webp`, n, line: tr(line), wide }));
+  shots.push({ bg: TOWN_IMG + 'town_view.jpg', n: 'エルディアのみんな', line: tr('「おかえり、鍛冶屋さん！」') });
+  if (partner) shots.push({ bg: TOWN_IMG + 'home_in.jpg', ev: `assets/event/end_${partner}.webp` });
+  const D = 4200; let i = 0, gone = false;
   const show = () => {
     if (gone) return;
     if (i >= shots.length) return theEnd();
-    const s = shots[i], c = document.createElement('div'); c.className = 'shot' + (i % 2 ? ' r' : '') + (s.wide ? ' wide' : '') + (s.ev ? ' ev' : '');
-    c.innerHTML = (s.bg ? `<img class="bg" src="${s.bg}" alt="">` : '') + (s.f ? `<img class="fg" src="${s.f}" alt="">` : '') + (s.ev ? `<img class="cg" src="${s.ev}" alt="">` : '') + (s.n ? `<span>${s.n}</span>` : '');
+    const s = shots[i], c = document.createElement('div'); c.className = 'shot' + (i % 2 ? ' r' : '') + (s.wide ? ' wide' : '') + (s.ev ? ' ev' : '') + (s.f ? '' : ' nofg');
+    c.innerHTML = (s.bg ? `<img class="bg" src="${s.bg}" alt="">` : '') + (s.f ? `<img class="fg" src="${s.f}" alt="">` : '') + (s.ev ? `<img class="cg" src="${s.ev}" alt="">` : '')
+      + (s.n ? `<div class="cap"><b>${s.n}</b>${s.line ? `<p>${s.line}</p>` : ''}</div>` : '');
     ov.appendChild(c); void c.offsetWidth; c.classList.add('on');
+    if (s.line) setTimeout(() => { if (!gone) sfx('page', { vol: .25 }); }, 700);  // ひとことが出るのに合わせて、紙をめくる小さな音
     const old = [...ov.querySelectorAll('.shot')].slice(0, -1); old.forEach(o => { o.classList.remove('on'); o.classList.add('off'); setTimeout(() => o.remove(), 1400); });
     i++; setTimeout(show, s.ev ? D * 2 : D);
   };
   const theEnd = () => {
     gone = true; ov.querySelectorAll('.shot').forEach(o => { o.classList.remove('on'); o.classList.add('off'); });
-    setTimeout(() => { const e = document.createElement('div'); e.className = 'theend'; e.innerHTML = '<b>The End</b><small>Tower of Hope</small>'; ov.appendChild(e); void e.offsetWidth; e.classList.add('on');
+    setTimeout(() => { const e = document.createElement('div'); e.className = 'theend'; e.innerHTML = '<b>The End</b><small>Tower of Hope</small>'; ov.appendChild(e); void e.offsetWidth; e.classList.add('on'); sfx('holy', { vol: .35 });
       setTimeout(() => { e.classList.add('tap'); ov.onclick = () => { ov.onclick = null; ov.classList.add('out'); setTimeout(() => { ov.remove(); done(); }, 1200); }; }, 3500); }, 1800);
   };
   // 2回目からは、押すと The End へ飛ばせる
   if (G.endSeen) ov.onclick = () => { if (!gone) { ov.onclick = null; theEnd(); } };
-  setTimeout(show, 600);
+  setTimeout(show, 900);
 }
 function ending() {
   B = null; F = null; G.cleared = true; const love = loveOf(); save(); clearFig();
-  const fin = () => runSeq(ENDING_LAST, 0, () => endRecord(() => endMontage(love && G.partner === love ? love : null, () => { SND.scene = ''; clearFig(); G.endSeen = true; save(); fadeGo(() => inside('home', '工房の朝。炉に火を入れる。\n……さて、今日は何を打とうか。'), { hold: 900 }); })));
+  document.body.classList.add('ending');  // エンディング中: 立ち絵はいつも全身、顔の小窓は出さない
+  const fin = () => runSeq(ENDING_LAST, 0, () => endRecord(() => endMontage(love && G.partner === love ? love : null, () => { SND.scene = ''; clearFig(); document.body.classList.remove('ending'); G.endSeen = true; save(); fadeGo(() => inside('home', '工房の朝。炉に火を入れる。\n……さて、今日は何を打とうか。'), { hold: 900 }); })));
   const loveScene = () => { const E = ENDING_LOVE[love]; runSeq(E.pre, 0, () => buttons([
     { t: E.ask[0], hot: true, f: () => { G.partner = love; save(); runSeq(E.yes, 0, fin); } },
     { t: E.ask[1], f: () => { G.partner = null; save(); runSeq(E.no, 0, fin); } }], 'one')); };

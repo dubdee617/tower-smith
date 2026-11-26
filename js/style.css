@@ -183,20 +183,20 @@ button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;l
 #montage.out{opacity:0}
 #montage .shot{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
 #montage .shot.on{opacity:1}#montage .shot.off{opacity:0}
-#montage .bg{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;filter:brightness(.5) saturate(.85);animation:kb 3.8s linear forwards}
+#montage .bg{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;filter:brightness(.5) saturate(.85);animation:kb 5.6s linear forwards}
 #montage .shot.r .bg{animation-name:kbr}
 @keyframes kb{from{transform:scale(1.04) translateX(-1%)}to{transform:scale(1.12) translateX(1.5%)}}
 @keyframes kbr{from{transform:scale(1.12) translateX(1.5%)}to{transform:scale(1.04) translateX(-1%)}}
-#montage .fg{position:absolute;bottom:0;left:50%;height:86%;max-width:96%;object-fit:contain;transform:translateX(-58%);filter:drop-shadow(0 0 14px rgba(0,0,0,.8));animation:fgin 2.6s ease-out forwards}
+#montage .fg{position:absolute;bottom:0;left:50%;height:84%;max-height:calc(100% - 40px);max-width:96%;object-fit:contain;transform:translateX(-58%);filter:drop-shadow(0 0 14px rgba(0,0,0,.8));animation:fgin 2.6s ease-out forwards}
 #montage .shot.r .fg{animation-name:fginr}
 #montage .shot.wide .fg{height:auto;width:96%;max-height:70%;transform:translateX(-50%)}
 #montage .shot.wide .fg{animation-name:fginw}
 @keyframes fgin{from{transform:translateX(-66%)}to{transform:translateX(-56%)}}
 @keyframes fginr{from{transform:translateX(-34%)}to{transform:translateX(-44%)}}
 @keyframes fginw{from{transform:translateX(-50%) scale(.96)}to{transform:translateX(-50%) scale(1)}}
-#montage .cg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;animation:kb 5s linear forwards}
-#montage span{position:absolute;bottom:7%;right:8%;font-size:17px;letter-spacing:.2em;color:#fff3d6;text-shadow:0 0 8px #000,0 1px 2px #000}
-#montage .shot.r span{right:auto;left:8%}
+#montage .cg{position:absolute;left:0;right:0;bottom:6%;width:100%;max-height:88%;object-fit:contain;object-position:50% 100%;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent);animation:kb 9s linear forwards}#montage .shot.ev .bg{filter:brightness(.35) saturate(.8)}
+#montage .cap{position:absolute;left:0;right:0;bottom:0;padding:44px 7% 7%;background:linear-gradient(transparent,rgba(0,0,0,.82) 45%);color:#fff3d6;text-shadow:0 1px 3px #000;opacity:0;transition:opacity 1s .6s}#montage .shot.on .cap{opacity:1}#montage .cap b{display:block;font-size:13px;letter-spacing:.25em;color:#ffc069;font-weight:400}#montage .cap p{margin:.35em 0 0;font-size:17px;line-height:1.5}
+#montage .shot.r .cap{text-align:right}
 #montage .theend{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 2.4s;color:#f3e6c8}
 #montage .theend.on{opacity:1}
 #montage .theend b{font-family:Georgia,serif;font-size:44px;font-weight:400;letter-spacing:.12em}
