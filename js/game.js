@@ -708,7 +708,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 154'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 155'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1010,12 +1010,15 @@ function warpMenu() {
   L.push({ t: 'やめる', f: () => towerScreen() });
   buttons(L, L.length > 6 ? 'three small' : ''); log('女神の像が、やさしく光っている。どこへ行く？', true);
 }
+/* 2026-11-27: 5階ごとの区切り（5・10・15…95階）を、その次の階まで行ったら入口から選べる（6階まで行けば5階から、16階なら15階、31階なら30階。Daichiさん）。
+   いちばん高い区切りを先頭に、高い順に並べる */
 function enterMenu() {
-  if (G.maxFloor < 5) { goFloor(1); return; }
-  const opts = [{ t: '1階から', hot: true, f: () => goFloor(1) }, { t: '5階から', s: '昇降機', f: () => goFloor(5) }];
-  if (G.maxFloor >= 10) opts.push({ t: '10階から', s: '昇降機', f: () => goFloor(10) });
+  const top = G.maxFloor || 0, ks = []; for (let k = 5; k <= 95; k += 5) if (top >= k + 1) ks.push(k);
+  if (!ks.length) { goFloor(1); return; }
+  const opts = ks.reverse().map((k, i) => ({ t: `${k}階から`, s: areaOf(k)[2], hot: i === 0, f: () => goFloor(k) }));
+  opts.push({ t: '1階から', s: areaOf(1)[2], f: () => goFloor(1) });
   opts.push({ t: 'やめる', f: () => towerScreen('「……どうしようか」') });
-  buttons(opts); log('どこから登る？', true);
+  buttons(opts, opts.length > 4 ? 'three' : ''); log('どこから登る？', true);
 }
 // ツール: 1回の塔のぼりに1つだけ持っていける。塔の中では「ツール」のコマンドで使う
 const toolName = () => { const t = gearBy(G.equip.tool); return t ? `${t.name} ${t.dur}/${t.maxDur}` : 'なし'; };
