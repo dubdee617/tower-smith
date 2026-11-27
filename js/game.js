@@ -196,7 +196,7 @@ function drawLog(cont) {
   }
   tx.textContent = '';
   /* 2026-11-26: 会話に続きのページがあるあいだは、下の選択肢を押せないようにする（押すと続きのページへ）。最後まで読んでから選ぶ */
-  { const c = $('ctl'); if (c) { const was = c.classList.contains('pg'), on = !!drawLog.rest && mode !== 'battle'; c.classList.toggle('pg', on); document.body.classList.toggle('pgon', on); if (was && !on) drawLog.guard = Date.now() + 450; } }
+  { const c = $('ctl'); if (c) { const was = c.classList.contains('pg'), on = !!drawLog.rest && mode !== 'battle' && !c.querySelector('.pad');  /* 塔を歩く画面（移動のボタン）では止めない */ c.classList.toggle('pg', on); document.body.classList.toggle('pgon', on); if (was && !on) drawLog.guard = Date.now() + 450; } }
   clearInterval(drawLog.tm); const chars = [...last]; let k = 0;
   const more = () => { if (drawLog.rest) { const mk = document.createElement('span'); mk.className = 'more'; mk.textContent = '▼'; s.appendChild(mk); } };
   const speed = (mode === 'battle' ? 2 : 1) * [1, 1, 2, 999][OPTS.text], done = () => { clearInterval(drawLog.tm); drawLog.tm = 0; tx.textContent = last; if (!s.querySelector('.more')) more(); };
@@ -675,7 +675,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 145'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 146'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -793,7 +793,7 @@ function affEvent(who) {
     jenny: (G.seen || {}).jenny ? 'ジェニー[inlove]「……あの雨の夜から、私、もう隠すのやめたの。\n……覚悟しなさいよね」' : 'ジェニー[inlove]「ねえ……あんたって、誰にでもそんなに優しいの？\n……私にだけなら、いいのに」',
     elly:  'エリー[happy]「今日は怪我ではないんですね。……よかった。\n……いえ、その……お顔が見られて、嬉しかったので」',
     ria:   'リア[happy]「鍛冶屋さんとお話ししてると、なんだか安心するんです。\n……仕事中でも、つい、扉のほうを見ちゃうんですよ」',
-    fuuka: 'フウカ[love]「……あなたといると、時々、自分が忍びであることを忘れそうになります。\n……忘れはしませんが。……少しだけ、です」',
+    fuuka: 'フウカ[shy]「……あなたといると、時々、自分が忍びであることを忘れそうになります。\n……忘れはしませんが。……少しだけ、です」',
     jin:   'ジン[laugh]「お主には、いずれ教えたいことがある。……その時が来たらな」',
   };
   if (who === 'jenny') npcFig('weapon_inlove');
@@ -1768,10 +1768,42 @@ function meetNpc(id) {
   if (id === 'fuuka') {
     talkTo('fuuka', () => {
       G.ally = { id, left: perk('fuuka') ? 12 : TOWER_NPCS.fuuka.battles }; save();
-      log(`フウカ「……しばらく、ご一緒します」\nフウカが一緒に戦ってくれる（${G.ally.left}回）。`, true);
+      log(`フウカ「${fuukaScout()}……しばらく、ご一緒します」\nフウカが一緒に戦ってくれる（${G.ally.left}回）。`, true);
       buttons([{ t: '先へ進む', hot: true, f: go }]);
     });
   }
+}
+/* 2026-11-27: フウカは塔の中で会うので、「今この階で何が起きているか」を先に見てきて教えてくれる（Daichiさん）。
+   上り階段の方角（主や番人がいれば、その名前）、残っている宝箱の数、そのエリアの様子、ときどき少し不思議なひとこと */
+const FUUKA_AREA = {
+  stone: ['この階の壁は、ときどき動きます。塔が、息をしているのです。', '松明の煙が、上へ流れています。上に、風の通り道があります。'],
+  forest: ['木の魔物は、眠ったふりをします。根元を見てください。', '鳥が鳴きやみました。何かが、近くにいます。'],
+  desert: ['砂の下を、何かが泳いでいます。足音は、軽く。', '砂の上の足跡が、すぐに消えます。迷わないでください。'],
+  mountain: ['空気が薄いです。息は、ゆっくり。', '落石の跡が新しい。上で、何かが暴れています。'],
+  snow: ['雪の上の足跡が、途中で消えています。……追わないほうがいい。', '寒さは、刃をもろくします。刀の手入れを。'],
+  jungle: ['花の匂いが甘すぎます。毒です。吸わないでください。', '蔓が、さっきと違う場所にあります。'],
+  ruins: ['この遺跡の印は、古い忍びのものです。この先に、罠がひとつ。', '砂に埋もれた像が、こちらを見ています。気のせいでは、ありません。'],
+  canyon: ['風が強い。谷側の壁には、近づかないでください。', '岩の上から、こちらを見ているものがいます。'],
+  glacier: ['ここでは、雷の音が遅れて届きます。', '氷の中に、昔の冒険者が眠っています。……起こさないように。'],
+  castle: ['城の者たちは、まだ自分が仕えていると思っています。', '廊下の鎧は、空ではありません。'],
+};
+const FUUKA_ODD = ['……風が、あなたの名前を知っていました。', '昨日の夜、塔が少しだけ高くなりました。', '今日の塔は、機嫌がいいようです。', '……あなたの足音は、三つ下の階から聞こえていました。'];
+function fuukaScout() {
+  const S = [];
+  try {
+    const boss = BOSSES[floorNo] && (!bossBeat(floorNo) || midAgain(floorNo));
+    if (boss) S.push(`上り階段の前に、${BOSSES[floorNo].name}がいます。`);
+    else if (F) {
+      const px = Math.floor(T.x), py = Math.floor(T.y); let up = null;
+      for (let y = 0; y < F.M.length && !up; y++) for (let x = 0; x < F.M[y].length; x++) if (F.M[y][x] === 2) { up = [x, y]; break; }
+      if (up && (up[0] !== px || up[1] !== py)) { const a = Math.atan2(up[1] - py, up[0] - px); S.push(`上り階段は、${['東', '南東', '南', '南西', '西', '北西', '北', '北東'][((Math.round(a / (Math.PI / 4)) % 8) + 8) % 8]}の方です。`); }
+    }
+    if (F && F.chests) { const n = F.chests.filter(c => !c.open).length; S.push(n ? `宝箱が、あと${n}つ残っています。` : '宝箱は、もう残っていません。'); }
+    const ar = (AREAS.filter(a => floorNo >= a[0]).pop() || [])[1], L = FUUKA_AREA[ar];
+    if (L) S.push(L[Math.floor(Math.random() * L.length)]);
+    if (Math.random() < .3) S.push(FUUKA_ODD[Math.floor(Math.random() * FUUKA_ODD.length)]);
+  } catch (e) { }
+  return S.join('');
 }
 function fuukaFirst(go) {
   clearFig(); buttons([]);
@@ -1790,7 +1822,7 @@ function fuukaFirst(go) {
           next(null, () => {
             log('フウカ[think]「あなたは……冒険者には見えませんね。その手……職人の手です」', true);
             next('「鍛冶屋だ。材料を採りに来た」', () => {
-              log('フウカ[laugh]「……鍛冶屋が、自分で。……ふふ。変わった方ですね」', true);
+              log('フウカ[think]「鍛冶屋が、自分で。……変わった方ですね」', true);
               next(null, () => {
                 G.met = G.met || {}; G.met.fuuka = true;
                 G.ally = { id: 'fuuka', left: perk('fuuka') ? 12 : TOWER_NPCS.fuuka.battles }; save();

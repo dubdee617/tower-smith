@@ -377,3 +377,111 @@ HP {0}/{1}|HP {0}/{1}
 エリー[smile]「はい。水は、二日に一度で足ります」|Elly[smile]「Yes. Watering every other day is enough.」
 エリー[smile]「では、工房に置いておいてください」|Elly[smile]「Then keep it at the workshop.」
 エリー[shock]「……食べないでください」|Elly[shock]「...Please don't eat it.」
+フウカ「見守るのも、忍びの務めです」|Fuuka「Watching over you is also a ninja's duty.」
+フウカ[smile]「見事でした。……今のは、独り言です」|Fuuka[smile]「Well done. ...That was me talking to myself.」
+フウカ[smile]「……忍びですので」|Fuuka[smile]「...I am a ninja, after all.」
+フウカ[smile]「重いのは、槌のせいです」|Fuuka[smile]「It's the hammer that's heavy.」
+フウカ[shy]「無理です。……おそらく」|Fuuka[shy]「Impossible. ...Probably.」
+フウカ「砂漠は、暑いですね。覆面が、少し。……取っても、笑いませんか」|Fuuka「The desert is hot. My mask is a little... Would you laugh if I took it off?」
+フウカ[shy]「では、少しだけ。……あまり、見ないでください」|Fuuka[shy]「Then, just for a moment. ...Please don't look too much.」
+フウカ「……簡単に言わないでください。素顔は、大切な人にしか見せないものです」|Fuuka「...Don't say it so lightly. One shows one's face only to those who matter.」
+フウカ「……従うかどうかは、私が決めます」|Fuuka「...Whether I obey is for me to decide.」
+フウカ「……そのようなことは、おっしゃらないでください」|Fuuka「...Please don't say such things.」
+フウカ[shy]「……返事は、まだ書いていません」|Fuuka[shy]「...I haven't written my reply yet.」
+フウカ[smile]「……はい。あなたをお守りするのも、私の務めですから」|Fuuka[smile]「...Yes. Protecting you is also my duty.」
+フウカ「……嘘です。手が、震えていました」|Fuuka「...That's a lie. Your hands were shaking.」
+フウカ[smile]「……はい。いちばんよく見える岩を、存じています」|Fuuka[smile]「...Yes. I know the rock with the best view.」
+フウカ「……そうですか」|Fuuka「...I see.」
+フウカ[shy]「……温かい。……借りておきます」|Fuuka[shy]「...Warm. ...I'll borrow it.」
+フウカ「……そういう意味では、ありません」|Fuuka「...That's not what I meant.」
+フウカ[smile]「はい。背中は、任せてください」|Fuuka[smile]「Yes. Leave your back to me.」
+フウカ「……見つかりましたか。修行が足りません」|Fuuka「...You found me? I need more training.」
+フウカ[shy]「……いなくなりません。忍びは、約束を守ります」|Fuuka[shy]「...I won't disappear. A ninja keeps her word.」
+フウカ[shy]「……ずっと、ですか」|Fuuka[shy]「...Always, you say?」
+フウカ「……少し、違います」|Fuuka「...Not quite.」
+フウカ「……わかりません。でも、私は必ず帰ります。あなたと」|Fuuka「...I don't know. But I will return. With you.」
+フウカ[smile]「……はい。二人の印に。……あなたの槌の形にしましょう」|Fuuka[smile]「...Yes. A mark for the two of us. ...Let's make it the shape of your hammer.」
+フウカ[shy]「中は、まだいけません。……落ち着かないので」|Fuuka[shy]「Not inside, not yet. ...I couldn't settle down.」
+フウカ[shy]「……もう一度、おっしゃってください」|Fuuka[shy]「...Please say that once more.」
+フウカ「……本当に見ないのですね。少しは、見てもかまいません」|Fuuka「...You really aren't looking. You may look a little.」
+フウカ[smile]「……はい。あなたのせいです」|Fuuka[smile]「...Yes. It's your fault.」
+フウカ[shy]「……はい。その言葉が、聞きたかったのです」|Fuuka[shy]「...Yes. Those were the words I wanted to hear.」
+フウカ[smile]「……手を、おつなぎしましょうか」|Fuuka[smile]「...Shall we hold hands?」
+フウカ「……ちゃんと、見てください。ほら、あそこです」|Fuuka「...Look properly. There, right there.」
+フウカ「お城の階……嫌な気配がします。……私が、前を歩きます」|Fuuka「The castle floors... I sense something foul. ...I'll walk in front.」
+フウカ[smile]「……頑固な方です。……では、背中はお任せください」|Fuuka[smile]「...Stubborn man. ...Then leave your back to me.」
+フウカ[smile]「チッチ殿は、腰を抜かすかもしれません」|Fuuka[smile]「Sir Chicchi might fall right over.」
+フウカ[smile]「照れているあなたは、珍しい」|Fuuka[smile]「It's rare to see you embarrassed.」
+フウカ「あなたは、隠れなくていい。私が見ています」|Fuuka「You don't need to hide. I'm watching.」
+フウカ[smile]「……足音を消すのは、癖です」|Fuuka[smile]「...Silencing my footsteps is a habit.」
+フウカ[smile]「……それは、槌の音のせいかと」|Fuuka[smile]「...I suspect that's the hammering.」
+フウカ「……覚えておきます」|Fuuka「...I'll remember that.」
+フウカ「……それは、それで、複雑です」|Fuuka「...That, too, is complicated.」
+フウカ[smile]「それも、いいかもしれません」|Fuuka[smile]「That might be nice, too.」
+フウカ[smile]「あなたは、鍛冶屋であることを忘れないでください」|Fuuka[smile]「And don't you forget that you're a blacksmith.」
+フウカ[shy]「……そう、ですか」|Fuuka[shy]「...Is that so.」
+フウカ[shy]「……はい。もう一度は、まだ」|Fuuka[shy]「...Yes. Not a second time, not yet.」
+フウカ「……そういう呼び方では、なくて」|Fuuka「...Not like that.」
+フウカ[smile]「あなたも、照れるのですね」|Fuuka[smile]「So you get embarrassed too.」
+フウカ[shy]「……はい。ずっと、見ています」|Fuuka[shy]「...Yes. I've always been watching.」
+フウカ[smile]「……はい。……あそこが、いいです」|Fuuka[smile]「...Yes. ...That place would be good.」
+フウカ「……あなた、でしたか。申し訳ありません。このような姿を……任務の途中で、少々油断しました」|Fuuka「...So it was you. Forgive me for being seen like this... I let my guard down during my mission.」
+フウカ「……そういうことに、しておきます」|Fuuka「...I'll leave it at that.」
+フウカ[smile]「……あなた。また、お会いできました。……今日は、手をつながなくても大丈夫です」|Fuuka[smile]「...You. We meet again. ...Today, I'm fine without holding hands.」
+フウカ「……そこは、『つなごうか』と言うところです」|Fuuka「...That's where you're supposed to say, 'Shall we hold hands?'」
+フウカ[shy]「……はい」|Fuuka[shy]「...Yes.」
+フウカ[smile]「……正解です」|Fuuka[smile]「...Correct.」
+フウカ「……いえ。何でもありません」|Fuuka「...No. It's nothing.」
+フウカ[smile]「……あなたらしいです」|Fuuka[smile]「...That's just like you.」
+フウカ[shy]「今日は塔ではなく、ここでお会いしたかったのです」|Fuuka[shy]「Today, I wanted to see you here instead of in the tower.」
+フウカ「ブッパ殿。そこは、私が座ろうと思っていた場所です」|Fuuka「Sir Buppa. That's where I was going to sit.」
+フウカ「……半分ずつに、したかったのです」|Fuuka「...I wanted us to split it.」
+フウカ[shy]「……あなたの、そういうところが」|Fuuka[shy]「...It's that part of you that I...」
+フウカ[smile]「あなたが手をかけたものですから」|Fuuka[smile]「Because it's something your hands have worked on.」
+フウカ「……そうですか」|Fuuka「...I see.」
+フウカ[smile]「今のお言葉、確かに聞きました」|Fuuka[smile]「I heard those words clearly.」
+フウカ「……そういう意味では、ありません」|Fuuka「...That's not what I meant.」
+フウカ[smile]「見習いからでも、構いません」|Fuuka[smile]「I don't mind starting as an apprentice.」
+フウカ[shy]「……そう、ですか」|Fuuka[shy]「...Is that so.」
+フウカ「偶然でも、うれしいのです」|Fuuka「Even by chance, I'm glad.」
+フウカ[shy]「忍びは、帰る場所を持たないものです。……でも、ここには、帰りたくなります」|Fuuka[shy]「A ninja has no place to return to. ...But this place makes me want to come back.」
+フウカ[shy]「ですから、ここを私の見張り場所にしても、よろしいでしょうか。あなたが帰ってくるのを、見張る場所に」|Fuuka[shy]「So, may I make this my lookout? A place to watch for your return.」
+フウカ[shy]「……はい。それを、お返事と受け取ります」|Fuuka[shy]「...Yes. I'll take that as your answer.」
+フウカ「……それは、お約束できません」|Fuuka「...That, I can't promise.」
+フウカ[shy]「……あなたといると、時々、自分が忍びであることを忘れそうになります。\n……忘れはしませんが。……少しだけ、です」|Fuuka[shy]「...When I'm with you, I sometimes almost forget I'm a ninja.\n...I don't forget, though. ...Only a little.」
+フウカ[think]「鍛冶屋が、自分で。……変わった方ですね」|Fuuka[think]「A blacksmith, by himself. ...What an unusual man.」
+フウカ[shy]「違います。偶然です。……偶然、です」|Fuuka[shy]「No. It's a coincidence. ...A coincidence.」
+フウカ「……存じています」|Fuuka「...I'm aware.」
+フウカ[shy]「……よろしいのですか？ ……温かい」|Fuuka[shy]「...Are you sure? ...It's warm.」
+フウカ「欲しいとは、申していません」|Fuuka「I never said I wanted it.」
+フウカ「……あなたは、本当に鈍い方ですね」|Fuuka「...You really are a dense man.」
+フウカ[smile]「……はい。そうしてみます」|Fuuka[smile]「...Yes. I'll try that.」
+フウカ[smile]「……何ですか、それは」|Fuuka[smile]「...What is that supposed to be?」
+上り階段の前に、{0}がいます。|{0} is waiting before the up stairs.
+上り階段は、{0}の方です。|The up stairs are to the {0}.
+宝箱が、あと{0}つ残っています。|{0} chests still remain.
+宝箱は、もう残っていません。|No chests remain.
+この階の壁は、ときどき動きます。塔が、息をしているのです。|The walls on this floor shift now and then. The tower is breathing.
+松明の煙が、上へ流れています。上に、風の通り道があります。|The torch smoke drifts upward. There's a path for the wind above.
+木の魔物は、眠ったふりをします。根元を見てください。|The tree monsters pretend to sleep. Watch their roots.
+鳥が鳴きやみました。何かが、近くにいます。|The birds have gone quiet. Something is near.
+砂の下を、何かが泳いでいます。足音は、軽く。|Something is swimming beneath the sand. Step lightly.
+砂の上の足跡が、すぐに消えます。迷わないでください。|Footprints vanish fast in the sand. Don't get lost.
+空気が薄いです。息は、ゆっくり。|The air is thin. Breathe slowly.
+落石の跡が新しい。上で、何かが暴れています。|These rockfalls are fresh. Something is rampaging above.
+雪の上の足跡が、途中で消えています。……追わないほうがいい。|The tracks in the snow stop halfway. ...Better not to follow them.
+寒さは、刃をもろくします。刀の手入れを。|Cold makes blades brittle. Tend to your weapon.
+花の匂いが甘すぎます。毒です。吸わないでください。|The flowers smell too sweet. It's poison. Don't breathe it in.
+蔓が、さっきと違う場所にあります。|The vines aren't where they were a moment ago.
+この遺跡の印は、古い忍びのものです。この先に、罠がひとつ。|These ruin markings were left by ninja long ago. There's a trap ahead.
+砂に埋もれた像が、こちらを見ています。気のせいでは、ありません。|The half-buried statue is watching us. It's not my imagination.
+風が強い。谷側の壁には、近づかないでください。|The wind is strong. Stay away from the canyon-side wall.
+岩の上から、こちらを見ているものがいます。|Something is watching us from atop the rocks.
+ここでは、雷の音が遅れて届きます。|Here, the thunder arrives late.
+氷の中に、昔の冒険者が眠っています。……起こさないように。|An adventurer from long ago sleeps in the ice. ...Let's not wake them.
+城の者たちは、まだ自分が仕えていると思っています。|The castle's people still believe they are serving.
+廊下の鎧は、空ではありません。|The armor in the halls is not empty.
+……風が、あなたの名前を知っていました。|...The wind knew your name.
+昨日の夜、塔が少しだけ高くなりました。|Last night, the tower grew a little taller.
+今日の塔は、機嫌がいいようです。|The tower seems to be in a good mood today.
+……あなたの足音は、三つ下の階から聞こえていました。|...I could hear your footsteps from three floors below.
