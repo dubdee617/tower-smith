@@ -345,3 +345,4 @@ html.en #ctl.pg::after{content:'▼ Tap to continue'}
 #arc dd small{margin-left:2px;color:#a8946e;font-size:10px}
 #arc .note{margin:5px 0 0;color:#cdb894;font-size:11px}
 #arc.tight .art button{min-height:26px;font-size:11px}#arc.tight .art button small{font-size:9px}#arc.tight .ars button{min-height:26px}#arc.tight img{width:12px;height:12px}#arc.tight td,#arc.tight dd{line-height:1.1}#arc.tight h3{font-size:13px;margin:0 0 2px}
+#stp tr.inj th{color:#ffd23a}#stp tr.inj b{font-weight:400;color:#ffe066}#stp tr.inj small{display:block;font-size:.85em;color:#e8d79c;line-height:1.3}#stp tr.inj small.how{color:#b9a77e;margin-top:2px}#stp tr.inj div{margin-bottom:2px}

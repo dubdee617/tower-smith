@@ -393,6 +393,16 @@ const GOD_MK = { forest: 'mk_g_forest', druid: 'mk_g_druid', desert: 'mk_g_deser
 }
 // 武具屋で買える物（買うと高い。自分で打つ方が得）
 const SHOP = ['copper_sword','bone_dagger','bone_staff','copper_shield','leather_armor'];
+// 剣士の像の寄付（2026-11-27 Daichiさん決定）: 寄付の合計が届くと、ジェニーの店に並ぶ武具の素材が上がる
+// 寄付は「塔の町の基金」に入り、街道と精錬所が直って、いい金属が町に届くようになる。その素材の階まで行っていないと、まだ並ばない
+const DONATE = [
+  { need: 0,     tier: 'copper',     name: '銅',           floor: 0 },
+  { need: 800,   tier: 'iron',       name: '鉄',           floor: 5 },
+  { need: 3000,  tier: 'silver',     name: '銀',           floor: 21 },
+  { need: 8000,  tier: 'mithril',    name: 'ミスリル',     floor: 41 },
+  { need: 16000, tier: 'darksteel',  name: '黒鋼',         floor: 61 },
+  { need: 30000, tier: 'orichalcum', name: 'オリハルコン', floor: 71 },
+];
 
 // 魔物（1〜10階・ダンジョン）。数値は仮
 // 2026-11-24 強くした（最初の値からHP約3倍、攻撃約1.8倍）。最初は歯ごたえがあるように

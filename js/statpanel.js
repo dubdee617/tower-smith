@@ -18,7 +18,7 @@ function statPanel() {
     <div class="sts">${STAT_DEF.map(row).join('')}</div>
     <table>${line('右手', r ? r.name : 'なし')}${line('左手', l ? l.name : 'なし')}${line('鎧', a ? a.name : 'なし')}${line('ツール', t ? `${t.name}（耐久${t.dur}/${t.maxDur}）` : 'なし')}
       ${line('技', sk.join('・') || 'なし')}${line('パッシブ', ps.join('・') || 'なし')}${line('道具', items.join('・') || 'なし')}
-      ${line('ケガ', G.injuries.map(k => INJURIES[k].name).join('・'))}${line('料理', G.meal && MEALS[G.meal] ? MEALS[G.meal].name : '')}
+      ${G.injuries.length ? `<tr class="inj"><th>ケガ</th><td>${G.injuries.map(k => `<div><b>${INJURIES[k].name}</b>${G.bandaged.includes(k) ? '（包帯でしのいでいる）' : ''}<small>${INJURIES[k].desc}</small></div>`).join('')}<small class="how">寝ても治らない。治療院で治す（包帯は塔の中だけ）</small></td></tr>` : ''}${line('料理', G.meal && MEALS[G.meal] ? MEALS[G.meal].name : '')}
       ${line('手持ち', `${G.gold}G${inTower ? '（倒れるとなくなる）' : ''}`)}${inTower ? line('戦利品', `${matText(G.carry) || 'なし'}（倒れるとなくなる）`) : ''}</table></div>`;
   document.body.appendChild(w);
   const close = () => { sfx('select', { vol: .4 }); w.remove(); };

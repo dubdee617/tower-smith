@@ -642,7 +642,7 @@ let place = null;
 
 function showTown(on, aspect) { document.body.classList.remove('story', 'title', 'intro', 'big'); if ($('town')) $('town').onclick = null; $('town').style.display = on ? 'block' : 'none'; $('view').style.display = on ? 'none' : 'block'; ASPECT = aspect || (on ? 2 / 3 : 4 / 3); COVER = on && (aspect === 4 / 3 || aspect === 0); spkFace = null; drawSpk(); fitStage(); }
 function rollRumor() { const k = Object.keys(RUMORS); G.rumor = k[Math.floor(R() * k.length)]; }
-function startRun(n) { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; G.cur = { start: n || 1, top: n || 1, before: G.maxFloor || 0, boss: 0, kills: 0 }; }
+function startRun(n) { G.runHp = has('p_hp') ? 20 : 0; G.mhp += G.runHp; G.hp += G.runHp; G.cur = { start: n || 1, top: n || 1, before: G.maxFloor || 0, boss: 0, kills: 0, low: 1, inj: 0 }; }
 // 塔から戻ったとき（倒れたときも）、今回の塔のぼりを G.last に残す。町の人のあいさつに使う
 function finishRun(lost) { const c = G.cur || { start: 1, top: floorNo || 1, before: G.maxFloor, boss: 0, kills: 0 }; G.last = { ...c, lost: !!lost, run: G.runs, told: [] }; G.cur = null; }
 function endRun() { G.mhp -= G.runHp || 0; G.hp = Math.min(G.hp, G.mhp); G.runHp = 0; }
@@ -651,7 +651,8 @@ function toTown(msg, fromTower, then) {
   mode = 'town'; B = null; F = null; FLOORS = {};
   let letter = false;
   if (fromTower) { endMeal(); endRun(); rollRumor(); G.bless = null; G.runs++; finishRun(false); G.ally = null; G.bandaged = []; G.enc = null; G.als = false; if (G.maxFloor >= 50 && !G.castle) { G.castle = true; letter = true; } }
-  const brought = matText(G.carry);
+  const brought = matText(G.carry), haul = Object.values(G.carry).reduce((a, b) => a + b, 0);
+  if (fromTower && G.last) G.last.haul = haul;
   for (const [k, n] of Object.entries(G.carry)) add(RAW[k] ? G.raw : G.store, k, n);
   G.carry = {}; save();
   if (fromTower && then) { then(); return; }
@@ -681,10 +682,26 @@ function guildWelcome(has) {
   if (close) L.push(has ? 'リア[happy]「おかえりなさい。……待ってました。\nほんとに、待ってたんですから」' : 'リア[happy]「おかえりなさい。手ぶらでも、\n顔を見せてくれるだけでうれしいです」');
   return pick(L);
 }
+// 塔から戻ったときのひとこと（2026-11-27）: 今回の塔のぼり（G.last）に合わせて変える
+const BACK_LINES = {
+  boss:   [['grin', '「……主を倒した。今日の仕事は、これで十分だ」'], ['smug', '「主の首、取ってやったぞ。……まぁ〜、腕は落ちてないな」'], ['laugh', '「はは……あの主に勝ったのか、俺。我ながら大したもんだ」']],
+  record: [['lookup', '「……ここまで来たのは、初めてだな。まだ上がある」'], ['resolve', '「記録更新だ。……次は、もう少し上まで行ける」'], ['grin', '「新しい階の空気は、ちょっと違ったな。悪くない」']],
+  close:  [['wince', '「……今回は、やばかったな。生きてるのが不思議だ」'], ['sigh', '「危なかった……。ルゥの顔が、ちらついたぞ」'], ['tired', '「……足が震えてる。次は、もう少し早めに引き返そう」']],
+  hurt:   [['wince', '「いてて……。今回は、もらいすぎたな」'], ['worry', '「……このケガじゃ、しばらく槌も握りにくいな。治療院に寄るか」'], ['sigh', '「無理をしたツケだな。……エリーに怒られそうだ」']],
+  easy:   [['smug', '「余裕だったな。……もっと上まで頑張れたか？」'], ['calm', '「今日は楽だった。次は、もう少し先まで行ってみるか」'], ['doubt', '「……ちょっと物足りなかったな。装備が良くなりすぎたか？」']],
+  haul:   [['laugh', '「大漁だ！ 工房が忙しくなるぞ」'], ['grin', '「背中が重い……いい重さだ。打ちたい物が山ほどある」']],
+  empty:  [['tired', '「……手ぶらか。まぁ、生きて帰っただけ良しとしよう」'], ['sigh', '「今日は、何も持ち帰れなかったな。……次だ、次」']],
+  normal: [['content', '「……ふう、戻ったか」'], ['calm', '「ただいま、町。……今日も、ちゃんと帰ってこられた」'], ['normal', '「まずまず、ってところだな。さて、ギルドへ行くか」']],
+};
+function backLine(empty) {
+  const c = G.last || {}, low = c.low == null ? 1 : c.low;
+  const k = c.boss ? 'boss' : low <= .2 ? 'close' : c.inj ? 'hurt' : c.top > (c.before || 0) && c.before ? 'record' : empty ? 'empty' : (c.haul || 0) >= 60 ? 'haul' : low >= .7 && (c.kills || 0) >= 3 ? 'easy' : 'normal';
+  return pick(BACK_LINES[k]);
+}
 function returnScreen(msg, brought, letter) {
   viewScreen('帰還', false, true);
   // セリフ欄には短いことばだけ。持ち帰った物はボタンの上に出す（セリフ欄からはみ出さないように）
-  say(brought === 'なし' ? 'tired' : 'content', `${msg ? msg + '\n' : ''}「……ふう、戻ったか」`, true);
+  { const [f, t] = backLine(brought === 'なし'); say(f, `${msg ? msg + '\n' : ''}${t}`, true); }
   if (letter) log('お城から手紙が届いていた。\n町の門の下から、お城へ行けるようになった。');
   buttons([{ title: `持ち帰った戦利品: ${brought}` }, { t: 'ギルドへ', s: brought === 'なし' ? '到達記録を書いてもらう' : '戦利品を素材にしてもらう', hot: true, go: true, f: () => evReady('jenny', .35) ? jennyEvent() : inside('guild', guildWelcome(brought !== 'なし')) }]); hud();
 }
@@ -709,7 +726,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 159'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 160'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -938,9 +955,24 @@ function jinTeach() {
 }
 function statueButtons() {
   const L = [{ t: '碑文を読む', f: () => { log('「剣聖ハヤテ　塔に挑み、多くの民を救いし者」\n……台座の文字は、少しすり減っている。', true);  /* 2026-11-27: 像の名をジンと同じにするとネタバレなので、若い頃の名「ハヤテ」に（Daichiさん） */ } }];
+  L.push({ t: '寄付する', s: `基金 ${G.donated || 0}G`, f: () => donateMenu() });
   L.push(talkBtn('jin', () => statueScreen(byeLine('jin')))); const tj = jinTeach(); if (tj) L.push(tj);
   L.push({ t: '戻る', f: townMap });
   buttons(L); hud();
+}
+// 寄付（2026-11-27）: 像の足元の箱に入れる。合計が届くと、ジェニーの店の品が上がる
+function donateMenu(msg) {
+  const lv = donateLv(), nx = DONATE.find(d => (G.donated || 0) < d.need), cur = G.donated || 0;
+  const wait = DONATE.find((d, i) => i > lv && cur >= d.need && (G.maxFloor || 0) < d.floor);
+  const st = nx ? `次は${nx.name}の品（あと${nx.need - cur}G）` : '基金は、もう十分に集まった';
+  const give = n => { if (G.gold < n || n <= 0) return; const before = donateLv(); G.gold -= n; G.donated = cur + n; save(); sfx('register', { vol: .8 });
+    const now = donateLv(); if (now > before) { sfx('levelup', { vol: .7 }); bigFx(`<b>町の基金</b><em>${DONATE[now].name}の武具</em><small>ジェニーの店に並ぶようになった</small>`); donateMenu(`街道が直り、ジェニーの店に${DONATE[now].name}の武具が並ぶようになった。`); return; }
+    donateMenu(`${n}Gを箱に入れた。硬貨が、ちゃりんと鳴った。`); };
+  const amt = [100, 500, 1000, 5000].filter(n => n <= Math.max(G.gold, 100));
+  buttons([{ title: `塔の町の基金 ${cur}G／${st}` }, ...amt.map(n => ({ t: `${n}G`, s: '寄付する', off: G.gold < n, f: () => give(n) })),
+    { t: '全部', s: `${G.gold}G`, off: G.gold <= 0, f: () => buttons([{ title: `手持ちの${G.gold}Gを、全部寄付する？` }, { t: '寄付する', hot: true, f: () => give(G.gold) }, { t: 'やめる', f: () => donateMenu() }]) },
+    { t: '戻る', f: () => statueScreen() }], 'three small'); hud();
+  log(msg || `像の足元に、塔の町の基金の箱がある。\n基金で街道が直ると、ジェニーの店の品が変わる。${wait ? `\n（${wait.name}は、${wait.floor}階まで行くと店に並ぶ）` : ''}`, true);
 }
 function statueScreen(msg) {
   place = 'statue'; showTown(true, 0);
@@ -1374,12 +1406,16 @@ function shopSell(msg) {
   L.push({ t: '戻る', f: () => shop() });
   buttons(L); log(msg || 'ジェニー「何を売るの？ 自分で打ったのも買い取るわよ」', true);
 }
+// ジェニーの店の品: 寄付の段階（donateLv）で変わる
+function donateLv() { let k = 0; DONATE.forEach((d, i) => { if ((G.donated || 0) >= d.need && (G.maxFloor || 0) >= d.floor) k = i; }); return k; }
+function shopList() { const d = DONATE[donateLv()]; if (d.tier === 'copper') return SHOP; const pre = d.tier === 'iron' ? /^iron_(?!pick|lumber|shovel)/ : new RegExp('^' + d.tier + '_(?!pick|lumber|shovel)'); return RECIPES.filter(r => !r.meika && !r.royal && r.type !== 'tool' && pre.test(r.id)).map(r => r.id); }
+const SHOP_HELLO = ['ジェニー「うちの品よ。自分で打つより高いけど、急ぎならね」', 'ジェニー「鉄の品、入ったわよ。……あんたのおかげで、街道が直ったんだって？」', 'ジェニー「銀よ、銀。うちの棚に銀が並ぶ日が来るなんてね」', 'ジェニー[smile]「ミスリル。……触るとき、ちょっと手が震えたわ」', 'ジェニー「黒鋼。重いし、扱いにくいけど……いい品よ」', 'ジェニー[laugh]「オリハルコンまで並ぶなんて。……この店、あんたの基金で建て直したようなものね」'];
 function shopBuy(msg) {
   const L = [{ title: `買う（手持ち ${G.gold}G）` }];
-  for (const id of SHOP) { const r = RECIPES.find(x => x.id === id), p = Math.floor(r.price * 1.8);
+  for (const id of shopList()) { const r = RECIPES.find(x => x.id === id), p = Math.floor(r.price * 1.8);
     L.push({ t: r.name, s: `${p}G`, off: G.gold < p, f: () => deal(`${r.name}を${p}Gで買う？（手持ち${G.gold}G）`, () => { G.gold -= p; G.gear.push(newGear(r)); save(); shopBuy(`${r.name}を買った。\nジェニー「毎度。……あんたが打った方が、いい物なんだけどね」`); }, () => shopBuy()) }); }
   L.push({ t: '戻る', f: () => shop() });
-  buttons(L); log(msg || 'ジェニー「うちの品よ。自分で打つより高いけど、急ぎならね」', true);
+  buttons(L, L.length > 8 ? 'three small' : undefined); log(msg || SHOP_HELLO[donateLv()], true);
 }
 const ITEM_HELLO = 'ドーラ「ほかに要るものは？」';
 function itemShop(msg) {
@@ -2185,7 +2221,7 @@ function apBase() { return 3 + (has('p_ap') ? 1 : 0) + (MK().ap || 0) - (hurt('r
 function injuryFlash(ms) { setTimeout(() => { const z = $('injury'); if (!z) return; z.classList.remove('hit'); void z.offsetWidth; z.classList.add('hit'); sfx('wallhit', { vol: .7 }); }, ms || 0); }
 const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 // ケガをする（すでに全部のケガをしていたら何もしない）
-function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
+function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); if (G.cur) G.cur.inj = (G.cur.inj || 0) + 1; return x; }
 function startBattle(boss, saved) {
   const n = saved ? 0 : boss ? 1 : groupSize(), ms = saved ? saved.map(m => Object.assign({}, m)) : [];
   const BM = boss && !boss.chest && !boss.mirror && !boss.trial ? midPow(floorNo) : { hp: 1, atk: 1, def: 1 };
@@ -2460,7 +2496,7 @@ function endTurn() {
       if (m.boss && G.bless === 'ward') d = Math.ceil(d * .7);
       if (hurt('rib')) d = Math.ceil(d * 1.2);
       { const rf = MK().reflect; if (rf && m.hp > 0) { const back = dmgTo(m, d * rf, true); log(`鏡の盾が、${back}のダメージを返した。`); } }
-      G.hp -= d; B.pendMe = (B.pendMe || 0) + d; { const dd = d, w = (order - 1) * 220, BB = B; setTimeout(() => { BB.pendMe = Math.max(0, (BB.pendMe || 0) - dd); hud(); popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
+      G.hp -= d; B.pendMe = (B.pendMe || 0) + d; { const dd = d, w = (order - 1) * 220, BB = B; setTimeout(() => { BB.pendMe = Math.max(0, (BB.pendMe || 0) - dd); hud(); popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`); if (G.cur) G.cur.low = Math.min(G.cur.low == null ? 1 : G.cur.low, Math.max(0, G.hp) / G.mhp);
       // 大きな一撃はケガが残ることがある（2026-11-27: 最大HPの2割から。重いほど、大技ほど残りやすい。3階までは残らない）
       if (G.hp > 0 && d >= G.mhp * .2 && floorNo > 3 && R() < Math.min(.6, .08 + (d / G.mhp - .2) * 1.2 + (big ? .15 : 0)) && !MK().noInjury && !(big && floorNo <= 5)) { const x = injure(); if (x) { log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); injuryFlash((order - 1) * 220 + 120); } }
       if (allDead()) { win(); return; }

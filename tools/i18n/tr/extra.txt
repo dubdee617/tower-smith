@@ -682,3 +682,49 @@ HP {0}/{1}|HP {0}/{1}
 なると覚える|Learned on taking the job
 図鑑・技の手引き|Codex & skills
 {0}は眠っている。|{0} is asleep.
+「……主を倒した。今日の仕事は、これで十分だ」|「...I took down the lord. That's enough work for today.」
+「主の首、取ってやったぞ。……まぁ〜、腕は落ちてないな」|「Got the lord. ...Well, my arm hasn't gotten rusty.」
+「はは……あの主に勝ったのか、俺。我ながら大したもんだ」|「Ha... I actually beat that lord. Not bad, if I say so myself.」
+「……ここまで来たのは、初めてだな。まだ上がある」|「...First time I've made it this far. And there's still more above.」
+「記録更新だ。……次は、もう少し上まで行ける」|「A new record. ...Next time I can go a little higher.」
+「新しい階の空気は、ちょっと違ったな。悪くない」|「The air on the new floors felt different. Not bad.」
+「……今回は、やばかったな。生きてるのが不思議だ」|「...That was way too close. I'm amazed I'm alive.」
+「危なかった……。ルゥの顔が、ちらついたぞ」|「That was close... I saw Lou's face flash before my eyes.」
+「……足が震えてる。次は、もう少し早めに引き返そう」|「...My legs are shaking. Next time I'll turn back sooner.」
+「いてて……。今回は、もらいすぎたな」|「Ow... I took too many hits this time.」
+「……このケガじゃ、しばらく槌も握りにくいな。治療院に寄るか」|「...With this injury, I can barely grip a hammer. Better stop by the clinic.」
+「無理をしたツケだな。……エリーに怒られそうだ」|「That's what I get for pushing it. ...Elly's going to scold me.」
+「余裕だったな。……もっと上まで頑張れたか？」|「That was easy. ...Could I have pushed higher?」
+「今日は楽だった。次は、もう少し先まで行ってみるか」|「Today was a breeze. Next time, let's go a bit further.」
+「……ちょっと物足りなかったな。装備が良くなりすぎたか？」|「...Felt a little lacking. Has my gear gotten too good?」
+「大漁だ！ 工房が忙しくなるぞ」|「What a haul! The workshop's going to be busy.」
+「背中が重い……いい重さだ。打ちたい物が山ほどある」|「My back is heavy... a good kind of heavy. So much I want to forge.」
+「……手ぶらか。まぁ、生きて帰っただけ良しとしよう」|「...Empty-handed. Well, coming back alive is good enough.」
+「今日は、何も持ち帰れなかったな。……次だ、次」|「Couldn't bring anything back today. ...Next time, next time.」
+「ただいま、町。……今日も、ちゃんと帰ってこられた」|「I'm home, town. ...Made it back again today.」
+「まずまず、ってところだな。さて、ギルドへ行くか」|「Not bad, not great. Well, off to the guild.」
+（包帯でしのいでいる）| (held together with a bandage)
+寝ても治らない。治療院で治す（包帯は塔の中だけ）|Sleep won't heal it. Get treated at the clinic (bandages only last in the tower)
+寄付する|Donate
+基金 {0}G|Fund {0}G
+ジェニー「鉄の品、入ったわよ。……あんたのおかげで、街道が直ったんだって？」|Jenny「Iron goods just came in. ...I hear the road got fixed thanks to you?」
+ジェニー「銀よ、銀。うちの棚に銀が並ぶ日が来るなんてね」|Jenny「Silver. Silver! Never thought I'd see silver on my shelves.」
+ジェニー[smile]「ミスリル。……触るとき、ちょっと手が震えたわ」|Jenny[smile]「Mithril. ...My hands shook a little when I touched it.」
+ジェニー「黒鋼。重いし、扱いにくいけど……いい品よ」|Jenny「Blacksteel. Heavy and hard to handle... but good stuff.」
+ジェニー[laugh]「オリハルコンまで並ぶなんて。……この店、あんたの基金で建て直したようなものね」|Jenny[laugh]「Even orichalcum now. ...Your fund practically rebuilt this shop.」
+町の基金|Town Fund
+{0}の武具|{0} Gear
+ジェニーの店に並ぶようになった|Now on sale at Jenny's shop
+箱の中で、硬貨が鳴った。\n……街道を直す馬車が、また一台、町を出ていった。\nジェニーの店に、{0}の武具が並ぶようになった。|The coins rang inside the box.\n...Another wagon left town to repair the road.\n{0} gear is now on sale at Jenny's shop.
+{0}Gを箱に入れた。硬貨が、ちゃりんと鳴った。|You put {0}G in the box. The coins jingled.
+次は{0}の品（あと{1}G）|Next: {0} goods ({1}G to go)
+基金は、もう十分に集まった|The fund is complete
+塔の町の基金 {0}G／{1}|Tower Town Fund {0}G / {1}
+全部|All
+手持ちの{0}Gを、全部寄付する？|Donate all {0}G you're carrying?
+やめる|Cancel
+像の足元に、古い木の箱がある。「塔の町の基金」と彫ってある。\n集まったお金で街道と精錬所を直すと、いい金属が町に届き、ジェニーの店の品が変わる。|At the foot of the statue sits an old wooden box carved with "Tower Town Fund."\nThe money repairs the road and the smelter, so better metal reaches town and Jenny's stock improves.
+（{0}は、{1}階まで行くと店に並ぶ）|({0} goes on sale once you reach floor {1})
+像の足元の「塔の町の基金」の箱。\n基金で街道が直ると、ジェニーの店の品が変わる。|The "Tower Town Fund" box at the statue's feet.\nOnce the fund repairs the road, Jenny's stock changes.
+像の足元に、塔の町の基金の箱がある。\n基金で街道が直ると、ジェニーの店の品が変わる。|At the statue's feet is the Tower Town Fund box.\nOnce the fund repairs the road, Jenny's stock changes.
+街道が直り、ジェニーの店に{0}の武具が並ぶようになった。|The road is repaired. Jenny's shop now sells {0} gear.
