@@ -708,7 +708,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 155'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 156'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -861,7 +861,7 @@ function towerScreen(msg) {
   const t = $('town'); t.className = 'box town';
   t.innerHTML = `<img data-tw src="${TOWN_IMG}tower.jpg" alt="塔の入口" style="object-position:50% 30%"><div class="name">塔</div>`;
   // 2026-11-26: 準備を忘れないよう、目立つのは「準備する」
-  buttons([{ t: '入る', stay: true, f: () => (G.maxFloor >= 90 && !(G.jstory || {}).s3 && !G.cleared) ? jennySeq('s3', () => towerScreen('「……行ってくる」')) : G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.warps.length ? `ワープ ${G.warps.length}か所` : 'まだ光っていない', f: warpMenu }, { t: '準備する', hot: true, f: prepMenu }, { t: '戻る', f: townMap }]);
+  buttons([{ t: '入る', stay: true, f: () => (G.maxFloor >= 90 && !(G.jstory || {}).s3 && !G.cleared) ? jennySeq('s3', () => towerScreen('「……行ってくる」')) : G.sentOff ? enterMenu() : sendOff() }, { t: '女神の像', s: G.godBless ? `${TOWER_NPCS[G.godBless].name}の加護` : G.warps.length ? '加護を選ぶ' : 'まだ光っていない', f: warpMenu }, { t: '準備する', hot: true, f: prepMenu }, { t: '戻る', f: townMap }]);
   if (msg) say('resolve', msg, true); else log(pick(PLACES.tower.hello), true);
   if (!msg && G.gold > 0) log(`手持ちの${G.gold}Gは、倒れるとなくなる。`);
   if (!msg && G.injuries.length) say('tired', `${G.injuries.map(k => INJURIES[k].name).join('・')}が痛む。\n「……まぁ〜、どうにかなるんじゃないか」`);
@@ -999,16 +999,24 @@ function castleHall(msg) {
     giftBtn(), { t: '戻る', f: castleScreen }]);
   log(msg || castleLine('king'), true); hud();
 }
-// 女神の像: 触ると、女神に会ったエリアの最初の階へワープできる
+// 女神の像（2026-11-27 Daichiさん）: ワープではなく「加護」。会ったことのある女神から1人を選ぶと、
+// その女神のエリアにいるあいだ、掘る壁・鉱脈と床の小物から見つかる素材が2割増える。選び直すまで続く
+const godsMet = () => [...new Set((G.warps || []).map(n => GOD_OF_AREA[n]).filter(Boolean))];
+const GOD_AREAS = id => (TOWER_NPCS[id].ranges || []).map(([a, b]) => `${areaOf(a)[2]}（${a}〜${b}階）`).join('・');
+function godBlessOn() { const id = G.godBless; return !!(id && TOWER_NPCS[id] && (TOWER_NPCS[id].ranges || []).some(([a, b]) => floorNo >= a && floorNo <= b)); }
+/* 加護があるとき、手に入れた素材を2割増しに（1個ずつ20%で、もう1個） */
+function godBoost(got) { if (!godBlessOn()) return 0; let extra = 0; for (const id of Object.keys(got)) { let x = 0; for (let i = 0; i < got[id]; i++) if (R() < .2) x++; if (x) { got[id] += x; extra += x; } } return extra; }
 function warpMenu() {
-  // 4人の女神の像を並べて出す。加護を受けた像だけが光る
+  // 5人の女神の像を並べて出す。会った女神の像だけが光る。加護を受けている像は特に明るく
   showTown(true, 4 / 3); const t = $('town'); t.className = 'box town';
-  const lit = id => G.warps.some(n => GOD_OF_AREA[n] === id);
-  t.innerHTML = `<div class="statues">${['forest', 'desert', 'mountain', 'ice', 'druid'].map(id => `<img class="${lit(id) ? 'lit' : ''}" src="${TOWN_IMG}gstatue_${id}.png" alt="${TOWER_NPCS[id].name}の像">`).join('')}</div><div class="name">女神の像</div>`;
-  if (!G.warps.length) { buttons([{ t: '戻る', f: () => towerScreen() }]); log('塔の入口に、5人の女神の像が並んでいる。\nまだどれも光っていない。……塔の中で、女神に会えたら。', true); return; }
-  const L = G.warps.map(n => ({ t: `${n}階へ`, s: `${TOWER_NPCS[GOD_OF_AREA[n]].name}・${areaOf(n)[2]}`, f: () => { log(`${TOWER_NPCS[GOD_OF_AREA[n]].name}の像に触れた。光に包まれて……`, true); setTimeout(() => goFloor(n), 400); } }));
-  L.push({ t: 'やめる', f: () => towerScreen() });
-  buttons(L, L.length > 6 ? 'three small' : ''); log('女神の像が、やさしく光っている。どこへ行く？', true);
+  const met = godsMet(), lit = id => met.includes(id);
+  t.innerHTML = `<div class="statues">${['forest', 'desert', 'mountain', 'ice', 'druid'].map(id => `<img class="${lit(id) ? 'lit' : ''}${G.godBless === id ? ' blessed' : ''}" src="${TOWN_IMG}gstatue_${id}.png" alt="${TOWER_NPCS[id].name}の像">`).join('')}</div><div class="name">女神の像</div>`;
+  if (!met.length) { buttons([{ t: '戻る', f: () => towerScreen() }]); log('塔の入口に、5人の女神の像が並んでいる。\nまだどれも光っていない。……塔の中で、女神に会えたら。', true); return; }
+  const L = met.map(id => ({ t: TOWER_NPCS[id].name, s: G.godBless === id ? '加護を受けている' : '押して祈る', hot: G.godBless === id, f: () => {
+    G.godBless = id; save(); sfx('holy', { vol: .6 }); playFx('blessing', { self: true, size: 1.1 });
+    warpMenu(); log(`${TOWER_NPCS[id].name}の像に祈った。やわらかな光に包まれる。\n（${GOD_AREAS(id)}では、採取できる素材が2割増える）`, true); } }));
+  L.push({ t: '戻る', f: () => towerScreen() });
+  buttons(L, L.length > 4 ? 'three small' : ''); log(G.godBless ? `今は、${TOWER_NPCS[G.godBless].name}の加護を受けている。\n（${GOD_AREAS(G.godBless)}で、採取が2割増える）` : '女神の像が、やさしく光っている。\n向かうエリアの女神に祈ると、そこでの採取が2割増える。\n' + met.map(id => `${TOWER_NPCS[id].name}: ${GOD_AREAS(id)}`).join('\n'), true);
 }
 /* 2026-11-27: 5階ごとの区切り（5・10・15…95階）を、その次の階まで行ったら入口から選べる（6階まで行けば5階から、16階なら15階、31階なら30階。Daichiさん）。
    いちばん高い区切りを先頭に、高い順に並べる */
@@ -1889,7 +1897,7 @@ function meetGod(id, go0, after) {
   SND.goddess = true; const go = () => { SND.goddess = false; go0(); };
   if (!after && godStory(id, () => meetGod(id, go0, true), go)) return;
   const name = TOWER_NPCS[id].name, start = areaOf(floorNo)[0];
-  if (start > 1 && !G.warps.includes(start)) { G.warps.push(start); G.warps.sort((a, b) => a - b); save(); setTimeout(() => log(`（${name}の加護を受けた。塔の入口の女神像から、${start}階へ来られるようになった）`), 0); }
+  if (start > 1 && !G.warps.includes(start)) { G.warps.push(start); G.warps.sort((a, b) => a - b); save(); setTimeout(() => log(`（${name}に会えた。塔の入口の${name}の像に祈ると、加護を受けられるようになった）`), 0); }
   talkTo(id, () => {
     const aff = G.aff[id] || 0;
     log(`${name}[smile]「さあ、どうしてほしい？」`, true);
@@ -1947,7 +1955,7 @@ const propAt = (x, y) => (F.props || []).find(p => p.cx === x && p.cy === y);
 function propAhead() { const [fdx, fdy] = DIRS[dir], x = Math.floor(T.x) + fdx, y = Math.floor(T.y) + fdy; return (F.props || []).find(p => p.cx === x && p.cy === y); }
 function rollLoot(table) { const sum = table.reduce((s, r) => s + r[2], 0); let q = R() * sum; for (const r of table) if ((q -= r[2]) < 0) return r; return table[table.length - 1]; }
 function giveLoot([kind, v]) {
-  if (kind === 'raw') { add(G.carry, v, 1); return `${NAMES[v]}を見つけた。`; }
+  if (kind === 'raw') { const g = { [v]: 1 }, gx = godBoost(g); add(G.carry, v, g[v]); return `${NAMES[v]}を${g[v] > 1 ? g[v] + '個' : ''}見つけた。${gx ? '（女神の加護）' : ''}`; }
   if (kind === 'item') { G.items[v] = (G.items[v] || 0) + 1; gotToast(v, 1); return `${ITEMS[v].name}を見つけた。`; }
   if (kind === 'gold') { const n = Math.ceil(v * (.6 + R() * .8) * (1 + floorNo * .1) * ECON.prop * goldArea(floorNo)); G.gold += n; gotToast('gold', n); return `${n}Gを見つけた。`; }
   return '';
@@ -2015,8 +2023,9 @@ function dig() {
     const n = ((d.eff === 3 ? 2 : 1) + (vk ? 1 : 0)) * digX;
     for (let i = 0; i < n; i++) { let r = R() * sum; for (const [id, w] of table) { if ((r -= w) < 0) { add(got, id, 1); break; } } }
     if (!vk && d.eff === 1 && R() < .4) for (const id in got) delete got[id];
+    const gx = godBoost(got);
     for (const [id, v] of Object.entries(got)) add(G.carry, id, v);
-    log(`ガラガラッ……壁が崩れた！${Object.keys(got).length ? `\n${matText(got)}を手に入れた。` : '\n……何も出てこなかった。'}`, true);
+    log(`ガラガラッ……壁が崩れた！${Object.keys(got).length ? `\n${matText(got)}を手に入れた。` : '\n……何も出てこなかった。'}${gx ? '\n（女神の加護で、少し多くとれた）' : ''}`, true);
     if (d.t.dur <= 0) log(`${d.t.name}が壊れてしまった。工房で直そう。`);
   }
   save();

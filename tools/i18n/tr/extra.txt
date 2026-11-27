@@ -622,3 +622,19 @@ HP {0}/{1}|HP {0}/{1}
 ブッパ[laugh]「がっはっは。で、腹いっぱいで、また塔だ。……俺は、もう登らんがな」|Buppa[laugh]「Gahaha. Then, with a full belly, back to the tower. ...Not me, though. I'm done climbing.」
 ブッパ「……ぐう……」\nルゥ「……もう寝てます」|Buppa「...Zzz...」\nLou「...He's already asleep.」
 工房のにぎやかな夜が、ふけていく。|The lively night at the workshop grows late.
+{0}に祈る|Pray to the {0}
+加護を受けている|Blessed
+加護を選ぶ|Choose a blessing
+{0}の加護|{0}'s blessing
+{0}の像に祈った。やわらかな光に包まれる。|You prayed at the statue of the {0}. A gentle light surrounds you.
+（{0}では、採取できる素材が2割増える）|(In {0}, gathered materials increase by 20%)
+今は、{0}の加護を受けている。|You are currently blessed by the {0}.
+（{0}で、採取が2割増える）|(Gathering in {0} increases by 20%)
+女神の像が、やさしく光っている。|The goddess statues glow gently.
+向かうエリアの女神に祈ると、そこでの採取が2割増える。|Pray to the goddess of the area you're heading to, and gathering there increases by 20%.
+（{0}に会えた。塔の入口の{0}の像に祈ると、加護を受けられるようになった）|(You met the {0}. Pray at her statue at the tower entrance to receive her blessing.)
+（女神の加護で、少し多くとれた）|(The goddess's blessing yielded a little extra.)
+{0}を{1}個見つけた。（女神の加護）|Found {1} {0}. (Goddess's blessing)
+{0}（{1}〜{2}階）|{0} (Floors {1}-{2})
+押して祈る|Tap to pray
+{0}: {1}|{0}: {1}
