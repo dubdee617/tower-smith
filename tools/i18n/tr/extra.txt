@@ -659,3 +659,26 @@ HP {0}/{1}|HP {0}/{1}
 リアは、ギルドへ戻っていった。|Ria went back to the guild.
 フウカは、いつの間にかいなくなっていた。|Before you knew it, Fuuka was gone.
 {0}は、帰っていった。|{0} went home.
+ジェニー「……店、開けっぱなしだから。じゃあね。\n……無茶しないでよ」\nジェニーは、武具屋に戻っていった。|Jenny「I left the shop open. See you.\n...Don't do anything reckless.」\nJenny went back to the weapon shop.
+エリー[smile]「そろそろ、治療院に戻りますね。\nケガをしたら、すぐに来てください」\nエリーは、治療院へ帰っていった。|Elly[smile]「I should get back to the clinic.\nIf you get hurt, come see me right away.」\nElly went back to the clinic.
+リア「では、ギルドに戻ります。\n次の報告、お待ちしていますね」\nリアは、ギルドへ戻っていった。|Ria「I'll head back to the guild, then.\nI'll be waiting for your next report.」\nRia went back to the guild.
+フウカ「……任務に戻ります。ご武運を」\n振り向くと、もう誰もいなかった。|Fuuka「...I return to my mission. Good fortune to you.」\nWhen you turned around, no one was there.
+攻撃−40%|Attack -40%
+攻撃をかわせない・逃げにくい・守り−30%|Can't dodge, hard to escape, Defense -30%
+毎ターンのAP−1・受けるダメージ+20%|AP -1 every turn, damage taken +20%
+会心が出ない・技の威力−25%|No crits, skill power -25%
+図鑑・技と武器の手引き|Codex, skill and weapon guides
+技|Skills
+まだ、なったことのないジョブ|A job you haven't taken yet
+{0}を持ち、{1}の熟練を積むとなれる|Hold a {0} and build {1} mastery to unlock
+{0}を持つとなれる|Unlocked by holding a {0}
+このジョブでの勝利：{0}|Wins in this job: {0}
+パッシブ|Passive
+覚えた|Learned
+{0}勝で覚える|Learned at {0} wins
+どのジョブでも|Any job
+ジンに教わった技|Skills Jin taught you
+覚えた技はどのジョブでも使える。持ち込めるのは{0}個、パッシブは{1}個まで。|Learned skills work in any job. You can bring {0} skills and {1} passives.
+なると覚える|Learned on taking the job
+図鑑・技の手引き|Codex & skills
+{0}は眠っている。|{0} is asleep.

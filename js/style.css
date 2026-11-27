@@ -147,6 +147,8 @@ button small .mkd{display:block;font-style:normal;color:#9fe0c0;font-size:11px;l
 #menu .dexread{font-size:12px}
 #menu .dexw{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 #menu .dexw.one{grid-template-columns:1fr}
+#menu .dexsk .yet{opacity:.62}
+#menu .dexsk .yet b{color:#c9b58a}
 #menu .dexw>div{background:#120c08;border:1px solid #3a2a1a;padding:4px 5px;border-radius:2px}
 #menu .dexw b{display:flex;align-items:center;gap:3px;font-weight:400;color:#ffe7a3;font-size:13px}
 #menu .dexw b em{margin-left:auto;font-style:normal;font-size:10px;color:#ffb46a}

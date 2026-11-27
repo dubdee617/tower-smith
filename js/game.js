@@ -122,10 +122,10 @@ function atkPower() {
   if (r && r.atk) a += r.atk;
   if (l && l.atk) a += l.type === 'shield' ? l.atk : Math.ceil(l.atk * .5); // 左手の武器は半分
   if (has('p_atk')) a += 3;
-  if (hurt('arm')) a = Math.floor(a * .8);
+  if (hurt('arm')) a = Math.floor(a * .6);
   return a;
 }
-function defPower() { let d = G.def; for (const k of ['r', 'l', 'armor']) { const g = gearBy(G.equip[k]); if (g && g.def) d += g.def; } if (has('p_def')) d += 3; return d; }
+function defPower() { let d = G.def; for (const k of ['r', 'l', 'armor']) { const g = gearBy(G.equip[k]); if (g && g.def) d += g.def; } if (has('p_def')) d += 3; if (hurt('leg')) d = Math.floor(d * .7); return d; }
 // そのジョブで覚える技のうち、勝利数が足りたものを覚える
 // 勝ち数はもう足りているのに覚えていない技（あとから足した技など）を、まとめて覚える
 function relearnAll(quiet) {
@@ -390,6 +390,7 @@ function hud() {
   for (const id of ['apl', 'apbar', 'apt']) $(id).style.visibility = mode === 'battle' ? 'visible' : 'hidden';
   // HPが3割以下: 画面のふちが赤く脈打つ
   { const dz = $('danger'); if (dz) dz.classList.toggle('on', mode !== 'town' && G.hp > 0 && G.hp <= G.mhp * .3); }
+  { const iz = $('injury'); if (iz) iz.classList.toggle('on', mode !== 'town' && G.injuries.some(k => !G.bandaged.includes(k))); }
 }
 // ボタン: 「戻る」系はいつも右下。見出しが2つ以上ある長い一覧はタブに分け、多すぎるときはページ送り
 const TAIL_T = ['戻る', 'やめる', '外に出る'];
@@ -708,7 +709,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 158'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 159'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -848,7 +849,7 @@ function homeMenu() {
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); sleepScene(() => say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true)); } },
     { t: 'ステータス', s: `Lv${G.lv} ${job()}`, f: () => statusMenu(homeMenu) },
-    { t: '書棚', s: `図鑑・武器の手引き`, f: () => { sfx('page', { vol: .6 }); openMenu('dex'); } },
+    { t: '書棚', s: `図鑑・技の手引き`, f: () => { sfx('page', { vol: .6 }); openMenu('dex'); } },
     { t: '装備を変える', s: job(), f: () => equipMenu(homeMenu) },
     { t: 'ツール', s: toolName(), f: () => toolMenu(homeMenu) },
     { t: '技を選ぶ', s: `${Math.min(G.loadout.skills.length, SKILL_MAX)}/${SKILL_MAX}`, f: () => skillMenu(homeMenu) },
@@ -1416,7 +1417,7 @@ function payClinic(p) {
 }
 function clinic(msg) {
   const L = [{ title: G.injuries.length ? `ケガ: ${G.injuries.map(k => INJURIES[k].name).join('・')}` : 'ケガはない' }];
-  const half = perk('elly') ? .5 : 1, cost = Math.floor(G.injuries.length * INJURY_PRICE * half);
+  const half = perk('elly') ? .5 : 1, cost = Math.floor(G.injuries.length * injuryPrice(G.maxFloor) * half);
   L.push({ t: 'ケガを治す', s: G.injuries.length ? `${cost}G` : 'ケガなし', hot: G.injuries.length > 0, off: !G.injuries.length, f: () => {
     const note = payClinic(cost); G.injuries = []; G.hp = G.mhp; G.treated++; save();
     const t = G.treated, line = t >= 6 ? 'エリー[angry]「……本気で、怒っています」' : t >= 3 ? 'エリー[think]「……また、ですか。次は、もっと気をつけてください」' : 'エリー[smile]「はい、もう大丈夫です。無理はしないでくださいね」';
@@ -1593,8 +1594,9 @@ let DEX = { cat: 'guide', page: 0, sel: -1, ch: 0 };
 const DEX_PER = 25;
 function dexBody() {
   dexInit();
-  const sub = `<div class="seg dexcat">${[['guide', '手引き'], ['gear', '装備'], ['meika', '名品'], ['mon', '魔物']].map(([k, l]) => `<button data-dex="${k}" class="${DEX.cat === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+  const sub = `<div class="seg dexcat">${[['guide', '手引き'], ['skill', '技'], ['gear', '装備'], ['meika', '名品'], ['mon', '魔物']].map(([k, l]) => `<button data-dex="${k}" class="${DEX.cat === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
   if (DEX.cat === 'guide') return sub + dexGuide();
+  if (DEX.cat === 'skill') return sub + dexSkills();
   const list = DEX.cat === 'gear' ? DEX_GEARS() : DEX.cat === 'meika' ? DEX_MEIKA() : DEX_MONS();
   const known = x => DEX.cat === 'mon' ? G.dex.m[x.id] !== undefined : DEX.cat === 'meika' ? !!(G.dex.g[x.id] || (G.bp || []).includes(x.id)) : !!G.dex.g[x.id];
   const got = list.filter(known).length, pages = Math.ceil(list.length / DEX_PER);
@@ -1631,8 +1633,23 @@ function dexGuide() {
   if (DEX.ch === 5) h = dexGodLore() + '<p class="note">女神に初めて会ったとき（1周目は11〜50階、2周目は51〜90階）に聞ける。</p>';
   return tabs + `<div class="dexread">${h}</div>`;
 }
+// 技の手引き（2026-11-27）: ジョブごとに、覚える技・パッシブと、覚える勝利数。まだなっていない上のジョブは伏せる
+const DEX_JOBS = () => Object.keys(JOBS).filter(j => (JOBS[j].learn || []).length);
+const dexJobKnown = j => Object.values(WEAPON_TYPES).some(W => W.job === j) || (G.jobWins[j] || 0) > 0 || job() === j;
+function dexSkills() {
+  const js = DEX_JOBS(); DEX.job = Math.max(0, Math.min(DEX.job || 0, js.length - 1));
+  const j = js[DEX.job], ok = dexJobKnown(j), w = G.jobWins[j] || 0, U = UPPERS.find(u => u.job === j), T = TOPS.find(t => t.job === j);
+  const how = U ? `${WEAPON_TYPES[U.hold].name}を持ち、${WEAPON_TYPES[U.exp].name}の熟練を積むとなれる` : T ? T.hint : `${(Object.values(WEAPON_TYPES).find(W => W.job === j) || {}).name || ''}を持つとなれる`;
+  const nav = `<div class="dexpage"><button data-jb="-1" ${DEX.job ? '' : 'disabled'}>◀</button><span><b>${ok ? j : '？？？'}</b>　${DEX.job + 1}/${js.length}</span><button data-jb="1" ${DEX.job < js.length - 1 ? '' : 'disabled'}>▶</button></div>`;
+  if (!ok) return `<div class="dexread">${nav}<div class="dexw one"><div><b>まだ、なったことのないジョブ</b><small>${how}。</small></div></div></div>`;
+  const rows = JOBS[j].learn.map(([n, id]) => { const S = SKILLS[id] || PASSIVES[id]; if (!S) return ''; const got = G.learned.includes(id), pas = !!PASSIVES[id];
+    return `<div class="${got ? '' : 'yet'}"><b>${S.name}<em>${pas ? 'パッシブ' : `AP${S.ap}`}　${got ? '覚えた' : n ? `${n}勝で覚える` : 'なると覚える'}</em></b><small>${S.desc}</small></div>`; }).join('');
+  const jin = ['jin1', 'jin2'].filter(k => G.learned.includes(k)).map(k => `<div><b>${SKILLS[k].name}<em>AP${SKILLS[k].ap}　どのジョブでも</em></b><small>${SKILLS[k].desc}</small></div>`).join('');
+  return `<div class="dexread">${nav}<p class="note">${how}。このジョブでの勝利：${w}</p><div class="dexw one dexsk">${rows}</div>${jin ? `<p class="note">ジンに教わった技</p><div class="dexw one dexsk">${jin}</div>` : ''}<p class="note">覚えた技はどのジョブでも使える。持ち込めるのは${SKILL_MAX}個、パッシブは${PASSIVE_SLOTS}個まで。</p></div>`;
+}
 function dexBind(m) {
-  m.querySelectorAll('[data-dex]').forEach(b => b.onclick = () => { DEX = { cat: b.dataset.dex, page: 0, sel: -1, ch: DEX.ch }; sfx('page', { vol: .5 }); openMenu('dex'); });
+  m.querySelectorAll('[data-jb]').forEach(b => b.onclick = () => { DEX.job = (DEX.job || 0) + +b.dataset.jb; sfx('page', { vol: .5 }); openMenu('dex'); });
+  m.querySelectorAll('[data-dex]').forEach(b => b.onclick = () => { DEX = { cat: b.dataset.dex, page: 0, sel: -1, ch: DEX.ch, job: Math.max(0, DEX_JOBS().indexOf(job())) }; sfx('page', { vol: .5 }); openMenu('dex'); });
   m.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { DEX.ch = +b.dataset.ch; sfx('page', { vol: .5 }); openMenu('dex'); });
   m.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { DEX.sel = +b.dataset.sel; sfx('select', { vol: .4 }); openMenu('dex'); });
   m.querySelectorAll('[data-lore]').forEach(b => b.onclick = () => { DEX.lore = +b.dataset.lore; sfx('page', { vol: .5 }); openMenu('dex'); });
@@ -1690,7 +1707,11 @@ function resumeTower() {
 }
 /* 2026-11-27: 工房に遊びに来た人は、話が終わったら自分の施設に帰る（Daichiさん） */
 const VISIT_HOME = { jenny: 'weapon', elly: 'clinic', ria: 'guild' };
-const VISIT_BYE = { jenny: 'ジェニーは「店、開けっぱなしだから」と、武具屋に戻っていった。', elly: 'エリーは、治療院へ帰っていった。', ria: 'リアは、ギルドへ戻っていった。', fuuka: 'フウカは、いつの間にかいなくなっていた。' };
+const VISIT_BYE = {  // 2026-11-27: 帰るときに、ひとこと言ってから帰る
+  jenny: 'ジェニー「……店、開けっぱなしだから。じゃあね。\n……無茶しないでよ」\nジェニーは、武具屋に戻っていった。',
+  elly:  'エリー[smile]「そろそろ、治療院に戻りますね。\nケガをしたら、すぐに来てください」\nエリーは、治療院へ帰っていった。',
+  ria:   'リア「では、ギルドに戻ります。\n次の報告、お待ちしていますね」\nリアは、ギルドへ戻っていった。',
+  fuuka: 'フウカ「……任務に戻ります。ご武運を」\n振り向くと、もう誰もいなかった。' };
 function visitLeave(w) { if (G.visit && G.visit.who) { G.visit.who = G.visit.who.filter(x => x !== w); if (!G.visit.who.length) G.visit.line = false; save(); } }
 function closeMenu() { const m = $('menu'); if (m) m.classList.remove('on'); }
 function applyOpts() { if (SND.setVol) SND.setVol(OPTS.bgm, OPTS.sfx); }
@@ -2160,6 +2181,8 @@ const allDead = () => B.ms.every(x => x.hp <= 0);
 // 狙っている敵（倒れていたら、次の生きている敵に移る）
 function target() { let m = B.ms[B.ti]; if (!m || m.hp <= 0) { B.ti = B.ms.findIndex(x => x.hp > 0); m = B.ms[B.ti]; } return m || B.ms[0]; }
 function apBase() { return 3 + (has('p_ap') ? 1 : 0) + (MK().ap || 0) - (hurt('rib') ? 1 : 0); }
+// ケガをした瞬間: 画面のふちが黄色く光る（やられそうな時の赤とは別）。ケガが残っている間は、うすい黄色がふちに残る（2026-11-27）
+function injuryFlash(ms) { setTimeout(() => { const z = $('injury'); if (!z) return; z.classList.remove('hit'); void z.offsetWidth; z.classList.add('hit'); sfx('wallhit', { vol: .7 }); }, ms || 0); }
 const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 // ケガをする（すでに全部のケガをしていたら何もしない）
 function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
@@ -2366,7 +2389,7 @@ function doSkill(id) {
   const hitAt = (i, tg) => { if (!sh) return; const dl = (sh.wait || 0) + i * (sh.gap || 0); FX_AT = tg; FX_COLOR = SKILL_COLOR[id] || null; sh.hit(i, dl, tg); FX_AT = null; FX_COLOR = null; B.hitDelay = dl + (sh.at || 0); };
   const K = MK(); B.basic = id === 'attack';
   const mult = (s.mult || 1) + (s.rageScale ? s.rageScale * (1 - G.hp / G.mhp) : 0), tgx = (s.bossx && m.boss ? s.bossx : 1) * (s.plantx && PLANT_RE.test(m.id || '') ? s.plantx : 1);
-  const power = (atkPower() * mult * tgx * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0)) * (s.magic && K.magic ? K.magic : 1) * (id === 'jin1' && K.issen ? 1.5 : 1);
+  const power = (atkPower() * mult * tgx * B.boost * (B.turn === 1 && has('p_focus') ? 1.5 : 1) + (s.magic ? G.lv * 2 : 0)) * (s.magic && K.magic ? K.magic : 1) * (id === 'jin1' && K.issen ? 1.5 : 1) * (hurt('head') && id !== 'attack' ? .75 : 1);
   switch (s.kind) {
     case 'atk': {
       if (s.kill && !m.boss && R() < s.kill) { m.hp = 0; m.dying = performance.now(); fx.hit = 1; m.anim = { kind: 'hit', t0: performance.now() }; log(`${s.name}！ ${m.name}の急所を貫いた。`); break; }
@@ -2399,7 +2422,7 @@ function doSkill(id) {
     case 'guard': B.cut = Math.min(B.cut, s.cut * (has('p_guard') ? .7 : 1)); log(`${s.name}。守りを固めた。${s.heal ? `HPが${healMe(s.heal + G.lv * 3)}回復。` : ''}`); break;
     case 'counter': B.counter = { cut: s.cut, back: s.back }; log(`${s.name}。次の攻撃に備えた。`); break;
     case 'buff': B.boost = s.boost; log(`${s.name}。このターンの攻撃が強くなる。${s.heal ? `HPが${healMe(s.heal + G.lv * 2)}回復。` : ''}`); break;
-    case 'sleep': { let n = 0; for (const x of alive()) if (R() < (x.boss ? s.stun * .35 : s.stun)) { x.stun = true; x.charge = false; n++; } log(`${s.name}。${n ? `${n}体が眠った。` : '……効かなかった。'}`); break; }
+    case 'sleep': { let n = 0; for (const x of alive()) if (R() < (x.boss ? s.stun * .35 : s.stun)) { x.stun = true; x.sleep = true; x.charge = false; n++; } log(`${s.name}。${n ? `${n}体が眠った。` : '……効かなかった。'}`); break; }
     case 'dodge': B.dodge = s.dodge; log(`${s.name}！`); break;
     case 'steal': { const k = Object.keys(m.drop)[0]; if (R() < (has('p_steal') ? .8 : .5)) { add(G.carry, k, 1); log(`${NAMES[k]}を盗んだ！`); } else log('盗めなかった。'); break; }
     case 'flee': if (s.sure && B.ms.some(x => x.boss)) { log('主からは、逃げられない！'); break; }
@@ -2415,7 +2438,7 @@ function endTurn() {
   // 敵の番: 生きている敵が順に攻撃する（ボスは2回動くことがある）
   let order = 0;
   for (const m of alive()) {
-    if (m.stun) { log(`${m.name}は動けない。${m.charge ? '構えがくずれた！' : ''}`); m.stun = false; m.charge = false; continue; }
+    if (m.stun) { log(m.sleep ? `${m.name}は眠っている。` : `${m.name}は動けない。${m.charge ? '構えがくずれた！' : ''}`); m.stun = false; m.sleep = false; m.charge = false; continue; }
     // 2026-11-25: 大技の予告。力をためた次のターンに、強い一撃が来る（守るか、先に倒すか）
     let big = false;
     if (m.charge) { big = true; m.charge = false; m.lastCharge = B.turn; }
@@ -2435,10 +2458,11 @@ function endTurn() {
       if (B.counter) { d = Math.ceil(d * B.counter.cut); const c = dmgTo(m, atkPower() * B.counter.back); log(`受け止めて反撃！ ${c}のダメージ。`); B.counter = null; }
       else d = Math.ceil(d * B.cut);
       if (m.boss && G.bless === 'ward') d = Math.ceil(d * .7);
+      if (hurt('rib')) d = Math.ceil(d * 1.2);
       { const rf = MK().reflect; if (rf && m.hp > 0) { const back = dmgTo(m, d * rf, true); log(`鏡の盾が、${back}のダメージを返した。`); } }
       G.hp -= d; B.pendMe = (B.pendMe || 0) + d; { const dd = d, w = (order - 1) * 220, BB = B; setTimeout(() => { BB.pendMe = Math.max(0, (BB.pendMe || 0) - dd); hud(); popNum(dd, 'me', 'hurt'); fx.flash = .8; fx.shake = Math.max(fx.shake || 0, 6); }, w); } log(`${m.name}の攻撃。${d}のダメージを受けた。`);
-      // 大きな一撃（最大HPの35%以上）はケガが残ることがある
-      if (G.hp > 0 && d >= G.mhp * .35 && R() < .25 && !MK().noInjury && !(big && floorNo <= 5)) { const x = injure(); if (x) log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); }
+      // 大きな一撃はケガが残ることがある（2026-11-27: 最大HPの2割から。重いほど、大技ほど残りやすい。3階までは残らない）
+      if (G.hp > 0 && d >= G.mhp * .2 && floorNo > 3 && R() < Math.min(.6, .08 + (d / G.mhp - .2) * 1.2 + (big ? .15 : 0)) && !MK().noInjury && !(big && floorNo <= 5)) { const x = injure(); if (x) { log(`${INJURIES[x].name}をした！（${INJURIES[x].desc}）`); injuryFlash((order - 1) * 220 + 120); } }
       if (allDead()) { win(); return; }
       if (m.hp <= 0) break;
       if (G.hp <= 0 && G.bless === 'stand' && !B.stood) { G.hp = 1; B.stood = true; G.bless = null; playFx('blessing', { self: true, size: 1.2 }); say('resolve', '「……まだだ！」\nエリーの祈りで、踏みとどまった！'); continue; }
@@ -2978,6 +3002,7 @@ function drawMonsterImg(m, t, i) {
   if (A.kind === 'attack' && dt < 480) { pose = 'attack'; const k = Math.sin(Math.min(1, dt / 480) * Math.PI); sx *= 1 + k * .14; sy *= 1 + k * .14; oy = k * 10; }
   if (A.kind === 'hit' && dt < 360) { pose = 'hit'; const k = 1 - dt / 360; ox = Math.sin(dt / 25) * 5 * k; oy = -4 * k; white = dt < 90 ? .75 : 0; }
   if (m.charge && !m.dying) { sy *= 1.04; oy -= 3 + Math.sin(t / 90) * 1.5; }
+  if (m.sleep && !m.dying && pose === 'idle') { pose = 'hit'; sy = 1 + Math.sin(t / 900) * .025; sx = 1; oy += 4; }  // 2026-11-27: 眠っている魔物は、やられた姿でゆっくり息をする
   if (m.dying && t >= m.dying) { const d = Math.min(1, (t - m.dying) / 700); pose = 'hit'; alpha = 1 - d; oy = d * 18; sy *= 1 - d * .25; white = d < .2 ? .6 : 0; }
   const img = (monImg(m, pose) && monImg(m, pose).complete && monImg(m, pose).naturalWidth ? monImg(m, pose) : null) || monImg(m, 'idle');
   // 大きさ（2026-11-25）: 10階ごとの主がいちばん大きい（足元は切れてよい）。番人などのボスは、ふつうの魔物よりひとまわり大きい。頭は名前の帯の下に収める
@@ -3018,6 +3043,15 @@ function drawMonsterImg(m, t, i) {
     const o = drawMonsterImg.c; o.width = img.width; o.height = img.height; const g = o.getContext('2d');
     g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = '#fff'; g.fillRect(0, 0, o.width, o.height);
     ctx.globalAlpha = white * alpha; ctx.drawImage(o, cx - W * sx / 2, by - H * sy, W * sx, H * sy);
+  }
+  if (m.sleep && !m.dying && !m.mirror) {  // 眠っている: 頭の上に Zzz が、ふわふわ浮いていく
+    const fs = Math.round(Math.max(18, H * .1)), hx = cx + W * sx * .22, hy = Math.max(30 + fs, by - H * sy + fs * .6);
+    ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = '#140a30';
+    for (let k = 0; k < 3; k++) { const ph = ((t / 1400) + k / 3) % 1, z = fs * (.7 + ph * .6);
+      ctx.globalAlpha = alpha * Math.min(1, ph * 4) * (1 - ph); ctx.font = `900 ${Math.round(z)}px sans-serif`;
+      const zx = hx + ph * fs * 1.3 + Math.sin(t / 300 + k) * 3, zy = hy - ph * fs * 2.2;
+      ctx.strokeText('Z', zx, zy); ctx.fillStyle = '#cfc4ff'; ctx.fillText('Z', zx, zy); }
+    ctx.globalAlpha = alpha;
   }
   if (m.charge && !m.dying && !m.mirror) {  // 力をためている: 赤く脈打って、頭の上に「！」
     if (!drawMonsterImg.rc) drawMonsterImg.rc = document.createElement('canvas');

@@ -500,7 +500,7 @@ const ITEMS = {
   herb_m:  { name:'中薬草',         price:25, short:'HP中回復', desc:'HPをそこそこ回復',             battle:true },
   herb_l:  { name:'大薬草',         price:60, short:'HP全回復', desc:'HPを全回復',                   battle:true },
   wing:    { name:'帰還の羽',       price:30, short:'町へ帰る', desc:'町へ帰れる' },
-  bandage: { name:'包帯',           price:20, short:'ケガを一時的に治す', desc:'ケガを1つ一時的に治す（町に戻ったら治療が必要）', battle:true },
+  bandage: { name:'包帯',           price:40, short:'ケガを一時的に治す', desc:'ケガを1つ一時的に治す（町に戻ったら治療が必要）', battle:true },
   bird:    { name:'バードキャリー', price:40, short:'戦利品を工房へ', desc:'鳥が今の戦利品を全部工房に運んでくれる（戦利品だけ）' },
   ward:    { name:'魔除け',         price:25, short:'出会う率−30%・3階', desc:'魔物に出会う率−30%（使ってから3フロア）' },
   lure:    { name:'魔寄せ',         price:20, short:'出会う率+40%・3階', desc:'魔物に出会う率+40%（使ってから3フロア）' },
@@ -526,12 +526,14 @@ const RUMORS = {
 // ---------- 治療院（2026-11-23 決定） ----------
 // ケガ: 倒れたときや、大きな一撃を受けたときに残る。工房のベッドでは治らず、治療院でしか治せない
 const INJURIES = {
-  arm:  { name:'腕の骨折',     desc:'攻撃−20%' },
-  leg:  { name:'足のねんざ',   desc:'攻撃をかわせない・逃げにくい' },
-  rib:  { name:'あばらのヒビ', desc:'毎ターンのAP−1' },
-  head: { name:'頭の打撲',     desc:'会心が出ない' },
+  // 2026-11-27: ケガを重くした（腕−20%→−40%、足・あばら・頭にも1つずつ足した）。そのぶん、ケガをしやすくした
+  arm:  { name:'腕の骨折',     desc:'攻撃−40%' },
+  leg:  { name:'足のねんざ',   desc:'攻撃をかわせない・逃げにくい・守り−30%' },
+  rib:  { name:'あばらのヒビ', desc:'毎ターンのAP−1・受けるダメージ+20%' },
+  head: { name:'頭の打撲',     desc:'会心が出ない・技の威力−25%' },
 };
-const INJURY_PRICE = 30;
+const INJURY_PRICE = 30;  // 1つぶんの治療代の元。上の階まで行った人ほど高い（injuryPrice）
+const injuryPrice = top => INJURY_PRICE + Math.floor((top || 0) * 6);
 // 祝福: エリーに祈ってもらう。次の1回の挑戦だけ効く守り（料理は攻め、祝福は守り）。一度に1つ
 const BLESSINGS = {
   stand: { name:'踏みとどまる祈り', price:40, desc:'一度だけ、倒れてもHP1で踏みとどまる' },

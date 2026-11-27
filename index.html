@@ -189,6 +189,10 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
 /* HPが少ないとき */
 #danger{position:fixed;inset:0;z-index:39;pointer-events:none;opacity:0;transition:opacity .6s;box-shadow:inset 0 0 60px 12px rgba(220,20,10,.65),inset 0 0 140px 24px rgba(140,0,0,.3)}
 #danger.on{opacity:1;animation:pulse 1.1s ease-in-out infinite}
+#injury{position:fixed;inset:0;z-index:38;pointer-events:none;opacity:0;transition:opacity .6s;box-shadow:inset 0 0 50px 8px rgba(255,205,20,.75),inset 0 0 130px 26px rgba(220,160,0,.3)}
+#injury.on{opacity:.85;animation:pulse 2.4s ease-in-out infinite}
+#injury.hit{animation:injhit 1.2s ease-out;opacity:1}
+@keyframes injhit{0%{opacity:1;background:rgba(255,215,40,.4)}35%{opacity:1;background:rgba(255,215,40,.14)}100%{background:transparent}}
 @keyframes pulse{50%{opacity:.45}}
 .btns.tail .auto{flex:0 0 24%}.btns.tail .auto.on{border-color:#7cc4ff;background:#16324a;color:#cfe9ff}
 /* 話している人の顔: セリフ欄の外、枠なし */
@@ -233,7 +237,7 @@ h2{font-size:14px;margin:0 0 2px;color:var(--ember2);font-weight:600}
 </main>
 <div id="fade"></div>
 <div id="flash"></div>
-<div id="danger"></div>
+<div id="danger"></div><div id="injury"></div>
 <script src="js/assets.js"></script>
 <script src="js/props.js"></script>
 <script src="js/fx.js"></script>
