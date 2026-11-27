@@ -638,3 +638,19 @@ HP {0}/{1}|HP {0}/{1}
 {0}（{1}〜{2}階）|{0} (Floors {1}-{2})
 押して祈る|Tap to pray
 {0}: {1}|{0}: {1}
+ギルドの資料庫|Guild Archive
+資料庫|Archive
+どの階で何がとれるか|What you can find on each floor
+魔物と素材|Monsters & Materials
+主・番人と採取|Bosses & Gathering
+壁を掘ると|Digging walls
+鉱脈|Ore veins
+魔物が|Monsters
+ときどき|sometimes
+持っている|carry
+{0}の加護が効く|{0}'s blessing applies
+90階から上の記録は、まだない。……誰も、そこまで行ったことがないのだ。|There are no records above the 90th floor yet. ...No one has ever made it that far.
+{0}〜{1}階|Floors {0}-{1}
+{0}階〜|From F{0}
+{0}階・主|F{0} · Master
+{0}階・番人|F{0} · Guardian

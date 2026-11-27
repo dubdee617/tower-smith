@@ -321,3 +321,25 @@ html.en #ctl.pg::after{content:'▼ Tap to continue'}
 /* 工房の窓: カードの右上に売値（2026-11-26） */
 #fw .fwi{position:relative}#fw .fwi .sp{position:absolute;top:3px;right:5px;font-size:10px;color:#ffd76a;line-height:1;pointer-events:none}
 #fw .fwi .nm{padding-right:42px}
+
+/* ギルドの資料庫（2026-11-27） */
+#arc{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:calc(10px + env(safe-area-inset-top)) 8px 8px}
+#arc .arw{width:100%;max-width:520px;max-height:100%;display:flex;flex-direction:column;border:2px solid #c9a25d;border-radius:8px;background:linear-gradient(#2a1d12,#140d08);padding:8px 10px;color:#efe3cc;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.8)}
+#arc .arh{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}#arc .arh b{color:#ffc069;font-size:16px;letter-spacing:.1em}
+#arc .arh .x{min-height:30px;padding:0 12px;font-size:13px}
+#arc .art{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:5px}
+#arc .art button{min-height:34px;padding:1px 2px;font-size:12px;line-height:1.15}#arc .art button small{display:block;font-size:10px;color:#cdb894}
+#arc .art button.on{background:linear-gradient(#a3481a,#6a2a0c)!important;color:#fff3d6}
+#arc .ars{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:4px}#arc .ars button{min-height:30px;font-size:13px}#arc .ars button.on{background:linear-gradient(#5a7a3a,#34521c)!important;color:#fff3d6}
+#arc .arb{overflow:hidden;min-height:0;flex:1 1 auto}
+#arc h3{margin:2px 0 3px;font-size:14px;color:#fff3d6}#arc h3 small{margin-left:8px;font-size:11px;color:#ffd98a}
+#arc table{width:100%;border-collapse:collapse}
+#arc tr{border-bottom:1px solid rgba(201,162,93,.18)}#arc tr.boss th{color:#ff9a6a}
+#arc th{text-align:left;font-weight:400;white-space:nowrap;padding:1px 6px 1px 0;width:1%;color:#fff3d6;font-size:12px}#arc th small{margin-left:4px;color:#a8946e;font-size:10px}
+#arc td{padding:1px 0;line-height:1.25}
+#arc td span,#arc dd span{display:inline-flex;align-items:center;margin-right:7px;white-space:nowrap}
+#arc img{width:15px;height:15px;margin-right:2px;object-fit:contain}
+#arc dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:2px 8px}#arc dt{color:#ffd98a;font-size:11px;white-space:nowrap}#arc dd{margin:0;line-height:1.25}
+#arc dd small{margin-left:2px;color:#a8946e;font-size:10px}
+#arc .note{margin:5px 0 0;color:#cdb894;font-size:11px}
+#arc.tight .art button{min-height:26px;font-size:11px}#arc.tight .art button small{font-size:9px}#arc.tight .ars button{min-height:26px}#arc.tight img{width:12px;height:12px}#arc.tight td,#arc.tight dd{line-height:1.1}#arc.tight h3{font-size:13px;margin:0 0 2px}

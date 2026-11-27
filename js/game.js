@@ -708,7 +708,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 156'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 157'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1469,6 +1469,7 @@ function guild(msg, face) {
     { t: '素材を売る', s: have ? `工房の素材${have}個` : '素材がない', f: () => guildSell() },
     { t: '素材を買う', s: '値上がり中', f: () => guildBuy() },
     { t: '到達記録', s: `${heroName()} ${G.maxFloor}階`, f: () => log(`最高到達: 近衛兵長ギャバン 86階／${heroName()} ${G.maxFloor}階${G.bossDown ? '（10階の主を倒した）' : ''}`, true) },
+    { t: '資料庫', s: 'どの階で何がとれるか', f: () => archiveWin() },
     guestBtn(), talkBtn('ria', () => inside('guild', byeLine('ria'))), leave].filter(Boolean));
   if (msg) { if (face) say(face, msg, true); else log(msg, true); }
 }
