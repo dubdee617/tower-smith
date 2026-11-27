@@ -285,3 +285,95 @@ HP {0}/{1}|HP {0}/{1}
 ジェニー[happy]「でしょ？ わかってるじゃない」|Jenny[happy]「Right? You get it.」
 ジェニー[doubt]「はあ？ 置き方も大事なの」|Jenny[doubt]「Huh? How you display them matters too.」
 ジェニー[happy]「……ほんとに？ 約束だからね」|Jenny[happy]「...Really? That's a promise, okay?」
+エリー「信じません。腕を見せてください」|Elly「I don't believe you. Show me your arm.」
+エリー[worried]「やっぱり。……でも、正直に言ってくださって、よかったです」|Elly[worried]「I knew it. ...But I'm glad you told me honestly.」
+エリー[shy]「……それなら、よかったです」|Elly[shy]「...Then I'm glad.」
+エリー[smile]「ありがとうございます。新しい薬を、作ってみます」|Elly[smile]「Thank you. I'll try making a new medicine.」
+エリー[smile]「では、今度、図鑑をお貸しします」|Elly[smile]「Then I'll lend you a field guide next time.」
+エリー[shock]「えっ……。……無理です。私、ネズミも怖いので」|Elly[shock]「Oh... ...I couldn't. I'm even scared of mice.」
+エリー[smile]「一日三回です。……忘れないでください」|Elly[smile]「Three times a day. ...Please don't forget.」
+エリー[worried]「……日焼けの薬も、用意しておくべきでした」|Elly[worried]「...I should have prepared something for sunburn too.」
+エリー[shy]「……届いていたなら、うれしいです」|Elly[shy]「...If they reached you, I'm happy.」
+エリー「あります。なければ、作ってください」|Elly「You do. And if you don't, make the time.」
+エリー[smile]「……怒るのは、心配しているからです」|Elly[smile]「...I scold you because I worry.」
+エリー[happy]「……本当ですか。では、明日からもう少し明るくします」|Elly[happy]「...Really? Then I'll make it a little brighter from tomorrow.」
+エリー[smile]「……そうですよね。でも、灯しておきます」|Elly[smile]「...I suppose not. But I'll keep it lit.」
+エリー[smile]「赤が蛇、緑が虫、青が熱さましです。……色だけ、覚えておいてください」|Elly[smile]「Red for snakes, green for insects, blue for fever. ...Just remember the colors.」
+エリー「使い方を書いた紙を、袋に入れてあります」|Elly「I put a note with the directions in the bag.」
+エリー[shy]「……そういうことを言うと、本当についていきますよ」|Elly[shy]「...If you say things like that, I really will come along.」
+エリー[shy]「……どんな夢ですか。……いえ、やっぱり言わないでください」|Elly[shy]「...What kind of dream? ...No, please don't tell me.」
+エリー[shy]「……知りません。自分では、見えないので」|Elly[shy]「...I wouldn't know. I can't see my own face.」
+エリー[smile]「……そうなんです。……鈍い人」|Elly[smile]「...Exactly. ...Such a dense man.」
+エリー[shy]「……そうですか。……同じ、なんですね」|Elly[shy]「...I see. ...So it's the same for you.」
+エリー「……私にやらせてください」|Elly「...Please, let me do it.」
+エリー[smile]「なんですか、それ。……でも、少し安心しました」|Elly[smile]「What is that supposed to mean? ...But I feel a little relieved.」
+エリー[smile]「……神様より、私を頼ってください」|Elly[smile]「...Rely on me, rather than the gods.」
+エリー「大げさではありません」|Elly「It's not an exaggeration.」
+エリー[happy]「おかえりなさい……。本当に、本当に……」|Elly[happy]「Welcome back... Truly, truly...」
+エリー[smile]「……あとで、一応診ます」|Elly[smile]「...I'll still examine you later, just in case.」
+エリー[happy]「……はい。塔のない日にも、花を描きます」|Elly[happy]「...Yes. I'll draw flowers on the days without the tower, too.」
+エリー[worried]「……大事な話なのに」|Elly[worried]「...And this was important.」
+エリー[smile]「60階を越えた人の診察は、初めてです。……記録に残しておきます」|Elly[smile]「This is my first time examining someone who's passed the 60th floor. ...I'll keep a record of it.」
+エリー[happy]「おかえりなさい。……今日は、ケガの話ではなく、お茶の話をしましょう」|Elly[happy]「Welcome back. ...Today, let's talk about tea instead of injuries.」
+エリー[smile]「我慢強いんですね。でも、痛いときは、痛いと言ってください」|Elly[smile]「You're very patient. But when it hurts, please say so.」
+エリー[smile]「はい。……念のため、紙に書いてお渡しします」|Elly[smile]「Yes. ...Just in case, I'll write it down for you.」
+エリー「勲章でも、痛いものは痛いんです。薬を塗ります」|Elly「Badge or not, pain is pain. I'll apply some medicine.」
+エリー「それでも、です。帰ってこられなかったら、意味がありません」|Elly「Even so. If you can't come back, none of it means anything.」
+エリー[happy]「本当ですか。助かります」|Elly[happy]「Really? That would help.」
+エリー「そう言う方ほど、運ばれてくるんです」|Elly「The people who say that are the ones who get carried in.」
+エリー[smile]「はい。約束です」|Elly[smile]「Yes. It's a promise.」
+エリー[happy]「釣り、ですか。意外です。……今度、どこで釣れるか教えてください」|Elly[happy]「Fishing? That's unexpected. ...Tell me where they bite sometime.」
+エリー[worried]「……それは、治療師として見過ごせません」|Elly[worried]「...As a healer, I can't overlook that.」
+エリー[smile]「もう、ずっと前の話です」|Elly[smile]「That was a long time ago now.」
+エリー[shy]「……秘密です。できたら、お見せします」|Elly[shy]「...It's a secret. I'll show you when it's done.」
+エリー[smile]「照れている鍛冶屋さんは、珍しいです」|Elly[smile]「It's rare to see you embarrassed.」
+エリー[happy]「はい、好きです。……少し騒がしいですけれど」|Elly[happy]「Yes, I like them. ...Even if they're a little noisy.」
+エリー[smile]「よかった。……でも、一袋お渡ししておきます」|Elly[smile]「Good. ...But I'll give you a bag anyway.」
+エリー[shy]「……それは、うれしいです。お茶を淹れます」|Elly[shy]「...That makes me happy. I'll make some tea.」
+エリー[smile]「はい、ご用意します。……でも、お顔が見られて、うれしかったです」|Elly[smile]「Yes, I'll get it ready. ...But I was glad to see your face.」
+エリー[shy]「……ずるいです。今夜は、眠れそうにありません」|Elly[shy]「...That's unfair. I don't think I'll sleep tonight.」
+エリー[smile]「……では、もっといい薬を作ります」|Elly[smile]「...Then I'll make even better medicine.」
+エリー[happy]「本当ですか。……お弁当、作っていきます」|Elly[happy]「Really? ...I'll make us lunch.」
+エリー[smile]「丘に魔物はいません。……でも、心強いです」|Elly[smile]「There are no monsters on the hill. ...But it's reassuring.」
+エリー[smile]「はい。……誰のことか、聞かないんですね」|Elly[smile]「Yes. ...You don't ask who it is.」
+エリー[shy]「……それは、とても、うれしいです」|Elly[shy]「...That makes me very happy.」
+エリー[angry]「倒れるまで無理をしたんですね。……治療師として、今日は見過ごせません」|Elly[angry]「You pushed yourself until you collapsed. ...As a healer, I can't let that pass today.」
+エリー[smile]「早めに戻られたんですね。……私は、そのほうが安心です」|Elly[smile]「You came back early. ...I feel better that way.」
+エリー「{k}匹も魔物と戦ったんですか？ ……腕を、少し見せてください」|Elly「You fought {k} monsters? ...Let me see your arm for a moment.」
+エリー[happy]「おかえりなさい。……今日は、ケガをしていませんね」|Elly[happy]「Welcome back. ...No injuries today.」
+エリー[shy]「お茶、二人分淹れてあります。……たまたまです」|Elly[shy]「I made tea for two. ...By coincidence.」
+エリー[smile]「……本当に、ひどい人」|Elly[smile]「...Truly, a cruel man.」
+エリー[shy]「……それなら、いいんです」|Elly[shy]「...Then that's all right.」
+エリー[smile]「塔にも、持っていってください」|Elly[smile]「Take it with you to the tower, too.」
+エリー[worried]「……では、新しいのを作ります」|Elly[worried]「...Then I'll make a new one.」
+エリー「チッチさん、手を切っています。……包帯を巻きます」|Elly「Chicchi, you've cut your hand. ...I'll bandage it.」
+エリー[smile]「ブッパさん、またここで寝ています。……毛布を、かけておきます」|Elly[smile]「Buppa's sleeping here again. ...I'll put a blanket over him.」
+エリー「往診に来ました。……塔から帰った方は、念のため、です」|Elly「I've come for a house call. ...Anyone back from the tower gets checked, just in case.」
+エリー「アルスさん、手のまめ、つぶれてませんか？ ……ほら、やっぱり。包帯を巻きます」|Elly「Als, have your blisters burst? ...There, I thought so. I'll bandage them.」
+エリー「工房って、こんなに暑いんですね。……お水は、こまめに飲んでください」|Elly「So the workshop gets this hot. ...Drink water often.」
+エリー[smile]「わかっています。……気持ちの問題です」|Elly[smile]「I know. ...It's about how it feels.」
+エリー[smile]「本当ですか。……きっと、見えないと思いますけれど」|Elly[smile]「Really? ...Though I'm sure you can't actually see it.」
+エリー[smile]「……苦かったですか。顔に出ています」|Elly[smile]「...Was it bitter? It shows on your face.」
+エリー「では、はちみつを入れます」|Elly「Then I'll add some honey.」
+エリー[shy]「……少しだけ、そうかもしれません」|Elly[shy]「...Maybe a little.」
+エリー[smile]「悪くはありません。確かめたかっただけです」|Elly[smile]「Nothing's wrong. I just wanted to check.」
+エリー[shy]「……鍛冶屋さんのせいですよ」|Elly[shy]「...It's your fault, you know.」
+エリー[worried]「……考えさせているのは、鍛冶屋さんです」|Elly[worried]「...You're the one who makes me think about it.」
+エリー[shy]「……毎日、祈っています」|Elly[shy]「...I pray every day.」
+エリー[happy]「……本当に、行ってしまいますよ」|Elly[happy]「...I really will come, you know.」
+エリー[smile]「……違います。そういう意味では、ありません」|Elly[smile]「...No. That's not what I meant.」
+エリー「あ、患者さんが。……また、あとで」|Elly「Oh, a patient. ...Later, then.」
+エリー[smile]「指切り、ですね。……子どもみたいです。でも、うれしい」|Elly[smile]「A pinky promise. ...Like children. But I'm happy.」
+エリー[shy]「……だめです。それは、だめです」|Elly[shy]「...No. Not that.」
+エリー[smile]「あ、おかえりなさい。今日は、ケガをしていませんか」|Elly[smile]「Oh, welcome back. No injuries today?」
+エリー[shock]「えっ……塔に行くんですか？ 町いちばんの鍛冶屋さんが……」|Elly[shock]「What... You're going into the tower? The best smith in town...」
+エリー[smile]「10階の主を……。みんな驚いていましたけれど、私は信じていました」|Elly[smile]「The 10th floor master... Everyone was surprised, but I believed in you.」
+エリー[angry]「……本気で、怒っています」|Elly[angry]「...I'm truly angry.」
+エリー「どのお祈りにしますか？ 押すと、くわしく説明します」|Elly「Which prayer would you like? Tap one and I'll explain it.」
+エリー[shy]「……いえ。治療師として、当然のことです」|Elly[shy]「...No. It's only natural for a healer.」
+エリー[shock]「えっ……。お腹を壊します」|Elly[shock]「What... You'll upset your stomach.」
+エリー「……そう、ですよね」|Elly「...Right, of course.」
+エリー[smile]「では、一言だけ。『おかえりなさい』」|Elly[smile]「Then just one word. 'Welcome home.'」
+エリー[smile]「はい。水は、二日に一度で足ります」|Elly[smile]「Yes. Watering every other day is enough.」
+エリー[smile]「では、工房に置いておいてください」|Elly[smile]「Then keep it at the workshop.」
+エリー[shock]「……食べないでください」|Elly[shock]「...Please don't eat it.」

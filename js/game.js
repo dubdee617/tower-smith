@@ -537,7 +537,7 @@ const PLACES = {
   home:   { name: '工房（自宅）', box: [168,  468,  302,  560], hello: ['アルス「師匠、おかえりなさい！ 今日の名言、まだですか」', 'チッチ「掃除しといたっす。あ、炉の火は落としてないっす」', 'チッチ[laugh]「親方の剣、磨いといたっす！ ……盗んでないっすよ？」', 'チッチ[shy]「アルス君に『チッチさんの料理、最高です』って言われたっす。……照れるっす」', 'チッチ[think]「鍵なら開けられるっす。心の鍵？ ……知らないっす」', '床に獲物が置いてある。オルグだろう。'] },
   weapon: { name: '武具屋', box: [321,  410,  445,  490], hello: ['ジェニー「打ったの見せて。値段は私が決める」', 'ジェニー[laugh]「叩けば直る。人生以外は」',
     'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」'] },
-  clinic: { name: '治療院', box: [312,  242,  413,  325], hello: ['エリー[smile]「あ、おかえりなさい！ 今日はケガしてませんか？」', 'エリー「神様はちゃんと聞いてますよ。……たまに返事が遅いだけで」',
+  clinic: { name: '治療院', box: [312,  242,  413,  325], hello: ['エリー[smile]「あ、おかえりなさい。今日は、ケガをしていませんか」', 'エリー「神様はちゃんと聞いてますよ。……たまに返事が遅いだけで」',
     'エリー[smile]「これ、お守りです。手作りなんですけど……」\n「ありがとう。治療院の新しい商品か？」', 'エリー「無茶しないでくださいね。……私、毎晩お祈りしてるんですから」\n「神様も忙しいだろうに、悪いな」'] },
   guild:  { name: 'ギルド', box: [25,  325,  149,  407], hello: ['ジロ「ゴローが、今日の塔は機嫌が悪いって言ってる」', 'リア「最高到達記録は86階。近衛兵長のギャバンさんの記録です」', 'リア[smile]「依頼はまだ準備中です。……もう少し待っててくださいね」',
     'リア「鍛冶屋さんの到達記録は、毎回私が書いてます。……ほかの人のは新人に任せてますけど」\n「そうか、大変だな」', 'リア[smile]「記録を更新したら、お祝いしましょうか。……ふたりで」\n「いいな。ギルドのみんなも呼ぼう」', 'ボルツ[laugh]「旦那！ 戦利品があるなら奥に回してくれ。加工は俺の仕事だ」'] },
@@ -563,9 +563,9 @@ const STAGE = {
     [10, ['ジェニー[laugh]「10階の主ねぇ。……ま、あんたならやると思ってたわ」', 'ジェニー「お客さんがね、『あの鍛冶屋の武器なら登れる』って買っていくのよ。商売上がったり……じゃないわね」']],
   ],
   clinic: [
-    [0, ['エリー[shock]「えっ、塔に行くんですか！？ 町いちばんの鍛冶屋さんが……？」']],
+    [0, ['エリー[shock]「えっ……塔に行くんですか？ 町いちばんの鍛冶屋さんが……」']],
     [5, ['エリー「5階まで行ったって聞きました。……本当に、無茶しないでくださいね」']],
-    [10, ['エリー[smile]「10階の主を……！ みんな驚いてましたけど、私は信じてましたよ」']],
+    [10, ['エリー[smile]「10階の主を……。みんな驚いていましたけれど、私は信じていました」']],
   ],
   guild: [
     [0, ['リア[shock]「鍛冶屋さんが冒険者登録……？ 前例がありません。……書類、探してきます」', '冒険者たちが、主人公を見てひそひそ話している。']],
@@ -675,7 +675,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 144'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 145'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1372,7 +1372,7 @@ function clinic(msg) {
   const half = perk('elly') ? .5 : 1, cost = Math.floor(G.injuries.length * INJURY_PRICE * half);
   L.push({ t: 'ケガを治す', s: G.injuries.length ? `${cost}G` : 'ケガなし', hot: G.injuries.length > 0, off: !G.injuries.length, f: () => {
     const note = payClinic(cost); G.injuries = []; G.hp = G.mhp; G.treated++; save();
-    const t = G.treated, line = t >= 6 ? 'エリー[angry]「もう！ 私、本気で怒ってるんですからね！」' : t >= 3 ? 'エリー[think]「……また、ですか。次は、もっと気をつけてください」' : 'エリー[smile]「はい、もう大丈夫です。無理はしないでくださいね」';
+    const t = G.treated, line = t >= 6 ? 'エリー[angry]「……本気で、怒っています」' : t >= 3 ? 'エリー[think]「……また、ですか。次は、もっと気をつけてください」' : 'エリー[smile]「はい、もう大丈夫です。無理はしないでくださいね」';
     clinic(`${line}${note}\n「助かったよ」`); } });
   // 2026-11-26: お祈りは別の画面で、ひとつずつ中身を全部読んでから選ぶ
   L.push({ t: 'お祈り', s: G.bless ? `${BLESSINGS[G.bless].name}（次の挑戦で効く）` : '次の1回の挑戦だけ守ってもらう', f: () => blessMenu() });
@@ -1384,7 +1384,7 @@ function blessMenu(msg) {
   const half = perk('elly') ? .5 : 1, L = [{ title: G.bless ? `今の祈り: ${BLESSINGS[G.bless].name}` : 'お祈り（次の1回の挑戦だけ。どれか1つ）' }];
   for (const [id, b] of Object.entries(BLESSINGS)) { const bp = Math.floor(b.price * half); L.push({ t: b.name + (G.bless === id ? ' ◀' : ''), s: `${bp}G`, hot: G.bless === id, f: () => blessPick(id) }); }
   L.push({ t: '戻る', f: () => clinic() }); buttons(L);
-  log(msg || (G.bless ? `エリー[smile]「${BLESSINGS[G.bless].name}は、次の挑戦で効きますよ」` : 'エリー「どのお祈りにしますか？ 押すと、くわしく説明しますね」'), true);
+  log(msg || (G.bless ? `エリー[smile]「${BLESSINGS[G.bless].name}は、次の挑戦で効きますよ」` : 'エリー「どのお祈りにしますか？ 押すと、くわしく説明します」'), true);
 }
 function blessPick(id) {
   const half = perk('elly') ? .5 : 1, b = BLESSINGS[id], bp = Math.floor(b.price * half), ok = !G.bless && G.gold >= bp;
