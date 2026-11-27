@@ -60,7 +60,15 @@ let fx = { shake: 0, flash: 0, hit: 0 };
 const OPT_DEF = { bgm: 1, sfx: 1, text: 1, shake: 2, auto: true, lang: I18N.on ? 1 : 0 };
 let OPTS = (() => { try { return Object.assign({}, OPT_DEF, JSON.parse(localStorage.getItem('tower_opts') || '{}')); } catch (e) { return { ...OPT_DEF }; } })();
 function saveOpts() { try { localStorage.setItem('tower_opts', JSON.stringify(OPTS)); } catch (e) {} }
+/* 2026-11-27: 塔の中で閉じても、続きは塔の中から（戦闘中ならその戦闘から）。倒れる前にアプリを閉じて逃げられないように（Daichiさん） */
+function towerState() {
+  if (!G || document.body.classList.contains('title')) return;  /* タイトル画面では、記録をそのまま残す */
+  const inT = !save.noTower && (mode === 'dungeon' || mode === 'battle') && floorNo > 0;
+  G.inTower = inT ? { floor: floorNo } : null;
+  G.inBattle = inT && mode === 'battle' && B && !B.over && B.ms && B.ms.some(m => m.hp > 0) ? { ms: B.ms.map(m => Object.assign({}, m)) } : null;
+}
 function save() {
+  towerState();
   if (OPTS.auto === false) return;
   try { localStorage.setItem('tower_smith_v2', JSON.stringify(G)); } catch (e) {}
   // 町に戻ったときなど、ときどき「オートセーブ」と小さく出す
@@ -68,7 +76,7 @@ function save() {
 }
 const SLOT_KEY = n => 'tower_smith_slot' + n;
 function slotInfo(n) { try { const s = JSON.parse(localStorage.getItem(n === 0 ? 'tower_smith_v2' : SLOT_KEY(n)) || 'null'); if (!s) return null; const g = s.G || s; return { g, at: s.at || 0 }; } catch (e) { return null; } }
-function slotText(n) { const i = slotInfo(n); if (!i) return 'からっぽ'; const g = i.g, d = i.at ? new Date(i.at) : null; return `${g.name && g.name !== '鍛冶屋' ? g.name + '・' : ''}Lv${g.lv}・最高${g.maxFloor || 0}階・${g.gold}G${d ? `　${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` : ''}`; }
+function slotText(n) { const i = slotInfo(n); if (!i) return 'からっぽ'; const g = i.g, d = i.at ? new Date(i.at) : null; return `${g.name && g.name !== '鍛冶屋' ? g.name + '・' : ''}${g.inTower && g.inTower.floor ? '塔' + g.inTower.floor + '階・' : ''}Lv${g.lv}・最高${g.maxFloor || 0}階・${g.gold}G${d ? `　${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` : ''}`; }
 function load() { try { const s = localStorage.getItem('tower_smith_v2'); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
 
 // ---------- 計算 ----------
@@ -696,11 +704,11 @@ function titleScreen() {
   const t = $('town'); t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}title.jpg" alt="Tower of Hope">`;
   const anySlot = [1, 2, 3].some(n => slotInfo(n));
   const L = [{ t: 'はじめから', hot: !load(), f: () => load() ? resetGame() : (G = NEW_GAME(), save(), intro(0)) }, { t: 'ロード', s: anySlot ? 'セーブしたデータから' : 'オートセーブ', off: !load() && !anySlot, f: () => openMenu('load') }, { t: '設定', s: '音・文字の速さ・揺れ', f: () => openMenu('opt') }];
-  if (load()) L.unshift({ t: 'つづきから', hot: true, f: () => { G = load(); townMap(); say('normal', '「さて、今日も行くか」\n工房の火はまだ温かい。', true); } });
+  if (load()) L.unshift({ t: 'つづきから', hot: true, f: () => { G = load(); if (resumeTower()) return; townMap(); say('normal', '「さて、今日も行くか」\n工房の火はまだ温かい。', true); } });
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 152'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 153'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1631,7 +1639,8 @@ function openMenu(tab) {
     <dt>名前</dt><dd><div class="seg"><button data-act="name">${heroName()}（変える）</button></div></dd>
     <dt>オートセーブ</dt><dd><div class="seg"><button data-k="auto" data-v="1" class="${OPTS.auto ? 'on' : ''}">オン</button><button data-k="auto" data-v="0" class="${!OPTS.auto ? 'on' : ''}">オフ</button></div></dd></dl>
     <p class="note">オートセーブは、町に戻ったときや階を移ったときに自動で記録します。</p><p class="note" data-act="ver" style="text-align:right;opacity:.45">Tower of Hope</p>`;
-  if (tab === 'save') body = (inTown ? '' : '<p class="note warn">セーブは町にいるときだけできます。</p>') + [1, 2, 3].map(n => `<button class="slot" data-save="${n}" ${inTown && G ? '' : 'disabled'}><b>スロット${n}</b><small>${slotText(n)}</small></button>`).join('');
+  const canSave = inTown || (mode === 'dungeon' && !document.body.classList.contains('story'));  /* 2026-11-27: 塔の中でもセーブできる（戦闘中はできない） */
+  if (tab === 'save') body = (canSave ? '' : '<p class="note warn">戦闘中は、セーブできません。</p>') + [1, 2, 3].map(n => `<button class="slot" data-save="${n}" ${canSave && G ? '' : 'disabled'}><b>スロット${n}</b><small>${slotText(n)}</small></button>`).join('');
   if (tab === 'load') body = [0, 1, 2, 3].map(n => `<button class="slot" data-load="${n}" ${slotInfo(n) ? '' : 'disabled'}><b>${n ? 'スロット' + n : 'オートセーブ'}</b><small>${slotText(n)}</small></button>`).join('') + '<p class="note">ロードすると、町から始まります。</p>';
   if (tab === 'dex') body = dexBody();
   m.innerHTML = `<div class="panel${tab === 'dex' ? ' dex' : ''}"><div class="tabs2">${[['opt', '設定'], ['save', 'セーブ'], ['load', 'ロード'], ['dex', '図鑑']].filter(x => x[0] !== 'dex' || G).map(([k, l]) => `<button data-tab="${k}" class="${k === tab ? 'on' : ''}">${l}</button>`).join('')}</div><div class="body">${body}</div>
@@ -1643,19 +1652,28 @@ function openMenu(tab) {
     if (k === 'auto' && OPTS.auto && G) save(); openMenu('opt');
   });
   m.querySelectorAll('[data-save]').forEach(b => b.onclick = () => {
-    const n = +b.dataset.save; try { localStorage.setItem(SLOT_KEY(n), JSON.stringify({ G, at: Date.now() })); sfx('chest', { vol: .7 }); } catch (e) {}
+    const n = +b.dataset.save; towerState(); try { localStorage.setItem(SLOT_KEY(n), JSON.stringify({ G, at: Date.now() })); sfx('chest', { vol: .7 }); } catch (e) {}
     openMenu('save'); const e = m.querySelector(`[data-save="${n}"]`); if (e) e.classList.add('done');
   });
   m.querySelectorAll('[data-load]').forEach(b => b.onclick = () => {
     const n = +b.dataset.load, i = slotInfo(n); if (!i) return;
     b.outerHTML = `<div class="confirm"><span>${n ? 'スロット' + n : 'オートセーブ'}をロードする？ 今の進み具合は、セーブしていなければ消えます。</span><button data-yes="${n}" class="hot">ロードする</button><button data-no>やめる</button></div>`;
     m.querySelector('[data-no]').onclick = () => openMenu('load');
-    m.querySelector('[data-yes]').onclick = () => { G = Object.assign(NEW_GAME(), i.g); FLOORS = {}; B = null; closeMenu(); document.body.classList.remove('story', 'title', 'intro'); fadeGo(() => { townMap(); say('normal', '「さて、続きといくか」', true); save(); }, { hold: 400 }); };
+    m.querySelector('[data-yes]').onclick = () => { G = Object.assign(NEW_GAME(), i.g); FLOORS = {}; B = null; closeMenu(); document.body.classList.remove('story', 'title', 'intro'); fadeGo(() => { if (resumeTower()) return; mode = 'town'; townMap(); say('normal', '「さて、続きといくか」', true); save(); }, { hold: 400 }); };
   });
   { const vb = m.querySelector('[data-act="ver"]'); if (vb) vb.onclick = () => { openMenu.tap = (openMenu.tap || 0) + 1; if (openMenu.tap >= 5) { openMenu.tap = 0; closeMenu(); testMenu(); } }; }  // 5回押すとテストモード
   { const nb = m.querySelector('[data-act="name"]'); if (nb) nb.onclick = () => { closeMenu(); const back = ['home', 'weapon', 'clinic', 'guild', 'item', 'bank', 'inn'].includes(place) ? (() => { const p = place; return () => inside(p); })() : townMap; if (mode === 'dungeon' || mode === 'battle') { log('名前は、町にいるときに変えられる。', true); return; } nameScreen(back, true); }; }
   m.querySelector('[data-act="close"]').onclick = closeMenu;
   { const t = m.querySelector('[data-act="title"]'); if (t) t.onclick = () => { t.outerHTML = `<button data-act="title2" class="hot">${OPTS.auto ? 'タイトルへ戻る' : 'セーブせずに戻る'}</button>`; m.querySelector('[data-act="title2"]').onclick = () => { save(); closeMenu(); FLOORS = {}; B = null; titleScreen(); }; }; }
+}
+function resumeTower() {
+  const t = G && G.inTower; if (!t || !t.floor) return false;
+  const bt = G.inBattle && G.inBattle.ms && G.inBattle.ms.length ? G.inBattle.ms : null;
+  document.body.classList.remove('story', 'title', 'intro'); FLOORS = {}; B = null;
+  enterFloor.resume = true; try { enterFloor(t.floor); } finally { enterFloor.resume = false; }
+  if (bt) setTimeout(() => startBattle(bt[0].boss ? bt[0] : null, bt), 300);
+  else log(`${t.floor}階。……続きから。`, true);
+  return true;
 }
 function closeMenu() { const m = $('menu'); if (m) m.classList.remove('on'); }
 function applyOpts() { if (SND.setVol) SND.setVol(OPTS.bgm, OPTS.sfx); }
@@ -1667,7 +1685,7 @@ let FLOORS = {};
 function enterFloor(n, fromAbove) {
   showTown(false, 4 / 3);
   if (!G.rumor) rollRumor(); TODAY = RUMORS[G.rumor].mod;
-  if (!Object.keys(FLOORS).length) startRun(n);
+  if (!Object.keys(FLOORS).length && !enterFloor.resume) startRun(n);
   if (G.cur) G.cur.top = Math.max(G.cur.top, n);
   // 魔除け・魔寄せは、使ってから3フロアで切れる（階が変わるたびに1減る）
   let encEnd = false; if (G.enc && n !== floorNo) { G.enc.floors--; if (G.enc.floors <= 0) { G.enc = null; encEnd = true; } }
@@ -2127,19 +2145,19 @@ function apBase() { return 3 + (has('p_ap') ? 1 : 0) + (MK().ap || 0) - (hurt('r
 const hurt = k => G.injuries.includes(k) && !G.bandaged.includes(k);
 // ケガをする（すでに全部のケガをしていたら何もしない）
 function injure() { const k = Object.keys(INJURIES).filter(x => !hurt(x)); if (!k.length) return null; const x = pick(k); G.injuries.push(x); return x; }
-function startBattle(boss) {
-  const n = boss ? 1 : groupSize(), ms = [];
+function startBattle(boss, saved) {
+  const n = saved ? 0 : boss ? 1 : groupSize(), ms = saved ? saved.map(m => Object.assign({}, m)) : [];
   const BM = boss && !boss.chest && !boss.mirror && !boss.trial ? midPow(floorNo) : { hp: 1, atk: 1, def: 1 };
   const QB = !boss || boss.mirror ? [1, 1, 1] : boss.chest || boss.trial ? balMon(floorNo) : balBoss(floorNo);
   for (let i = 0; i < n; i++) { const m = boss ? { ...boss, hp: Math.round(boss.hp * (boss.chest ? 1 : 1.1) * BM.hp * QB[0]), atk: Math.round(boss.atk * BM.atk * QB[1]), def: Math.round(boss.def * BM.def * (QB[2] || 1)) } : pickMonster(); if (n > 1) m.hp = Math.round(m.hp * .8); m.mhp = m.hp; ms.push(m); }
   // 同じ魔物が2体以上なら A・B… と呼ぶ
-  const cnt = {}; for (const m of ms) cnt[m.id] = (cnt[m.id] || 0) + 1;
+  const cnt = {}; for (const m of ms) cnt[m.id] = (cnt[m.id] || 0) + 1; if (saved) for (const k in cnt) cnt[k] = 0;  /* 続きの戦闘は、名前（A・B）をそのまま */
   const seen = {}; for (const m of ms) if (cnt[m.id] > 1) { seen[m.id] = (seen[m.id] || 0) + 1; m.name += 'ABCD'[seen[m.id] - 1]; }
   B = { ms, ti: 0, ap: apBase() + (G.meal === 'spark' ? 1 : 0), cut: 1, counter: null, dodge: 0, boost: 1, broken: 0, turn: 1, over: false };
   Object.defineProperty(B, 'm', { get: target });
   for (const x of ms) dexMon(x);
   const m = ms[0];
-  mode = 'battle'; encounterFx(m, ms);
+  mode = 'battle'; encounterFx(m, ms); save();
   setTimeout(() => { if (B && B.m) { if (B.m.boss) sfx('bossstep'); sfx(CRY_SFX[B.m.id] || 'swing', { delay: B.m.boss ? 500 : 0 }); } }, 150);
   checkLearn(job());
   log(ms.length > 1 ? `${ms.map(x => x.name).join('・')}が現れた！\n（魔物を押すと、狙う相手を選べる）` : `${m.name}が現れた！`, true);
@@ -2414,7 +2432,7 @@ function endTurn() {
     for (const m of alive()) if (m.poison) { const d = dmgTo(m, m.poison, true); log(`${m.name}は毒で${d}のダメージ。`); }
     if (allDead()) { win(); return; } }
   { const c = B.ms.find(x => x.charge && x.hp > 0); if (c && (G.chargeTip || 0) < 3) { G.chargeTip = (G.chargeTip || 0) + 1; log('（次のターン、強い一撃が来る。「守る」で受けるか、先に倒してしまおう）'); } }
-  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud();
+  B.cut = 1; B.boost = 1; B.dodge = 0; B.turn++; B.ap = apBase() + carry; B.plan = []; B.running = false; battleUI(); hud(); save();
   if (B.auto) setTimeout(autoTurn, 550);
 }
 // 力をためるか決める。2階から。同時にためるのは1体だけ、続けてはためない。鏡はためない
@@ -2474,7 +2492,7 @@ function lose() {
   if (has('p_keep')) { const k = {}; for (const [m, n] of Object.entries(G.carry)) { const h = Math.floor(n / 2); if (h) { k[m] = h; add(RAW[m] ? G.raw : G.store, m, h); G.carry[m] -= h; } } kept = matText(k); }
   const lost = matText(G.carry), lostG = G.gold;
   const inj = injure(); G.runs++; G.fellOnce = true; finishRun(true); G.ally = null; G.bandaged = []; G.enc = null; G.als = false;
-  G.carry = {}; G.gold = 0; G.bless = null; endMeal(); endRun(); rollRumor(); G.hp = G.mhp; FLOORS = {}; save();
+  G.carry = {}; G.gold = 0; G.bless = null; endMeal(); endRun(); rollRumor(); G.hp = G.mhp; FLOORS = {}; save.noTower = true; save(); save.noTower = false;
   say('sad', `倒れた……。素材（${lost}）と、手持ちの${lostG}Gはなくなった。${kept !== '' && kept !== 'なし' ? `\n持ち帰りのおかげで、${kept}は工房に残った。` : ''}`, true);
   buttons([{ t: '……', hot: true, f: () => { mode = 'town'; B = null; F = null; if (evReady('elly', .6)) { SND.lost = false; ellieEvent(inj); return; } fadeGo(() => {
       // 治療院のベッドで目を覚ます。エリーのひとことは、前回（倒れた）に合わせたもの
