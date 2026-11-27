@@ -270,9 +270,11 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 #fw .fwi.tl .nm{white-space:normal;font-size:13px;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tw .log{flex:1 1 84px!important;min-height:84px}
 /* 塔の入口（2026-11-26）: 台詞を絵の下に重ねる */
-.tw #log.over{position:absolute;left:18px;right:18px;height:88px;min-height:0;flex:none!important;z-index:3;background:linear-gradient(rgba(12,8,4,.55),rgba(12,8,4,.82));border-color:rgba(201,162,93,.7);backdrop-filter:blur(1px)}
+.tw #log.over{position:absolute;left:18px;right:18px;height:112px;min-height:0;flex:none!important;z-index:3;background:linear-gradient(rgba(12,8,4,.55),rgba(12,8,4,.82));border-color:rgba(201,162,93,.7);backdrop-filter:blur(1px)}
 /* 塔の入口: どのメニューでもボタンの欄の高さを同じにして、すき間を作らない（ボタンが少ない画面はボタンを大きく） */
 .tw #ctl{display:flex;flex-direction:column}
+.twtalk.tw #ctl{justify-content:flex-end}.twtalk.tw #ctl>.btns:not(.tail){flex:0 0 auto;grid-auto-rows:minmax(52px,auto)}  /* 会話中: ボタンは下に1段、上は台詞 */
+.tw #log.over.twt{background:linear-gradient(#1c140e,#150f0a)!important;backdrop-filter:none}
 .tw #ctl>.btns:not(.tail){flex:1 1 auto;grid-auto-rows:1fr}
 .tw #ctl>.btns:not(.tail) button{height:auto}
 /* 2026-11-26 塔の中は、移動も戦闘も倒したあとも絵の大きさを同じに。台詞の欄は84px固定、ボタンの欄は残り全部 */
@@ -303,7 +305,7 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 #stp .srow .sl{display:flex;justify-content:space-between;font-size:12px}#stp .srow .sl b{color:#fff3d6}
 #stp .sbar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}#stp .sbar i{display:block;height:100%}
 #stp table{width:100%;border-collapse:collapse}#stp th{text-align:left;color:#cdb894;font-weight:400;width:4.5em;vertical-align:top;padding:2px 0}#stp td{padding:2px 0;line-height:1.35}
-.log .face{max-height:calc(100% - 14px)}
+.log .face{height:min(84px,calc(100% - 14px));max-height:none;width:auto;aspect-ratio:64/84}  /* 2026-11-27: 台詞の欄が低いときも、顔を切らずに縮めて全部見せる */
 body.title #stb,body.story #stb,body.intro #stb{visibility:hidden}
 body.title #ctl{overflow:hidden}body.title #ctl button{height:100%}
 /* 2026-11-26: 会話の文字を少し小さく。顔があるときは、文字が顔の下に入らないよう右をあける（上の !important に消されていた） */

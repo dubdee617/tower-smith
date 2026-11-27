@@ -598,3 +598,27 @@ HP {0}/{1}|HP {0}/{1}
 アルス[smile]「師匠。30階の番人を、一人で倒しました。……師匠の打った剣で」|Als[smile]「Master. I defeated the 30th floor guardian by myself. ...With a sword you forged.」
 「剣聖ハヤテ　塔に挑み、多くの民を救いし者」|「Hayate the Sword Saint — who challenged the tower and saved many」
 ジン[smile]「ハヤテ、と呼ばれておった。……英雄の名は、重くてのう。\n疾風の『迅』の一字だけ残して、あとは置いてきたんじゃ」|Jin[smile]「They called me Hayate. ...A hero's name is a heavy thing.\nI kept only 'Jin'—the 'swift' in 'swift wind'—and left the rest behind.」
+ガストン「塔に行く前は、腹に何か入れていきな。うちの料理は、次の一回しっかり効く」|Gaston「Get something in your belly before the tower. My cooking will hold you for the next run.」
+ガストン[laugh]「ブッパの旦那は昔、うちの骨のスープを鍋ごと飲んで、そのまま塔に行ったもんだ」|Gaston[laugh]「Back in the day, Buppa drank my bone soup straight from the pot and marched right into the tower.」
+エリー「塔へ行く前に、お祈りをしていきませんか。効くのは、次の一回だけですけれど」|Elly「Would you like a prayer before the tower? It only lasts for the next run, though.」
+ジェニー「打った装備で、使わないのは持ってきなさい。工房を強くするお金になるでしょ」|Jenny「Bring me any gear you forged but won't use. It'll pay for upgrading your workshop.」
+ブッパ[eat]「親方、塔の魔物の肉はな、焼くより煮込みだ。……ガストンに言っとけ」|Buppa[eat]「Boss, tower monster meat is better stewed than grilled. ...Tell Gaston.」
+ルゥ「親方、炉を強くすると、もっといい物が打てるんですよね？ ……ルゥ、炉の番、がんばります」|Lou「Boss, if we upgrade the furnace, you can forge better things, right? ...I'll do my best minding it!」
+ブッパ[laugh]「がっはっは！ 俺も昔は、斧一本で40階まで行ったもんだ。……膝をやるまではな」|Buppa[laugh]「Gahaha! Back in my day, I made it to the 40th floor with nothing but an axe. ...Until my knee gave out.」
+ブッパ[tired]「……山の魔物の肉は、筋ばってる。煮込むなら、半日だ。……ぐう」|Buppa[tired]「...Mountain monster meat is stringy. Stew it half a day. ...Zzz.」
+ブッパ「……ジャングルの蛇は、うまいぞ。毒のあるやつほど、うまい。……俺は、それで一回死にかけた」|Buppa「...Jungle snakes are tasty. The poisonous ones taste best. ...Nearly killed me once.」
+ブッパ[eat]「親方。ここまで来たら、俺より上だ。……がっはっは。悔しいから、肉をもう一枚くれ」|Buppa[eat]「Boss. You've climbed past me now. ...Gahaha. I'm jealous, so give me another slice of meat.」
+ルゥ[shock]「親方！ 塔で倒れたって……。もう、起きて大丈夫なんですか？」|Lou[shock]「Boss! I heard you collapsed in the tower... Are you okay to be up already?」
+ルゥ「親方、おかえりなさい！ 晩ごはん、もうすぐです」|Lou「Welcome back, Boss! Dinner's almost ready.」
+「……思ったより、きついな。塔ってのは」|「...The tower's tougher than I thought.」
+ブッパ[laugh]「がっはっは！ 一回目は、誰でも倒れる。俺なんか、斧一本で調子に乗って、三回目で膝をやった」|Buppa[laugh]「Gahaha! Everyone falls the first time. Me, I got cocky with my axe and wrecked my knee on my third run.」
+ブッパ[laugh]「がっはっは！ 生きて帰ってきたなら上出来だ。俺なんか、斧一本で調子に乗って、三回目で膝をやった」|Buppa[laugh]「Gahaha! Coming back alive is good enough. Me, I got cocky with my axe and wrecked my knee on my third run.」
+ブッパ[eat]「いいか親方。塔の前は、ガストンの店で食っていけ。革の煮込みは体がもつ。骨のスープは、勝つたびに効いてくる。\n……腹が減ってちゃ、斧も剣も振れん」|Buppa[eat]「Listen, Boss. Eat at Gaston's before the tower. The leather stew keeps your body going. The bone soup kicks in every time you win.\n...You can't swing an axe or a sword on an empty stomach.」
+チッチ「それと、エリーさんのお祈りっすね。次の一回しか効かないっすけど、あれで命拾いした冒険者、俺は何人も見てるっす」|Chicchi「And Miss Elly's prayers. They only last one run, but I've seen plenty of adventurers saved by them.」
+アルス「持ち帰った戦利品は、ギルドのボルツさんに素材にしてもらって……。師匠が打った装備で、いちばんいいのを使う。\n残りは、ジェニーさんの店に売るんですよね」|Als「The loot you bring back, Boltz at the guild turns into materials... You use the best of the gear you forge.\nAnd the rest you sell at Miss Jenny's shop, right?」
+ルゥ[laugh]「売ったお金で、炉や金床を強くしましょう！ 強い炉なら、もっといい物が打てます。……炉の番は、ルゥがします」|Lou[laugh]「Let's use the money to upgrade the furnace and anvil! A stronger furnace means better gear. ...I'll mind the furnace!」
+チッチ「道具屋で薬草と帰還の羽も、忘れずにっす。……で、余ったお金は銀行っす。\n塔で倒れたら、持ってたお金は全部なくなるっすけど、預けた分は無事っす」|Chicchi「Don't forget herbs and return feathers from the item shop. ...And leftover money goes in the bank.\nIf you fall in the tower, you lose all the money you're carrying, but what's deposited is safe.」
+チッチ[think]「元盗賊が言うんだから、間違いないっす。……持ち歩く金は、なくなるもんっす」|Chicchi[think]「Take it from a former thief. ...Money you carry around tends to disappear.」
+ブッパ[laugh]「がっはっは。で、腹いっぱいで、また塔だ。……俺は、もう登らんがな」|Buppa[laugh]「Gahaha. Then, with a full belly, back to the tower. ...Not me, though. I'm done climbing.」
+ブッパ「……ぐう……」\nルゥ「……もう寝てます」|Buppa「...Zzz...」\nLou「...He's already asleep.」
+工房のにぎやかな夜が、ふけていく。|The lively night at the workshop grows late.

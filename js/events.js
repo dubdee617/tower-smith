@@ -724,6 +724,30 @@ const HOME_CALL = {
     { p: 'fuuka_b_4', music: '', t: '（フウカが、ときどき工房に遊びに来るようになった）' },
   ],
 };
+// 2026-11-27: 工房のみんなが夕飯どきに、町での回り方を話す（Daichiさん）。わざとらしい説明にせず、同居人の会話として。
+// 宿で食べる → 治療院でお祈り → 戦利品をギルドで素材に → 打って強い物を使い、残りは売る → 工房の強化と道具 → 残りは銀行 → また塔
+// 初めて倒れたあと（倒れずに2回目を終えたときも）、工房に入ると一度だけ
+function loopTalkReady() { return !G.loopTalk && G.runs >= 1 && (G.fellOnce || G.runs >= 2); }
+function loopTalk() {
+  G.loopTalk = true; save();
+  const fell = !!G.fellOnce;
+  const L = [
+    fell ? { bg: 'home_in.jpg', fig: 'apprentice', sfx: 'cooking', t: 'ルゥ[shock]「親方！ 塔で倒れたって……。もう、起きて大丈夫なんですか？」' }
+         : { bg: 'home_in.jpg', fig: 'apprentice', sfx: 'cooking', t: 'ルゥ「親方、おかえりなさい！ 晩ごはん、もうすぐです」' },
+    fell ? { hero: 'calm', t: '「まぁ〜、どうにかなるんじゃないか」' } : { hero: 'calm', t: '「……思ったより、きついな。塔ってのは」' },
+    fell ? { fig: 'buppa_laugh', t: 'ブッパ[laugh]「がっはっは！ 一回目は、誰でも倒れる。俺なんか、斧一本で調子に乗って、三回目で膝をやった」' }
+         : { fig: 'buppa_laugh', t: 'ブッパ[laugh]「がっはっは！ 生きて帰ってきたなら上出来だ。俺なんか、斧一本で調子に乗って、三回目で膝をやった」' },
+    { fig: 'buppa_eat', t: 'ブッパ[eat]「いいか親方。塔の前は、ガストンの店で食っていけ。革の煮込みは体がもつ。骨のスープは、勝つたびに効いてくる。\n……腹が減ってちゃ、斧も剣も振れん」' },
+    { fig: 'chicchi', t: 'チッチ「それと、エリーさんのお祈りっすね。次の一回しか効かないっすけど、あれで命拾いした冒険者、俺は何人も見てるっす」' },
+    { fig: 'als', t: 'アルス「持ち帰った戦利品は、ギルドのボルツさんに素材にしてもらって……。師匠が打った装備で、いちばんいいのを使う。\n残りは、ジェニーさんの店に売るんですよね」' },
+    { fig: 'apprentice', t: 'ルゥ[laugh]「売ったお金で、炉や金床を強くしましょう！ 強い炉なら、もっといい物が打てます。……炉の番は、ルゥがします」' },
+    { fig: 'chicchi', t: 'チッチ「道具屋で薬草と帰還の羽も、忘れずにっす。……で、余ったお金は銀行っす。\n塔で倒れたら、持ってたお金は全部なくなるっすけど、預けた分は無事っす」' },
+    { fig: 'chicchi', t: 'チッチ[think]「元盗賊が言うんだから、間違いないっす。……持ち歩く金は、なくなるもんっす」' },
+    { fig: 'buppa_laugh', t: 'ブッパ[laugh]「がっはっは。で、腹いっぱいで、また塔だ。……俺は、もう登らんがな」' },
+    { fig: 'buppa_sleep', t: 'ブッパ「……ぐう……」\nルゥ「……もう寝てます」' },
+  ];
+  runSeq(L, 0, () => fadeGo(() => inside('home', '工房のにぎやかな夜が、ふけていく。')));
+}
 function homeCall() {
   const w = homeCallWho()[0]; G.homeCallRun = G.runs; G.homeEv = G.homeEv || {};
   runEv(w, HOME_CALL[w], () => { G.homeEv[w] = true; save(); SND.scene = ''; G.visit = { run: G.runs, who: [w] }; inside('home', `${VNAME[w]}は、しばらく工房でくつろいでいくらしい。`); });

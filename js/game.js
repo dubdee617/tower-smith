@@ -221,11 +221,30 @@ function popNum(n, who, kind, m) {
 function drawSpk() {
   const sp = $('spk'); if (!sp) return;
   const evOn = document.querySelector('#town .portrait.ev') || ($('meet') && $('meet').classList.contains('ev') && $('meet').style.display === 'flex');
-  if (!spkFace || evOn || document.body.classList.contains('title') || document.body.classList.contains('ending')) { sp.className = ''; sp.removeAttribute('src'); return; }
+  if (!spkFace || evOn || document.body.classList.contains('title') || document.body.classList.contains('ending')) { sp.className = ''; sp.removeAttribute('src'); spkPad(); return; }
   const f = document.querySelector('.fig'), side = f && f.classList.contains('L') ? 'R' : 'L';
   const src = `assets/face/${spkFace.replace(/^npc\//, '')}.webp`;
   if (sp.getAttribute('src') !== src || !sp.classList.contains('on')) { sp.className = ''; void sp.offsetWidth; sp.src = src; }
-  sp.className = 'on ' + side;
+  sp.className = 'on ' + side; sp.onload = spkPad; spkPad();
+}
+/* 2026-11-27: 話している人の顔（#spk）が台詞の欄に重なるときは、その分だけ台詞の欄の内側をあけて、文字が顔の下に入らないようにする（ゲーム全体） */
+function spkPad() {
+  const sp = $('spk'), lg = $('log'); if (!lg) return;
+  let pr = 0, pl = 0;
+  if (sp) { sp.style.bottom = ''; sp.style.height = ''; }
+  if (sp && sp.classList.contains('on') && sp.naturalWidth) {
+    let a = sp.getBoundingClientRect(); const b = lg.getBoundingClientRect();
+    const hit = () => a.width && a.bottom > b.top + 6 && a.top < b.bottom - 6 && a.right > b.left && a.left < b.right;
+    /* 町の建物の中（絵に台詞が重なる形）: 顔を台詞の欄のすぐ上に持ち上げて、文字は欄いっぱいに使う */
+    if (hit() && lg.classList.contains('over') && !lg.classList.contains('twt')) {
+      sp.style.height = ''; sp.style.bottom = Math.ceil(a.bottom - b.top + 2) + 'px'; a = sp.getBoundingClientRect();
+      const st = $('stage') && $('stage').getBoundingClientRect(); if (st && a.top < st.top + 4) { sp.style.height = Math.max(64, Math.floor(a.height - (st.top + 4 - a.top))) + 'px'; a = sp.getBoundingClientRect(); }  /* 絵の上に切れないよう、顔を少し小さく */
+    }
+    if (hit()) { if (sp.classList.contains('R')) pr = Math.ceil(b.right - a.left) + 8; else pl = Math.ceil(a.right - b.left) + 8; }
+  }
+  const set = (k, v) => { if (v) lg.style.setProperty(k, v + 'px', 'important'); else lg.style.removeProperty(k); };
+  const was = lg.style.paddingRight + '|' + lg.style.paddingLeft; set('padding-right', pr); set('padding-left', pl);
+  if (was !== lg.style.paddingRight + '|' + lg.style.paddingLeft && typeof refitLog === 'function') setTimeout(refitLog, 0);
 }
 // 店の人: セリフが「名前「…」」で始まると、その人の顔が出る。名前[表情]「…」で表情を選べる
 // 表情: normal smile laugh shock angry happy think（シートの番号）
@@ -425,6 +444,9 @@ function buttons(list, cls) {
   }
   /* 2026-11-26: 塔の中で会話しているとき（選択肢が1段だけ）は、ボタンの欄を低くして、そのぶん台詞の欄を広げる。足すと同じ高さなので絵は動かない */
   document.body.classList.toggle('dgtalk', mode === 'dungeon' && !box.querySelector('.pad') && pages === 1 && !tail.length && items.filter(b => !b.title).length <= 3 && !items.some(b => b.title) && !head);
+  /* 2026-11-27: 町の建物の中で会話をしているとき（「次へ」や「」の返事だけのとき）は、台詞をボタンの欄の上側に大きく出す。絵の大きさは変えない */
+  { const its = list.filter(b => !b.title), talkT = t => /^「|^次へ$|^とばす$|^……$|^受け取る$/.test(String(t || '').replace(/<[^>]*>/g, ''));
+    document.body.classList.toggle('twtalk', mode === 'town' && !head && its.length <= 3 && its.length > 0 && its.every(b => talkT(b.t)) && its.some(b => b.t === '次へ' || /^「/.test(b.t))); }
   fitStage();
   // 2026-11-25: 一覧が画面からはみ出したら（小さい画面・作れる物が多いとき）、1ページの数を減らして並べ直す。戻るボタンが見切れないように
   if (cls === 'list' && per > 2) { const r = box.getBoundingClientRect(); if (r.bottom > innerHeight + 2 || (fitStage.res && $('ctl').offsetHeight > fitStage.res + 2)) { buttons.lp[innerHeight] = per - 2; buttons(list, cls); return; } }
@@ -521,8 +543,10 @@ function fitStage() {
   slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;
   /* 塔の入口: 台詞は絵の下の方に重ねて出す（台詞の欄のぶんも塔を大きく） */
   const lg = $('log');
-  if (tw) { main.style.position = 'relative'; lg.classList.add('over'); lg.style.top = Math.round(s.offsetTop + h - 96) + 'px'; }
-  else if (lg.classList.contains('over')) { lg.classList.remove('over'); lg.style.top = ''; }  /* 絵の左右が切れるぶん、群れを内側に寄せる */
+  if (tw && bc.contains('twtalk')) { main.style.position = 'relative'; lg.classList.add('over', 'twt'); lg.style.top = Math.round(ctl.offsetTop) + 'px'; lg.style.height = Math.max(88, RES - 70) + 'px'; }
+  else if (tw) { main.style.position = 'relative'; lg.classList.add('over'); lg.classList.remove('twt'); lg.style.height = ''; lg.style.top = Math.round(s.offsetTop + h - 120) + 'px'; }  /* 2026-11-27: 名札＋2行が入る高さ（112px）に */
+  else if (lg.classList.contains('over')) { lg.classList.remove('over', 'twt'); lg.style.top = ''; lg.style.height = ''; }  /* 絵の左右が切れるぶん、群れを内側に寄せる */
+  setTimeout(spkPad, 0);
   /* 2026-11-25: それでも画面からはみ出すとき（ボタンの一覧が多いなど）は、そのぶん絵を小さくする */
   if (!dg && !tw && !document.body.classList.contains('intro')) { const over = main.scrollHeight - main.clientHeight; if (over > 1 && h - over >= 120) { h -= over; if (!COVER) w = h * ASPECT; el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px'; } }
 }
@@ -536,14 +560,14 @@ const TOWN_IMG = 'assets/town/';
 const PLACES = {
   home:   { name: '工房（自宅）', box: [168,  468,  302,  560], hello: ['アルス「師匠、おかえりなさい！ 今日の名言、まだですか」', 'チッチ「掃除しといたっす。あ、炉の火は落としてないっす」', 'チッチ[laugh]「親方の剣、磨いといたっす！ ……盗んでないっすよ？」', 'チッチ[shy]「アルス君に『チッチさんの料理、最高です』って言われたっす。……照れるっす」', 'チッチ[think]「鍵なら、たいてい開けられるっす。……開けちゃいけない鍵があるのも、知ってるっす」', '床に獲物が置いてある。オルグだろう。'] },
   weapon: { name: '武具屋', box: [321,  410,  445,  490], hello: ['ジェニー「打ったの見せて。値段は私が決める」', 'ジェニー[laugh]「叩けば直る。人生以外は」',
-    'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」'] },
+    'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」', 'ジェニー「打った装備で、使わないのは持ってきなさい。工房を強くするお金になるでしょ」'] },
   clinic: { name: '治療院', box: [312,  242,  413,  325], hello: ['エリー[smile]「あ、おかえりなさい。今日は、ケガをしていませんか」', 'エリー「神様はちゃんと聞いてますよ。……たまに返事が遅いだけで」',
-    'エリー[smile]「これ、お守りです。手作りなんですけど……」\n「ありがとう。治療院の新しい商品か？」', 'エリー「無茶しないでくださいね。……私、毎晩お祈りしてるんですから」\n「神様も忙しいだろうに、悪いな」'] },
+    'エリー[smile]「これ、お守りです。手作りなんですけど……」\n「ありがとう。治療院の新しい商品か？」', 'エリー「無茶しないでくださいね。……私、毎晩お祈りしてるんですから」\n「神様も忙しいだろうに、悪いな」', 'エリー「塔へ行く前に、お祈りをしていきませんか。効くのは、次の一回だけですけれど」'] },
   guild:  { name: 'ギルド', box: [25,  325,  149,  407], hello: ['ジロ「ゴローが、今日の塔は機嫌が悪いって言ってる」', 'リア「最高到達記録は86階。近衛兵長のギャバンさんの記録です」', 'リア[smile]「依頼はまだ準備中です。……もう少し待っててくださいね」',
     'リア「鍛冶屋さんの到達記録は、毎回私が書いてます。……ほかの人のは新人に任せてますけど」\n「そうか、大変だな」', 'リア[smile]「記録を更新したら、お祝いしましょうか。……ふたりで」\n「いいな。ギルドのみんなも呼ぼう」', 'ボルツ[laugh]「旦那！ 戦利品があるなら奥に回してくれ。加工は俺の仕事だ」'] },
   item:   { name: '道具屋', box: [324,  325,  445,  407], hello: ['ドーラ「薬草は多めに持っていきな。塔の中じゃ買えないよ」', 'ドーラ[laugh]「若いの、いや若くもないか。死ぬんじゃないよ」'] },
   bank:   { name: '銀行', box: [54,  245,  162,  325], hello: ['ベルナルド「お預かりしたお金は、塔の中で倒れても無事です」', 'ベルナルド[think]「お金は裏切りません。人と違って」'] },
-  inn:    { name: '宿屋', box: [22,  410,  146,  490], hello: ['ガストン「素材を持ってきな。うまく料理してやるよ」'] },
+  inn:    { name: '宿屋', box: [22,  410,  146,  490], hello: ['ガストン「素材を持ってきな。うまく料理してやるよ」', 'ガストン「塔に行く前は、腹に何か入れていきな。うちの料理は、次の一回しっかり効く」', 'ガストン[laugh]「ブッパの旦那は昔、うちの骨のスープを鍋ごと飲んで、そのまま塔に行ったもんだ」'] },
   tower:  { name: '塔', box: [184,  127,  283,  248], hello: ['門番「塔へ行くのかい。86階より上には、誰も行ったことがないよ」', '見上げても、てっぺんは雲の中だ。'] },
   statue: { name: '剣士の像', box: [184,  331,  280,  420], hello: ['広場の真ん中に、旗を掲げた剣士の像が立っている。', '像の足元で、子どもたちが「塔ごっこ」をして遊んでいる。'] },
   south:  { name: '街の門', box: [153,  585,  312,  694], hello: ['門番「外の国へ行くのかい？ ……いや、あんたの用は塔だろう」'] },
@@ -553,9 +577,9 @@ const PLACES = {
 // [その階以上, セリフ]。今の最高到達階で一番上の段のセリフが選ばれやすい
 const STAGE = {
   home: [
-    [0, ['アルス「師匠が塔に……。町じゅう、その話でもちきりですよ」', 'チッチ「親方、ほんとに行くんすか。鍛冶屋っすよね？」', 'アルス[smile]「今朝の素振りも、終わりました。師匠、いつでも冒険に誘ってください」', 'アルス「チッチさん、倉庫の整理、手伝いますよ」\nチッチ「アルス君は真面目っすねぇ……。眩しいっす」']],
+    [0, ['ブッパ[eat]「親方、塔の魔物の肉はな、焼くより煮込みだ。……ガストンに言っとけ」', 'ルゥ「親方、炉を強くすると、もっといい物が打てるんですよね？ ……ルゥ、炉の番、がんばります」', 'アルス「師匠が塔に……。町じゅう、その話でもちきりですよ」', 'チッチ「親方、ほんとに行くんすか。鍛冶屋っすよね？」', 'アルス[smile]「今朝の素振りも、終わりました。師匠、いつでも冒険に誘ってください」', 'アルス「チッチさん、倉庫の整理、手伝いますよ」\nチッチ「アルス君は真面目っすねぇ……。眩しいっす」']],
     [5, ['アルス「5階ですか……。師匠、本当に登るんですね」', 'チッチ「近所の人が、親方は昔冒険者だったのかって聞いてきたっす」']],
-    [10, ['アルス「10階の主を倒したって、ギルドで大騒ぎです。……まあ、師匠ならって思ってましたけど」', 'チッチ[laugh]「親方、近所から差し入れが山ほど届いてるっす！ 食べきれないっす！」']],
+    [10, ['ブッパ[laugh]「がっはっは！ 俺も昔は、斧一本で40階まで行ったもんだ。……膝をやるまではな」', 'アルス「10階の主を倒したって、ギルドで大騒ぎです。……まあ、師匠ならって思ってましたけど」', 'チッチ[laugh]「親方、近所から差し入れが山ほど届いてるっす！ 食べきれないっす！」']],
   ],
   weapon: [
     [0, ['ジェニー[shock]「は？ 塔に登る？ あんた鍛冶屋でしょ！？」', 'ジェニー[doubt]「職人が自分で素材取りに行くなんて、聞いたことないわよ」']],
@@ -675,7 +699,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 148'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 150'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -749,6 +773,7 @@ function inside(id, msg) {
   place = id; SND_INDOOR = true; SND.lost = false; sfx('door'); showTown(true, 4 / 3); const p = PLACES[id], t = $('town');
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
   if (id === 'home' && !msg && typeof jennyHomeEv === 'function' && jennyHomeEv()) return;  // ジェニー専用イベント
+  if (id === 'home' && !msg && typeof loopTalkReady === 'function' && loopTalkReady()) { loopTalk(); return; }  /* 2026-11-27: 工房のみんなが、町での回り方を話す（一度だけ） */
   if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
   if (id === 'weapon' && !msg && typeof jennyStoryKey === 'function' && jennyStoryKey()) { const k = jennyStoryKey(); jennySeq(k, () => inside('weapon', k === 's1' ? 'ジェニー「……さ、仕事仕事。何か用？」' : 'ジェニー「……で、今日は何を買うの？」')); return; }
   const lastSaid = msg || greet(id); log(lastSaid, true);
@@ -2447,7 +2472,7 @@ function lose() {
   B.over = true; let kept = '';
   if (has('p_keep')) { const k = {}; for (const [m, n] of Object.entries(G.carry)) { const h = Math.floor(n / 2); if (h) { k[m] = h; add(RAW[m] ? G.raw : G.store, m, h); G.carry[m] -= h; } } kept = matText(k); }
   const lost = matText(G.carry), lostG = G.gold;
-  const inj = injure(); G.runs++; finishRun(true); G.ally = null; G.bandaged = []; G.enc = null; G.als = false;
+  const inj = injure(); G.runs++; G.fellOnce = true; finishRun(true); G.ally = null; G.bandaged = []; G.enc = null; G.als = false;
   G.carry = {}; G.gold = 0; G.bless = null; endMeal(); endRun(); rollRumor(); G.hp = G.mhp; FLOORS = {}; save();
   say('sad', `倒れた……。素材（${lost}）と、手持ちの${lostG}Gはなくなった。${kept !== '' && kept !== 'なし' ? `\n持ち帰りのおかげで、${kept}は工房に残った。` : ''}`, true);
   buttons([{ t: '……', hot: true, f: () => { mode = 'town'; B = null; F = null; if (evReady('elly', .6)) { SND.lost = false; ellieEvent(inj); return; } fadeGo(() => {
