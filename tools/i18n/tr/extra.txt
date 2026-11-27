@@ -556,3 +556,45 @@ HP {0}/{1}|HP {0}/{1}
 リア[shy]「……今のは、記録には書けませんね」|Ria[shy]「...That one, I can't put in the records.」
 リア[smile]「ボルツさんにも、伝えておきます」|Ria[smile]「I'll pass that on to Boltz too.」
 リア[shy]「……私は、受付なので」|Ria[shy]「...I'm just the receptionist.」
+チッチ[shy]「親方……俺ら、毎晩、塔に向かって手を合わせてるっす。……柄じゃないっすけど」|Chicchi[shy]「Boss... every night, we put our hands together toward the tower. ...Not really my style, though.」
+チッチ[shy]「親方……。俺、拾ってもらった恩、まだ返せてないっす。……だから、ちゃんと帰ってきてほしいっす」|Chicchi[shy]「Boss... I still haven't repaid you for taking me in. ...So you'd better come back.」
+チッチ「……やさしいっす」|Chicchi「...So kind.」
+チッチ「エリーさん、包帯の巻き方が丁寧っすね。……盗賊の手当てとは大違いっす」|Chicchi「Miss Elly, you wrap bandages so neatly. ...Nothing like how thieves patch each other up.」
+チッチ「リアさん、帳簿の付け方、教えてほしいっす。……昔は、他人の帳簿ばっかり覗いてたっすけど」|Chicchi「Miss Ria, teach me how to keep books. ...I used to only peek at other people's.」
+チッチ「……俺、何も悪くないっすよね？」|Chicchi「...I didn't do anything wrong, right?」
+チッチ「俺が来たときには、もういたっす」|Chicchi「He was already here when I showed up.」
+チッチ[shy]「……それは昔の話っす。親方には、鍵を開ける前に見つかったっす」|Chicchi[shy]「...That's ancient history. The boss caught me before I even picked the lock.」
+チッチ「俺っす。……たまにっす」|Chicchi「That's me. ...Sometimes.」
+チッチ「うわっ……いつから、そこにいたっすか」|Chicchi「Whoa... how long have you been there?」
+チッチ「元盗賊の俺が気づかないなんて……。弟子にしてほしいっす」|Chicchi「Even a former thief like me didn't notice... Take me on as your student.」
+チッチ[think]「鍵なら、たいてい開けられるっす。……開けちゃいけない鍵があるのも、知ってるっす」|Chicchi[think]「I can open most locks. ...I also know there are some you shouldn't open.」
+アルス[shock]「大砂蟲を……。師匠は、もう町の伝説です。……僕も、師匠の弟子として恥ずかしくない剣を振ります」|Als[shock]「The Great Sandworm... You're a legend in town now, Master. ...I'll swing a sword worthy of being your apprentice.」
+アルス「師匠。僕、20階まで一人で行けるようになりました。……いつか、師匠の背中に追いつきます」|Als「Master. I can reach the 20th floor on my own now. ...Someday, I'll catch up to you.」
+アルス[smile]「師匠……。登りきった塔の絵を、描きました。下手ですけど、工房に飾ってもいいですか」|Als[smile]「Master... I painted the tower you climbed. It's clumsy, but may I hang it in the workshop?」
+アルス「{f}階……。師匠、僕も、いつかそこまで行きます」|Als「Floor {f}... Master, someday I'll get there too.」
+アルス[shock]「{f}階……。ギルドの誰も、そこまで行ったことがないそうです」|Als[shock]「Floor {f}... They say no one in the guild has ever gone that far.」
+アルス[smile]「{b}階の主を……。師匠、あとで、その剣を見せてください。刃の減り方が知りたいんです」|Als[smile]「The floor {b} master... Master, show me that sword later. I want to see how the edge wore down.」
+アルス[smile]「おはようございます、師匠。素振り、終わりました。\n……今日は、少しだけ剣が軽かったです」|Als[smile]「Good morning, Master. I finished my practice swings.\n...My sword felt a little lighter today.」
+アルス[smile]「……今の言葉、忘れません」|Als[smile]「...I won't forget those words.」
+アルス[smile]「……はい。\n今日のことは、日記の最初の頁に書きます」|Als[smile]「...Yes.\nI'll write today on the first page of my diary.」
+アルス「師匠。……今の顔、ちょっとだけ笑ってました」|Als「Master. ...You were smiling just a little just now.」
+アルス「ジェニーさん。師匠の昔の話、何か知りませんか」|Als「Miss Jenny. Do you know any stories about the master from way back?」
+アルス[laugh]「やっぱり。前に聞いたのと、同じです」|Als[laugh]「I knew it. Same as what I heard before.」
+アルス[smile]「……覚えておきます」|Als[smile]「...I'll remember that.」
+アルス「僕です。……素振りのついでに」|Als「That was me. ...On the way to practice.」
+アルス[smile]「今朝の素振りも、終わりました。師匠、いつでも冒険に誘ってください」|Als[smile]「This morning's practice is done too. Master, invite me on an adventure anytime.」
+アルス「5階ですか……。師匠、本当に登るんですね」|Als「The 5th floor... Master, you really are climbing.」
+アルス[shock]「くっ……まだ、やれます！」|Als[shock]「Ngh... I can still go!」
+ジン「取りゃせんよ」|Jin「I won't take it.」
+ジン[laugh]「若いのと話すと、若返るわい」|Jin[laugh]「Talking with young folk makes me feel young.」
+ジン[laugh]「四十から冒険を始めるとは、なかなかやるのう」|Jin[laugh]「Starting your adventures at forty. Not bad at all.」
+ジン「また会ったのう、鍛冶屋の」|Jin「We meet again, smith.」
+ジン[laugh]「その答えがいい」|Jin[laugh]「That's a good answer.」
+アルス「師匠。森の階の入口まで、一人で行ってきました。……まだ、足が震えました」|Als「Master. I went to the entrance of the forest floors by myself. ...My legs were still shaking.」
+アルス[smile]「師匠。昨日、ギルドの依頼で、森の主の子分を倒しました。……一人で、です」|Als[smile]「Master. Yesterday, on a guild request, I defeated one of the forest master's minions. ...By myself.」
+チッチ[think]「親方、ギルドの裏で、塔帰りの連中が素材を安く流してるって噂っす。……昔の仲間の手口っす。俺は、もう足を洗ったっすけど」|Chicchi[think]「Boss, word is some tower folk are dumping materials cheap behind the guild. ...That's how my old crew worked. I've gone straight, though.」
+アルス「ギャバンさんに、近衛の稽古に誘われました。……断りました。僕の師匠は、一人なので」|Als「Sir Gaban invited me to train with the royal guard. ...I said no. I only have one master.」
+チッチ「親方、近ごろ工房の前をうろつく顔があるっす。……ただの見物人っすね。盗賊の目じゃないっす」|Chicchi「Boss, there's been a face hanging around the workshop lately. ...Just a sightseer. Not a thief's eyes.」
+アルス[smile]「師匠。30階の番人を、一人で倒しました。……師匠の打った剣で」|Als[smile]「Master. I defeated the 30th floor guardian by myself. ...With a sword you forged.」
+「剣聖ハヤテ　塔に挑み、多くの民を救いし者」|「Hayate the Sword Saint — who challenged the tower and saved many」
+ジン[smile]「ハヤテ、と呼ばれておった。……英雄の名は、重くてのう。\n疾風の『迅』の一字だけ残して、あとは置いてきたんじゃ」|Jin[smile]「They called me Hayate. ...A hero's name is a heavy thing.\nI kept only 'Jin'—the 'swift' in 'swift wind'—and left the rest behind.」
