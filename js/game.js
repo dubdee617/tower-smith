@@ -552,7 +552,7 @@ function fitStage() {
   slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;
   /* 塔の入口: 台詞は絵の下の方に重ねて出す（台詞の欄のぶんも塔を大きく） */
   const lg = $('log');
-  if (tw && bc.contains('twtalk')) { main.style.position = 'relative'; lg.classList.add('over', 'twt'); lg.style.top = Math.round(ctl.offsetTop) + 'px'; lg.style.height = Math.max(88, RES - 70) + 'px'; }
+  if (tw && bc.contains('twtalk') && RES >= 200) {  /* 剣士の像（ボタンの欄が低い）は、台詞を絵の上のまま。選択肢が隠れないように */ main.style.position = 'relative'; lg.classList.add('over', 'twt'); lg.style.top = Math.round(ctl.offsetTop) + 'px'; lg.style.height = Math.max(88, RES - 70) + 'px'; }
   else if (tw) { main.style.position = 'relative'; lg.classList.add('over'); lg.classList.remove('twt'); lg.style.height = ''; lg.style.top = Math.round(s.offsetTop + h - 120) + 'px'; }  /* 2026-11-27: 名札＋2行が入る高さ（112px）に */
   else if (lg.classList.contains('over')) { lg.classList.remove('over', 'twt'); lg.style.top = ''; lg.style.height = ''; }  /* 絵の左右が切れるぶん、群れを内側に寄せる */
   setTimeout(spkPad, 0);
@@ -708,7 +708,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 157'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 158'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -782,6 +782,7 @@ function inside(id, msg) {
   place = id; SND_INDOOR = true; SND.lost = false; sfx('door'); showTown(true, 4 / 3); const p = PLACES[id], t = $('town');
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
   if (id === 'home' && !msg && typeof jennyHomeEv === 'function' && jennyHomeEv()) return;  // ジェニー専用イベント
+  { const w = Object.keys(VISIT_HOME).find(k => VISIT_HOME[k] === id); if (w && G.visit && G.visit.run === G.runs && G.visit.who.includes(w)) visitLeave(w); }  /* 工房に来ていた人は、店に行けば店に戻っている（同じ人が2か所にいない） */
   if (id === 'home' && !msg && typeof loopTalkReady === 'function' && loopTalkReady()) { loopTalk(); return; }  /* 2026-11-27: 工房のみんなが、町での回り方を話す（一度だけ） */
   if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
   if (id === 'weapon' && !msg && typeof jennyStoryKey === 'function' && jennyStoryKey()) { const k = jennyStoryKey(); jennySeq(k, () => inside('weapon', k === 's1' ? 'ジェニー「……さ、仕事仕事。何か用？」' : 'ジェニー「……で、今日は何を買うの？」')); return; }
@@ -842,7 +843,7 @@ function npcFig(id) {
 
 function homeMenu() {
   buttons([{ title: `工房の素材: ${matText(G.store)}` },
-    ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', hot: true, f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => inside('home')); } }))),
+    ...((G.visit && G.visit.run === G.runs ? G.visit.who : []).map(w => ({ t: `${VNAME[w]}と話す`, s: '遊びに来ている', hot: true, f: () => { npcFig(VISIT_FIG[w]); talkTo(w, () => { visitLeave(w); inside('home', VISIT_BYE[w] || `${VNAME[w]}は、帰っていった。`); }); } }))),
     typeof banterBtn === 'function' ? banterBtn() : null,
     { t: '鍛冶をする', s: '武具を打つ', hot: true, f: forge },
     { t: '休む', s: 'HP全回復', f: () => { if (G.hp >= G.mhp) { say('doubt', '「……まだ眠くないな」', true); return; } G.hp = G.mhp; save(); sleepScene(() => say('calm', `自分のベッドで眠った。炉の音が子守唄だ。\nHPが回復した。${G.injuries.length ? '\n……ケガは、寝ても治らない。治療院に行こう。' : ''}`, true)); } },
@@ -1687,6 +1688,10 @@ function resumeTower() {
   else log(`${t.floor}階。……続きから。`, true);
   return true;
 }
+/* 2026-11-27: 工房に遊びに来た人は、話が終わったら自分の施設に帰る（Daichiさん） */
+const VISIT_HOME = { jenny: 'weapon', elly: 'clinic', ria: 'guild' };
+const VISIT_BYE = { jenny: 'ジェニーは「店、開けっぱなしだから」と、武具屋に戻っていった。', elly: 'エリーは、治療院へ帰っていった。', ria: 'リアは、ギルドへ戻っていった。', fuuka: 'フウカは、いつの間にかいなくなっていた。' };
+function visitLeave(w) { if (G.visit && G.visit.who) { G.visit.who = G.visit.who.filter(x => x !== w); if (!G.visit.who.length) G.visit.line = false; save(); } }
 function closeMenu() { const m = $('menu'); if (m) m.classList.remove('on'); }
 function applyOpts() { if (SND.setVol) SND.setVol(OPTS.bgm, OPTS.sfx); }
 function resetGame() { buttons([{ title: 'はじめからにする？（オートセーブは上書き。スロットのセーブは残る）' }, { t: 'はじめる', f: () => { G = NEW_GAME(); save(); intro(0); } }, { t: 'やめる', f: titleScreen }]); }

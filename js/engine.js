@@ -290,6 +290,8 @@ function genFloor(floor, seed) {
       if (!edgeDirs.length || edgeDirs.some(([a, b]) => M[y + b][x + a] !== 1)) continue;
       if ([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => used.has((x + a) + ',' + (y + b)))) continue;
       if (x === sx && y === sy) continue;
+      /* 2026-11-27: 階段のまわり1マスには物（木の幹・宝箱・小物）を置かない。階段が陰に隠れて「上り階段がない」と見えないように */
+      let nearSt = false; for (let b = -1; b <= 1 && !nearSt; b++) for (let a = -1; a <= 1; a++) { const c = M[y + b] && M[y + b][x + a]; if (c === 2 || c === 3) { nearSt = true; break; } } if (nearSt) continue;
       M[y][x] = 6; const ok = allReach(); M[y][x] = 0; if (!ok) continue;  // 置くと行けない場所ができるなら置かない
       return [x, y];
     }

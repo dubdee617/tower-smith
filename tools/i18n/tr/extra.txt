@@ -654,3 +654,8 @@ HP {0}/{1}|HP {0}/{1}
 {0}階〜|From F{0}
 {0}階・主|F{0} · Master
 {0}階・番人|F{0} · Guardian
+ジェニーは「店、開けっぱなしだから」と、武具屋に戻っていった。|Jenny said, "I left the shop open," and went back to the weapon shop.
+エリーは、治療院へ帰っていった。|Elly went back to the clinic.
+リアは、ギルドへ戻っていった。|Ria went back to the guild.
+フウカは、いつの間にかいなくなっていた。|Before you knew it, Fuuka was gone.
+{0}は、帰っていった。|{0} went home.
