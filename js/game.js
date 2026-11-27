@@ -536,7 +536,7 @@ const TOWN_IMG = 'assets/town/';
 const PLACES = {
   home:   { name: '工房（自宅）', box: [168,  468,  302,  560], hello: ['アルス「師匠、おかえりなさい！ 今日の名言、まだですか」', 'チッチ「掃除しといたっす。あ、炉の火は落としてないっす」', 'チッチ[laugh]「親方の剣、磨いといたっす！ ……盗んでないっすよ？」', 'チッチ[shy]「アルス君に『チッチさんの料理、最高です』って言われたっす。……照れるっす」', 'チッチ[think]「鍵なら開けられるっす。心の鍵？ ……知らないっす」', '床に獲物が置いてある。オルグだろう。'] },
   weapon: { name: '武具屋', box: [321,  410,  445,  490], hello: ['ジェニー「打ったの見せて。値段は私が決める」', 'ジェニー[laugh]「叩けば直る。人生以外は」',
-    'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー[angry]「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」'] },
+    'ジェニー「また来たの？ ……別に、待ってないけど」\n「そうか。じゃあ売ったらすぐ帰る」', 'ジェニー「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」\n「ああ、商売の話か。分かってる」'] },
   clinic: { name: '治療院', box: [312,  242,  413,  325], hello: ['エリー[smile]「あ、おかえりなさい！ 今日はケガしてませんか？」', 'エリー「神様はちゃんと聞いてますよ。……たまに返事が遅いだけで」',
     'エリー[smile]「これ、お守りです。手作りなんですけど……」\n「ありがとう。治療院の新しい商品か？」', 'エリー「無茶しないでくださいね。……私、毎晩お祈りしてるんですから」\n「神様も忙しいだろうに、悪いな」'] },
   guild:  { name: 'ギルド', box: [25,  325,  149,  407], hello: ['ジロ「ゴローが、今日の塔は機嫌が悪いって言ってる」', 'リア「最高到達記録は86階。近衛兵長のギャバンさんの記録です」', 'リア[smile]「依頼はまだ準備中です。……もう少し待っててくださいね」',
@@ -558,7 +558,7 @@ const STAGE = {
     [10, ['アルス「10階の主を倒したって、ギルドで大騒ぎです。……まあ、師匠ならって思ってましたけど」', 'チッチ[laugh]「親方、近所から差し入れが山ほど届いてるっす！ 食べきれないっす！」']],
   ],
   weapon: [
-    [0, ['ジェニー[shock]「は？ 塔に登る？ あんた鍛冶屋でしょ！？」', 'ジェニー[angry]「職人が自分で素材取りに行くなんて、聞いたことないわよ」']],
+    [0, ['ジェニー[shock]「は？ 塔に登る？ あんた鍛冶屋でしょ！？」', 'ジェニー[doubt]「職人が自分で素材取りに行くなんて、聞いたことないわよ」']],
     [5, ['ジェニー「5階……。まぐれよ、まぐれ。……ケガは？」']],
     [10, ['ジェニー[laugh]「10階の主ねぇ。……ま、あんたならやると思ってたわ」', 'ジェニー「お客さんがね、『あの鍛冶屋の武器なら登れる』って買っていくのよ。商売上がったり……じゃないわね」']],
   ],
@@ -675,7 +675,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 143'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 144'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -750,7 +750,7 @@ function inside(id, msg) {
   t.className = 'box town'; t.innerHTML = `<img src="${TOWN_IMG}${id}_in.jpg" alt="${p.name}の中"><div class="name">${p.name}</div>` ; if (id !== 'home') npcFig(id);
   if (id === 'home' && !msg && typeof jennyHomeEv === 'function' && jennyHomeEv()) return;  // ジェニー専用イベント
   if (id === 'home' && !msg && homeCallReady()) { homeCall(); return; }
-  if (id === 'weapon' && !msg && typeof jennyStoryKey === 'function' && jennyStoryKey()) { const k = jennyStoryKey(); jennySeq(k, () => inside('weapon', k === 's1' ? 'ジェニー「……さ、仕事仕事。何か用？」' : 'ジェニー[shy]「……で、今日は何を買うの？」')); return; }
+  if (id === 'weapon' && !msg && typeof jennyStoryKey === 'function' && jennyStoryKey()) { const k = jennyStoryKey(); jennySeq(k, () => inside('weapon', k === 's1' ? 'ジェニー「……さ、仕事仕事。何か用？」' : 'ジェニー「……で、今日は何を買うの？」')); return; }
   const lastSaid = msg || greet(id); log(lastSaid, true);
   { const sp = /^([^\s「\[]+)(?:\[(\w+)\])?/.exec(lastSaid || ''); if (sp && sp[1] === 'ブッパ') npcFig('buppa_' + (NPCS['ブッパ'][sp[2] || 'normal'] || 'sleep')); else if (sp && NPCS[sp[1]] && ['ボルツ', 'アルス', '客', 'チッチ', 'ルゥ'].includes(sp[1])) npcFig(NPCS[sp[1]].id); }
   if (id === 'inn') inn.first = lastSaid;

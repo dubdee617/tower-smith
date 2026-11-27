@@ -195,3 +195,93 @@ HP {0}/{1}|HP {0}/{1}
 フウカ「……お答えできません。……でも、少しの間なら、ご一緒できます」|Fuuka「...I can't say. ...But I can travel with you for a little while.」
 フウカ「……少しの間なら。私には、私の道がありますので」|Fuuka「...For a little while. I do have my own path to walk.」
 「助かった。またな」|「Thanks for the help. See you.」
+ジェニー「売れるのはいいことよ。……でも、先にあんたが無事かどうかでしょ」|Jenny「Selling well is nice. ...But whether you're safe comes first, doesn't it?」
+ジェニー[smile]「ケガしてないか見に来ただけよ。……ほら、腕。……ん、大丈夫そうね」|Jenny[smile]「I only came to check if you got hurt. ...Here, your arm. ...Mm, looks fine.」
+ジェニー「だから鍛えなさいって言ってるの。鍛冶屋でしょ」|Jenny「That's why I keep telling you to build some muscle. You're a smith, aren't you?」
+ジェニー[happy]「任せなさい。目利きで私に勝てる人なんて、この町にいないんだから」|Jenny[happy]「Leave it to me. Nobody in this town has a better eye than I do.」
+ジェニー「店番してるとね、ときどき塔のほうを見ちゃうのよ。……窓を拭くついでにね」|Jenny「When I'm minding the shop, I sometimes end up looking toward the tower. ...While I'm wiping the windows, that's all.」
+ジェニー[laugh]「……相変わらず鈍いわね。いいわよ、別に」|Jenny[laugh]「...Dense as ever. Never mind, it's fine.」
+ジェニー[laugh]「……さあ、どうしてかしらね。自分で考えなさい」|Jenny[laugh]「...Hmm, I wonder why. Figure it out yourself.」
+ジェニー[shy]「……そ。なら、おあいこね」|Jenny[shy]「...Oh. Then we're even.」
+ジェニー[happy]「でしょ？ あの盾、私が一番いい革を選んだのよ」|Jenny[happy]「Right? I picked the best leather for that shield myself.」
+ジェニー[smile]「あんたが打つからでしょ。私は並べてるだけ」|Jenny[smile]「It's because you forge them. I just put them on the shelf.」
+ジェニー「雪原って、寒いんでしょ。……はい、これ。首巻き。余り毛糸よ、余り毛糸」|Jenny「The snowfields are cold, right? ...Here. A scarf. Leftover yarn. Just leftover yarn.」
+ジェニー[smile]「……うん。寒くなったら、それ巻いて私のこと思い出しなさい」|Jenny[smile]「...Good. When it gets cold, wrap it on and think of me.」
+ジェニー[doubt]「こんな編み目の甘いの、売り物にするわけないでしょ。……いいから巻いていきなさい」|Jenny[doubt]「As if I'd sell something with stitches this loose. ...Just wear it and go.」
+ジェニー[shy]「……なに急に。ずるい」|Jenny[shy]「...Where did that come from? That's not fair.」
+ジェニー[worried]「あるわよ、そりゃ。……虫と、あんたが帰ってこないのと」|Jenny[worried]「Of course I do. ...Bugs, and you not coming back.」
+ジェニー[shy]「……行くわよ。道具を見に行くだけだからね」|Jenny[shy]「...I'll come. Just to see the tools, okay?」
+ジェニー[laugh]「売らないわよ。……値段は、ちょっと気になるけど」|Jenny[laugh]「I won't sell it. ...Though I'm a little curious what it'd fetch.」
+ジェニー[shy]「……あんたに言われると、泣きそうになるじゃない」|Jenny[shy]「...Hearing that from you makes me want to cry.」
+ジェニー[shy]「……ん。これでいい。……顔、近いわね」|Jenny[shy]「...There. That's better. ...Your face is close.」
+ジェニー[laugh]「はいはい。……後ろ、まだはねてるわよ」|Jenny[laugh]「Yes, yes. ...The back's still sticking up.」
+ジェニー[shock]「えっ、ほんと？ ……もう、そういうのは先に言ってよね」|Jenny[shock]「Huh, really? ...Geez, tell me that sort of thing first.」
+ジェニー[doubt]「……言ったわよ。十の時に。まあ、覚えてないとは思ってたけど」|Jenny[doubt]「...I did. When I was ten. Well, I figured you wouldn't remember.」
+ジェニー[shy]「……何言ってるのよ、急に。……もう一回、言って」|Jenny[shy]「...What are you saying all of a sudden? ...Say it again.」
+ジェニー[shy]「……なによ、それ。気になるじゃない。……いいわ、待ってる。だから帰ってきて」|Jenny[shy]「...What's that supposed to mean? Now I'm curious. ...Fine, I'll wait. So come back.」
+ジェニー[smile]「……そうよね。言ってみただけ」|Jenny[smile]「...Right. I was only asking.」
+ジェニー「よくないわよ。剣は、持った人の顔なの」|Jenny「It's not fine. A sword is the face of the one who carries it.」
+ジェニー[laugh]「好みで商売しないの」|Jenny[laugh]「Don't run a business on your preferences.」
+ジェニー「苦手で済ませないの。生活がかかってるんだから」|Jenny「'Bad at it' isn't an excuse. Your living depends on it.」
+ジェニー[laugh]「悔しいわよ。私がいくら目利きしても、あんたの腕には敵わないんだもの」|Jenny[laugh]「Of course I am. However good my eye is, it can't beat your hands.」
+ジェニー「別に。置き方が上手いだけよ」|Jenny「Not really. I'm just good at displaying them.」
+ジェニー[laugh]「するわけないでしょ。……帰ってこなかったら、ツケが回収できないだけ」|Jenny[laugh]「As if. ...If you don't come back, I can't collect your tab, that's all.」
+ジェニー「忘れないの。……ほら、パン。余ったから」|Jenny「Don't forget. ...Here, bread. I had some left over.」
+ジェニー[laugh]「食べてるわよ。……人の心配してる場合？」|Jenny[laugh]「I'm eating. ...Are you really in a position to worry about others?」
+ジェニー[laugh]「うるさいわね。……でも、そうかも」|Jenny[laugh]「Oh, hush. ...But maybe so.」
+ジェニー「休みの日って、何してるの？ ……一応、聞いておこうと思って」|Jenny「What do you do on your days off? ...Just thought I'd ask.」
+ジェニー[shy]「別に。……市場に新しい茶葉が入ったって、聞いただけ」|Jenny[shy]「Nothing. ...I just heard the market got some new tea leaves.」
+ジェニー[shy]「……ふーん。……まあ、ありがと」|Jenny[shy]「...Hmm. ...Well, thanks.」
+ジェニー[doubt]「……ほんと、鉄以外は見てないのね。はいはい」|Jenny[doubt]「...You really don't look at anything but iron, do you. Yes, yes.」
+ジェニー[laugh]「うるさかったら、とっくに怒鳴り込んでるわよ。……落ち着くの、あの音」|Jenny[laugh]「If it bothered me, I'd have stormed over long ago. ...That sound calms me.」
+ジェニー[smile]「控えなくていいわよ。……あの音、けっこう好きなの」|Jenny[smile]「You don't have to. ...I kind of like that sound.」
+ジェニー[shy]「……何よ、急に」|Jenny[shy]「...What's that all of a sudden?」
+ジェニー[shy]「……じゃあ、私には、特別？ ……なんでもない。今の、なし」|Jenny[shy]「...Then, am I special? ...Never mind. Forget I said that.」
+ジェニー[shy]「……っ。……今の、もう一回言って」|Jenny[shy]「...! ...Say that again.」
+ジェニー[laugh]「……そういうことじゃないのよ。ほんと、職人なんだから」|Jenny[laugh]「...That's not the point. You're such a craftsman.」
+ジェニー[shy]「……不意打ちしないでよ。……ありがと」|Jenny[shy]「...Don't catch me off guard like that. ...Thanks.」
+ジェニー[smile]「……二人でもよかったんだけど。いいわ、チッチの分もお昼作る」|Jenny[smile]「...Just the two of us would've been fine. Okay, I'll make lunch for Chicchi too.」
+ジェニー[shy]「……っ。……ほんと、ずるい人」|Jenny[shy]「...! ...You really are unfair.」
+ジェニー[laugh]「もう帰ってきたの？ 早いじゃない。……いい判断よ、それ」|Jenny[laugh]「Back already? That was quick. ...Good call.」
+ジェニー[shy]「そんなに見ないでよ。びしょ濡れなのは、自分でもわかってるわ」|Jenny[shy]「Don't stare like that. I know I'm soaked.」
+ジェニー[shy]「ばか。……あんたが、いいのよ」|Jenny[shy]「Idiot. ...It's you I want.」
+ジェニー[happy]「あ、来た来た。……待ってたわけじゃないけど、お茶くらい出すわよ」|Jenny[happy]「Oh, there you are. ...Not that I was waiting, but I'll at least make you tea.」
+ジェニー[laugh]「……あんたの工房に行く予定。今決めたの」|Jenny[laugh]「...I'm going to your workshop. I just decided.」
+ジェニー[happy]「……！ 行く。絶対行く。……朝、迎えに来なさいよ」|Jenny[happy]「...! I'll go. Definitely. ...Come pick me up in the morning.」
+ジェニー「いいから貸しなさい。……私がやりたいの」|Jenny「Just give it here. ...I want to do it.」
+ジェニー[shy]「あんたが熱すぎるのよ」|Jenny[shy]「You're the one who's too warm.」
+ジェニー「……別に用はないわよ。注文の剣、できてるか見に来ただけ」|Jenny「...I don't need anything. I just came to see if the sword I ordered is ready.」
+ジェニー[laugh]「うるさいわね」|Jenny[laugh]「Oh, hush.」
+ジェニー[smile]「当然でしょ。私の目利きなんだから」|Jenny[smile]「Of course. It's my eye we're talking about.」
+ジェニー[laugh]「私の仕事を取らないの。値段は私が決めるんだから」|Jenny[laugh]「Don't steal my job. I'm the one who sets the prices.」
+ジェニー[doubt]「……そうね、気のせいだったわ」|Jenny[doubt]「...You're right. Must have been my imagination.」
+ジェニー[shy]「……お世辞はいいの。……でも、ちょっとうれしい」|Jenny[shy]「...Spare me the flattery. ...But I'm a little happy.」
+ジェニー[smile]「……ふーん。そう」|Jenny[smile]「...Hmm. I see.」
+ジェニー[shy]「……うん」|Jenny[shy]「...Okay.」
+ジェニー[laugh]「ちがうわよ。……ほんと、鈍いんだから」|Jenny[laugh]「That's not it. ...You really are dense.」
+ジェニー[shy]「……また話してあげてもいいわよ」|Jenny[shy]「...I suppose I could talk with you again.」
+ジェニー「……もう行っちゃうの？ ……ふん、またね」|Jenny「...Leaving already? ...Hmph. See you.」
+ジェニー「……別に、見送りに来たわけじゃないわよ。\n卸し先がいなくなると困るだけ」|Jenny「...I didn't come to see you off or anything.\nI'd just be in trouble if I lost my supplier.」
+ジェニー[worried]「……遅い。どれだけ待たせるのよ」|Jenny[worried]「...You're late. How long are you going to keep me waiting?」
+ジェニー[shy]「……何よ。一回くらい、いいでしょ」|Jenny[shy]「...What? Just once is fine, isn't it?」
+ジェニー[shy]「遅いのよ。……店、早く閉めて来たんだから」|Jenny[shy]「You're late. ...I closed the shop early to come.」
+ジェニー[shy]「……なによ。じっと見て」|Jenny[shy]「...What? Why are you staring?」
+ジェニー[shy]「……ねえ。この剣、ここに飾ってもいい？ 私の場所、ってことで」|Jenny[shy]「...Hey. Can I hang this sword here? As my spot, I mean.」
+ジェニー[smile]「……うん。毎日、見に来てやるんだから」|Jenny[smile]「...Okay. I'll come look at it every day.」
+ジェニー[laugh]「うるさいわね。……あんただって、ひょろひょろだったくせに」|Jenny[laugh]「Oh, hush. ...You were a beanpole yourself.」
+ジェニー[shy]「……何よそれ。……ずるい言い方」|Jenny[shy]「...What's that? ...That's an unfair way to put it.」
+ジェニー[shy]「……なんでもない。今の、忘れて。\nほら、王様に会うんでしょ。その格好じゃだめ。ちゃんとした服、選んであげる」|Jenny[shy]「...Never mind. Forget that.\nCome on, you're meeting the king, right? You can't go like that. I'll pick out proper clothes for you.」
+ジェニー[shy]「……その顔、絶対見たでしょ。……もう」|Jenny[shy]「...That face says you definitely saw. ...Geez.」
+ジェニー[shy]「……なんで私なのよ。王様に会うのよ？ 武具屋の娘が」|Jenny[shy]「...Why me? We're meeting the king, you know? A weapon shop girl?」
+ジェニー[shy]「…………。……仕方ないわね。あんた一人じゃ、礼儀作法も心配だし」|Jenny[shy]「.......... ...Oh, fine. I'd worry about your manners if you went alone anyway.」
+ジェニー[shy]「……っ。急にそういうこと言わないでよ。……ありがと」|Jenny[shy]「...! Don't say things like that out of nowhere. ...Thanks.」
+ジェニー[happy]「もう……やめてよ、みんな。……ふふっ」|Jenny[happy]「Come on... stop it, everyone. ...Hehe.」
+ジェニー[shock]「はあ！？ なに言ってんのよ、この子は！」|Jenny[shock]「Huh!? What is this kid saying!?」
+ジェニー「塔で死んだら、誰が私の店に武器を卸すのよ。……そういう意味だからね」|Jenny「If you die in the tower, who's going to supply my shop? ...That's all I mean.」
+ジェニー[doubt]「職人が自分で素材取りに行くなんて、聞いたことないわよ」|Jenny[doubt]「I've never heard of a craftsman going to fetch his own materials.」
+ジェニー「……で、今日は何を買うの？」|Jenny「...So, what are you buying today?」
+ジェニー「別に心配なんかしてないから。……薬、塗っときなさいよ」|Jenny「Not that I'm worried. ...Put some ointment on it.」
+ジェニー[laugh]「うるさいわね。私だって槌を振ってるのよ」|Jenny[laugh]「Oh, hush. I swing a hammer too, you know.」
+ジェニー[happy]「でしょ？ わかってるじゃない」|Jenny[happy]「Right? You get it.」
+ジェニー[doubt]「はあ？ 置き方も大事なの」|Jenny[doubt]「Huh? How you display them matters too.」
+ジェニー[happy]「……ほんとに？ 約束だからね」|Jenny[happy]「...Really? That's a promise, okay?」
