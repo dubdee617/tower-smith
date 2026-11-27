@@ -708,7 +708,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 153'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 154'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1757,7 +1757,7 @@ function facingNote() {
 }
 function afterStep() {
   if (mode !== 'dungeon') return;
-  if (steps > 4 && R() < (TODAY.enc || .075) * ((F && F.walkK) || 1) * (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
+  if (steps > 4 && R() < (TODAY.enc || .075) * .8 * ((F && F.walkK) || 1) *  /* 2026-11-27: 出会いが多すぎるので2割減（Daichiさん） */ (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
   else if (steps > 6 && !F.met && R() < .025) { const who = meetCandidates(); if (who.length) { F.met = true; meetApproach(pick(who)); return; } }
   facingNote(); dungeonUI();
 }
@@ -2446,7 +2446,7 @@ function chargeStart(m) {
 }
 function win() {
   // 倒した敵（群れ）の分をまとめてもらう
-  const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1), gold = Math.round(ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1) * ECON.mon * goldArea(floorNo)), drop = {};
+  const K = MK(), ms = B.ms, m = ms.find(x => x.boss) || ms[0], exp = Math.round(ms.reduce((s, x) => s + x.exp, 0) * (K.expx || 1) * 1.15),  /* 出会いを2割減らした分、経験値を少し足す（レベルが遅れすぎないように） */ gold = Math.round(ms.reduce((s, x) => s + x.gold, 0) * (K.goldx || 1) * ECON.mon * goldArea(floorNo)), drop = {};
   for (const x of ms) for (const [k, n] of Object.entries(x.drop)) if (x.boss || R() < Math.min(.98, (TODAY.drop || .8) + (has('p_loot') || K.loot ? .12 : 0))) add(drop, k, n * (x.mine ? 2 : 1));
   sfx('win', { delay: 300, max: G.exp + exp >= expNeed() ? .9 : 0 });
   B.over = true; for (const x of ms) { if (!x.dying) x.dying = performance.now(); dexMon(x, true); }

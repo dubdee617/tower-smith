@@ -186,7 +186,7 @@ function genFloor(floor, seed) {
   /* 2026-11-27: 広すぎるという声があり、23×23で止める（前は31×31）。小さくした分、魔物との出会い（walkK）と宝箱（chestK）を上げて、
      1つの階で戦う回数と宝箱の数は前とほぼ同じに保つ（歩く時間だけ減る）。係数はシミュレーションで合わせた（最短の歩数 37→26、宝箱 4.8→3.0） */
   const N0 = Math.min(31, 13 + floor * 2) | 1, N = Math.min(23, N0); // 低層は小さく、上ほど広く
-  const walkK = 1 + (N0 - N) * .053, chestK = 1 + (N0 - N) * .075;
+  const walkK = 1 + (N0 - N) * .053, chestK = 1 + (N0 - N) * .075, veinK = 1 + (N0 - N) * .074, propK = 1 + (N0 - N) * .052;  /* 鉱脈・小物は、前の広さのときの85%くらいに（Daichiさん 11-27） */
   const M = Array.from({ length: N }, () => Array(N).fill(1));
   const rooms = [];
   const tries = 6 + floor * 2;
@@ -267,7 +267,7 @@ function genFloor(floor, seed) {
   const vein = {};
   const VA = VEINS_AREA[area];
   if (VA && typeof PROPS !== 'undefined' && floor % 10 !== 0) for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++) {
-    if (M[y][x] !== 1 || !([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => M[y + b][x + a] === 0)) || R() > VA[0]) continue;
+    if (M[y][x] !== 1 || !([[1,0],[-1,0],[0,1],[0,-1]].some(([a, b]) => M[y + b][x + a] === 0)) || R() > VA[0] * veinK) continue;
     const sum = VA[1].reduce((s, v) => s + v[1], 0); let q = R() * sum;
     for (const [n, w] of VA[1]) if ((q -= w) < 0) { vein[x + ',' + y] = n; break; }
   }
@@ -309,7 +309,7 @@ function genFloor(floor, seed) {
       }
     }
     for (const r of rooms) {
-      const n = (r.w >= 4 && r.h >= 4 && R() < .35 ? 2 : 1) * (R() < (nt ? .35 : .45) ? 1 : 0);
+      const n = (r.w >= 4 && r.h >= 4 && R() < .35 ? 2 : 1) * (R() < Math.min(.95, (nt ? .35 : .45) * propK) ? 1 : 0);
       for (let k = 0, tries = 0; k < n && tries < 4; tries++) {
         const c = edgeCell(r); if (!c) continue; const [x, y] = c;
         let q = R() * tw, pick = table[0]; for (const p of table) if ((q -= p[2]) < 0) { pick = p; break; }
