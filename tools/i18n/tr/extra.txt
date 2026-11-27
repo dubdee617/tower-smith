@@ -485,3 +485,74 @@ HP {0}/{1}|HP {0}/{1}
 昨日の夜、塔が少しだけ高くなりました。|Last night, the tower grew a little taller.
 今日の塔は、機嫌がいいようです。|The tower seems to be in a good mood today.
 ……あなたの足音は、三つ下の階から聞こえていました。|...I could hear your footsteps from three floors below.
+リア[laugh]「もう、町じゅうが読んでいますよ」|Ria[laugh]「The whole town is already reading it.」
+リア[smile]「……はい。いちばん丁寧に書きました」|Ria[smile]「...Yes. I wrote it more carefully than anything.」
+リア[smile]「その時も、ここで待っています」|Ria[smile]「I'll be waiting here then, too.」
+リア[smile]「職人さんらしいですね。……でも、持っていってください」|Ria[smile]「That's so like a craftsman. ...But please take it.」
+リア[smile]「……地図係ですから。これくらいは」|Ria[smile]「...I'm in charge of maps. This is the least I can do.」
+リア[worried]「……それは、困ります」|Ria[worried]「...That would be a problem.」
+リア[smile]「その人たちの登録も、私が引き受けます」|Ria[smile]「I'll handle their registrations too.」
+リア[happy]「……じゃあ、表を書き直す日を、楽しみにしています」|Ria[happy]「...Then I'll look forward to the day I rewrite the chart.」
+リア[happy]「……はい。お茶を用意して、待っています」|Ria[happy]「...Yes. I'll have tea ready and wait for you.」
+リア[smile]「間違えませんよ。一番最初に覚えた名前ですから」|Ria[smile]「I won't get it wrong. It's the first name I ever memorized.」
+リア[shock]「ひっ……。それ、報告書にどう書けば……」|Ria[shock]「Eek... How am I supposed to put that in a report...」
+リア[smile]「……かわいいですね。そういう話、好きです」|Ria[smile]「...That's cute. I like stories like that.」
+リア[happy]「じゃあ、毎回聞かせてください。ずっと」|Ria[happy]「Then tell me every time. Always.」
+リア[shy]「……本気にしますよ？」|Ria[shy]「...I'll take that seriously, you know?」
+リア[laugh]「そんな報告、前代未聞です」|Ria[laugh]「A report like that is unheard of.」
+リア「ギルドの古い言葉にあるんです。『いい職人は、帰る場所を大事にする』って」|Ria「There's an old guild saying. 'A good craftsman treasures the place he returns to.'」
+リア[laugh]「そうですね。気が早かったです」|Ria[laugh]「You're right. I got ahead of myself.」
+リア[shy]「……秘密です。帰ってきたら、読ませてあげます」|Ria[shy]「...It's a secret. I'll let you read it when you come back.」
+リア[shy]「……じゃあ、半分ずつ。……どきどきしますね」|Ria[shy]「...Then, half each. ...My heart's pounding.」
+リア[shy]「……あとで、二人のときに見せます」|Ria[shy]「...I'll show you later, when it's just us.」
+リア[smile]「そうですね。……でも、ちょっと寂しいです」|Ria[smile]「That's true. ...But it's a little lonely.」
+リア「40階より上の報告は、ほとんど空白なんです。……無理のない範囲で、お願いします」|Ria「Reports above the 40th floor are almost blank. ...Only as far as you safely can, please.」
+リア[happy]「おかえりなさい。……最後の報告、受け付けました。お疲れさまでした」|Ria[happy]「Welcome back. ...Your final report is received. Thank you for everything.」
+リア[smile]「いえ、これが私の仕事ですから」|Ria[smile]「Not at all, this is my job.」
+リア[laugh]「はい。朝の受付は、元気が仕事ですから」|Ria[laugh]「Yes. At the morning desk, cheerfulness is part of the job.」
+リア[shy]「……ありがとうございます。字だけは、昔から褒められるんです」|Ria[shy]「...Thank you. My handwriting is the one thing people have always praised.」
+リア[smile]「確認してもらえて、助かりました。ありがとうございます」|Ria[smile]「I'm glad you checked. Thank you.」
+リア「それはできません。ギルドの信用に関わりますから」|Ria「I can't do that. The guild's trust is at stake.」
+リア[smile]「顔に出そうですもんね」|Ria[smile]「It would show on your face, after all.」
+リア[laugh]「……今のは、聞かなかったことにします」|Ria[laugh]「...I'll pretend I didn't hear that.」
+リア「運も実力のうちです。帰ってきたのが、何よりの成果ですよ」|Ria「Luck is part of skill. Coming back is the best result of all.」
+リア「それなら、いいんですけど。……困ったら、いつでも」|Ria「If you say so. ...If you're ever in trouble, anytime.」
+リア[laugh]「職人さんの言葉ですね。覚えておきます」|Ria[laugh]「Spoken like a craftsman. I'll remember that.」
+リア[shy]「……そう、ですか。……ありがとうございます」|Ria[shy]「...You think so? ...Thank you.」
+リア[happy]「よかった。今度、おすすめのお店を教えます」|Ria[happy]「Great. I'll tell you my favorite shop next time.」
+リア[laugh]「ガストンさんのお店の常連さんですもんね」|Ria[laugh]「You are a regular at Gaston's, after all.」
+リア[worried]「……それだけですか？ もう少し、何か言ってくれても」|Ria[worried]「...That's all? You could say a little more.」
+リア[happy]「……おそろい、ですね」|Ria[happy]「...We match, then.」
+リア[shy]「……違います。そういう意味じゃなくて」|Ria[shy]「...No. That's not what I meant.」
+リア[smile]「そんなことないです。……少し、不器用なだけです」|Ria[smile]「That's not true. ...You're just a little clumsy.」
+リア[laugh]「まだ、先の話ですよ」|Ria[laugh]「That's still a long way off.」
+リア[happy]「はい。焦がさないように、がんばります」|Ria[happy]「Yes. I'll do my best not to burn them.」
+リア[laugh]「チッチさんの分も焼きます。……でも、一番は鍛冶屋さんの分です」|Ria[laugh]「I'll bake some for Chicchi too. ...But yours comes first.」
+リア[shock]「えっ、お菓子も焼けるんですか？ ……炉があれば、何でも作れちゃうんですね」|Ria[shock]「Huh, you can bake sweets too? ...Give you a forge and you can make anything.」
+リア[shy]「邪魔じゃないです。……むしろ、楽しみなんです」|Ria[shy]「You're not in the way. ...If anything, I look forward to it.」
+リア[shy]「……今日は、仕事になりません」|Ria[shy]「...I won't get any work done today.」
+リア[happy]「最高到達記録、{f}階に更新です！ ……冒険者さんたちが、また騒ぎますね」|Ria[happy]「New highest record: floor {f}! ...The adventurers are going to be buzzing again.」
+リア[happy]「{b}階の主の撃破、確認しました！ 掲示板に貼り出します」|Ria[happy]「Defeat of the floor {b} master confirmed! I'll post it on the board.」
+リア[smile]「早めのお帰りですね。引き際がいいのは、長生きする冒険者の条件です」|Ria[smile]「Back early. Knowing when to turn back is how adventurers live long.」
+リア[smile]「おかえりなさい！ {f}階まで、ですね。お疲れさまでした」|Ria[smile]「Welcome back! Up to floor {f}. Good work.」
+リア[happy]「お疲れさまです。……今日も、ちゃんと帰ってきてくれましたね」|Ria[happy]「Welcome back. ...You came home safe again today.」
+リア[worried]「上の階、危ないって聞きました。……帰ってこなかったら、許しません」|Ria[worried]「I heard the upper floors are dangerous. ...If you don't come back, I won't forgive you.」
+リア[happy]「……はい。夕飯、何か持っていきます」|Ria[happy]「...Okay. I'll bring something for dinner.」
+リア[shy]「違います。……その逆、です」|Ria[shy]「No. ...The opposite.」
+リア「ギルドの掲示板の古い地図、もらってきました。工房に貼ってください」|Ria「I got an old map from the guild board. Put it up in the workshop.」
+リア[shy]「……用事は、ないんです。ちょっと、顔が見たくて」|Ria[shy]「...I don't need anything. I just wanted to see your face.」
+リア[happy]「……はい。その言葉、覚えておきます」|Ria[happy]「...Yes. I'll remember those words.」
+リア「休みの日、何をしてるんですか？ ……一応、参考までに」|Ria「What do you do on your days off? ...Just for reference.」
+リア[smile]「次の依頼も、用意しておきます」|Ria[smile]「I'll have the next request ready.」
+リア[smile]「到達記録は、私が書きます。\n……たくさん、書かせてください」|Ria[smile]「I'll write your records.\n...Let me write a lot of them.」
+リア[shy]「……記録じゃなくて、声に出して呼びたかったんです」|Ria[shy]「...I wanted to say it out loud, not just write it down.」
+リア[shy]「それは……私の、独り言です」|Ria[shy]「That... was me talking to myself.」
+リア[happy]「……はい。じゃあ、野菜を切ってください。……手は、切らないように」|Ria[happy]「...Okay. Then cut the vegetables. ...Without cutting your hand.」
+リア[smile]「……記録は、『更生済み』にしておきます」|Ria[smile]「...I'll mark the record 'reformed.'」
+リア[smile]「もちろんです。……そのときは、師匠さんの隣の行に書きます」|Ria[smile]「Of course. ...When the time comes, I'll write it on the line next to your master's.」
+リア[smile]「おかえりなさい。今日の報告、受け付けます。\n持ち込みはそちらでどうぞ」|Ria[smile]「Welcome back. I'll take today's report.\nTrade-ins are over there.」
+リア「おかえりなさい。報告だけ、受け付けておきます」|Ria「Welcome back. I'll just log your report.」
+リア「到達記録の書類、清書しておきました。……見やすくなったでしょう？」|Ria「I made a clean copy of your record papers. ...Easier to read, right?」
+リア[shy]「……今のは、記録には書けませんね」|Ria[shy]「...That one, I can't put in the records.」
+リア[smile]「ボルツさんにも、伝えておきます」|Ria[smile]「I'll pass that on to Boltz too.」
+リア[shy]「……私は、受付なので」|Ria[shy]「...I'm just the receptionist.」

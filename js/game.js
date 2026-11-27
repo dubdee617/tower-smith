@@ -636,12 +636,12 @@ function guildWelcome(has) {
   const close = (G.seen || {}).ria;
   const L = has ? [
     'リア[smile]「おかえりなさい！ 無事でよかった。\n……戦利品、ボルツさんに回しますね」',
-    'リア[smile]「おかえりなさい。到達記録、書いておきますね。\n持ち込みはそちらでどうぞ」',
+    'リア[smile]「おかえりなさい。今日の報告、受け付けます。\n持ち込みはそちらでどうぞ」',
     'リア「おかえりなさい。……ケガはないですか？\nあ、戦利品はこちらです」',
     'リア[smile]「おかえりなさい。今日はどこまで行きました？\n……あとで、ゆっくり聞かせてくださいね」',
   ] : [
     'リア[smile]「おかえりなさい。……今日は手ぶら、ですか？\n生きて帰ってくるのが一番です」',
-    'リア「おかえりなさい。記録だけ、書いておきますね」',
+    'リア「おかえりなさい。報告だけ、受け付けておきます」',
     'リア[smile]「おかえりなさい。また明日がありますよ」',
   ];
   if (close) L.push(has ? 'リア[happy]「おかえりなさい。……待ってました。\nほんとに、待ってたんですから」' : 'リア[happy]「おかえりなさい。手ぶらでも、\n顔を見せてくれるだけでうれしいです」');
@@ -675,7 +675,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 146'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 147'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
