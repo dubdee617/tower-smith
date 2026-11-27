@@ -238,7 +238,8 @@ function spkPad() {
     /* 町の建物の中（絵に台詞が重なる形）: 顔を台詞の欄のすぐ上に持ち上げて、文字は欄いっぱいに使う */
     if (hit() && lg.classList.contains('over') && !lg.classList.contains('twt')) {
       sp.style.height = ''; sp.style.bottom = Math.ceil(a.bottom - b.top + 2) + 'px'; a = sp.getBoundingClientRect();
-      const st = $('stage') && $('stage').getBoundingClientRect(); if (st && a.top < st.top + 4) { sp.style.height = Math.max(64, Math.floor(a.height - (st.top + 4 - a.top))) + 'px'; a = sp.getBoundingClientRect(); }  /* 絵の上に切れないよう、顔を少し小さく */
+      /* 2026-11-27: 顔は絵の枠の外に出てもよい（Daichiさん）。上の帯（ボタン）にかかるときだけ、少し小さくする */
+      const tp = document.querySelector('.top'), lim = tp ? tp.getBoundingClientRect().bottom + 2 : 0; if (a.top < lim) { sp.style.height = Math.max(64, Math.floor(a.height - (lim - a.top))) + 'px'; a = sp.getBoundingClientRect(); }
     }
     if (hit()) { if (sp.classList.contains('R')) pr = Math.ceil(b.right - a.left) + 8; else pl = Math.ceil(a.right - b.left) + 8; }
   }
@@ -699,7 +700,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 150'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 151'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
