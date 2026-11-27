@@ -183,7 +183,10 @@ const BLOCK = c => SOLID(c) || c === 6;
 // seed: 塔に入るたびに変わる（塔は生きていて、入るたびに中が組み変わる）。節目の階は固定
 function genFloor(floor, seed) {
   const R = rng(floor * 7919 + 17 + (seed || 0) * 104729);
-  const N = Math.min(31, 13 + floor * 2) | 1; // 低層は小さく、上ほど広く
+  /* 2026-11-27: 広すぎるという声があり、23×23で止める（前は31×31）。小さくした分、魔物との出会い（walkK）と宝箱（chestK）を上げて、
+     1つの階で戦う回数と宝箱の数は前とほぼ同じに保つ（歩く時間だけ減る）。係数はシミュレーションで合わせた（最短の歩数 37→26、宝箱 4.8→3.0） */
+  const N0 = Math.min(31, 13 + floor * 2) | 1, N = Math.min(23, N0); // 低層は小さく、上ほど広く
+  const walkK = 1 + (N0 - N) * .053, chestK = 1 + (N0 - N) * .075;
   const M = Array.from({ length: N }, () => Array(N).fill(1));
   const rooms = [];
   const tries = 6 + floor * 2;
@@ -292,7 +295,7 @@ function genFloor(floor, seed) {
     }
     return null;
   };
-  for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35) * (typeof ECON !== 'undefined' ? ECON.chestN : 1)) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
+  for (const r of rooms.slice(1)) if (R() < (TODAY.chest || .35) * (typeof ECON !== 'undefined' ? ECON.chestN : 1) * chestK) { const c = edgeCell(r); if (c) { chests.push({ x: c[0], y: c[1], gold: R() < .15, open: false }); M[c[1]][c[0]] = 6; used.add(c[0] + ',' + c[1]); } }
   if (typeof PROPS !== 'undefined') {
     const own = (AREA_PROPS[area] || []).map((p, k) => [`${area}_p${k + 1}`, p[1], area === 'stone' ? 6 : 10]);
     const table = (area === 'stone' ? own.concat(FLOOR_PROPS_STONE, floor >= 6 ? FLOOR_PROPS_DEEP : []) : own).concat(AREA_EXTRA[area] || []), tw = table.reduce((s, p) => s + p[2], 0);
@@ -314,7 +317,7 @@ function genFloor(floor, seed) {
       }
     }
   }
-  return { N, M, vein, props, start: [sx, sy], startDir: [down[4], down[5]], upFront: [up[2], up[3]], upDir: [up[4], up[5]], face, torches, wm, G, chests, seen: Array.from({ length: N }, () => Array(N).fill(0)) };
+  return { N, walkK, M, vein, props, start: [sx, sy], startDir: [down[4], down[5]], upFront: [up[2], up[3]], upDir: [up[4], up[5]], face, torches, wm, G, chests, seen: Array.from({ length: N }, () => Array(N).fill(0)) };
 }
 
 // ---------- 描画 ----------

@@ -700,7 +700,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 151'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 152'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
@@ -1739,7 +1739,7 @@ function facingNote() {
 }
 function afterStep() {
   if (mode !== 'dungeon') return;
-  if (steps > 4 && R() < (TODAY.enc || .075) * (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
+  if (steps > 4 && R() < (TODAY.enc || .075) * ((F && F.walkK) || 1) * (G.bless === 'calm' ? .6 : 1) * (G.enc ? (G.enc.k === 'ward' ? .7 : 1.4) : 1)) { startBattle(); return; }
   else if (steps > 6 && !F.met && R() < .025) { const who = meetCandidates(); if (who.length) { F.met = true; meetApproach(pick(who)); return; } }
   facingNote(); dungeonUI();
 }
