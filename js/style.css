@@ -309,7 +309,7 @@ html.en #fw .fwi .nm{font-size:12px}html.en #fw button{font-size:12px}
 #stp table{width:100%;border-collapse:collapse}#stp th{text-align:left;color:#cdb894;font-weight:400;width:4.5em;vertical-align:top;padding:2px 0}#stp td{padding:2px 0;line-height:1.35}
 .log .face{height:min(84px,calc(100% - 14px));max-height:none;width:auto;aspect-ratio:64/84}  /* 2026-11-27: 台詞の欄が低いときも、顔を切らずに縮めて全部見せる */
 body.title #stb,body.story #stb,body.intro #stb{visibility:hidden}
-body.title #ctl{overflow:hidden}body.title #ctl button{height:100%}
+
 /* 2026-11-26: 会話の文字を少し小さく。顔があるときは、文字が顔の下に入らないよう右をあける（上の !important に消されていた） */
 .log{font-size:15px!important;line-height:1.5}
 .log.hasface{padding-right:86px!important}

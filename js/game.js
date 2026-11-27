@@ -512,7 +512,7 @@ function flashIn() {
 // 絵は上に寄せる。COVER の画面（店の中・町の景色など）は余った高さいっぱいに広げ、切れた分は絵の端を落とす
 let ASPECT = 2 / 3, COVER = false;
 const LOG_MIN = 120;
-const TITLE_CTL = 50;  // タイトルのボタン欄の高さ（決め打ち）
+const TITLE_CTL = 156;  // タイトルのボタン欄に取っておく高さ。いちばん高い画面（「はじめからにする？」の確認）に合わせる（2026-11-27: 50だとボタンが切れて押せなかった）
 function fitStage() {
   const s = $('stage'), main = s.parentNode, el = mode === 'town' ? $('town') : $('view');
   const dg = mode !== 'town'; document.body.classList.toggle('dg', dg);
@@ -531,7 +531,7 @@ function fitStage() {
   /* 2026-11-26: タイトルは「タップではじめる」→ メニューで、ボタンの高さや台詞の有無が変わっても絵が縮まないよう、
      ボタン欄を決まった高さ（TITLE_CTL）にして、台詞の欄は数えずに計算する */
   const ttl = bc.contains('title') && !dg;
-  if (ttl) { used += TITLE_CTL - ctl.offsetHeight - (logOn && !tw ? LOG_MIN : -6) - 6; ctl.style.height = TITLE_CTL + 'px'; }
+  if (ttl) { used += Math.max(TITLE_CTL, ctl.offsetHeight) - ctl.offsetHeight - (logOn && !tw ? LOG_MIN : -6) - 6; ctl.style.height = ''; }
   const H = Math.max(120, main.clientHeight - used); if (!W) return;
   /* 2026-11-26: 塔の中（移動・戦闘・倒したあと）は、絵の大きさを固定。台詞の欄とボタンの欄の高さを決め打ちにして、ボタンの数で絵が変わらないようにする */
   let Hdg = 0;
@@ -548,7 +548,7 @@ function fitStage() {
   else { h = w / ASPECT; if (h > H) { h = H; w = h * ASPECT; } }
   el.style.width = Math.floor(w) + 'px'; el.style.height = Math.floor(h) + 'px'; s.style.height = Math.floor(h) + 'px';
   const talk = dg && !bt && bc.contains('dgtalk');
-  ctl.style.flex = ''; ctl.style.height = dg ? (talk ? CTL_TALK : CTL_DG) + 'px' : ttl ? TITLE_CTL + 'px' : '';
+  ctl.style.flex = ''; ctl.style.height = dg ? (talk ? CTL_TALK : CTL_DG) + 'px' : '';
   { const lgx = $('log'); if (talk) lgx.style.setProperty('flex', `0 0 ${LOG_DG + CTL_DG - CTL_TALK}px`, 'important'); else lgx.style.removeProperty('flex'); }  /* 塔の中のボタン欄は高さ固定。余った高さは全部、絵へ */
   slotOf.k = dg ? Math.min(1, (w / (h * 4 / 3)) / .765) : 1;
   /* 塔の入口: 台詞は絵の下の方に重ねて出す（台詞の欄のぶんも塔を大きく） */
@@ -726,7 +726,7 @@ function titleScreen() {
   // iPhoneは最初のタップまで音が出せないので、まず「タップしてはじめる」でタイトルの曲を鳴らす
   if (!SND.unlocked) buttons([{ t: 'タップしてはじめる', hot: true, f: () => buttons(L) }]); else buttons(L);
   log('', true); hud();
-  { const v = document.createElement('div'); v.textContent = 'ver 165'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
+  { const v = document.createElement('div'); v.textContent = 'ver 166'; v.style.cssText = 'position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff8;text-shadow:0 0 3px #000'; t.appendChild(v); }
 }
 // オープニング: 絵を画面いっぱいに出し、文章を真ん中に1行ずつ浮かべて、自動で次へ進む（画面を押すと早送り）
 function intro(i) {
